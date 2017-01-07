@@ -58,12 +58,17 @@ coming soon :)
 # Sources and additional links
 
 deauth attack: https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack
+
 deauth frame: https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/
+
 ESP8266: https://de.wikipedia.org/wiki/ESP8266
+
 https://espressif.com/en/products/hardware/esp8266ex/overview
 
 packet injection with ESP8266: http://hackaday.com/2016/01/14/inject-packets-with-an-esp8266/
+
 http://bbs.espressif.com/viewtopic.php?f=7&t=1357&p=10205&hilit=wifi_pkt_freedom#p10205
+
 https://github.com/pulkin/esp8266-injection-example
 
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009
