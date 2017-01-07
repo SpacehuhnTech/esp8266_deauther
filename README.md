@@ -1,5 +1,4 @@
 # esp8266_deauther
-WiFi deauther
 Build your own WiFi jammer for under $10 with an ESP8266.
 
 # Introduction
