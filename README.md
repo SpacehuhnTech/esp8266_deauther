@@ -9,7 +9,7 @@ Basically it’s a device which performs a deauth attack.
 You select the clients you want to disconnect from their network and start the attack. As long as the attack is running, the
 selected clients are not able to connect to the network.
 
-# How it works:
+## How it works:
 
 The 802.11 WiFi protocol contains a so called deauthentication frame. It is used to disconnect clients safely from a wireless
 network.
@@ -24,7 +24,7 @@ prevent errors, these packets were invented.
 Because they are unencrypted, you just need the mac address of the WiFi router and of the client device which you want to
 disconnect from the network. You don’t even have to be in the network or know the password, it’s enough to be in its range.
 
-# What an ESP8266 is:
+## What an ESP8266 is:
 
 The ESP8266 a very cheap micro controller with build in WiFi. It contains a powerfull 160 MHz processor and you can program it
 with the Arduino IDE. This makes it perfect for this project.
@@ -32,7 +32,7 @@ with the Arduino IDE. This makes it perfect for this project.
 You can buy these chips for under $2 from China. But I recommend you to buy one of the USB breakout/developer boards. 
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
-# How to protect yourself:
+## How to protect yourself:
 
 With 802.11w-2009 WiFi got an update to encrypt management frames.
 So make sure your router is up to date and has management frame protection enabled. But be sure that your client device
@@ -51,11 +51,11 @@ My intention with this project is to draw attention to this issue.
 This attack shows how vulnerable the 802.11 WiFi standard is and that we need to fix it.
 A solution is already there, why don’t we use it?
 
-##### Tutorial #####
+# Tutorial
 
 coming soon :)
 
-#### Sources and additional links ####
+# Sources and additional links
 
 deauth attack: https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack
 deauth frame: https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/
