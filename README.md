@@ -2,8 +2,8 @@
 WiFi deauther
 Build your own WiFi jammer for under $10 with an ESP8266.
 
-##### Introduction #####
-#What it is:
+# Introduction
+## What it is:
 
 Basically it’s a device which performs a deauth attack.
 You select the clients you want to disconnect from their network and start the attack. As long as the attack is running, the
