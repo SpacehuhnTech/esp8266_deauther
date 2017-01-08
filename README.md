@@ -70,9 +70,13 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 **6** Select version `2.0.0` and click on `Install`
 
+![screenshot of arduino, selecting the right version](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_1.JPG)
+
 **7** Go to `File` > `Preferences`again
 
 **8** Open the folder path under `More preferences can be edited directly in the file`
+
+![screenshot of arduino, opening folder path](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_2.JPG)
 
 **9** Go to `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `tools` > `sdk` > `include`
 
@@ -85,7 +89,11 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 `void wifi_unregister_send_pkt_freedom_cb(void);`  
 `int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);`  
 
-**12** Download and open `esp8266_deauther` > `esp8266_deauther.ino` with Arduino
+![screenshot of notepad, copy paste the right code](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/notepad_screenshot_1.JPG)
+
+**don't forget to save!**
+
+**12** Download and open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
 
 **13** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
 If no port shows up you may have to reinstall the drivers.
@@ -95,7 +103,10 @@ If no port shows up you may have to reinstall the drivers.
 **Your ESP8266 Deauther is now ready!**
 
 Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
-Once connected, you can open up your browser and go to `192.168.4.1`.
+Once connected, you can open up your browser and go to `192.168.4.1`.  
+![webinterface of the deauther device](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
+
+You can now scan for networks, client devices and start different attacks.
 
 Happy hacking :)
 
