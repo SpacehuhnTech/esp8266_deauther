@@ -58,7 +58,7 @@ The only thing you will need is a computer and an ESP8266.
 I recommend you to buy one of the USB breakout/developer boards.
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
-**1** Install and open [Arduino](https://www.arduino.cc/en/Main/Software).
+**1** Install [Arduino](https://www.arduino.cc/en/Main/Software) and open it.
 
 **2** Go to `File` > `Preferences`
 
@@ -70,7 +70,7 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 **6** Select version `2.0.0` and click on `Install`
 
-**7** Go to `File` > `Preferences` again
+**7** Go to `File` > `Preferences`again
 
 **8** Open the folder path under `More preferences can be edited directly in the file`
 
@@ -95,7 +95,7 @@ If no port shows up you may have to reinstall the drivers.
 **Your ESP8266 Deauther is now ready!**
 
 Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
-Once connected you can open up your browser and go to `192.168.4.1`.
+Once connected, you can open up your browser and go to `192.168.4.1`.
 
 Happy hacking :)
 
