@@ -29,8 +29,7 @@ disconnect from the network. You don’t even have to be in the network or know 
 The [ESP8266](https://de.wikipedia.org/wiki/ESP8266) a very cheap micro controller with build in WiFi. It contains a powerfull 160 MHz processor and you can program it
 with the [Arduino IDE](https://www.arduino.cc/en/Main/Software). This makes it perfect for this project.
 
-You can buy these chips for under $2 from China. But I recommend you to buy one of the USB breakout/developer boards. 
-It doesn’t matter which board you use, as long as it has an ESP8266 on it.
+You can buy these chips for under $2 from China!
 
 ## How to protect yourself:
 
@@ -54,7 +53,52 @@ This attack shows how vulnerable the 802.11 WiFi standard is and that it has to 
 
 # Tutorial
 
-coming soon :)
+The only thing you will need is a computer and an ESP8266.
+
+I recommend you to buy one of the USB breakout/developer boards.
+It doesn’t matter which board you use, as long as it has an ESP8266 on it.
+
+**1** Install and open [Arduino](https://www.arduino.cc/en/Main/Software).
+
+**2** Go to `File` > `Preferences`
+
+**3** Add `http://arduino.esp8266.com/stable/package_esp8266com_index.json` to the Additional Boards Manager URLs. (source: https://github.com/esp8266/Arduino)
+
+**4** Go to `Tools` > `Board` > `Boards Manager`
+
+**5** Type in `esp8266`
+
+**6** Select version `2.0.0` and click on `Install`
+
+**7** Go to `File` > `Preferences` again
+
+**8** Open the folder path under `More preferences can be edited directly in the file`
+
+**9** Go to `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `tools` > `sdk` > `include`
+
+**10** Open `user_interface.h` with a text editor
+
+**11** Scroll down and before `#endif` add following lines:
+
+`typedef void (*freedom_outside_cb_t)(uint8 status);`  
+`int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);`  
+`void wifi_unregister_send_pkt_freedom_cb(void);`  
+`int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);`  
+
+**12** Download and open `esp8266_deauther` > `esp8266_deauther.ino` with Arduino
+
+**13** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
+If no port shows up you may have to reinstall the drivers.
+
+**14** Upload!
+
+**Your ESP8266 Deauther is now ready!**
+
+Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
+Once connected you can open up your browser and go to `192.168.4.1`.
+
+Happy hacking :)
+
 
 # Sources and additional links
 
