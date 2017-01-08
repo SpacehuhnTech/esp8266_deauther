@@ -49,7 +49,7 @@ Please check the legal regulations in your country before using it. Jamming tran
 and this device can fall into the same category (even if it’s technically not the same).
 
 My intention with this project is to draw attention to this issue. 
-This attack shows how vulnerable the 802.11 WiFi standard is and that we need to fix it.
+This attack shows how vulnerable the 802.11 WiFi standard is and that it has to be fixed.
 **A solution is already there, why don’t we use it?**
 
 # Tutorial
