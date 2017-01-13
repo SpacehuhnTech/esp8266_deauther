@@ -121,7 +121,7 @@ If no port shows up you may have to reinstall the drivers.
 
 First start your ESP8266 by giving it power.  
 
-You can use your smartphone if you have a OTG USB cable.
+You can use your smartphone if you have an OTG USB cable.
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_2.jpg?token=ADphfAcPwuqXZ3iZnLa5l2TZM4e4FO05ks5Ygm65wA%3D%3D)
 
 Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
