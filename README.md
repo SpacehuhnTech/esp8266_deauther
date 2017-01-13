@@ -1,7 +1,7 @@
 # ESP8266 Deauther
 Build your own WiFi jammer with an ESP8266.
 
-![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg?token=ADphfABZE5u9AIYeyizA0936U90pZUFtks5Ygm63wA%3D%3D)
+![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)
 
 ## Contents
 - [Introduction](#introduction)
@@ -122,22 +122,22 @@ If no port shows up you may have to reinstall the drivers.
 First start your ESP8266 by giving it power.  
 
 You can use your smartphone if you have an OTG USB cable.
-![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_2.jpg?token=ADphfAcPwuqXZ3iZnLa5l2TZM4e4FO05ks5Ygm65wA%3D%3D)
+![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_2.jpg)
 
 Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
 Once connected, you can open up your browser and go to `192.168.4.1`.  
 ![webinterface of the deauther device](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
 
 You can now scan for networks...
-![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG?token=ADphfCKndMnVl6dv8a_IX2ZO4t2Vs4GCks5Ygm3JwA%3D%3D)
+![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
 
 scan for client devices... 
-![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG?token=ADphfGv3ziQy3LmQvqB1yIAECuQmhAlOks5Ygm3KwA%3D%3D)
+![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG)
 
 Note: While scanning the ESP8266 will shut down its access point, so you may have to go to your settings and reconnect to the WiFi network manually.
 
 ...and start different attacks.
-![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG?token=ADphfA6PIeuMzISlWw5BJM-qzY7KbTtDks5Ygm3MwA%3D%3D)
+![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
 
 Happy hacking :)
 
