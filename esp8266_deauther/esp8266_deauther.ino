@@ -108,15 +108,20 @@ void loadFunctionsJS(){ server.send( 200, "text/javascript", data_getFunctionsJS
 void loadStyle(){ server.send ( 200, "text/css", data_getStyle() ); }
 
 //==========AP-Scan==========
-void startAPScan(){ if(apScan.start()) server.send ( 200, "text/json", "true"); }
+void startAPScan(){ 
+  if(apScan.start()){
+    server.send ( 200, "text/json", "true");
+    attack.stopAll();
+  }
+}
 
 void sendAPResults(){ server.send ( 200, "text/json", apScan.getResults()); }
 
 void selectAP(){
   if(server.hasArg("num")) {
     apScan.select(server.arg("num").toInt());
-    attack.stopAll();
     server.send ( 200, "text/json", "true");
+    attack.stopAll();
   }
 }
 
@@ -125,6 +130,7 @@ void startClientScan(){
   if(server.hasArg("time") && apScan.selected > -1 && !clientScan.sniffing) {
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
+    attack.stop(0);
   } else server.send ( 200, "text/json", "false");
 }
 
