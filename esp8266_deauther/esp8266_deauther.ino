@@ -1,8 +1,10 @@
+#include <Arduino.h>
+
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 
-extern "C" { 
+extern "C" {
   #include "user_interface.h"
 }
 
@@ -20,7 +22,8 @@ ESP8266WebServer server(80);
 /*
 I had some troubles implementing singleton classes.
 see: https://github.com/esp8266/Arduino/issues/500
-They fixed this issue with in a newer SDK version, but we can only use the old so I used global variables.
+They fixed this issue with in the newer SDK version (the one we can't use),
+so I used global variables.
 */
 
 NameList nameList;
@@ -41,25 +44,28 @@ void startWifi(){
   Serial.println("Password: "+(String)password);
 }
 
+
+
 void setup(){
+
+  Serial.begin(115200);
+  delay(2000);
 
   nameList.begin();
   //nameList.clear();
   nameList.load();
-  
-  Serial.begin(115200);
-  delay(2000);
+
   Serial.println("");
   Serial.println("starting...");
-  
+
   startWifi();
   attack.generate(-1);
-  
+
   /* ========== Web Server ========== */
 
   /* HTML sites */
   server.onNotFound(load404);
-  
+
   server.on("/", loadIndex);
   server.on("/index.html", loadIndex);
   server.on("/clients.html", loadClients);
@@ -79,7 +85,7 @@ void setup(){
   server.on("/setName.json", setClientName);
   server.on("/attackInfo.json", sendAttackInfo);
   server.on("/attackStart.json", startAttack);
-  
+
   server.begin();
 }
 
@@ -92,7 +98,6 @@ void loop(){
     server.handleClient();
     attack.run();
   }
-  
 }
 
 void load404(){ server.send ( 200, "text/html", data_get404()); }
@@ -100,7 +105,7 @@ void loadIndex(){ server.send ( 200, "text/html", data_getIndexHTML() ); }
 void loadClients(){ server.send ( 200, "text/html", data_getClientsHTML()); }
 void loadAttack(){ server.send ( 200, "text/html", data_getAttackHTML() ); }
 void loadFunctionsJS(){ server.send( 200, "text/javascript", data_getFunctionsJS() ); }
-void loadStyle(){ server.send ( 200, "text/css", data_getStyle()/*, data_getStyleSize()*/ ); }
+void loadStyle(){ server.send ( 200, "text/css", data_getStyle() ); }
 
 //==========AP-Scan==========
 void startAPScan(){ if(apScan.start()) server.send ( 200, "text/json", "true"); }
@@ -132,8 +137,9 @@ void selectClient(){
     server.send ( 200, "text/json", "true");
   }
 }
+
 void setClientName(){
-  if(server.hasArg("id")&&server.hasArg("name")) {
+  if(server.hasArg("id") && server.hasArg("name")) {
     nameList.add(clientScan.getClientMac(server.arg("id").toInt()),server.arg("name"));
     server.send ( 200, "text/json", "true");
   }
@@ -144,6 +150,7 @@ void sendAttackInfo(){ server.send ( 200, "text/json", attack.getResults()); }
 
 void startAttack(){
   if(server.hasArg("num") && apScan.selected > -1) {
+    
     attack.start(server.arg("num").toInt());
     server.send ( 200, "text/json", "true");
   }

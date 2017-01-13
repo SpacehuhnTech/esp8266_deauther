@@ -12,7 +12,7 @@
 /*
 The NameList holds and saves all your custom device names in the EEPROM.
 You can modify the length above, but be careful the EEPROM has only 512 bytes.
-You have to call nameList.clear() in setup once after 
+You may have to call nameList.clear() when uploading for the first time.
 */
 
 class NameList
@@ -26,7 +26,7 @@ class NameList
     String get(Mac client);
   private:
     void save();
-  
+
     int len = 0;
     MacList clients;
     uint8_t names[listLength][nameLength];

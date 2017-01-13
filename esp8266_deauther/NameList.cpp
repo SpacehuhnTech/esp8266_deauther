@@ -1,26 +1,27 @@
 #include "NameList.h"
 
 NameList::NameList(){
-  
+
 }
 
 void NameList::begin(){
   EEPROM.begin(512);
   if((listLength*nameLength+6)+1>512) Serial.println("ERROR: EEPROM OVERFLOW!");
-  if(EEPROM.read(romAdr)==255) NameList::clear();
 }
 
 void NameList::load(){
   len = (int)EEPROM.read(romAdr);
+  if(len < 1 || len > listLength) NameList::clear();
+  
   int num = 0;
-  for(int i=1;i<len*(nameLength+6)+1;i += nameLength+6){
-    Mac _client;
+  Mac _client;
+  
+  for(int i=1;i<len*(nameLength+6)+1;i += nameLength+6){ 
     for(int h=0;h<6;h++) _client.setAt(EEPROM.read(i+h),h);
     for(int h=0;h<nameLength;h++) names[num][h] = EEPROM.read(i+h+6);
     clients.add(_client);
     num++;
   }
-  //Serial.println("list len:"+(String)len);
 }
 
 void NameList::clear(){
@@ -56,6 +57,10 @@ void NameList::add(Mac client, String name){
 String NameList::get(Mac client){
   String returnStr;
   int clientNum = clients.getNum(client);
-  if(clientNum > -1) for(int h=0;h<nameLength;h++) if(names[clientNum][h] != 0x00) returnStr += (char)names[clientNum][h];
+  if(clientNum > -1){
+    for(int h=0;h<nameLength;h++){
+      if(names[clientNum][h] != 0x00) returnStr += (char)names[clientNum][h];
+    }
+  }
   return returnStr;
 }
