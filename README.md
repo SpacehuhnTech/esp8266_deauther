@@ -1,15 +1,29 @@
-# esp8266_deauther
-Build your own WiFi jammer for under $10 with an ESP8266.
+# ESP8266 Deauther
+Build your own WiFi jammer with an ESP8266.
 
-# Introduction
+![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg?token=ADphfABZE5u9AIYeyizA0936U90pZUFtks5Ygm63wA%3D%3D)
 
-## What it is:
+## Contents
+- [Introduction](#introduction)
+  - [What it is](#what-it-is)
+  - [How it works](#how-it-works)
+  - [What an ESP8266 is](#what-an-esp8266-is)
+  - [How to protect against it](#how-to-protect-against-it)
+- [Disclaimer](#disclaimer)
+- [Installation](#installation)
+- [How to use it](#how-to-use-it)
+- [Sources and additional links](#sources-and-additional-links)
+- [License](#license)
+
+## Introduction ##
+
+### What it is
 
 Basically it’s a device which performs a [deauth attack](https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack).
 You select the clients you want to disconnect from their network and start the attack. As long as the attack is running, the
 selected devices are not able to connect to the network.
 
-## How it works:
+### How it works
 
 The 802.11 WiFi protocol contains a so called [deauthentication frame](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/). It is used to disconnect clients safely from a wireless
 network.
@@ -24,14 +38,14 @@ prevent errors, these packets were invented.
 Because they are unencrypted, you just need the mac address of the WiFi router and of the client device which you want to
 disconnect from the network. You don’t even have to be in the network or know the password, it’s enough to be in its range.
 
-## What an ESP8266 is:
+### What an ESP8266 is
 
 The [ESP8266](https://de.wikipedia.org/wiki/ESP8266) a very cheap micro controller with build in WiFi. It contains a powerfull 160 MHz processor and you can program it
 with the [Arduino IDE](https://www.arduino.cc/en/Main/Software). This makes it perfect for this project.
 
 You can buy these chips for under $2 from China!
 
-## How to protect yourself:
+### How to protect against it
 
 With [802.11w-2009](https://en.wikipedia.org/wiki/IEEE_802.11w-2009) WiFi got an update to encrypt management frames.
 So make sure your router is up to date and has management frame protection enabled. But be sure that your client device
@@ -40,7 +54,7 @@ supports it too, both ends need to have it enabled!
 The only problem is that most devices don’t use it. I tested it with different WiFi networks and client devices now 
 and it worked every time. It seems that even newer devices which support frame protection, don’t use it by default.
 
-# Disclaimer
+## Disclaimer
 
 Use it only for testing purposes on your own devices!
 
@@ -51,12 +65,13 @@ My intention with this project is to draw attention to this issue.
 This attack shows how vulnerable the 802.11 WiFi standard is and that it has to be fixed.
 **A solution is already there, why don’t we use it?**
 
-# Tutorial
+## Installation
 
 The only thing you will need is a computer and an ESP8266.
 
-I recommend you to buy one of the USB breakout/developer boards.
-It doesn’t matter which board you use, as long as it has an ESP8266 on it.
+I recommend you to buy one of the USB breakout/developer boards with 4mb flash size.
+It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
+If you using an ESP-01 or other chips with just 1mb, you can comment out the mac vendor list in data.h. 
 
 **1** Install [Arduino](https://www.arduino.cc/en/Main/Software) and open it.
 
@@ -72,7 +87,7 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 ![screenshot of arduino, selecting the right version](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_1.JPG)
 
-**7** Go to `File` > `Preferences`again
+**7** Go to `File` > `Preferences`
 
 **8** Open the folder path under `More preferences can be edited directly in the file`
 
@@ -102,16 +117,32 @@ If no port shows up you may have to reinstall the drivers.
 
 **Your ESP8266 Deauther is now ready!**
 
+## How to use it
+
+First start your ESP8266 by giving it power.  
+
+You can use your smartphone if you have a OTG USB cable.
+![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_2.jpg?token=ADphfAcPwuqXZ3iZnLa5l2TZM4e4FO05ks5Ygm65wA%3D%3D)
+
 Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
 Once connected, you can open up your browser and go to `192.168.4.1`.  
 ![webinterface of the deauther device](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
 
-You can now scan for networks, client devices and start different attacks.
+You can now scan for networks...
+![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG?token=ADphfCKndMnVl6dv8a_IX2ZO4t2Vs4GCks5Ygm3JwA%3D%3D)
+
+scan for client devices... 
+![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG?token=ADphfGv3ziQy3LmQvqB1yIAECuQmhAlOks5Ygm3KwA%3D%3D)
+
+Note: While scanning the ESP8266 will shut down its access point, so you may have to go to your settings and reconnect to the WiFi network manually.
+
+...and start different attacks.
+![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG?token=ADphfA6PIeuMzISlWw5BJM-qzY7KbTtDks5Ygm3MwA%3D%3D)
 
 Happy hacking :)
 
 
-# Sources and additional links
+## Sources and additional links
 
 deauth attack: https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack
 
@@ -131,3 +162,7 @@ packet injection with ESP8266:
 wifi_send_pkt_freedom function limitations: http://esp32.com/viewtopic.php?f=13&t=586&p=2648&hilit=wifi_send_pkt_freedom#p2648
 
 esp32 esp_wifi_internal function limitations: http://esp32.com/viewtopic.php?f=13&t=586&p=2648&hilit=wifi_send_pkt_freedom#p2648
+
+## License
+
+This project is licensed under the MIT License - see the [license file](LICENSE) file for details
