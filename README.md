@@ -59,11 +59,11 @@ This attack shows how vulnerable the 802.11 WiFi standard is and that it has to 
 
 ## Installation
 
-The only thing you will need is a computer and an ESP8266.
+The only thing you will need is a computer and an ESP8266 with at least 1Mb of flash memory.
 
-I recommend you to buy one of the USB breakout/developer boards with 4mb flash size.
+I recommend you to buy a USB breakout/developer board, because they have 4Mb flash and are very simple to use.
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
-(If you using an ESP-01 or other chips with just 1mb, you can comment out the mac vendor list in data.h.)
+(If you using an ESP-01 with just 512kb, you can comment out the mac vendor list in data.h.)
 
 **1** Install [Arduino](https://www.arduino.cc/en/Main/Software) and open it.
 
