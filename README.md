@@ -118,7 +118,6 @@ You can use your smartphone if you have an OTG USB cable.
 
 Scan for WiFi networks and connect to `pwned`. The password is `deauther`.  
 Once connected, you can open up your browser and go to `192.168.4.1`.  
-![webinterface of the deauther device](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
 
 You can now scan for networks...
 ![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
