@@ -12,7 +12,7 @@ Build your own WiFi jammer with an ESP8266.
 - [Disclaimer](#disclaimer)
 - [Installation](#installation)
 - [How to use it](#how-to-use-it)
-- [FAQ and Troubleshooting](#faq-and-troubleshooting)
+- [FAQ](#faq)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
 
@@ -20,17 +20,16 @@ Build your own WiFi jammer with an ESP8266.
 
 ### What it is
 
-Basically it’s a device which performs a [deauth attack](https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack).
+Basically it’s a device which performs a [deauth attack](https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack).  
 You select the clients you want to disconnect from their network and start the attack. As long as the attack is running, the
-selected devices are not able to connect to the network.
+selected devices are unable to connect to their network.
 
 ### How it works
 
 The 802.11 WiFi protocol contains a so called [deauthentication frame](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/). It is used to disconnect clients safely from a wireless
 network.
 
-Because they are unencrypted, you just need the mac address of the WiFi router and of the client device which you want to
-disconnect from the network. You don’t even have to be in the network or know the password, it’s enough to be in its range.
+Because these packets are unencrypted, you just need the mac address of the WiFi router and of the client device which you want to disconnect from the network. You don’t need to be in the network or know the password, it’s enough to be in its range.
 
 ### What an ESP8266 is
 
@@ -76,7 +75,7 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 **5** Type in `esp8266`
 
-**6** Select version `2.0.0` and click on `Install`
+**6** Select version `2.0.0` and click on `Install` (**must be version 2.0.0!**)
 
 ![screenshot of arduino, selecting the right version](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_1.JPG)
 
@@ -133,7 +132,16 @@ Note: While scanning the ESP8266 will shut down its access point, so you may hav
 
 Happy hacking :)
 
-## FAQ and Troubleshooting
+## FAQ
+
+**Could it auto-deauth all APs in the range?**
+
+It definitely could! But I will not implement this 'feature' for ethical and legal reasons.
+
+**Can it sniff handshakes?**
+
+The ESP8266 has a promiscuous mode in which you can sniff nearly all packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
+Maybe someone will find a way around this barrier but I wasn't able to.
 
 **`espcomm_sync failed` when uploading**
 
@@ -145,40 +153,15 @@ Which drivers you need depends on the board, most boards use a cp2102, cp2104 or
 **AP scan doesn't work**
 
 There is a reported issue with the Internet Explorer: https://github.com/spacehuhn/esp8266_deauther/issues/5  
-Try out switching the browser or open the website with another device.  
-
-**Timeout error**
-
-This can happen if your device (phone, computer... whatever have the website open) looses connection to the pwned WiFi.  
-When scanning for clients you will lose the connection, this is normal and you have to make sure you reconnect.  
-After reloading the page everything should be fine.  
-
-**No clients found**
-
-The ESP8266 can only find devices which are in its range and sends packets in the selected WiFi network via 2,4 GHz WiFi while the ESP is scanning.  
+Try out switching the browser or open the website with another device.   
 
 **Deauth attack won't work**
 
 If you see 0 pkts/s on the website you have made a mistake. Check if you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!  
 If it can send packets but your target don't loose its connection then the WiFi router uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks or they communicate via 5 GHz WiFi, which the ESP8266 doesn't support.
 
-**Could it auto-deauth all APs in the range?**
-
-It definitely could! But I will not implement this 'feature' for ethical and legal reasons.
-
-**Can it sniff handshakes?**
-
-The ESP8266 has a promiscuous mode in which you can sniff nearly all packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
-Maybe someone will find a way around this barrier but I wasn't able to.
-
-**Could it open a fake AP to grab passwords?**
-
-That's a feature to be implemented as soon as I have time to code it :).
-
-
 
 ###If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
-
 
 
 ## License
