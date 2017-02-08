@@ -1,4 +1,4 @@
-# ESP8266 Deauther
+# esp8266_deauther
 Build your own WiFi jammer with an ESP8266.
 
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)
