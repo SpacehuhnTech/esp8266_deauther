@@ -1,0 +1,101 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css">
+		<style>
+			nav a:nth-child(3){
+				background: #000;
+				color:#fff;
+			}
+		</style>
+		<script src="functions.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=0.8">
+	</head>
+	<body>
+		<nav>
+			<a href="index.html">APs</a>
+			<a href="clients.html">Clients</a>
+			<a href="attack.html">Attack</a>
+		</nav>
+		<div id="content">
+			<h1>Attack</h1>
+			
+			<p class="block bold">Selected AP:</p>
+			<ul id="selectedAPs">
+			</ul>
+			
+			<br />
+			
+			<p class="block bold">Selected Clients:</p>
+			<ul id="selectedClients">
+			</ul>
+			
+			<br />
+			
+			<table>
+			</table>
+			
+			<p class="small">
+				<br>
+				<b>deauth selected:</b><br>
+				sends deauthentication frames and dissociation frames to the selected client(s) in the selected WiFi network.
+				<br><br>
+				<b>deauth all:</b><br>
+				sends deauthentication frames and dissociation frames as broadcast to all clients in the selected WiFi network.
+				<br><br>
+				<b>beacon spam:</b><br>
+				sends beacon frames with the same SSID as the selected WiFi access point.
+				<br><br>
+				<b>random beacon spam:</b><br>
+				sends beacon frames with a random SSID .
+				<br>
+			</p>
+			
+		</div>
+	</body>
+	<script>
+		var selectedAPs = document.getElementById("selectedAPs");
+		var selectedClients = document.getElementById("selectedClients");
+		var table = document.getElementsByTagName("table")[0];
+		
+		function getResults(){
+			getResponse("attackInfo.json",function(responseText){
+						var res = JSON.parse(responseText);
+						var aps = "";
+						var clients = "";
+						var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
+						for(var i=0;i<res.aps.length;i++) aps += "<li>"+res.aps[i]+"</li>";
+						for(var i=0;i<res.clients.length;i++) clients += "<li>"+res.clients[i]+"</li>";
+						
+						selectedAPs.innerHTML = aps;
+						selectedClients.innerHTML = clients;
+						
+						for(var i=0;i<res.attacks.length;i++){
+							if(res.attacks[i].running) tr += "<tr class='selected'>";
+							else tr += "<tr>";
+							
+							tr += "<td>"+res.attacks[i].name+"</td>";
+							if(res.attacks[i].status == "ready") tr += "<td style='color:#1ecb1e'>"+res.attacks[i].status+"</td>";
+							else tr += "<td style='color:#f00'>"+res.attacks[i].status+"</td>";
+							if(res.attacks[i].running) tr += "<td><button class='marginNull selectedBtn' onclick='startStop("+i+")'>stop</button></td>";
+							else tr += "<td><button class='marginNull' onclick='startStop("+i+")'>start</button></td>";
+							
+							tr += "</tr>";
+						}
+						table.innerHTML = tr;
+			});
+		}
+		
+		function startStop(num){
+			getResponse("attackStart.json?num="+num,function(responseText){
+				if(responseText == "true") {
+					getResults();
+					setTimeout(getResults,3000);
+				}
+				else alert("error");
+			});
+		}
+		
+		getResults();
+	</script>
+</html>

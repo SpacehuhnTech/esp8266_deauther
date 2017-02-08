@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css">
+		<style>
+			#clientScanStatus{
+				margin-left: 1em;
+			}
+			nav a:nth-child(2){
+				background: #000;
+				color:#fff;
+			}
+			#clientScanStart{
+				margin-left: 30px;
+			}
+			#clientScanTime{
+				width: 60px;
+			}
+		</style>
+		<script src="functions.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=0.8">
+	</head>
+	<body>
+		<nav>
+			<a href="index.html">APs</a>
+			<a href="clients.html">Clients</a>
+			<a href="attack.html">Attack</a>
+		</nav>
+		<div id="content">
+			<h1>Scan for client devices</h1>
+			
+			<label for="clientScanTime">Scan time:</label>
+			<input type="number" id="scanTime" value="10">s
+			
+			<button onclick="scan()" id="startScan">start</button>
+			<a id="clientScanStatus">ready!</a>
+			<br />
+			<p class="warn" id="status">AP will be off while scanning!<p>
+			<br />
+			
+			<p class="block bold" id="clientsFound">Client devices found: 0</p>
+			
+			<br />
+			
+			<table>
+			</table>
+		</div>
+	</body>
+	<script>
+		var table = document.getElementsByTagName('table')[0];
+		var scanBtn = document.getElementById("startScan");
+		var scanTime = document.getElementById("scanTime");
+		var clientsFound = document.getElementById("clientsFound");
+		var scanStatus = document.getElementById("clientScanStatus");
+		
+		var res;
+		
+		function compare(a,b) {
+			if (a.packets > b.packets) return -1;
+			if (a.packets < b.packets) return 1;
+			return 0;
+		}
+		
+		function toggleBtn(onoff){
+			if(onoff){
+				scanBtn.style.visibility = 'visible';
+			}else{
+				scanBtn.style.visibility = 'hidden';
+			}
+		}
+		
+		function getResults(reload = false){
+			getResponse("ClientScanResults.json",function(responseText){
+				res = JSON.parse(responseText);
+				res.clients = res.clients.sort(compare);
+					
+				clientsFound.innerHTML = "Client devices found: "+res.clients.length;
+				
+				var tr = '';
+				if(res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>Select</th></tr>';
+				
+				for(var i=0;i<res.clients.length;i++){
+					
+					if(res.clients[i].selected) tr += '<tr class="selected">';
+					else tr += '<tr>';
+					tr += '<td>'+res.clients[i].packets+'</td>';
+					tr += '<td>'+res.clients[i].vendor+'</td>';
+					tr += '<td>'+res.clients[i].name+' <a class="blue" onclick="changeName('+res.clients[i].id+')">edit</a></td>';
+					tr += '<td>'+res.clients[i].mac+'</td>';
+					
+					if(res.clients[i].selected) tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.clients[i].id+')">deselect</button></td>';
+					else tr += '<td><button class="marginNull" onclick="select('+res.clients[i].id+')">select</button></td>';
+					
+					tr += '</tr>';
+				}
+				table.innerHTML = tr;
+				toggleBtn(true);
+				scanStatus.innerHTML = "";
+				
+				if(reload == true) location.reload();
+				
+			},function(){
+				location.reload();
+			},6000);
+			
+		}
+		
+		function scan(){
+			getResponse("ClientScan.json?time="+scanTime.value,function(responseText){
+				if(responseText == "true"){
+					scanStatus.innerHTML = "scanning...";
+					toggleBtn(false);
+					setTimeout(function(){
+						scanStatus.innerHTML = "reconnecting...";
+						getResults(true);
+					},scanTime.value*1000);
+				}
+				else alert("error");
+			});
+		}
+		
+		function select(num){
+			getResponse("clientSelect.json?num="+num,function(responseText){
+				if(responseText == "true") getResults();
+				else alert("error :/");
+			});
+		}
+		
+		function changeName(id){
+			var newName = prompt("Name for "+res.clients[id].mac);
+			
+			getResponse("setName.json?id="+id+"&name="+newName,function(responseText){
+				if(responseText == "true") getResults();
+				else alert("error");
+			});
+		}
+		
+		getResults();
+	</script>
+</html>
