@@ -191,4 +191,3 @@ esp32 esp_wifi_internal function limitations: http://esp32.com/viewtopic.php?f=1
 
 Videos:  
 [![Cheap Wifi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
-[![DIY WiFi jammer with ESP8266 & Mobile App](https://img.youtube.com/vi/N5JVQ-m5Kd0/0.jpg)](https://www.youtube.com/watch?v=N5JVQ-m5Kd0)
