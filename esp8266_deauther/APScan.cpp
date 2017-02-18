@@ -70,7 +70,7 @@ String APScan::getResults(){
     json += "\"vendor\": \""+getAPVendor(i)+"\",";
     json += "\"selected\": "+getAPSelected(i);
     json += "}";
-    if(i!=results-1) json += ",";
+    if((i!=results-1) && (i!=maxResults-1)) json += ",";
   }
   json += "] }";
   return json;
