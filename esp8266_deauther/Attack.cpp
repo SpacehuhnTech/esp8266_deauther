@@ -96,7 +96,7 @@ void Attack::start(int num){
 
 String Attack::getResults(){
 
-  if(apScan.selected < 0) stati[0] = stati[1] = stati[2] = stati[3] = "no AP";
+  if(apScan.selected < 0) stati[0] = stati[1] = stati[2] = "no AP";
   
   String json = "{ \"aps\": [";
   json += "\""+apScan.getAPName(apScan.selected)+"\"";
@@ -260,7 +260,6 @@ void Attack::generatePacket(){/*
       packetSize += sizeof(beaconPacket_header);
 
       if(running[2]){ //target spam
-
 
         String apName = apScan.getAPName(apScan.selected);
         

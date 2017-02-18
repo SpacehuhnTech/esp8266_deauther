@@ -20,6 +20,7 @@ extern "C" {
 #define randomBeacons 50
 #define SSIDLen 32
 #define randomBeaconChange 3
+#define beaconChannel 10
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -95,7 +96,7 @@ class Attack
     uint8_t beaconPacket_end[13] = {
       0x01, 0x08, 0x82, 0x84,
       0x8b, 0x96, 0x24, 0x30, 0x48, 0x6c, 0x03, 0x01,
-      0x03 //channel  
+      beaconChannel //channel  
     };
 
     uint8_t beaconWPA2tag[26] = {

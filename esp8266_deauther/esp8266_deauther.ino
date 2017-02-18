@@ -155,9 +155,11 @@ void setClientName(){
 void sendAttackInfo(){ server.send ( 200, "text/json", attack.getResults()); }
 
 void startAttack(){
-  if(server.hasArg("num") && apScan.selected > -1) {
-    
-    attack.start(server.arg("num").toInt());
-    server.send ( 200, "text/json", "true");
+  if(server.hasArg("num")) {
+    int _attackNum = server.arg("num").toInt();
+    if(apScan.selected > -1 || _attackNum == 3){
+      attack.start(server.arg("num").toInt());
+      server.send ( 200, "text/json", "true");
+    }
   }
 }
