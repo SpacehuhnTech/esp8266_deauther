@@ -16,9 +16,9 @@ h1{
 button{
 	background: #00B0FF;
 	color: #fff;
-	border: 1px solid #7A7A7A;
-	border-radius: 12px;
-	padding: 0.34em 1em;
+	border: 1px solid #7A7A7A80;
+	border-radius: 14px;
+	padding: 0.34em 0.3em;
 	margin-bottom: 0.6em;
 }
 button:hover{
@@ -85,7 +85,8 @@ nav a:hover{
 table{
 	padding: 0;
 	width: 100%;
-	min-width: 420px;
+	max-width: 960px;
+	margin: 0 auto;
 	border-spacing: 0;
 	background: #222222;
 }
@@ -98,9 +99,8 @@ table td{
 	background: #f0f0f0;
 }
 table th, table td{
-	border: 1px solid #000;
 	text-align: center;
-	padding: 0.1em 0.2em;
+	padding: 0.1em 0;
 }
 table .selected td{
 	background: #11a4cc;

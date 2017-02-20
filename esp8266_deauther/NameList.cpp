@@ -5,8 +5,8 @@ NameList::NameList(){
 }
 
 void NameList::begin(){
-  EEPROM.begin(512);
-  if((listLength*nameLength+6)+1>512) Serial.println("ERROR: EEPROM OVERFLOW!");
+  EEPROM.begin(eepromSize);
+  if((listLength*nameLength+6)+1>eepromSize) Serial.println("ERROR: EEPROM OVERFLOW!");
 }
 
 void NameList::load(){

@@ -12,15 +12,15 @@ extern "C" {
 #include "APScan.h"
 #include "ClientScan.h"
 
-#define attackNum 4
+#define attackNum 4 //number of defined attacks
 
-#define deauthsPerSecond 10
+#define deauthsPerSecond 10 //number of deauthentication & disassociation frames sent per second per target.
 
-#define beaconPerSecond 10
-#define randomBeacons 50
-#define SSIDLen 32
-#define randomBeaconChange 3
-#define beaconChannel 10
+#define beaconPerSecond 10 //number of beacon frames sent per second
+#define randomBeacons 50 //number of generated beacon frames
+#define SSIDLen 32 //SSID length of random generated APs (random beacon spam)
+#define randomBeaconChange 3 //time in seconds after new beacon frames are generated
+#define beaconChannel 10 //channel to send beacon frames on (only for the packet bytes, it will actually sent on the current channel)
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -71,7 +71,7 @@ class Attack
 
     uint8_t beaconNumbers[randomBeacons];
     
-    uint8_t packet[512];
+    uint8_t packet[128];
     int packetSize;
     
     int randomBeaconCounter = 0;

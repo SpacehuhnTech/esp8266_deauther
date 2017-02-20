@@ -1,7 +1,7 @@
 #ifndef ClientScan_h
 #define ClientScan_h
 
-#define maxResults 30
+#define maxResults 80
 
 #include "ESP8266WiFi.h"
 #include "Mac.h"
@@ -38,9 +38,6 @@ class ClientScan{
 
     int results = 0;
     int timeout = 0;
-
-    uint8_t beaconPacket[512];
-    int beaconPacketLen = 0;
     
     bool sniffing = false;
   private:

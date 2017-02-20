@@ -20,6 +20,10 @@
 				height: 15px;
 				background: #c20000;
 			}
+			#wpa_info{
+				padding-left: 0.34em;
+			}
+			
 		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
@@ -43,13 +47,15 @@
 			</p>
 			<br />
 			
-			<table>
-			</table>
-			<p class="small">
-				<br />
-				WPA* = WPA/WPA2 auto mode
-			</p>
 		</div>
+		
+		<table>
+		</table>
+		<p class="small" id="wpa_info">
+			<br />
+			WPA* = WPA/WPA2 auto mode
+		</p>
+			
 	</body>
 	<script>
 		var table = document.getElementsByTagName('table')[0];
@@ -85,7 +91,7 @@
 				apVendor.innerHTML = "";
 				
 				var tr = '';
-				if(res.aps.length > 0) tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encryption</th><th>Select</th></tr>';
+				if(res.aps.length > 0) tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
 				
 				for(var i=0;i<res.aps.length;i++){
 					

@@ -42,9 +42,11 @@
 			
 			<br />
 			
-			<table>
-			</table>
 		</div>
+		
+		<table>
+		</table>
+		
 	</body>
 	<script>
 		var table = document.getElementsByTagName('table')[0];
@@ -115,7 +117,7 @@
 						getResults(true);
 					},scanTime.value*1000);
 				}
-				else alert("error");
+				else alert(responseText);
 			});
 		}
 		

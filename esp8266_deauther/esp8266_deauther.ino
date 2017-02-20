@@ -15,15 +15,14 @@ extern "C" {
 #include "Attack.h"
 
 const static char *ssid = "pwned";
-const static char *password = "deauther";
+const static char *password = "deauther"; //must have at least 8 characters
 
 ESP8266WebServer server(80);
 
 /*
 I had some troubles implementing singleton classes.
 see: https://github.com/esp8266/Arduino/issues/500
-They fixed this issue with in the newer SDK version (the one we can't use),
-so I used global variables.
+They fixed this issue within a newer SDK version - the one we can't use, so I used global variables.
 */
 
 NameList nameList;
@@ -39,9 +38,13 @@ void sniffer(uint8_t *buf, uint16_t len){
 void startWifi(){
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
-  WiFi.softAP(ssid, password);
-  Serial.println("SSID: "+(String)ssid);
-  Serial.println("Password: "+(String)password);
+  WiFi.softAP(ssid, password); //for an open network without a password change to:  WiFi.softAP(ssid);
+  String _ssid = (String)ssid;
+  String _password = (String)password;
+  Serial.println("SSID: "+_ssid);
+  Serial.println("Password: "+_password);
+  if(_password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
+  if(_ssid.length()<1 || _ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
 }
 
 
@@ -131,7 +134,7 @@ void startClientScan(){
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
     attack.stop(0);
-  } else server.send ( 200, "text/json", "false");
+  } else server.send ( 200, "text/json", "Error: no selected access point");
 }
 
 void sendClientResults(){ server.send( 200, "text/json", clientScan.getResults()); }
