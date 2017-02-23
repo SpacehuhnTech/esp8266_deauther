@@ -41,7 +41,13 @@ String APScan::getEncryption(int code){
       break;
     }
 }
-
+bool APScan::setAsyncIndex() {
+    asyncIndex = results-1;
+    if(asyncIndex > maxResults) {
+      asyncIndex = maxResults-1;
+    }
+    return true;
+}
 String APScan::getAPName(int num){ return names[num]; }
 String APScan::getAPEncryption(int num){ return encryption[num]; }
 String APScan::getAPVendor(int num){ return vendors[num]; }
@@ -56,7 +62,21 @@ int APScan::getAPChannel(int num){ return channels[num]; }
 Mac APScan::getTarget(){
   return aps._get(selected);
 }
-
+String APScan::getResult(int i){
+  String json = "{ \"aps\":[ ";
+  json += "{";
+  json += "\"id\": "+(String)i+",";
+  json += "\"channel\": "+(String)getAPChannel(i)+",";
+  json += "\"mac\": \""+getAPMac(i)+"\",";
+  json += "\"ssid\": \""+getAPName(i)+"\",";
+  json += "\"rssi\": "+(String)getAPRSSI(i)+",";
+  json += "\"encryption\": \""+getAPEncryption(i)+"\",";
+  json += "\"vendor\": \""+getAPVendor(i)+"\",";
+  json += "\"selected\": "+getAPSelected(i);
+  json += "}";
+  json += "] }";
+  return json;
+}
 String APScan::getResults(){
   String json = "{ \"aps\":[ ";
   for(int i=0;i<results && i<maxResults;i++){
@@ -75,10 +95,15 @@ String APScan::getResults(){
   json += "] }";
   return json;
 }
-
-void APScan::select(int num){
+int APScan::getResultByAPName(String apName){
+  for(int i=0;i<results && i<maxResults;i++){
+    if(apName!=getAPName(i) && apName!=getAPMac(i)) continue;
+    return i;
+  }
+  return -1;
+}
+int APScan::select(int num){
   if(selected != num) selected = num;
   else selected = -1;
 }
 
-    
