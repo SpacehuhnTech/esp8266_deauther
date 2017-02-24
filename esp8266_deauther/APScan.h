@@ -3,11 +3,12 @@
 
 #define maxResults 80
 
-#include "ESP8266WiFi.h"
+#include <ESP8266WiFi.h>
 #include "Mac.h"
 #include "MacList.h"
 
 extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
+extern const bool debug;
 
 class APScan{
   public:
@@ -25,12 +26,12 @@ class APScan{
     int getAPRSSI(int num);
     int getAPChannel(int num);
 
-    Mac getTarget();
-
+    int getFirstTarget();
+    bool isSelected(int num);
+    
     int results = 0;
-    int selected = -1;
-  private:
     MacList aps;
+  private:
     int channels[maxResults];
     int rssi[maxResults];
     char names[maxResults][33];
@@ -38,6 +39,8 @@ class APScan{
     char vendors[maxResults][9];
 
     String getEncryption(int code);
+
+    bool selected[maxResults];
 };
 
 #endif

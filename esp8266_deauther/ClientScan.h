@@ -3,7 +3,7 @@
 
 #define maxResults 80
 
-#include "ESP8266WiFi.h"
+#include <ESP8266WiFi.h>
 #include "Mac.h"
 #include "MacList.h"
 #include "APScan.h"
@@ -17,7 +17,9 @@ extern APScan apScan;
 extern NameList nameList;
 
 extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
+extern bool intInArray(int num, int _array[]);
 extern void PrintHex8(uint8_t *data, uint8_t length);
+extern const bool debug;
 
 class ClientScan{
   public:
@@ -35,6 +37,7 @@ class ClientScan{
     String getClientVendor(int num);
     Mac getClientMac(int num);
     bool getClientSelected(int num);
+    int getFirstClient();
 
     int results = 0;
     int timeout = 0;
@@ -45,7 +48,6 @@ class ClientScan{
     
     Mac from;
     Mac to;
-    Mac target;
 
     Mac broadcast;
     Mac zero;
@@ -54,6 +56,10 @@ class ClientScan{
     char vendors[maxResults][9];
     int packets[maxResults];
     bool selected[maxResults];
+
+    int channels[13];
+    int channelsNum = 0;
+    int curChannel = 0;
 };
 
 #endif

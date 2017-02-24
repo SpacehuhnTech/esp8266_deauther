@@ -44,8 +44,8 @@ void NameList::save(){
 }
 
 void NameList::add(Mac client, String name){
-  if(clients.add(client)) len++;
-  else Serial.println("WARNING: name list is full!");
+  if(clients.add(client) >= 0) len++;
+  else if(clients.getNum(client) < 0) Serial.println("WARNING: name list is full!");
   uint8_t _buf[nameLength];
   name.getBytes(_buf,nameLength);
   for(int i=0;i<nameLength;i++){

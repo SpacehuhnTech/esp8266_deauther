@@ -5,8 +5,12 @@ APScan::APScan(){
 }
 
 bool APScan::start(){
+    if(debug){
+      Serial.println("starting AP scan...");
+      Serial.println("MAC - Ch - RSSI - Encrypt. - SSID - Vendor");
+    }
     aps._clear();
-    selected = -1;
+    for(int i=0;i<maxResults;i++) selected[i] = false;
     results = WiFi.scanNetworks();
     
     for(int i=0;i<results && i<maxResults;i++){
@@ -18,7 +22,22 @@ bool APScan::start(){
       getEncryption(WiFi.encryptionType(i)).toCharArray(encryption[i],5);
       WiFi.SSID(i).toCharArray(names[i],33);
       data_getVendor(WiFi.BSSID(i)[0],WiFi.BSSID(i)[1],WiFi.BSSID(i)[2]).toCharArray(vendors[i],9);
+      if(debug){
+        _ap._print();
+        Serial.print(" - ");
+        Serial.print(channels[i]);
+        Serial.print(" - ");
+        Serial.print(rssi[i]);
+        Serial.print(" - ");
+        Serial.print(encryption[i]);
+        Serial.print(" - ");
+        Serial.print(names[i]);
+        Serial.print(" - ");
+        Serial.print(vendors[i]);
+        Serial.println();
+      }
     }
+    if(debug) Serial.println("scan done");
     return true;
 }
 
@@ -47,19 +66,24 @@ String APScan::getAPEncryption(int num){ return encryption[num]; }
 String APScan::getAPVendor(int num){ return vendors[num]; }
 String APScan::getAPMac(int num){ return aps._get(num).toString(); }
 String APScan::getAPSelected(int num){
-  if(selected == num) return "true";
+  if(selected[num]) return "true";
   else return "false";  
 }
 int APScan::getAPRSSI(int num){ return rssi[num]; }
 int APScan::getAPChannel(int num){ return channels[num]; }
 
-Mac APScan::getTarget(){
-  return aps._get(selected);
+int APScan::getFirstTarget(){
+  for(int i=0;i<maxResults;i++){
+    if(isSelected(i)) return i;
+  }
+  return -1;
 }
 
 String APScan::getResults(){
+  if(debug) Serial.print("getting AP scan result JSON ");
   String json = "{ \"aps\":[ ";
   for(int i=0;i<results && i<maxResults;i++){
+    if(debug) Serial.print(".");
     json += "{";
     json += "\"id\": "+(String)i+",";
     json += "\"channel\": "+(String)getAPChannel(i)+",";
@@ -73,12 +97,17 @@ String APScan::getResults(){
     if((i!=results-1) && (i!=maxResults-1)) json += ",";
   }
   json += "] }";
+  if(debug) Serial.println("done");
   return json;
 }
 
 void APScan::select(int num){
-  if(selected != num) selected = num;
-  else selected = -1;
+  if(debug) Serial.println("seect "+(String)num+" - "+!selected[num]);
+  selected[num] = !selected[num];
+}
+
+bool APScan::isSelected(int num){
+  return selected[num];
 }
 
     

