@@ -134,9 +134,9 @@ Happy hacking :)
 
 ## FAQ
 
-**Could it deauth multiple APs in the range?**
+**Could it auto-deauth all APs in the range?**
 
-It definitely could! But I will not implement this 'feature' for ethical and legal reasons.
+Yes, but I will not implement this 'feature' for ethical and legal reasons.
 
 **Can it sniff handshakes?**
 

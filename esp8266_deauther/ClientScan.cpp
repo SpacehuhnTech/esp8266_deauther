@@ -14,11 +14,11 @@ void ClientScan::start(int _time){
     selected[i] = false;
     packets[i] = 0;
   }
+  
+  for(int i=0;i<13;i++) channels[i] = -1;
+  
   results = 0;
   timeout = _time;
-  sniffing = true;
-
-  startTime = millis();
 
   channelsNum = 0;
   curChannel = 0;
@@ -36,8 +36,12 @@ void ClientScan::start(int _time){
   wifi_set_channel(channels[curChannel]);
   wifi_promiscuous_enable(1);
 
-  Serial.println("set channel to "+(String)channels[curChannel]);
+  if(debug) Serial.println("set channel to "+(String)channels[curChannel]);
   curChannel++;
+
+  startTime = millis();
+  sniffing = true;
+
 }
 
 bool ClientScan::stop(){
@@ -86,13 +90,13 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
             results++;
             packets[clients.add(to)]++;
           }else packets[clientNum]++;
-          if(debug){
+          /*if(debug){
             Serial.print("found: ");
             from._print();
             Serial.print(" => ");
             to._print();
             Serial.println("");
-          }
+          }*/
         }
       }
     }
