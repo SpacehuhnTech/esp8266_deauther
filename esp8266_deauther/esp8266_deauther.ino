@@ -16,7 +16,7 @@ extern "C" {
 
 const static char *ssid = "pwned";
 const static char *password = "deauther"; //must have at least 8 characters
-const bool debug = true;
+const bool debug = false;
 
 ESP8266WebServer server(80);
 
@@ -134,7 +134,7 @@ void startClientScan(){
   if(server.hasArg("time") && apScan.getFirstTarget() > -1 && !clientScan.sniffing) {
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
-    attack.stop(0);
+    attack.stopAll();
   } else server.send ( 200, "text/json", "Error: no selected access point");
 }
 

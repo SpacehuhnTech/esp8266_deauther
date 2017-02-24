@@ -30,6 +30,7 @@ class APScan{
     bool isSelected(int num);
     
     int results = 0;
+    int selectedSum;
     MacList aps;
   private:
     int channels[maxResults];

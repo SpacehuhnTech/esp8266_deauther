@@ -14,7 +14,6 @@ extern "C" {
 
 #define attacksNum 2
 #define macListLen 80
-#define macListInterval 5
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -48,6 +47,7 @@ class Attack
     unsigned int packetsCounter[attacksNum];
     bool isRunning[attacksNum];
     int packetRate = 10;
+    int macListInterval = 4;
 
     MacList beaconAdrs;
     

