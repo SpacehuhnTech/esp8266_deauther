@@ -111,13 +111,10 @@ void APScan::select(int num){
     selected[num] = true;
     selectedSum++;
   }
-=======
-  selected[num] = !selected[num];
->>>>>>> 0f3742b... Multi APs
-}
-
 bool APScan::isSelected(int num){
   return selected[num];
 }
 
     
+
+}
