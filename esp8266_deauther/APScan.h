@@ -15,11 +15,9 @@ class APScan{
     APScan();
     
     bool start();
-    String getResult(int i);
     String getResults();
-    int getResultByAPName(String apName);
-    int select(int num);
-    bool setAsyncIndex();
+    void select(int num);
+    
     String getAPName(int num);
     String getAPEncryption(int num);
     String getAPVendor(int num);
@@ -34,7 +32,6 @@ class APScan{
     int results = 0;
     int selectedSum;
     MacList aps;
-    int asyncIndex = -1;
   private:
     int channels[maxResults];
     int rssi[maxResults];

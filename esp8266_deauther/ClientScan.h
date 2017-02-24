@@ -31,7 +31,6 @@ class ClientScan{
     
     String getResults();
     void select(int num);
-    int lastSelected;
     
     String getClientName(int num);
     int getClientPackets(int num);
