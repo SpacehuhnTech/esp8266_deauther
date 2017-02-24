@@ -57,13 +57,14 @@ void setup(){
   delay(2000);
 
   nameList.begin();
-  //nameList.clear();
+  //nameList.clear(); //usefull for debugging the NameList class
   nameList.load();
 
   Serial.println("");
   Serial.println("starting...");
 
   startWifi();
+  attack.stopAll();
   attack.generate();
 
   /* ========== Web Server ========== */

@@ -12,7 +12,9 @@ extern "C" {
 #include "APScan.h"
 #include "ClientScan.h"
 
-#define attacksNum 3
+#define attacksNum 2
+#define macListLen 80
+#define macListInterval 5
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -39,13 +41,13 @@ class Attack
     bool send();
     
     //attack declarations
-    const String attackNames[attacksNum] = {"deauth","beacon (clone)","beacon (list)"};
+    const String attackNames[attacksNum] = {"deauth","beacon (clone)"/*,"beacon (list)"*/};
     
     //attack infos
     String stati[attacksNum];
     unsigned int packetsCounter[attacksNum];
     bool isRunning[attacksNum];
-    const int packetRate = 10 ;
+    int packetRate = 10;
 
     MacList beaconAdrs;
     
@@ -75,7 +77,7 @@ class Attack
       /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
       /* 22 - 23 */ 0xc0, 0x6c,
       /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, 
-      /* 32 - 33 */ 0xe8, 0x03, //0x64,0x00 => every 100ms
+      /* 32 - 33 */ 0x64, 0x00, //0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
       /* 34 - 35 */ 0x01, 0x04
                  /*,0x00, 0x06, //SSID size
                     0x72, 0x72, 0x72, 0x72, 0x72, 0x72, //SSID
@@ -100,6 +102,8 @@ class Attack
       0x00, 0x0f, 0xac, 0x02, //PSK
       0x00, 0x00 //RSN capabilities
     };
+
+    int macListChangeCounter = 0;
 };
 
 #endif
