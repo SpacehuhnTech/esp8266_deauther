@@ -18,6 +18,8 @@ const static char *ssid = "pwned";
 const static char *password = "deauther"; //must have at least 8 characters
 const bool debug = false;
 
+#define WIFI_UI_ON false
+
 ESP8266WebServer server(80);
 
 /*
@@ -32,6 +34,8 @@ APScan apScan;
 ClientScan clientScan;
 Attack attack;
 
+#include "SerialServer.h"
+
 void sniffer(uint8_t *buf, uint16_t len){
   clientScan.packetSniffer(buf,len);
 }
@@ -43,10 +47,12 @@ void startWifi(){
   WiFi.softAP(ssid, password); //for an open network without a password change to:  WiFi.softAP(ssid);
   String _ssid = (String)ssid;
   String _password = (String)password;
+  #if WIFI_UI_ON==true
   Serial.println("SSID: "+_ssid);
   Serial.println("Password: "+_password);
   if(_password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
   if(_ssid.length()<1 || _ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
+  #endif
 }
 
 
@@ -167,3 +173,94 @@ void startAttack(){
     }else server.send ( 200, "text/json", "false");
   }
 }
+
+
+
+void setup(){
+
+  Serial.begin(115200);
+  delay(2000);
+
+  nameList.begin();
+  //nameList.clear();
+  nameList.load();
+
+  Serial.println("");
+  Serial.println("starting...");
+
+  startWifi();
+  attack.generate(-1);
+
+  #if WIFI_UI_ON==true
+  /* ========== Web Server ========== */
+  /* HTML sites */
+  server.onNotFound(load404);
+
+  server.on("/", loadIndex);
+  server.on("/index.html", loadIndex);
+  server.on("/clients.html", loadClients);
+  server.on("/attack.html", loadAttack);
+  server.on("/functions.js", loadFunctionsJS);
+
+  /* header links */
+  server.on ("/style.css", loadStyle);
+
+  /* JSON */
+  server.on("/APScanResults.json", sendAPResults);
+  server.on("/APScan.json", startAPScan);
+  server.on("/APSelect.json", selectAP);
+  server.on("/ClientScan.json", startClientScan);
+  server.on("/ClientScanResults.json", sendClientResults);
+  server.on("/clientSelect.json", selectClient);
+  server.on("/setName.json", setClientName);
+  server.on("/attackInfo.json", sendAttackInfo);
+  server.on("/attackStart.json", startAttack);
+
+  server.begin();
+  #else
+  // send MOTD
+  incomingSerialData = "*";
+  incomingSerialDataReady = true;
+  #endif
+}
+
+void loop(){
+  #if WIFI_UI_ON!=true
+  bool show_hidden = false;
+  byte inByte = 0;
+  byte outByte = 0;
+  #endif
+  
+  if(clientScan.sniffing){
+    if(clientScan.stop()){
+      #if WIFI_UI_ON!=true
+      SerialPrintJSON( "CLIENT SCAN DONE" );
+      Serial.println( clientScan.getResults() );
+      #endif
+      startWifi();
+    }
+  } else{
+    #if WIFI_UI_ON==true
+    server.handleClient();
+    #else
+    if(incomingSerialDataReady) {
+      handleSerialClient();
+    }
+    #endif
+    attack.run();
+  }
+
+  #if WIFI_UI_ON!=true
+  if(Serial.available()){
+    // Read Arduino IDE Serial Monitor inputs (if available) and capture orders
+    outByte = Serial.read();
+    if(outByte==13) {
+      incomingSerialDataReady = true;
+    } else {
+      incomingSerialData = incomingSerialData + (char)outByte;
+    }
+  }
+  #endif
+  
+}
+

@@ -136,5 +136,6 @@ String ClientScan::getResults(){
 }
 
 void ClientScan::select(int num){
+  lastSelected = num;
   selected[num] = !selected[num];
 }

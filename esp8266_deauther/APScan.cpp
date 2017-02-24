@@ -60,7 +60,13 @@ String APScan::getEncryption(int code){
       break;
     }
 }
-
+bool APScan::setAsyncIndex() {
+    asyncIndex = results-1;
+    if(asyncIndex > maxResults) {
+      asyncIndex = maxResults-1;
+    }
+    return true;
+}
 String APScan::getAPName(int num){ return names[num]; }
 String APScan::getAPEncryption(int num){ return encryption[num]; }
 String APScan::getAPVendor(int num){ return vendors[num]; }
@@ -78,7 +84,21 @@ int APScan::getFirstTarget(){
   }
   return -1;
 }
-
+String APScan::getResult(int i){
+  String json = "{ \"aps\":[ ";
+  json += "{";
+  json += "\"id\": "+(String)i+",";
+  json += "\"channel\": "+(String)getAPChannel(i)+",";
+  json += "\"mac\": \""+getAPMac(i)+"\",";
+  json += "\"ssid\": \""+getAPName(i)+"\",";
+  json += "\"rssi\": "+(String)getAPRSSI(i)+",";
+  json += "\"encryption\": \""+getAPEncryption(i)+"\",";
+  json += "\"vendor\": \""+getAPVendor(i)+"\",";
+  json += "\"selected\": "+getAPSelected(i);
+  json += "}";
+  json += "] }";
+  return json;
+}
 String APScan::getResults(){
   if(debug) Serial.print("getting AP scan result JSON ");
   String json = "{ \"aps\":[ ";
@@ -102,6 +122,14 @@ String APScan::getResults(){
 }
 
 void APScan::select(int num){
+  if(selected != num) selected = num;
+  else selected = -1;
+}
+
+    
+
+
+void APScan::select(int num){
   if(debug) Serial.println("seect "+(String)num+" - "+!selected[num]);
   if(selected[num]){
     selected[num] = false;
@@ -110,10 +138,8 @@ void APScan::select(int num){
     selected[num] = true;
     selectedSum++;
   }
-}
-
 bool APScan::isSelected(int num){
   return selected[num];
 }
 
-    
+    
