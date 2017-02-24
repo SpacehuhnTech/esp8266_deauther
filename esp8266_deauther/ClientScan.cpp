@@ -14,27 +14,18 @@ void ClientScan::start(int _time){
     selected[i] = false;
     packets[i] = 0;
   }
-<<<<<<< HEAD
   
-  for(int i=0;i<13;i++) channels[i] = -1;
+  for(int i=0;i<13;i++) channels[i] = 0;
   
   results = 0;
   timeout = _time;
-=======
   results = 0;
   timeout = _time;
   sniffing = true;
->>>>>>> 0f3742b... Multi APs
 
   channelsNum = 0;
   curChannel = 0;
 
-<<<<<<< HEAD
-=======
-  channelsNum = 0;
-  curChannel = 0;
-
->>>>>>> 0f3742b... Multi APs
   for(int i=0;i<apScan.results;i++){
     if(!intInArray(apScan.getAPChannel(i),channels)){
       channels[channelsNum] = apScan.getAPChannel(i);
@@ -48,17 +39,11 @@ void ClientScan::start(int _time){
   wifi_set_channel(channels[curChannel]);
   wifi_promiscuous_enable(1);
 
-<<<<<<< HEAD
   if(debug) Serial.println("set channel to "+(String)channels[curChannel]);
   curChannel++;
 
   startTime = millis();
   sniffing = true;
-
-=======
-  Serial.println("set channel to "+(String)channels[curChannel]);
-  curChannel++;
->>>>>>> 0f3742b... Multi APs
 }
 
 bool ClientScan::stop(){
@@ -107,21 +92,13 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
             results++;
             packets[clients.add(to)]++;
           }else packets[clientNum]++;
-<<<<<<< HEAD
           /*if(debug){
-=======
-          if(debug){
->>>>>>> 0f3742b... Multi APs
             Serial.print("found: ");
             from._print();
             Serial.print(" => ");
             to._print();
             Serial.println("");
-<<<<<<< HEAD
           }*/
-=======
-          }
->>>>>>> 0f3742b... Multi APs
         }
       }
     }

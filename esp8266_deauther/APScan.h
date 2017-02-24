@@ -30,10 +30,7 @@ class APScan{
     bool isSelected(int num);
     
     int results = 0;
-<<<<<<< HEAD
     int selectedSum;
-=======
->>>>>>> 0f3742b... Multi APs
     MacList aps;
   private:
     int channels[maxResults];

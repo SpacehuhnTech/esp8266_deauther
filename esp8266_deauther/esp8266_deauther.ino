@@ -16,11 +16,7 @@ extern "C" {
 
 const static char *ssid = "pwned";
 const static char *password = "deauther"; //must have at least 8 characters
-<<<<<<< HEAD
 const bool debug = false;
-=======
-const bool debug = true;
->>>>>>> 0f3742b... Multi APs
 
 ESP8266WebServer server(80);
 
@@ -53,8 +49,6 @@ void startWifi(){
   if(_ssid.length()<1 || _ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
 }
 
-
-
 void setup(){
 
   Serial.begin(115200);
@@ -68,10 +62,7 @@ void setup(){
   Serial.println("starting...");
 
   startWifi();
-<<<<<<< HEAD
   attack.stopAll();
-=======
->>>>>>> 0f3742b... Multi APs
   attack.generate();
 
   /* ========== Web Server ========== */

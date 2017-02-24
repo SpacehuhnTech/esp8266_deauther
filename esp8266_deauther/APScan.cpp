@@ -103,7 +103,6 @@ String APScan::getResults(){
 
 void APScan::select(int num){
   if(debug) Serial.println("seect "+(String)num+" - "+!selected[num]);
-<<<<<<< HEAD
   if(selected[num]){
     selected[num] = false;
     selectedSum--;
@@ -111,10 +110,8 @@ void APScan::select(int num){
     selected[num] = true;
     selectedSum++;
   }
-bool APScan::isSelected(int num){
-  return selected[num];
 }
 
-    
-
+bool APScan::isSelected(int num){
+  return selected[num];
 }
