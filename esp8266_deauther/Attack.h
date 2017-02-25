@@ -14,7 +14,7 @@ extern "C" {
 #include "Settings.h"
 
 #define attacksNum 2
-#define macListLen 50 //max 80 - see MacList.h
+#define macListLen 80
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);

