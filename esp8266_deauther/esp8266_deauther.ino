@@ -16,7 +16,7 @@ extern "C" {
 #include "Attack.h"
 #include "Settings.h"
 
-const bool debug = true;
+const bool debug = false;
 
 ESP8266WebServer server(80);
 

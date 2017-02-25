@@ -9,13 +9,15 @@ void Settings::load(){
   passwordLen = EEPROM.read(passwordLenAdr);
   
   if(ssidLen < 1 || ssidLen > 32 || passwordLen < 8 || passwordLen > 32) reset();
-  for(int i=0;i<ssidLen;i++) ssid[i] = EEPROM.read(ssidAdr+i);
-  for(int i=0;i<passwordLen;i++) password[i] = EEPROM.read(passwordAdr+i);
-  
-  deauthReason = EEPROM.read(deauthReasonAdr);
-  attackTimeout = eepromReadInt(attackTimeoutAdr);
-  attackPacketRate = EEPROM.read(attackPacketRateAdr);
-  clientScanTime = EEPROM.read(clientScanTimeAdr);
+  else{
+    for(int i=0;i<ssidLen;i++) ssid += (char)EEPROM.read(ssidAdr+i);
+    for(int i=0;i<passwordLen;i++) password += (char)EEPROM.read(passwordAdr+i);
+    
+    deauthReason = EEPROM.read(deauthReasonAdr);
+    attackTimeout = eepromReadInt(attackTimeoutAdr);
+    attackPacketRate = EEPROM.read(attackPacketRateAdr);
+    clientScanTime = EEPROM.read(clientScanTimeAdr);
+  }
 }
 
 void Settings::reset(){
@@ -30,8 +32,6 @@ void Settings::reset(){
   deauthReason = 0x01;
   attackTimeout = 5*60;
   attackPacketRate = 10;
-  attackMacInterval = 4;
-  
   clientScanTime = 15;
   
   if(debug) Serial.println("done");
@@ -54,7 +54,6 @@ void Settings::save(){
   eepromWriteInt(attackTimeoutAdr, attackTimeout);
 
   EEPROM.write(attackPacketRateAdr, attackPacketRate);
-  EEPROM.write(attackMacIntervalAdr, attackMacInterval);
   EEPROM.write(clientScanTimeAdr, clientScanTime);
 
   if(debug){

@@ -1,0 +1,69 @@
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="stylesheet" href="style.css">
+		<style>
+			nav a:nth-child(4){
+				background: #000;
+				color:#fff;
+			}
+			label{
+				display: inline-block;
+				width: 135px;
+			}
+		</style>
+		<script src="functions.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=0.8">
+	</head>
+	<body>
+		<nav>
+			<a href="index.html">APs</a>
+			<a href="clients.html">Clients</a>
+			<a href="attack.html">Attack</a>
+			<a href="settings.html">Settings</a>
+		</nav>
+		<div id="content">
+			<h1>Settings</h1>
+			
+			<p class="block bold">WiFi</p>
+			
+			<label for="clientScanTime">SSID:</label>
+			<input type="text" id="scanTime" minlength="1" maxlength="32">
+			
+			<br />
+			
+			<label for="clientScanTime">password:</label>
+			<input type="text" id="scanTime" minlength="8" maxlength="32">
+			<p class="small">must have at least 8 characters!</p>
+			
+			<br />
+			<p class="block bold">Client Scan</p>
+			
+			<label for="clientScanTime">default scan time:</label>
+			<input type="number" id="scanTime" min="1" max="255">s
+			<br />
+			<br />
+			<p class="block bold">Attack</p>
+			
+			<label for="clientScanTime">timeout:</label>
+			<input type="number" id="scanTime" min="-1" max="32768">s
+			<p class="small">-1 for no timeout</p>
+			
+			<label for="clientScanTime">deauth reason:</label>
+			<input type="number" id="scanTime" min="1" max="45">
+			<p class="small">reason codes: <a target="_blank" href="http://www.aboutcher.co.uk/2012/07/linux-wifi-deauthenticated-reason-codes/">click</a></p>
+			
+			<label for="clientScanTime">packetrate:</label>
+			<input type="number" id="scanTime" min="1" max="100">pkts/s
+			<br />
+			
+		</div>
+		
+		<table>
+		</table>
+		
+	</body>
+	<script>
+
+	</script>
+</html>

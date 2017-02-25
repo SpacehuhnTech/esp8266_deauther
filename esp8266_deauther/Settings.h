@@ -16,8 +16,7 @@ extern int eepromReadInt(int adr);
 #define deauthReasonAdr 1090
 #define attackTimeoutAdr 1091
 #define attackPacketRateAdr 1093
-#define attackMacIntervalAdr 1094
-#define clientScanTimeAdr 1095
+#define clientScanTimeAdr 1094
 
 class Settings
 {
@@ -28,15 +27,14 @@ class Settings
     void save();
     void info();
 
-    uint8_t ssidLen;
-    String ssid;
-    uint8_t passwordLen;
-    String password;
+    int ssidLen;
+    String ssid = "";
+    int passwordLen;
+    String password = "";
     
     uint8_t deauthReason;
     int attackTimeout;
     int attackPacketRate;
-    int attackMacInterval;
     
     int clientScanTime;
   private:

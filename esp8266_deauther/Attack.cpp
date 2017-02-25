@@ -193,7 +193,7 @@ void Attack::run(){
     stati[1] = (String)(packetsCounter[1]*10)+"pkts/s";
     packetsCounter[1] = 0;
     macListChangeCounter++;
-    if(macListChangeCounter/10 >= settings.attackMacInterval){
+    if(macListChangeCounter/10 >= macChangeInterval){
       generate();
       macListChangeCounter = 0;
     }
