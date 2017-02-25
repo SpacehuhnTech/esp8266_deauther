@@ -8,15 +8,15 @@ extern "C" {
   #include "user_interface.h"
 }
 
+#include <EEPROM.h>
 #include "data.h"
 #include "NameList.h"
 #include "APScan.h"
 #include "ClientScan.h"
 #include "Attack.h"
+#include "Settings.h"
 
-const static char *ssid = "pwned";
-const static char *password = "deauther"; //must have at least 8 characters
-const bool debug = false;
+const bool debug = true;
 
 ESP8266WebServer server(80);
 
@@ -31,6 +31,7 @@ NameList nameList;
 APScan apScan;
 ClientScan clientScan;
 Attack attack;
+Settings settings;
 
 void sniffer(uint8_t *buf, uint16_t len){
   clientScan.packetSniffer(buf,len);
@@ -40,13 +41,11 @@ void startWifi(){
   Serial.println("starting WiFi AP");
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
-  WiFi.softAP(ssid, password); //for an open network without a password change to:  WiFi.softAP(ssid);
-  String _ssid = (String)ssid;
-  String _password = (String)password;
-  Serial.println("SSID: "+_ssid);
-  Serial.println("Password: "+_password);
-  if(_password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
-  if(_ssid.length()<1 || _ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
+  WiFi.softAP((const char*)settings.ssid.c_str(), (const char*)settings.password.c_str()); //for an open network without a password change to:  WiFi.softAP(ssid);
+  Serial.println("SSID: "+settings.ssid);
+  Serial.println("Password: "+settings.password);
+  if(settings.password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
+  if(settings.ssid.length()<1 || settings.ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
 }
 
 void setup(){
@@ -54,8 +53,9 @@ void setup(){
   Serial.begin(115200);
   delay(2000);
 
-  nameList.begin();
-  //nameList.clear(); //usefull for debugging the NameList class
+  EEPROM.begin(4096);
+
+  settings.load();
   nameList.load();
 
   Serial.println("");
@@ -85,6 +85,7 @@ void setup(){
   server.on("/APSelect.json", selectAP);
   server.on("/ClientScan.json", startClientScan);
   server.on("/ClientScanResults.json", sendClientResults);
+  server.on("/ClientScanTime.json", sendClientScanTime);
   server.on("/clientSelect.json", selectClient);
   server.on("/setName.json", setClientName);
   server.on("/attackInfo.json", sendAttackInfo);
@@ -136,7 +137,8 @@ void startClientScan(){
   } else server.send ( 200, "text/json", "Error: no selected access point");
 }
 
-void sendClientResults(){ server.send( 200, "text/json", clientScan.getResults()); }
+void sendClientResults(){ server.send( 200, "text/json", clientScan.getResults() ); }
+void sendClientScanTime(){ server.send( 200, "text/json", (String)settings.clientScanTime ); }
 
 void selectClient(){
   if(server.hasArg("num")) {

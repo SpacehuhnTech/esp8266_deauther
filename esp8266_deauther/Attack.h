@@ -11,9 +11,10 @@ extern "C" {
 #include "MacList.h"
 #include "APScan.h"
 #include "ClientScan.h"
+#include "Settings.h"
 
 #define attacksNum 2
-#define macListLen 80
+#define macListLen 50 //max 80 - see MacList.h
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -22,6 +23,7 @@ extern const bool debug;
 
 extern APScan apScan;
 extern ClientScan clientScan;
+extern Settings settings;
 
 class Attack
 {
@@ -46,8 +48,6 @@ class Attack
     String stati[attacksNum];
     unsigned int packetsCounter[attacksNum];
     bool isRunning[attacksNum];
-    int packetRate = 10;
-    int macListInterval = 4;
 
     MacList beaconAdrs;
     
@@ -104,6 +104,7 @@ class Attack
     };
 
     int macListChangeCounter = 0;
+    int attackTimeoutCounter[attacksNum];
 };
 
 #endif

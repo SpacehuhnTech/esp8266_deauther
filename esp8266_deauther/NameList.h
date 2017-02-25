@@ -6,9 +6,9 @@
 #include "MacList.h"
 
 #define romAdr 0
+#define maxSize 1024
 #define listLength 30
 #define nameLength 18
-#define eepromSize 4096
 
 /*
 The NameList holds and saves all your custom device names in the EEPROM.
@@ -21,7 +21,6 @@ class NameList
 {
   public:
     NameList();
-    void begin();
     void load();
     void clear();
     void add(Mac client, String name);

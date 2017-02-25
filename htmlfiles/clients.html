@@ -137,6 +137,10 @@
 			});
 		}
 		
+		getResponse("ClientScanTime.json",function(responseText){
+			scanTime.value = responseText;
+		});
+			
 		getResults();
 	</script>
 </html>

