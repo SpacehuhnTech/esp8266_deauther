@@ -7,7 +7,7 @@
 
 #define romAdr 0
 #define maxSize 1024
-#define listLength 30
+#define listLength 50
 #define nameLength 18
 
 /*
@@ -24,6 +24,7 @@ class NameList
     void load();
     void clear();
     void add(Mac client, String name);
+    void edit(int num, String name);
     String get(Mac client);
     String getName(int num);
     Mac getMac(int num);

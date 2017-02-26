@@ -2,7 +2,6 @@
 
 Attack::Attack(){
   randomSeed(os_random());
-  for(int i=0;i<attacksNum;i++) stati[i] = "ready";
 }
 
 void Attack::generate(){
@@ -235,6 +234,11 @@ String Attack::getResults(){
   if(debug) Serial.print("getting attacks JSON...");
   
   if(apScan.getFirstTarget() < 0) stati[0] = stati[1] = "no AP";
+  else {
+    for(int i=0;i<attacksNum;i++){
+      if(!isRunning[i]) stati[i] = "ready";
+    }
+  }
 
   int _selected;
   String json = "{ \"aps\": [";
@@ -265,11 +269,19 @@ String Attack::getResults(){
     json += "{";
     json += "\"name\": \""+attackNames[i]+"\",";
     json += "\"status\": \""+stati[i]+"\",";
-    json += "\"running\": "+(String)isRunning[i];
+    json += "\"running\": "+(String)isRunning[i]+"";
     json += "}";
     if(i != attacksNum-1) json += ",";
   }
-  json += "] }";
+  json += "],";
+  
+  json += "\"ssid\": [";
+  for(int i=0;i<ssidList.len;i++){
+    json += "\""+ssidList.get(i)+"\"";
+    if(i != ssidList.len-1) json += ",";
+  }
+  json += "]";
+  json += "}";
   if(debug) Serial.println("done ");
   return json;
 }

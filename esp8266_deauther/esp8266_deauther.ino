@@ -15,8 +15,9 @@ extern "C" {
 #include "ClientScan.h"
 #include "Attack.h"
 #include "Settings.h"
+#include "SSIDList.h"
 
-const bool debug = true;
+const bool debug = false;
 
 ESP8266WebServer server(80);
 
@@ -32,6 +33,7 @@ APScan apScan;
 ClientScan clientScan;
 Attack attack;
 Settings settings;
+SSIDList ssidList;
 
 void sniffer(uint8_t *buf, uint16_t len){
   clientScan.packetSniffer(buf,len);
@@ -66,6 +68,10 @@ void setup(){
   attack.stopAll();
   attack.generate();
 
+  ssidList._random();
+  for(int i=0;i<ssidList.len;i++) Serial.println(ssidList.get(i));
+  Serial.println(attack.getResults());
+
   /* ========== Web Server ========== */
 
   /* HTML sites */
@@ -94,7 +100,13 @@ void setup(){
   server.on("/attackStart.json", startAttack);
   server.on("/settings.json", getSettings);
   server.on("/settingsSave.json", saveSettings);
+  server.on("/settingsReset.json", resetSettings);
   server.on("/deleteName.json", deleteName);
+  server.on("/clearNameList.json", clearNameList);
+  server.on("/editNameList.json", editClientName);
+  server.on("/addSSID.json", addSSID);
+  server.on("/deleteSSID.json", deleteSSID);
+  server.on("/randomSSID.json", randomSSID);
 
   server.begin();
 }
@@ -130,7 +142,7 @@ void sendAPResults(){ server.send ( 200, "text/json", apScan.getResults()); }
 void selectAP(){
   if(server.hasArg("num")) {
     apScan.select(server.arg("num").toInt());
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
     attack.stopAll();
   }
 }
@@ -141,7 +153,7 @@ void startClientScan(){
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
     attack.stopAll();
-  } else server.send ( 200, "text/json", "Error: no selected access point");
+  } else server.send( 200, "text/json", "Error: no selected access point");
 }
 
 void sendClientResults(){ server.send( 200, "text/json", clientScan.getResults() ); }
@@ -151,19 +163,19 @@ void selectClient(){
   if(server.hasArg("num")) {
     clientScan.select(server.arg("num").toInt());
     attack.stop(0);
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
   }
 }
 
 void setClientName(){
   if(server.hasArg("id") && server.hasArg("name")) {
     nameList.add(clientScan.getClientMac(server.arg("id").toInt()),server.arg("name"));
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
   }
 }
 
 //==========Attack==========
-void sendAttackInfo(){ server.send ( 200, "text/json", attack.getResults()); }
+void sendAttackInfo(){ server.send( 200, "text/json", attack.getResults()); }
 
 void startAttack(){
   if(server.hasArg("num")) {
@@ -171,13 +183,28 @@ void startAttack(){
     if(apScan.getFirstTarget() > -1 || _attackNum == 2){
       attack.start(server.arg("num").toInt());
       server.send ( 200, "text/json", "true");
-    }else server.send ( 200, "text/json", "false");
+    }else server.send( 200, "text/json", "false");
   }
 }
 
+void addSSID(){
+  ssidList.add(server.arg("name"));
+  server.send( 200, "text/json", "true");
+}
+
+void deleteSSID(){
+  ssidList.remove(server.arg("num").toInt());
+  server.send( 200, "text/json", "true");
+}
+
+void randomSSID(){
+  ssidList._random();
+  server.send( 200, "text/json", "true");  
+}
 
 //==========Settings==========
 void getSettings(){ server.send ( 200, "text/json", settings.get() ); }
+
 void saveSettings(){ 
   if(server.hasArg("ssid")) settings.ssid = server.arg("ssid");
   if(server.hasArg("password")) settings.password = server.arg("password");
@@ -187,14 +214,31 @@ void saveSettings(){
   if(server.hasArg("packetRate")) settings.attackPacketRate = server.arg("packetRate").toInt();
   
   settings.save();
-  server.send ( 200, "text/json", "true" ); 
+  server.send( 200, "text/json", "true" ); 
+}
+
+void resetSettings(){
+  settings.reset();
+  server.send( 200, "text/json", "true" );
 }
 
 void deleteName(){
   if(server.hasArg("num")) {
     int _num = server.arg("num").toInt();
     nameList.remove(_num);
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
+  }
+}
+
+void clearNameList(){
+  nameList.clear();
+  server.send( 200, "text/json", "true" );
+}
+
+void editClientName(){
+  if(server.hasArg("id") && server.hasArg("name")) {
+    nameList.edit(server.arg("id").toInt(),server.arg("name"));
+    server.send( 200, "text/json", "true");
   }
 }
 

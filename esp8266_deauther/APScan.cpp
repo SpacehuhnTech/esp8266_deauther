@@ -20,7 +20,10 @@ bool APScan::start(){
       channels[i] = WiFi.channel(i);
       rssi[i] = WiFi.RSSI(i);
       getEncryption(WiFi.encryptionType(i)).toCharArray(encryption[i],5);
-      WiFi.SSID(i).toCharArray(names[i],33);
+      String _ssid;
+      _ssid = WiFi.SSID(i);
+      _ssid.replace("\"","\\\"");
+      _ssid.toCharArray(names[i],33);
       data_getVendor(WiFi.BSSID(i)[0],WiFi.BSSID(i)[1],WiFi.BSSID(i)[2]).toCharArray(vendors[i],9);
       if(debug){
         _ap._print();
@@ -58,7 +61,9 @@ String APScan::getEncryption(int code){
     case ENC_TYPE_AUTO:
       return "WPA*";
       break;
-    }
+    default:
+      return "?";
+  }
 }
 
 String APScan::getAPName(int num){ return names[num]; }

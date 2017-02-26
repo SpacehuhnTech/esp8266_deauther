@@ -12,9 +12,10 @@ extern "C" {
 #include "APScan.h"
 #include "ClientScan.h"
 #include "Settings.h"
+#include "SSIDList.h"
 
 #define attacksNum 2
-#define macListLen 80
+#define macListLen 64
 #define macChangeInterval 4
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
@@ -25,6 +26,7 @@ extern const bool debug;
 extern APScan apScan;
 extern ClientScan clientScan;
 extern Settings settings;
+extern SSIDList ssidList;
 
 class Attack
 {

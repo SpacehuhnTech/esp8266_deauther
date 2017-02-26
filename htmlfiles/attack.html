@@ -47,6 +47,11 @@
 				<b>beacon [beacon flood attack]:</b><br>
 				Spams beacon frames with a similar SSID as the selected WiFi access point(s).
 			</p>
+			<br />
+			<p class="block bold">SSIDs: <button class="marginNull warnBtn">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="addSSID()">add</button></p>
+			<br />
+			<table>
+			</table>
 			
 		</div>
 	</body>
@@ -54,11 +59,13 @@
 		var selectedAPs = document.getElementById("selectedAPs");
 		var selectedClients = document.getElementById("selectedClients");
 		var table = document.getElementsByTagName("table")[0];
+		var ssidList = document.getElementsByTagName("table")[1];
 		var resultInterval;
+		var res;
 		
 		function getResults(){
 			getResponse("attackInfo.json",function(responseText){
-						var res = JSON.parse(responseText);
+						res = JSON.parse(responseText);
 						var aps = "";
 						var clients = "";
 						var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
@@ -81,20 +88,43 @@
 							tr += "</tr>";
 						}
 						table.innerHTML = tr;
+						
+						var tr = "<tr><th>Name</th><th>X</th></tr>";
+						for(var i=0;i<res.ssid.length;i++){
+							tr += "<tr>";
+							tr += "<td>"+res.ssid[i]+"</td>";
+							tr += '<td><button class="marginNull warnBtn" onclick="deleteSSID('+i+')">x</button></td>';
+							tr += "</tr>";
+						}
+						ssidList.innerHTML = tr;
+						
 			},function(){
 				clearInterval(resultInterval);
-				alert("timeout error. Please reload the site");
+				location.reload();
 			});
 		}
 		
 		function startStop(num){
 			getResponse("attackStart.json?num="+num,function(responseText){
-				if(responseText == "true") {
-					getResults();
-					setTimeout(getResults,3000);
-				}
+				if(responseText == "true") getResults();
 				else alert("error");
 			});
+		}
+		
+		function addSSID(){
+			if(res.ssid.length >= 64) alert("SSID list full :(");
+			else{
+				var _ssidName = prompt("new SSID:");
+				if(_ssidName != null) getResponse("addSSID.json?name="+_ssidName,getResults);
+			}
+		}
+		
+		function deleteSSID(num){
+			getResponse("deleteSSID.json?num="+num,getResults);
+		}
+		
+		function randomSSID(){
+			getResponse("randomSSID.json",getResults);
 		}
 		
 		getResults();

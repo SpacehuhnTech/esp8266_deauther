@@ -24,7 +24,7 @@ void NameList::clear(){
   clients._clear();
   EEPROM.write(romAdr,len);
   EEPROM.commit();
-  Serial.println("EEPROM cleared");
+  Serial.println("nameList cleared");
 }
 
 void NameList::save(){
@@ -82,5 +82,12 @@ void NameList::remove(int num){
   clients.num--;
   len--;
   save();
+}
+
+void NameList::edit(int num, String name){
+  for(int i=0;i<nameLength;i++){
+    if(i<name.length()) names[num][i] = name[i];
+    else names[num][i] = 0x00;
+  }
 }
 

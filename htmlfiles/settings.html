@@ -62,13 +62,16 @@
 			<p class="small">only for deauth attack - may cause instability!</p>
 			<br />
 			<br />
-			<button onclick="saveSettings()">save</button><p class="small" id="saved"></p>
+			<button class="warnBtn" onclick="resetSettings()">reset</button> <button onclick="saveSettings()">save</button><p class="small" id="saved"></p>
 			<br />
 			<br />
 			
-			<p class="block bold">Client Names</p>
+			<p class="block bold" id="clientNames">Client Names</p>
 			<table id="nameList">
+			<tr><th>MAC</th><th>Vendor</th><th>Name</th><th>X</th></tr>
 			</table>
+			<br />
+			<button class="warnBtn" onclick="clearNameList()">clear</button></p>
 		</div>
 		
 		<table>
@@ -84,6 +87,7 @@
 		var deauthReason = document.getElementById('deauthReason');
 		var packetRate = document.getElementById('packetRate');
 		var saved = document.getElementById('saved');
+		var clientNames = document.getElementById('clientNames');
 		var res;
 		
 		function getData(){
@@ -97,8 +101,9 @@
 				deauthReason.value = res.deauthReason;
 				packetRate.value = res.attackPacketRate;
 				
-				var tr = '';
-				if(res.nameList.length > 0) tr += '<tr><th>MAC</th><th>Vendor</th><th>Name</th><th>X</th></tr>';
+				clientNames.innerHTML = "Client Names "+res.nameList.length+"/50";
+				
+				var tr = '<tr><th>MAC</th><th>Vendor</th><th>Name</th><th>X</th></tr>';
 				
 				for(var i=0;i<res.nameList.length;i++){
 					
@@ -118,8 +123,8 @@
 		function changeName(id){
 			var newName = prompt("Name for "+res.nameList[id].mac);
 			if(newName != null){
-				getResponse("setName.json?id="+id+"&name="+newName,function(responseText){
-					if(responseText == "true") getResults();
+				getResponse("editNameList.json?id="+id+"&name="+newName,function(responseText){
+					if(responseText == "true") getData();
 					else alert("error");
 				});
 			}
@@ -147,6 +152,23 @@
 					getData();
 					saved.innerHTML = "saved";
 				}
+				else alert("error");
+			});
+		}
+		
+		function resetSettings(){
+			getResponse("settingsReset.json", function(responseText){
+				if(responseText == "true"){
+					getData();
+					saved.innerHTML = "saved";
+				}
+				else alert("error");
+			});
+		}
+		
+		function clearNameList(){
+			getResponse("clearNameList.json", function(responseText){
+				if(responseText == "true") getData();
 				else alert("error");
 			});
 		}
