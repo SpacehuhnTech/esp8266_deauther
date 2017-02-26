@@ -99,6 +99,9 @@ void setup(){
   server.on("/addSSID.json", addSSID);
   server.on("/deleteSSID.json", deleteSSID);
   server.on("/randomSSID.json", randomSSID);
+  server.on("/clearSSID.json", clearSSID);
+  server.on("/resetSSID.json", resetSSID);
+  server.on("/saveSSID.json", saveSSID);
 
   server.begin();
 }
@@ -192,6 +195,21 @@ void deleteSSID(){
 void randomSSID(){
   ssidList._random();
   server.send( 200, "text/json", "true");  
+}
+
+void clearSSID(){
+  ssidList.clear();
+  server.send( 200, "text/json", "true");
+}
+
+void resetSSID(){
+  ssidList.load();
+  server.send( 200, "text/json", "true");
+}
+
+void saveSSID(){
+  ssidList.save();
+  server.send( 200, "text/json", "true");
 }
 
 //==========Settings==========

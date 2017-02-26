@@ -7,6 +7,9 @@
 				background: #000;
 				color:#fff;
 			}
+			#saved{
+				display: inline;
+			}
 		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
@@ -48,11 +51,12 @@
 				Spams beacon frames with a similar SSID as the selected WiFi access point(s).
 			</p>
 			<br />
-			<p class="block bold">SSIDs: <button class="marginNull warnBtn">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="addSSID()">add</button></p>
+			<p class="block bold">SSIDs: <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="addSSID()">add</button></p>
 			<br />
 			<table>
 			</table>
-			
+			<br />
+			<button class="marginNull warnBtn" onclick="resetSSID()">reset</button> <button class="marginNull" onclick="saveSSID()">save</button> <p class="small" id="saved">saved</p>
 		</div>
 	</body>
 	<script>
@@ -60,6 +64,7 @@
 		var selectedClients = document.getElementById("selectedClients");
 		var table = document.getElementsByTagName("table")[0];
 		var ssidList = document.getElementsByTagName("table")[1];
+		var saved = document.getElementById("saved");
 		var resultInterval;
 		var res;
 		
@@ -112,6 +117,7 @@
 		}
 		
 		function addSSID(){
+			saved.innerHTML = "";
 			if(res.ssid.length >= 64) alert("SSID list full :(");
 			else{
 				var _ssidName = prompt("new SSID:");
@@ -120,12 +126,27 @@
 		}
 		
 		function deleteSSID(num){
+			saved.innerHTML = "";
 			getResponse("deleteSSID.json?num="+num,getResults);
 		}
 		
 		function randomSSID(){
+			saved.innerHTML = "";
 			getResponse("randomSSID.json",getResults);
 		}
+		function clearSSID(){
+			saved.innerHTML = "";
+			getResponse("clearSSID.json",getResults);
+		}
+		function saveSSID(){
+			saved.innerHTML = "saved";
+			getResponse("saveSSID.json",getResults);
+		}
+		function resetSSID(){
+			saved.innerHTML = "saved";
+			getResponse("resetSSID.json",getResults);
+		}
+		
 		
 		getResults();
 		resultInterval = setInterval(getResults,3000);

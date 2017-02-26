@@ -10,7 +10,7 @@ void ClientScan::start(int _time){
   Serial.println("starting client scan");
   
   clients._clear();
-  for(int i=0;i<maxResults;i++){
+  for(int i=0;i<maxClientScanResults;i++){
     selected[i] = false;
     packets[i] = 0;
   }
@@ -60,7 +60,7 @@ bool ClientScan::stop(){
     Serial.println();
     Serial.println("stopping client scan");
     if(debug){
-      for(int i=0;i<results && i<maxResults;i++){
+      for(int i=0;i<results && i<maxClientScanResults;i++){
         Serial.print(i);
         Serial.print(": ");
         Serial.print(getClientPackets(i));
@@ -87,7 +87,7 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
       if(apScan.isSelected(i)){
         if(apScan.aps._get(i).compare(from)){
           int clientNum = clients.getNum(to);
-          if(clientNum == -1 && results < maxResults){
+          if(clientNum == -1 && results < maxClientScanResults){
             data_getVendor(to._get(0),to._get(1),to._get(2)).toCharArray(vendors[results],9);
             results++;
             packets[clients.add(to)]++;
@@ -112,7 +112,7 @@ String ClientScan::getClientVendor(int num){ return vendors[num]; }
 Mac ClientScan::getClientMac(int num){ return clients._get(num); }
 bool ClientScan::getClientSelected(int num){ return selected[num]; }
 int ClientScan::getFirstClient(){
-  for(int i=0;i<maxResults;i++){
+  for(int i=0;i<maxClientScanResults;i++){
     if(getClientSelected(i)) return i;
   }
   return -1;
@@ -120,7 +120,7 @@ int ClientScan::getFirstClient(){
 String ClientScan::getResults(){
   if(debug) Serial.print("getting client scan result JSON ");
   String json = "{ \"clients\":[";
-  for(int i=0;i<results && i<maxResults;i++){
+  for(int i=0;i<results && i<maxClientScanResults;i++){
     json += "{";
     json += "\"id\": "+(String)i+",";
     json += "\"packets\": "+(String)getClientPackets(i)+",";
@@ -129,7 +129,7 @@ String ClientScan::getResults(){
     json += "\"vendor\": \""+(String)getClientVendor(i)+"\",";
     json += "\"selected\": "+(String)getClientSelected(i);
     json += "}";
-    if((i!=results-1) && (i!=maxResults-1)) json += ",";
+    if((i!=results-1) && (i!=maxClientScanResults-1)) json += ",";
   }
   json += "] }";
   if(debug) Serial.println("done ");

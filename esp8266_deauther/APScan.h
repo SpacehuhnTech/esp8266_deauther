@@ -1,7 +1,7 @@
 #ifndef APScan_h
 #define APScan_h
 
-#define maxResults 80
+#define maxAPScanResults 40
 
 #include <ESP8266WiFi.h>
 #include "Mac.h"
@@ -20,7 +20,7 @@ class APScan{
     
     String getAPName(int num);
     String getAPEncryption(int num);
-    String getAPVendor(int num);
+    //String getAPVendor(int num);
     String getAPMac(int num);
     String getAPSelected(int num);
     int getAPRSSI(int num);
@@ -33,15 +33,14 @@ class APScan{
     int selectedSum;
     MacList aps;
   private:
-    int channels[maxResults];
-    int rssi[maxResults];
-    char names[maxResults][33];
-    char encryption[maxResults][5];
-    char vendors[maxResults][9];
+    int channels[maxAPScanResults];
+    int rssi[maxAPScanResults];
+    char names[maxAPScanResults][33];
+    int encryption[maxAPScanResults];
 
     String getEncryption(int code);
 
-    bool selected[maxResults];
+    bool selected[maxAPScanResults];
 };
 
 #endif

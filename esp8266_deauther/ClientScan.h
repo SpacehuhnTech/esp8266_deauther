@@ -1,7 +1,7 @@
 #ifndef ClientScan_h
 #define ClientScan_h
 
-#define maxResults 80
+#define maxClientScanResults 30
 
 #include <ESP8266WiFi.h>
 #include "Mac.h"
@@ -53,9 +53,9 @@ class ClientScan{
     Mac zero;
     
     MacList clients;
-    char vendors[maxResults][9];
-    int packets[maxResults];
-    bool selected[maxResults];
+    char vendors[maxClientScanResults][9];
+    int packets[maxClientScanResults];
+    bool selected[maxClientScanResults];
 
     int channels[13];
     int channelsNum = 0;

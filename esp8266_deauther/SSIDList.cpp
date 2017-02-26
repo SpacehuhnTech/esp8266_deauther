@@ -6,6 +6,10 @@ SSIDList::SSIDList(){
 
 void SSIDList::load(){
   len = EEPROM.read(lenAdr);
+  if( len < 0 ||len > SSIDListLength){
+    clear();
+    save();
+  }
   for(int i=0;i<len;i++){
     for(int h=0;h<SSIDLength;h++){
       char _nextChar = EEPROM.read(listAdr+(i*SSIDLength)+h);
