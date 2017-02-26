@@ -70,10 +70,7 @@ String APScan::getAPName(int num){ return names[num]; }
 String APScan::getAPEncryption(int num){ return getEncryption(encryption[num]); }
 //String APScan::getAPVendor(int num){ return vendors[num]; }
 String APScan::getAPMac(int num){ return aps._get(num).toString(); }
-String APScan::getAPSelected(int num){
-  if(selected[num]) return "true";
-  else return "false";  
-}
+bool APScan::getAPSelected(int num){ return selected[num]; }
 int APScan::getAPRSSI(int num){ return rssi[num]; }
 int APScan::getAPChannel(int num){ return channels[num]; }
 
@@ -97,8 +94,7 @@ String APScan::getResults(){
     json += "\"r\":"+(String)getAPRSSI(i)+",";
     json += "\"e\":\""+(String)encryption[i]+"\",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
-    if(getAPSelected(i)) json += "\"se\":1";
-    else json += "\"se\":0";
+    json += "\"se\":"+(String)getAPSelected(i);
     json += "}";
     if((i!=results-1) && (i!=maxAPScanResults-1)) json += ",";
   }
