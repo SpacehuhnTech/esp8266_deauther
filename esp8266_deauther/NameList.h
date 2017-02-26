@@ -25,10 +25,13 @@ class NameList
     void clear();
     void add(Mac client, String name);
     String get(Mac client);
+    String getName(int num);
+    Mac getMac(int num);
+    void remove(int num);
+    int len = 0;
   private:
     void save();
-
-    int len = 0;
+    
     MacList clients;
     uint8_t names[listLength][nameLength];
 };

@@ -144,10 +144,11 @@ void Attack::run(){
 
     stati[0] = (String)packetsCounter[0]+"pkts/s";
     packetsCounter[0] = 0;
-    attackTimeoutCounter[0]++;
     if(debug) Serial.println(" done");
-    attackTimeoutCounter[0]++;
-    if(attackTimeoutCounter[0] > settings.attackTimeout) stop(1);
+    if(settings.attackTimeout > 0){
+      attackTimeoutCounter[0]++;
+      if(attackTimeoutCounter[0] > settings.attackTimeout) stop(1);
+    }
   }
 
   /* =============== Beacon Attack =============== */
@@ -198,8 +199,10 @@ void Attack::run(){
       macListChangeCounter = 0;
     }
     if(debug) Serial.println(" done ");
-    attackTimeoutCounter[1]++;
-    if(attackTimeoutCounter[1]/10 > settings.attackTimeout) stop(1);
+    if(settings.attackTimeout > 0){
+      attackTimeoutCounter[1]++;
+      if(attackTimeoutCounter[1]/10 > settings.attackTimeout) stop(1);
+    }
   }
   
 }

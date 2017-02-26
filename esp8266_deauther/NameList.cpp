@@ -45,7 +45,7 @@ void NameList::add(Mac client, String name){
   name.getBytes(_buf,nameLength);
   for(int i=0;i<nameLength;i++){
     if(i<name.length()) names[clients.getNum(client)][i] = _buf[i];
-    else names[clients.getNum(client)][i] = 32;
+    else names[clients.getNum(client)][i] = 0x00;
   }
   NameList::save();
 }
@@ -60,3 +60,27 @@ String NameList::get(Mac client){
   }
   return returnStr;
 }
+
+String NameList::getName(int num){
+  String returnStr;
+  for(int h=0;h<nameLength;h++){
+    if(names[num][h] != 0x00) returnStr += (char)names[num][h];
+  }
+  return returnStr;
+}
+
+Mac NameList::getMac(int num){
+  return clients._get(num);
+}
+
+void NameList::remove(int num){
+  for(int i=num;i<len-1;i++){
+    clients.set(num, clients._get(num+1));
+    for(int h=0;h<nameLength;h++) names[num][h] = names[num+1][h];
+  }
+  clients.remove(clients._get(len));
+  clients.num--;
+  len--;
+  save();
+}
+

@@ -11,6 +11,10 @@
 				display: inline-block;
 				width: 135px;
 			}
+			#saved{
+				display: inline;
+				margin-left: 20px;
+			}
 		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
@@ -27,36 +31,44 @@
 			
 			<p class="block bold">WiFi</p>
 			
-			<label for="clientScanTime">SSID:</label>
-			<input type="text" id="scanTime" minlength="1" maxlength="32">
+			<label for="ssid">SSID:</label>
+			<input type="text" id="ssid" minlength="1" maxlength="32">
 			
 			<br />
 			
-			<label for="clientScanTime">password:</label>
-			<input type="text" id="scanTime" minlength="8" maxlength="32">
-			<p class="small">must have at least 8 characters!</p>
+			<label for="password">password:</label>
+			<input type="text" id="password" minlength="8" maxlength="32">
+			<p class="small">must have at least 8 characters! (needs restart)</p>
 			
 			<br />
 			<p class="block bold">Client Scan</p>
 			
-			<label for="clientScanTime">default scan time:</label>
+			<label for="scanTime">default scan time:</label>
 			<input type="number" id="scanTime" min="1" max="255">s
 			<br />
 			<br />
 			<p class="block bold">Attack</p>
 			
-			<label for="clientScanTime">timeout:</label>
-			<input type="number" id="scanTime" min="-1" max="32768">s
-			<p class="small">-1 for no timeout</p>
+			<label for="timeout">timeout:</label>
+			<input type="number" id="timeout" min="-1" max="65536">s
+			<p class="small">0 = no timeout</p>
 			
-			<label for="clientScanTime">deauth reason:</label>
-			<input type="number" id="scanTime" min="1" max="45">
+			<label for="deauthReason">deauth reason:</label>
+			<input type="number" id="deauthReason" min="1" max="45">
 			<p class="small">reason codes: <a target="_blank" href="http://www.aboutcher.co.uk/2012/07/linux-wifi-deauthenticated-reason-codes/">click</a></p>
 			
-			<label for="clientScanTime">packetrate:</label>
-			<input type="number" id="scanTime" min="1" max="100">pkts/s
+			<label for="packetRate">packetrate:</label>
+			<input type="number" id="packetRate" min="1" max="100">pkts/s
+			<p class="small">only for deauth attack - may cause instability!</p>
+			<br />
+			<br />
+			<button onclick="saveSettings()">save</button><p class="small" id="saved"></p>
+			<br />
 			<br />
 			
+			<p class="block bold">Client Names</p>
+			<table id="nameList">
+			</table>
 		</div>
 		
 		<table>
@@ -64,6 +76,81 @@
 		
 	</body>
 	<script>
+		var nameListTable = document.getElementById('nameList');
+		var ssid = document.getElementById('ssid');
+		var password = document.getElementById('password');
+		var scanTime = document.getElementById('scanTime');
+		var timeout = document.getElementById('timeout');
+		var deauthReason = document.getElementById('deauthReason');
+		var packetRate = document.getElementById('packetRate');
+		var saved = document.getElementById('saved');
+		var res;
+		
+		function getData(){
+			getResponse("settings.json",function(responseText){
+				res = JSON.parse(responseText);
+				
+				ssid.value = res.ssid;
+				password.value = res.password;
+				scanTime.value = res.clientScanTime;
+				timeout.value = res.attackTimeout;
+				deauthReason.value = res.deauthReason;
+				packetRate.value = res.attackPacketRate;
+				
+				var tr = '';
+				if(res.nameList.length > 0) tr += '<tr><th>MAC</th><th>Vendor</th><th>Name</th><th>X</th></tr>';
+				
+				for(var i=0;i<res.nameList.length;i++){
+					
+					tr += '<tr>';
+					tr += '<td>'+res.nameList[i].mac+'</td>';
+					tr += '<td>'+res.nameList[i].vendor+'</td>';
+					tr += '<td>'+res.nameList[i].name+' <a class="blue" onclick="changeName('+res.nameList[i].id+')">edit</a></td>';
+					tr += '<td><button class="marginNull warnBtn" onclick="deleteName('+res.nameList[i].id+')">x</button></td>';
 
+					tr += '</tr>';
+				}
+				
+				nameListTable.innerHTML = tr;
+			});
+		}
+		
+		function changeName(id){
+			var newName = prompt("Name for "+res.nameList[id].mac);
+			if(newName != null){
+				getResponse("setName.json?id="+id+"&name="+newName,function(responseText){
+					if(responseText == "true") getResults();
+					else alert("error");
+				});
+			}
+		}
+		
+		function deleteName(id){
+			getResponse("deleteName.json?num="+id,function(responseText){
+				if(responseText == "true") getData();
+				else alert("error");
+			});
+		}
+		
+		function saveSettings(){
+			saved.innerHTML = "saving...";
+			var url = "settingsSave.json";
+			url += "?ssid="+ssid.value;
+			url += "&password="+password.value;
+			url += "&scanTime="+scanTime.value;
+			url += "&timeout="+timeout.value;
+			url += "&deauthReason="+deauthReason.value;
+			url += "&packetRate="+packetRate.value;
+			
+			getResponse(url, function(responseText){
+				if(responseText == "true"){
+					getData();
+					saved.innerHTML = "saved";
+				}
+				else alert("error");
+			});
+		}
+		
+		getData();
 	</script>
 </html>

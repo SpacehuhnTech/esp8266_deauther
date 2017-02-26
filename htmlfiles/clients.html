@@ -13,7 +13,7 @@
 			#clientScanStart{
 				margin-left: 30px;
 			}
-			#clientScanTime{
+			#scanTime{
 				width: 60px;
 			}
 		</style>
@@ -25,11 +25,12 @@
 			<a href="index.html">APs</a>
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
+			<a href="settings.html">Settings</a>
 		</nav>
 		<div id="content">
 			<h1>Scan for client devices</h1>
 			
-			<label for="clientScanTime">Scan time:</label>
+			<label for="scanTime">Scan time:</label>
 			<input type="number" id="scanTime" value="10">s
 			
 			<button onclick="scan()" id="startScan">start</button>

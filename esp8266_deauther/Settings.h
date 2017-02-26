@@ -4,10 +4,13 @@
 #include <EEPROM.h>
 #include "Mac.h"
 #include "MacList.h"
+#include "NameList.h"
 
 extern const bool debug;
+extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
 extern void eepromWriteInt(int adr, int val);
 extern int eepromReadInt(int adr);
+extern NameList nameList;
 
 #define ssidLenAdr 1024
 #define ssidAdr 1025
@@ -25,6 +28,7 @@ class Settings
     void load();
     void reset();
     void save();
+    String get();
     void info();
 
     int ssidLen;
@@ -33,7 +37,7 @@ class Settings
     String password = "";
     
     uint8_t deauthReason;
-    int attackTimeout;
+    unsigned int attackTimeout;
     int attackPacketRate;
     
     int clientScanTime;

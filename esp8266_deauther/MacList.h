@@ -11,6 +11,7 @@ class MacList
     MacList();
     int add(Mac adr);
     void remove(Mac adr);
+    void set(int num, Mac adr);
     void info();
     bool contains(Mac adr);
     int getNum(Mac adr);

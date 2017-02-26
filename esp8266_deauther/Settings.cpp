@@ -10,6 +10,8 @@ void Settings::load(){
   
   if(ssidLen < 1 || ssidLen > 32 || passwordLen < 8 || passwordLen > 32) reset();
   else{
+    ssid = "";
+    password = "";
     for(int i=0;i<ssidLen;i++) ssid += (char)EEPROM.read(ssidAdr+i);
     for(int i=0;i<passwordLen;i++) password += (char)EEPROM.read(passwordAdr+i);
     
@@ -40,7 +42,8 @@ void Settings::reset(){
 }
 
 void Settings::save(){
-  if(debug) Serial.print("saving settings...");
+  ssidLen = ssid.length();
+  passwordLen = password.length();
   
   EEPROM.write(ssidLenAdr,ssidLen);
   EEPROM.write(passwordLenAdr,passwordLen);
@@ -49,18 +52,17 @@ void Settings::save(){
   for(int i=0;i<passwordLen;i++) EEPROM.write(passwordAdr+i,password[i]);
   
   EEPROM.write(deauthReasonAdr, deauthReason);
-  EEPROM.write(deauthReasonAdr, deauthReason);
 
   eepromWriteInt(attackTimeoutAdr, attackTimeout);
 
   EEPROM.write(attackPacketRateAdr, attackPacketRate);
   EEPROM.write(clientScanTimeAdr, clientScanTime);
-
+  EEPROM.commit();
+  
   if(debug){
     info();
-    Serial.println("done");
+    Serial.println("settings saved");
   }
-  
 }
 
 void Settings::info(){
@@ -75,3 +77,28 @@ void Settings::info(){
   Serial.println("client scan time: "+(String)clientScanTime);
 }
 
+String Settings::get(){
+  String json = "{";
+  //\"
+  json += "\"ssid\":\""+ssid+"\",";
+  json += "\"password\":\""+password+"\",";
+  json += "\"deauthReason\":"+(String)(int)deauthReason+",";
+  json += "\"attackTimeout\":"+(String)attackTimeout+",";
+  json += "\"attackPacketRate\":"+(String)attackPacketRate+",";
+  json += "\"clientScanTime\":"+(String)clientScanTime+",";
+
+  json += "\"nameList\":[";
+  for(int i=0;i<nameList.len;i++){
+    json += "{";
+    json += "\"id\":"+(String)i+",";
+    json += "\"name\":\""+nameList.getName(i)+"\",";
+    json += "\"mac\":\""+nameList.getMac(i).toString()+"\",";
+    json += "\"vendor\":\""+data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2))+"\"";
+    json += "}";
+    if(i!=nameList.len-1) json += ",";
+  }
+  json += "]";
+  
+  json += "}";
+  return json;
+}

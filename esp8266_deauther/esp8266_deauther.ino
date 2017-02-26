@@ -16,7 +16,7 @@ extern "C" {
 #include "Attack.h"
 #include "Settings.h"
 
-const bool debug = false;
+const bool debug = true;
 
 ESP8266WebServer server(80);
 
@@ -56,6 +56,7 @@ void setup(){
   EEPROM.begin(4096);
 
   settings.load();
+  if(debug) settings.info();
   nameList.load();
 
   Serial.println("");
@@ -74,6 +75,7 @@ void setup(){
   server.on("/index.html", loadIndex);
   server.on("/clients.html", loadClients);
   server.on("/attack.html", loadAttack);
+  server.on("/settings.html", loadSettings);
   server.on("/functions.js", loadFunctionsJS);
 
   /* header links */
@@ -90,6 +92,9 @@ void setup(){
   server.on("/setName.json", setClientName);
   server.on("/attackInfo.json", sendAttackInfo);
   server.on("/attackStart.json", startAttack);
+  server.on("/settings.json", getSettings);
+  server.on("/settingsSave.json", saveSettings);
+  server.on("/deleteName.json", deleteName);
 
   server.begin();
 }
@@ -109,6 +114,8 @@ void loadClients(){ server.send ( 200, "text/html", data_getClientsHTML()); }
 void loadAttack(){ server.send ( 200, "text/html", data_getAttackHTML() ); }
 void loadFunctionsJS(){ server.send( 200, "text/javascript", data_getFunctionsJS() ); }
 void loadStyle(){ server.send ( 200, "text/css", data_getStyle() ); }
+void loadSettings(){ server.send( 200, "text/html", data_getSettingsHTML() ); }
+
 
 //==========AP-Scan==========
 void startAPScan(){ 
@@ -167,3 +174,27 @@ void startAttack(){
     }else server.send ( 200, "text/json", "false");
   }
 }
+
+
+//==========Settings==========
+void getSettings(){ server.send ( 200, "text/json", settings.get() ); }
+void saveSettings(){ 
+  if(server.hasArg("ssid")) settings.ssid = server.arg("ssid");
+  if(server.hasArg("password")) settings.password = server.arg("password");
+  if(server.hasArg("scanTime")) settings.clientScanTime = server.arg("scanTime").toInt();
+  if(server.hasArg("timeout")) settings.attackTimeout = server.arg("timeout").toInt();
+  if(server.hasArg("deauthReason")) settings.deauthReason = server.arg("deauthReason").toInt();
+  if(server.hasArg("packetRate")) settings.attackPacketRate = server.arg("packetRate").toInt();
+  
+  settings.save();
+  server.send ( 200, "text/json", "true" ); 
+}
+
+void deleteName(){
+  if(server.hasArg("num")) {
+    int _num = server.arg("num").toInt();
+    nameList.remove(_num);
+    server.send ( 200, "text/json", "true");
+  }
+}
+
