@@ -17,15 +17,11 @@ extern "C" {
 #include "Settings.h"
 #include "SSIDList.h"
 
-const bool debug = false;
+/* ========== DEBUG ========== */
+const bool debug = true;
+/* ========== DEBUG ========== */
 
 ESP8266WebServer server(80);
-
-/*
-I had some troubles implementing singleton classes.
-see: https://github.com/esp8266/Arduino/issues/500
-They fixed this issue within a newer SDK version - the one we can't use, so I used global variables.
-*/
 
 NameList nameList;
 
@@ -67,10 +63,6 @@ void setup(){
   startWifi();
   attack.stopAll();
   attack.generate();
-
-  ssidList._random();
-  for(int i=0;i<ssidList.len;i++) Serial.println(ssidList.get(i));
-  Serial.println(attack.getResults());
 
   /* ========== Web Server ========== */
 

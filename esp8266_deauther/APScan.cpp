@@ -40,7 +40,9 @@ bool APScan::start(){
         Serial.println();
       }
     }
+    
     if(debug) Serial.println("scan done");
+    if(debug) Serial.println(getResults());
     return true;
 }
 
