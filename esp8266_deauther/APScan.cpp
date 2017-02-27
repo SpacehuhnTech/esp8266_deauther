@@ -34,11 +34,38 @@ bool APScan::start(){
         Serial.print(getEncryption(encryption[i]));
         Serial.print(" - ");
         Serial.print(names[i]);
-        /*Serial.print(" - ");
-        Serial.print(vendors[i]);*/
+        //Serial.print(" - ");
+        //Serial.print(vendors[i]);
         Serial.println();
       }
     }
+
+    //for debugging the APScan crash bug
+    /*if(debug){
+      for(int i=results;i<maxAPScanResults;i++){
+        Mac _ap;
+        _ap.set(random(255),random(255),random(255),random(255),random(255),random(255));
+        aps.add(_ap);
+        channels[i] = random(1,12);
+        rssi[i] = random(-30,-90);
+        encryption[i] = ENC_TYPE_NONE;
+        String _ssid = "test_dbeJwq3tPtJsuWtgULgShD9dxXV";
+        _ssid.toCharArray(names[i],33);
+
+        _ap._print();
+        Serial.print(" - ");
+        Serial.print(channels[i]);
+        Serial.print(" - ");
+        Serial.print(rssi[i]);
+        Serial.print(" - ");
+        Serial.print(getEncryption(encryption[i]));
+        Serial.print(" - ");
+        Serial.print(names[i]);
+        Serial.println();
+
+        results++;
+      }
+    }*/
     
     if(debug) Serial.println("scan done");
     if(debug) Serial.println(getResults());

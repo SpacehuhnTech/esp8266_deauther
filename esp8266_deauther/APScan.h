@@ -1,7 +1,7 @@
 #ifndef APScan_h
 #define APScan_h
 
-#define maxAPScanResults 40
+#define maxAPScanResults 30
 
 #include <ESP8266WiFi.h>
 #include "Mac.h"

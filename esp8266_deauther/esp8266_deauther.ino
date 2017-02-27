@@ -18,7 +18,7 @@ extern "C" {
 #include "SSIDList.h"
 
 /* ========== DEBUG ========== */
-const bool debug = false;
+const bool debug = true;
 /* ========== DEBUG ========== */
 
 ESP8266WebServer server(80);

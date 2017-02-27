@@ -83,7 +83,7 @@ void Settings::info(){
 
 String Settings::get(){
   String json = "{";
-  //\"
+  
   json += "\"ssid\":\""+ssid+"\",";
   json += "\"password\":\""+password+"\",";
   json += "\"deauthReason\":"+(String)(int)deauthReason+",";
@@ -101,8 +101,7 @@ String Settings::get(){
     json += "}";
     if(i!=nameList.len-1) json += ",";
   }
-  json += "]";
-  
-  json += "}";
+
+  json += "] }";
   return json;
 }
