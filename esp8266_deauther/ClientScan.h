@@ -1,7 +1,7 @@
 #ifndef ClientScan_h
 #define ClientScan_h
 
-#define maxClientScanResults 30
+#define maxClientScanResults 40
 
 #include <ESP8266WiFi.h>
 #include "Mac.h"

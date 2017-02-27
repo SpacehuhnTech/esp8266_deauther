@@ -92,7 +92,7 @@ String APScan::getResults(){
     json += "\"m\":\""+getAPMac(i)+"\",";
     json += "\"ss\":\""+getAPName(i)+"\",";
     json += "\"r\":"+(String)getAPRSSI(i)+",";
-    json += "\"e\":\""+(String)encryption[i]+"\",";
+    json += "\"e\":"+(String)encryption[i]+",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
     json += "\"se\":"+(String)getAPSelected(i);
     json += "}";

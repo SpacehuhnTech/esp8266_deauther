@@ -19,6 +19,7 @@ void Settings::load(){
     attackTimeout = eepromReadInt(attackTimeoutAdr);
     attackPacketRate = EEPROM.read(attackPacketRateAdr);
     clientScanTime = EEPROM.read(clientScanTimeAdr);
+    attackEncrypted = (bool)EEPROM.read(attackEncryptedAdr);
   }
 }
 
@@ -35,6 +36,7 @@ void Settings::reset(){
   attackTimeout = 5*60;
   attackPacketRate = 10;
   clientScanTime = 15;
+  attackEncrypted = false;
   
   if(debug) Serial.println("done");
   
@@ -57,6 +59,7 @@ void Settings::save(){
 
   EEPROM.write(attackPacketRateAdr, attackPacketRate);
   EEPROM.write(clientScanTimeAdr, clientScanTime);
+  EEPROM.write(attackEncryptedAdr, attackEncrypted);
   EEPROM.commit();
   
   if(debug){
@@ -75,6 +78,7 @@ void Settings::info(){
   Serial.println("attack timeout: "+(String)attackTimeout);
   Serial.println("attack packet rate: "+(String)attackPacketRate);
   Serial.println("client scan time: "+(String)clientScanTime);
+  Serial.println("attack SSID encrypted: "+(String)attackEncrypted);
 }
 
 String Settings::get(){
@@ -86,14 +90,14 @@ String Settings::get(){
   json += "\"attackTimeout\":"+(String)attackTimeout+",";
   json += "\"attackPacketRate\":"+(String)attackPacketRate+",";
   json += "\"clientScanTime\":"+(String)clientScanTime+",";
+  json += "\"attackEncrypted\":"+(String)attackEncrypted+",";
 
   json += "\"nameList\":[";
   for(int i=0;i<nameList.len;i++){
     json += "{";
-    json += "\"id\":"+(String)i+",";
-    json += "\"name\":\""+nameList.getName(i)+"\",";
-    json += "\"mac\":\""+nameList.getMac(i).toString()+"\",";
-    json += "\"vendor\":\""+data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2))+"\"";
+    json += "\"n\":\""+nameList.getName(i)+"\",";
+    json += "\"m\":\""+nameList.getMac(i).toString()+"\",";
+    json += "\"v\":\""+data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2))+"\"";
     json += "}";
     if(i!=nameList.len-1) json += ",";
   }

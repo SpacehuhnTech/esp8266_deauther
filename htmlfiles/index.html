@@ -81,10 +81,11 @@
 		}
 		
 		function getEncryption(num){
-			if(num == 5) return "WEP";
-			else if(num == 2) return "WPA";
+			if(num == 8) return "WPA*";
 			else if(num == 4) return "WPA2";
-			else if(num == 8) return "WPA*";
+			else if(num == 2) return "WPA";
+			else if(num == 7) return "none";
+			else if(num == 5) return "WEP";
 		}
 		
 		function getResults(){

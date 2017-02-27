@@ -14,7 +14,7 @@ extern "C" {
 #include "Settings.h"
 #include "SSIDList.h"
 
-#define attacksNum 2
+#define attacksNum 3
 #define macListLen 64
 #define macChangeInterval 4
 
@@ -41,11 +41,11 @@ class Attack
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
-    void buildBeacon(Mac _ap, Mac _client, String _ssid, int _ch, bool encrypt);
+    void buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt);
     bool send();
     
     //attack declarations
-    const String attackNames[attacksNum] = {"deauth","beacon (clone)"/*,"beacon (list)"*/};
+    const String attackNames[attacksNum] = {"deauth","beacon (clone)","beacon (list)"};
     
     //attack infos
     String stati[attacksNum];
@@ -108,6 +108,7 @@ class Attack
 
     int macListChangeCounter = 0;
     int attackTimeoutCounter[attacksNum];
+    int channels[macListLen];
 };
 
 #endif

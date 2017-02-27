@@ -53,6 +53,10 @@
 			<input type="number" id="timeout" min="-1" max="65536">s
 			<p class="small">0 = no timeout</p>
 			
+			<label for="ssidEnc">beacon encrypted:</label>
+			<input type="checkbox" name="ssidEnc" id="ssidEnc" value="true">
+			<br />
+			
 			<label for="deauthReason">deauth reason:</label>
 			<input type="number" id="deauthReason" min="1" max="45">
 			<p class="small">reason codes: <a target="_blank" href="http://www.aboutcher.co.uk/2012/07/linux-wifi-deauthenticated-reason-codes/">click</a></p>
@@ -88,6 +92,7 @@
 		var packetRate = document.getElementById('packetRate');
 		var saved = document.getElementById('saved');
 		var clientNames = document.getElementById('clientNames');
+		var ssidEnc = document.getElementById('ssidEnc');
 		var res;
 		
 		function getData(){
@@ -100,6 +105,7 @@
 				timeout.value = res.attackTimeout;
 				deauthReason.value = res.deauthReason;
 				packetRate.value = res.attackPacketRate;
+				ssidEnc.checked = res.attackEncrypted;
 				
 				clientNames.innerHTML = "Client Names "+res.nameList.length+"/50";
 				
@@ -108,10 +114,10 @@
 				for(var i=0;i<res.nameList.length;i++){
 					
 					tr += '<tr>';
-					tr += '<td>'+res.nameList[i].mac+'</td>';
-					tr += '<td>'+res.nameList[i].vendor+'</td>';
-					tr += '<td>'+res.nameList[i].name+' <a class="blue" onclick="changeName('+res.nameList[i].id+')">edit</a></td>';
-					tr += '<td><button class="marginNull warnBtn" onclick="deleteName('+res.nameList[i].id+')">x</button></td>';
+					tr += '<td>'+res.nameList[i].m+'</td>';
+					tr += '<td>'+res.nameList[i].v+'</td>';
+					tr += '<td>'+res.nameList[i].n+' <a class="blue" onclick="changeName('+i+')">edit</a></td>';
+					tr += '<td><button class="marginNull warnBtn" onclick="deleteName('+i+')">x</button></td>';
 
 					tr += '</tr>';
 				}
@@ -121,7 +127,7 @@
 		}
 		
 		function changeName(id){
-			var newName = prompt("Name for "+res.nameList[id].mac);
+			var newName = prompt("Name for "+res.nameList[id].m);
 			if(newName != null){
 				getResponse("editNameList.json?id="+id+"&name="+newName,function(responseText){
 					if(responseText == "true") getData();
@@ -146,6 +152,7 @@
 			url += "&timeout="+timeout.value;
 			url += "&deauthReason="+deauthReason.value;
 			url += "&packetRate="+packetRate.value;
+			url += "&ssidEnc="+ssidEnc.checked;
 			
 			getResponse(url, function(responseText){
 				if(responseText == "true"){

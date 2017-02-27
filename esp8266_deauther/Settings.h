@@ -20,6 +20,7 @@ extern NameList nameList;
 #define attackTimeoutAdr 1091
 #define attackPacketRateAdr 1093
 #define clientScanTimeAdr 1094
+#define attackEncryptedAdr 1095
 
 class Settings
 {
@@ -41,6 +42,7 @@ class Settings
     int attackPacketRate;
     
     int clientScanTime;
+    bool attackEncrypted;
   private:
 };
 

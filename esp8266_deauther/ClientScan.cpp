@@ -122,12 +122,12 @@ String ClientScan::getResults(){
   String json = "{ \"clients\":[";
   for(int i=0;i<results && i<maxClientScanResults;i++){
     json += "{";
-    json += "\"id\": "+(String)i+",";
-    json += "\"packets\": "+(String)getClientPackets(i)+",";
-    json += "\"mac\": \""+getClientMac(i).toString()+"\",";
-    json += "\"name\": \""+(String)nameList.get(getClientMac(i))+"\",";
-    json += "\"vendor\": \""+(String)getClientVendor(i)+"\",";
-    json += "\"selected\": "+(String)getClientSelected(i);
+    json += "\"i\":"+(String)i+",";
+    json += "\"p\":"+(String)getClientPackets(i)+",";
+    json += "\"m\":\""+getClientMac(i).toString()+"\",";
+    json += "\"n\":\""+(String)nameList.get(getClientMac(i))+"\",";
+    json += "\"v\":\""+(String)getClientVendor(i)+"\",";
+    json += "\"s\":"+(String)getClientSelected(i);
     json += "}";
     if((i!=results-1) && (i!=maxClientScanResults-1)) json += ",";
   }

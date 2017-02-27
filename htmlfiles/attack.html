@@ -48,10 +48,11 @@
 				If no client is selected, the packets are sent as broadcast!
 				<br><br>
 				<b>beacon [beacon flood attack]:</b><br>
-				Spams beacon frames with a similar SSID as the selected WiFi access point(s).
+				(clone:) spams beacon frames with a similar SSID as the selected WiFi access point(s).<br />
+				(list:) spams beacon frames with all SSIDs in the list below.
 			</p>
 			<br />
-			<p class="block bold">SSIDs: <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="addSSID()">add</button></p>
+			<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="addSSID()">add</button></p>
 			<br />
 			<table>
 			</table>
@@ -65,6 +66,7 @@
 		var table = document.getElementsByTagName("table")[0];
 		var ssidList = document.getElementsByTagName("table")[1];
 		var saved = document.getElementById("saved");
+		var ssidCounter = document.getElementById("ssidCounter");
 		var resultInterval;
 		var res;
 		
@@ -93,6 +95,8 @@
 							tr += "</tr>";
 						}
 						table.innerHTML = tr;
+						
+						ssidCounter.innerHTML = res.ssid.length+"/64";
 						
 						var tr = "<tr><th>Name</th><th>X</th></tr>";
 						for(var i=0;i<res.ssid.length;i++){

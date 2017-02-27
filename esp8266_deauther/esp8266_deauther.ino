@@ -18,7 +18,7 @@ extern "C" {
 #include "SSIDList.h"
 
 /* ========== DEBUG ========== */
-const bool debug = true;
+const bool debug = false;
 /* ========== DEBUG ========== */
 
 ESP8266WebServer server(80);
@@ -222,6 +222,10 @@ void saveSettings(){
   if(server.hasArg("timeout")) settings.attackTimeout = server.arg("timeout").toInt();
   if(server.hasArg("deauthReason")) settings.deauthReason = server.arg("deauthReason").toInt();
   if(server.hasArg("packetRate")) settings.attackPacketRate = server.arg("packetRate").toInt();
+  if(server.hasArg("ssidEnc")){
+    if(server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
+    else settings.attackEncrypted = true;
+  }
   
   settings.save();
   server.send( 200, "text/json", "true" ); 

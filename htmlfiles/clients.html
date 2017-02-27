@@ -59,8 +59,8 @@
 		var res;
 		
 		function compare(a,b) {
-			if (a.packets > b.packets) return -1;
-			if (a.packets < b.packets) return 1;
+			if (a.p > b.p) return -1;
+			if (a.p < b.p) return 1;
 			return 0;
 		}
 		
@@ -84,15 +84,15 @@
 				
 				for(var i=0;i<res.clients.length;i++){
 					
-					if(res.clients[i].selected) tr += '<tr class="selected">';
+					if(res.clients[i].s == 1) tr += '<tr class="selected">';
 					else tr += '<tr>';
-					tr += '<td>'+res.clients[i].packets+'</td>';
-					tr += '<td>'+res.clients[i].vendor+'</td>';
-					tr += '<td>'+res.clients[i].name+' <a class="blue" onclick="changeName('+res.clients[i].id+')">edit</a></td>';
-					tr += '<td>'+res.clients[i].mac+'</td>';
+					tr += '<td>'+res.clients[i].p+'</td>';
+					tr += '<td>'+res.clients[i].v+'</td>';
+					tr += '<td>'+res.clients[i].n+' <a class="blue" onclick="changeName('+res.clients[i].i+')">edit</a></td>';
+					tr += '<td>'+res.clients[i].m+'</td>';
 					
-					if(res.clients[i].selected) tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.clients[i].id+')">deselect</button></td>';
-					else tr += '<td><button class="marginNull" onclick="select('+res.clients[i].id+')">select</button></td>';
+					if(res.clients[i].s == 1) tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.clients[i].i+')">deselect</button></td>';
+					else tr += '<td><button class="marginNull" onclick="select('+res.clients[i].i+')">select</button></td>';
 					
 					tr += '</tr>';
 				}
@@ -130,7 +130,7 @@
 		}
 		
 		function changeName(id){
-			var newName = prompt("Name for "+res.clients[id].mac);
+			var newName = prompt("Name for "+res.clients[id].m);
 			if(newName != null){
 				getResponse("setName.json?id="+id+"&name="+newName,function(responseText){
 					if(responseText == "true") getResults();
