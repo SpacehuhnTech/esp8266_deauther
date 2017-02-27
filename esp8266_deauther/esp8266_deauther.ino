@@ -56,6 +56,7 @@ void setup(){
   settings.load();
   if(debug) settings.info();
   nameList.load();
+  ssidList.load();
 
   Serial.println("");
   Serial.println("starting...");

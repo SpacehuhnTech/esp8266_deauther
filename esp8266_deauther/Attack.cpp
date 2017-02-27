@@ -189,7 +189,7 @@ void Attack::run(){
     stati[1] = (String)(packetsCounter[1]*10)+"pkts/s";
     packetsCounter[1] = 0;
     macListChangeCounter++;
-    if(macListChangeCounter/10 >= macChangeInterval){
+    if(macListChangeCounter/10 >= macChangeInterval && macChangeInterval > 0){
       generate();
       macListChangeCounter = 0;
     }
@@ -216,11 +216,11 @@ void Attack::run(){
     
     stati[2] = (String)(packetsCounter[2]*10)+"pkts/s";
     packetsCounter[2] = 0;
-    macListChangeCounter++;
-    if(macListChangeCounter/10 >= macChangeInterval){
+    /*macListChangeCounter++;
+    if(macListChangeCounter/10 >= macChangeInterval && macChangeInterval > 0){
       generate();
       macListChangeCounter = 0;
-    }
+    }*/
     if(debug) Serial.println("done");
     if(settings.attackTimeout > 0){
       attackTimeoutCounter[2]++;

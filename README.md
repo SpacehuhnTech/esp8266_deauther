@@ -140,7 +140,7 @@ Yes, but I will not implement this 'feature' for ethical and legal reasons.
 
 **Can it sniff handshakes?**
 
-The ESP8266 has a promiscuous mode in which you can sniff nearly all packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
+The ESP8266 has a promiscuous mode in which you can sniff packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
 Maybe someone will find a way around this barrier but I wasn't able to.
 
 **espcomm_sync failed/espcomm_open when uploading**
@@ -152,7 +152,7 @@ Which drivers you need depends on the board, most boards use a cp2102, cp2104 or
 
 **AP scan doesn't work**
 
-There is a reported issue with the Internet Explorer: https://github.com/spacehuhn/esp8266_deauther/issues/5  
+There is a reported issue on this: https://github.com/spacehuhn/esp8266_deauther/issues/5  
 Try out switching the browser or open the website with another device.   
 
 **Deauth attack won't work**
