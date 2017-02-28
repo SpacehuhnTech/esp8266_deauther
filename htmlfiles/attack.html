@@ -52,7 +52,7 @@
 				(list:) spams beacon frames with all SSIDs in the list below.
 			</p>
 			<br />
-			<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="addSSID()">add</button></p>
+			<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="cloneSSID()">clone</button> <button class="marginNull" onclick="addSSID()">add</button></p>
 			<br />
 			<table>
 			</table>
@@ -126,6 +126,15 @@
 			else{
 				var _ssidName = prompt("new SSID:");
 				if(_ssidName != null) getResponse("addSSID.json?name="+_ssidName,getResults);
+			}
+		}
+		
+		function cloneSSID(){
+			saved.innerHTML = "";
+			if(res.ssid.length >= 64) alert("SSID list full :(");
+			else{
+				var _ssidName = prompt("new SSID:");
+				if(_ssidName != null) getResponse("cloneSSID.json?name="+_ssidName,getResults);
 			}
 		}
 		

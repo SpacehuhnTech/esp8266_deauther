@@ -98,6 +98,7 @@ void setup(){
   server.on("/clearNameList.json", clearNameList);
   server.on("/editNameList.json", editClientName);
   server.on("/addSSID.json", addSSID);
+  server.on("/cloneSSID.json", cloneSSID);
   server.on("/deleteSSID.json", deleteSSID);
   server.on("/randomSSID.json", randomSSID);
   server.on("/clearSSID.json", clearSSID);
@@ -186,6 +187,11 @@ void startAttack(){
 void addSSID(){
   ssidList.add(server.arg("name"));
   server.send( 200, "text/json", "true");
+}
+
+void cloneSSID(){
+  ssidList.addClone(server.arg("name"));
+  server.send( 200, "text/json", "true");  
 }
 
 void deleteSSID(){
