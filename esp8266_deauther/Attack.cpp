@@ -154,7 +154,7 @@ void Attack::run(){
     prevTime[1] = millis();
     
     for(int a=0;a<apScan.results;a++){
-      if(apScan.isSelected(a)){
+      if(apScan.isSelected(a) && !apScan.isHidden(a)){
         String _ssid = apScan.getAPName(a);
         int _ssidLen = _ssid.length();
         int _restSSIDLen = 32 - _ssidLen;
