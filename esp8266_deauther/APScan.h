@@ -23,6 +23,7 @@ class APScan{
     //String getAPVendor(int num);
     String getAPMac(int num);
     bool getAPSelected(int num);
+    bool isHidden(int num);
     int getAPRSSI(int num);
     int getAPChannel(int num);
 
@@ -37,7 +38,8 @@ class APScan{
     int rssi[maxAPScanResults];
     char names[maxAPScanResults][33];
     int encryption[maxAPScanResults];
-
+    bool hidden[maxAPScanResults];
+    
     String getEncryption(int code);
 
     bool selected[maxAPScanResults];
