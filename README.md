@@ -100,12 +100,20 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 **don't forget to save!**
 
-**12** Download and open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
+**12** Download the project
 
-**13** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
+**13** Go to the SDK_fix folder of this project
+
+**14** Copy ESP8266WiFi.cpp and ESP8266WiFi.h
+
+**15** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
+
+**16** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
+
+**17** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
 If no port shows up you may have to reinstall the drivers.
 
-**14** Upload!
+**18** Upload!
 
 **Your ESP8266 Deauther is now ready!**
 

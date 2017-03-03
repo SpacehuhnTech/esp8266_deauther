@@ -7,11 +7,11 @@ APScan::APScan(){
 bool APScan::start(){
     if(debug){
       Serial.println("starting AP scan...");
-      Serial.println("MAC - Ch - RSSI - Encrypt. - SSID");// - Vendor");
+      Serial.println("MAC - Ch - RSSI - Encrypt. - SSID - Hidden");// - Vendor");
     }
     aps._clear();
     for(int i=0;i<maxAPScanResults;i++) selected[i] = false;
-    results = WiFi.scanNetworks();
+    results = WiFi.scanNetworks(false, true); // lets scanNetworks return hidden APs. (async = false & show_hidden = true)
     
     for(int i=0;i<results && i<maxAPScanResults;i++){
       Mac _ap;
@@ -20,6 +20,7 @@ bool APScan::start(){
       channels[i] = WiFi.channel(i);
       rssi[i] = WiFi.RSSI(i);
       encryption[i] = WiFi.encryptionType(i);
+      hidden[i] = WiFi.isHidden(i);
       String _ssid = WiFi.SSID(i);
       _ssid.replace("\"","\\\"");
       _ssid.toCharArray(names[i],33);
@@ -34,6 +35,8 @@ bool APScan::start(){
         Serial.print(getEncryption(encryption[i]));
         Serial.print(" - ");
         Serial.print(names[i]);
+        Serial.print(" - ");
+        Serial.print(hidden[i]);
         //Serial.print(" - ");
         //Serial.print(vendors[i]);
         Serial.println();
@@ -93,11 +96,15 @@ String APScan::getEncryption(int code){
   return "?";
 }
 
-String APScan::getAPName(int num){ return names[num]; }
+String APScan::getAPName(int num){ 
+    if(isHidden(num)) return "* Hidden SSID *";
+    return names[num]; 
+}
 String APScan::getAPEncryption(int num){ return getEncryption(encryption[num]); }
 //String APScan::getAPVendor(int num){ return vendors[num]; }
 String APScan::getAPMac(int num){ return aps._get(num).toString(); }
 bool APScan::getAPSelected(int num){ return selected[num]; }
+bool APScan::isHidden(int num){ return hidden[num]; }
 int APScan::getAPRSSI(int num){ return rssi[num]; }
 int APScan::getAPChannel(int num){ return channels[num]; }
 
