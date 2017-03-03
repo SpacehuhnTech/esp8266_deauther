@@ -17,8 +17,9 @@ int MacList::add(Mac adr){
       macAdrs[num].setMac(adr);
       num++;
       return num-1;
-    }else return -1;
+    }
   }
+  return -1;
 }
 
 Mac MacList::_get(int i){
@@ -55,3 +56,8 @@ void MacList::remove(Mac adr){
         }
     }
 }
+
+void MacList::set(int num, Mac adr){
+  macAdrs[num].setMac(adr);
+}
+

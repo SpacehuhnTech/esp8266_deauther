@@ -8,61 +8,62 @@ extern "C" {
   #include "user_interface.h"
 }
 
+#include <EEPROM.h>
 #include "data.h"
 #include "NameList.h"
 #include "APScan.h"
 #include "ClientScan.h"
 #include "Attack.h"
+#include "Settings.h"
+#include "SSIDList.h"
 
-const static char *ssid = "pwned";
-const static char *password = "deauther"; //must have at least 8 characters
+/* ========== DEBUG ========== */
+const bool debug = true;
+/* ========== DEBUG ========== */
 
 ESP8266WebServer server(80);
-
-/*
-I had some troubles implementing singleton classes.
-see: https://github.com/esp8266/Arduino/issues/500
-They fixed this issue within a newer SDK version - the one we can't use, so I used global variables.
-*/
 
 NameList nameList;
 
 APScan apScan;
 ClientScan clientScan;
 Attack attack;
+Settings settings;
+SSIDList ssidList;
 
 void sniffer(uint8_t *buf, uint16_t len){
   clientScan.packetSniffer(buf,len);
 }
 
 void startWifi(){
+  Serial.println("starting WiFi AP");
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
-  WiFi.softAP(ssid, password); //for an open network without a password change to:  WiFi.softAP(ssid);
-  String _ssid = (String)ssid;
-  String _password = (String)password;
-  Serial.println("SSID: "+_ssid);
-  Serial.println("Password: "+_password);
-  if(_password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
-  if(_ssid.length()<1 || _ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
+  WiFi.softAP((const char*)settings.ssid.c_str(), (const char*)settings.password.c_str()); //for an open network without a password change to:  WiFi.softAP(ssid);
+  Serial.println("SSID: "+settings.ssid);
+  Serial.println("Password: "+settings.password);
+  if(settings.password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
+  if(settings.ssid.length()<1 || settings.ssid.length()>32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
 }
-
-
 
 void setup(){
 
   Serial.begin(115200);
   delay(2000);
 
-  nameList.begin();
-  //nameList.clear();
+  EEPROM.begin(4096);
+
+  settings.load();
+  if(debug) settings.info();
   nameList.load();
+  ssidList.load();
 
   Serial.println("");
   Serial.println("starting...");
 
   startWifi();
-  attack.generate(-1);
+  attack.stopAll();
+  attack.generate();
 
   /* ========== Web Server ========== */
 
@@ -73,6 +74,7 @@ void setup(){
   server.on("/index.html", loadIndex);
   server.on("/clients.html", loadClients);
   server.on("/attack.html", loadAttack);
+  server.on("/settings.html", loadSettings);
   server.on("/functions.js", loadFunctionsJS);
 
   /* header links */
@@ -84,19 +86,31 @@ void setup(){
   server.on("/APSelect.json", selectAP);
   server.on("/ClientScan.json", startClientScan);
   server.on("/ClientScanResults.json", sendClientResults);
+  server.on("/ClientScanTime.json", sendClientScanTime);
   server.on("/clientSelect.json", selectClient);
   server.on("/setName.json", setClientName);
   server.on("/attackInfo.json", sendAttackInfo);
   server.on("/attackStart.json", startAttack);
+  server.on("/settings.json", getSettings);
+  server.on("/settingsSave.json", saveSettings);
+  server.on("/settingsReset.json", resetSettings);
+  server.on("/deleteName.json", deleteName);
+  server.on("/clearNameList.json", clearNameList);
+  server.on("/editNameList.json", editClientName);
+  server.on("/addSSID.json", addSSID);
+  server.on("/cloneSSID.json", cloneSSID);
+  server.on("/deleteSSID.json", deleteSSID);
+  server.on("/randomSSID.json", randomSSID);
+  server.on("/clearSSID.json", clearSSID);
+  server.on("/resetSSID.json", resetSSID);
+  server.on("/saveSSID.json", saveSSID);
 
   server.begin();
 }
 
 void loop(){
   if(clientScan.sniffing){
-    if(clientScan.stop()){
-      startWifi();
-    }
+    if(clientScan.stop()) startWifi();
   } else{
     server.handleClient();
     attack.run();
@@ -109,6 +123,8 @@ void loadClients(){ server.send ( 200, "text/html", data_getClientsHTML()); }
 void loadAttack(){ server.send ( 200, "text/html", data_getAttackHTML() ); }
 void loadFunctionsJS(){ server.send( 200, "text/javascript", data_getFunctionsJS() ); }
 void loadStyle(){ server.send ( 200, "text/css", data_getStyle() ); }
+void loadSettings(){ server.send( 200, "text/html", data_getSettingsHTML() ); }
+
 
 //==========AP-Scan==========
 void startAPScan(){ 
@@ -123,46 +139,127 @@ void sendAPResults(){ server.send ( 200, "text/json", apScan.getResults()); }
 void selectAP(){
   if(server.hasArg("num")) {
     apScan.select(server.arg("num").toInt());
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
     attack.stopAll();
   }
 }
 
 //==========Client-Scan==========
 void startClientScan(){
-  if(server.hasArg("time") && apScan.selected > -1 && !clientScan.sniffing) {
+  if(server.hasArg("time") && apScan.getFirstTarget() > -1 && !clientScan.sniffing) {
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
-    attack.stop(0);
-  } else server.send ( 200, "text/json", "Error: no selected access point");
+    attack.stopAll();
+  } else server.send( 200, "text/json", "Error: no selected access point");
 }
 
-void sendClientResults(){ server.send( 200, "text/json", clientScan.getResults()); }
+void sendClientResults(){ server.send( 200, "text/json", clientScan.getResults() ); }
+void sendClientScanTime(){ server.send( 200, "text/json", (String)settings.clientScanTime ); }
 
 void selectClient(){
   if(server.hasArg("num")) {
     clientScan.select(server.arg("num").toInt());
     attack.stop(0);
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
   }
 }
 
 void setClientName(){
   if(server.hasArg("id") && server.hasArg("name")) {
     nameList.add(clientScan.getClientMac(server.arg("id").toInt()),server.arg("name"));
-    server.send ( 200, "text/json", "true");
+    server.send( 200, "text/json", "true");
   }
 }
 
 //==========Attack==========
-void sendAttackInfo(){ server.send ( 200, "text/json", attack.getResults()); }
+void sendAttackInfo(){ server.send( 200, "text/json", attack.getResults()); }
 
 void startAttack(){
   if(server.hasArg("num")) {
     int _attackNum = server.arg("num").toInt();
-    if(apScan.selected > -1 || _attackNum == 3){
+    if(apScan.getFirstTarget() > -1 || _attackNum == 2){
       attack.start(server.arg("num").toInt());
       server.send ( 200, "text/json", "true");
-    }
+    }else server.send( 200, "text/json", "false");
   }
 }
+
+void addSSID(){
+  ssidList.add(server.arg("name"));
+  server.send( 200, "text/json", "true");
+}
+
+void cloneSSID(){
+  ssidList.addClone(server.arg("name"));
+  server.send( 200, "text/json", "true");  
+}
+
+void deleteSSID(){
+  ssidList.remove(server.arg("num").toInt());
+  server.send( 200, "text/json", "true");
+}
+
+void randomSSID(){
+  ssidList._random();
+  server.send( 200, "text/json", "true");  
+}
+
+void clearSSID(){
+  ssidList.clear();
+  server.send( 200, "text/json", "true");
+}
+
+void resetSSID(){
+  ssidList.load();
+  server.send( 200, "text/json", "true");
+}
+
+void saveSSID(){
+  ssidList.save();
+  server.send( 200, "text/json", "true");
+}
+
+//==========Settings==========
+void getSettings(){ server.send ( 200, "text/json", settings.get() ); }
+
+void saveSettings(){ 
+  if(server.hasArg("ssid")) settings.ssid = server.arg("ssid");
+  if(server.hasArg("password")) settings.password = server.arg("password");
+  if(server.hasArg("scanTime")) settings.clientScanTime = server.arg("scanTime").toInt();
+  if(server.hasArg("timeout")) settings.attackTimeout = server.arg("timeout").toInt();
+  if(server.hasArg("deauthReason")) settings.deauthReason = server.arg("deauthReason").toInt();
+  if(server.hasArg("packetRate")) settings.attackPacketRate = server.arg("packetRate").toInt();
+  if(server.hasArg("ssidEnc")){
+    if(server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
+    else settings.attackEncrypted = true;
+  }
+  
+  settings.save();
+  server.send( 200, "text/json", "true" ); 
+}
+
+void resetSettings(){
+  settings.reset();
+  server.send( 200, "text/json", "true" );
+}
+
+void deleteName(){
+  if(server.hasArg("num")) {
+    int _num = server.arg("num").toInt();
+    nameList.remove(_num);
+    server.send( 200, "text/json", "true");
+  }
+}
+
+void clearNameList(){
+  nameList.clear();
+  server.send( 200, "text/json", "true" );
+}
+
+void editClientName(){
+  if(server.hasArg("id") && server.hasArg("name")) {
+    nameList.edit(server.arg("id").toInt(),server.arg("name"));
+    server.send( 200, "text/json", "true");
+  }
+}
+

@@ -7,6 +7,9 @@
 				background: #000;
 				color:#fff;
 			}
+			#saved{
+				display: inline;
+			}
 		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
@@ -16,6 +19,7 @@
 			<a href="index.html">APs</a>
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
+			<a href="settings.html">Settings</a>
 		</nav>
 		<div id="content">
 			<h1>Attack</h1>
@@ -37,30 +41,38 @@
 			
 			<p class="small">
 				<br>
-				<b>deauth selected:</b><br>
-				sends deauthentication frames and dissociation frames to the selected client(s) in the selected WiFi network.
-				<br><br>
-				<b>deauth all:</b><br>
-				sends deauthentication frames and dissociation frames as broadcast to all clients in the selected WiFi network.
-				<br><br>
-				<b>beacon spam:</b><br>
-				sends beacon frames with the same SSID as the selected WiFi access point.
-				<br><br>
-				<b>random beacon spam:</b><br>
-				sends beacon frames with a random SSID .
+				<b>deauth [deauthentication attack]:</b><br>
+				Sends deauthentication frames and dissociation frames to the selected client(s) in the selected WiFi access point(s).
 				<br>
+				<b>Note: </b>
+				If no client is selected, the packets are sent as broadcast!
+				<br><br>
+				<b>beacon [beacon flood attack]:</b><br>
+				(clone:) spams beacon frames with a similar SSID as the selected WiFi access point(s).<br />
+				(list:) spams beacon frames with all SSIDs in the list below.
 			</p>
-			
+			<br />
+			<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="cloneSSID()">clone</button> <button class="marginNull" onclick="addSSID()">add</button></p>
+			<br />
+			<table>
+			</table>
+			<br />
+			<button class="marginNull warnBtn" onclick="resetSSID()">reset</button> <button class="marginNull" onclick="saveSSID()">save</button> <p class="small" id="saved">saved</p>
 		</div>
 	</body>
 	<script>
 		var selectedAPs = document.getElementById("selectedAPs");
 		var selectedClients = document.getElementById("selectedClients");
 		var table = document.getElementsByTagName("table")[0];
+		var ssidList = document.getElementsByTagName("table")[1];
+		var saved = document.getElementById("saved");
+		var ssidCounter = document.getElementById("ssidCounter");
+		var resultInterval;
+		var res;
 		
 		function getResults(){
 			getResponse("attackInfo.json",function(responseText){
-						var res = JSON.parse(responseText);
+						res = JSON.parse(responseText);
 						var aps = "";
 						var clients = "";
 						var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
@@ -83,19 +95,73 @@
 							tr += "</tr>";
 						}
 						table.innerHTML = tr;
+						
+						ssidCounter.innerHTML = res.ssid.length+"/64";
+						
+						var tr = "<tr><th>Name</th><th>X</th></tr>";
+						for(var i=0;i<res.ssid.length;i++){
+							tr += "<tr>";
+							tr += "<td>"+res.ssid[i]+"</td>";
+							tr += '<td><button class="marginNull warnBtn" onclick="deleteSSID('+i+')">x</button></td>';
+							tr += "</tr>";
+						}
+						ssidList.innerHTML = tr;
+						
+			},function(){
+				clearInterval(resultInterval);
+				location.reload();
 			});
 		}
 		
 		function startStop(num){
 			getResponse("attackStart.json?num="+num,function(responseText){
-				if(responseText == "true") {
-					getResults();
-					setTimeout(getResults,3000);
-				}
+				if(responseText == "true") getResults();
 				else alert("error");
 			});
 		}
 		
+		function addSSID(){
+			saved.innerHTML = "";
+			if(res.ssid.length >= 64) alert("SSID list full :(");
+			else{
+				var _ssidName = prompt("new SSID:");
+				if(_ssidName != null) getResponse("addSSID.json?name="+_ssidName,getResults);
+			}
+		}
+		
+		function cloneSSID(){
+			saved.innerHTML = "";
+			if(res.ssid.length >= 64) alert("SSID list full :(");
+			else{
+				var _ssidName = prompt("new SSID:");
+				if(_ssidName != null) getResponse("cloneSSID.json?name="+_ssidName,getResults);
+			}
+		}
+		
+		function deleteSSID(num){
+			saved.innerHTML = "";
+			getResponse("deleteSSID.json?num="+num,getResults);
+		}
+		
+		function randomSSID(){
+			saved.innerHTML = "";
+			getResponse("randomSSID.json",getResults);
+		}
+		function clearSSID(){
+			saved.innerHTML = "";
+			getResponse("clearSSID.json",getResults);
+		}
+		function saveSSID(){
+			saved.innerHTML = "saved";
+			getResponse("saveSSID.json",getResults);
+		}
+		function resetSSID(){
+			saved.innerHTML = "saved";
+			getResponse("resetSSID.json",getResults);
+		}
+		
+		
 		getResults();
+		resultInterval = setInterval(getResults,3000);
 	</script>
 </html>
