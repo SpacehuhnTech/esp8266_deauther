@@ -39,7 +39,7 @@ void startWifi(){
   Serial.println("starting WiFi AP");
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
-  WiFi.softAP((const char*)settings.ssid.c_str(), (const char*)settings.password.c_str()); //for an open network without a password change to:  WiFi.softAP(ssid);
+  WiFi.softAP((const char*)settings.ssid.c_str(), (const char*)settings.password.c_str(), settings.apChannel, settings.ssidHidden); //for an open network without a password change to:  WiFi.softAP(ssid);
   Serial.println("SSID: "+settings.ssid);
   Serial.println("Password: "+settings.password);
   if(settings.password.length()<8) Serial.println("WARNING: password must have at least 8 characters!");
@@ -224,14 +224,23 @@ void getSettings(){ server.send ( 200, "text/json", settings.get() ); }
 
 void saveSettings(){ 
   if(server.hasArg("ssid")) settings.ssid = server.arg("ssid");
+  if(server.hasArg("ssidHidden")){
+    if(server.arg("ssidHidden") == "false") settings.ssidHidden = false;
+    else settings.ssidHidden = true;
+  }
   if(server.hasArg("password")) settings.password = server.arg("password");
+  if(server.hasArg("apChannel")) settings.apChannel = server.arg("apChannel").toInt();
+  if(server.hasArg("ssidEnc")){
+    if(server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
+    else settings.attackEncrypted = true;
+  }
   if(server.hasArg("scanTime")) settings.clientScanTime = server.arg("scanTime").toInt();
   if(server.hasArg("timeout")) settings.attackTimeout = server.arg("timeout").toInt();
   if(server.hasArg("deauthReason")) settings.deauthReason = server.arg("deauthReason").toInt();
   if(server.hasArg("packetRate")) settings.attackPacketRate = server.arg("packetRate").toInt();
-  if(server.hasArg("ssidEnc")){
-    if(server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
-    else settings.attackEncrypted = true;
+  if(server.hasArg("apScanHidden")){
+    if(server.arg("apScanHidden") == "false") settings.apScanHidden = false;
+    else settings.apScanHidden = true;
   }
   
   settings.save();
