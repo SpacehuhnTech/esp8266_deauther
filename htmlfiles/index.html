@@ -54,6 +54,8 @@
 		<p class="small" id="wpa_info">
 			<br />
 			WPA* = WPA/WPA2 auto mode
+			<br>
+			continous scan: <button onclick="startConScan()" id="startStopScan">start</button>
 		</p>
 			
 	</body>
@@ -63,9 +65,12 @@
 		var scanBtn = document.getElementById('apScanStart');
 		var scanInfo = document.getElementById('scanInfo');
 		var apMAC = document.getElementById('apMAC');
+		var startStopScan = document.getElementById('startStopScan');
+		var autoScan = false;
+		var canScan = true;
 		
 		function toggleBtn(onoff){
-			if(onoff){
+			if(onoff && !autoScan){
 				scanInfo.style.visibility = 'hidden';
 				scanBtn.style.visibility = 'visible';
 			}else{
@@ -116,18 +121,30 @@
 					tr += '</tr>';
 				}
 				table.innerHTML = tr;
+				canScan = true;
 			});
 		}
 			
 		function scan(){
+			canScan = false;
 			toggleBtn(false);
 			getResponse("APScan.json",function(responseText){
 				if(responseText == "true") getResults();
 				else alert("error");
 				toggleBtn(true);
-			},function(){
-				location.reload();
 			});
+		}
+		
+		function startConScan(){
+			if(autoScan){
+				autoScan = false;
+				startStopScan.innerHTML = "start";
+				toggleBtn(true);
+			}else{
+				autoScan = true;
+				startStopScan.innerHTML = "stop";
+				toggleBtn(false);
+			}
 		}
 		
 		function select(num){
@@ -138,5 +155,10 @@
 		}
 		
 		getResults();
+		
+		setInterval(function(){
+			if(autoScan && canScan) scan();
+		},1000);
+		
 	</script>
 </html>
