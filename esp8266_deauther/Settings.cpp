@@ -82,6 +82,7 @@ void Settings::info(){
 }
 
 String Settings::get(){
+  if(debug) Serial.println("getting settings json");
   String json = "{";
   
   json += "\"ssid\":\""+ssid+"\",";
@@ -103,5 +104,9 @@ String Settings::get(){
   }
 
   json += "] }";
+  if(debug){
+    Serial.println(json);
+    Serial.println("done");
+  }
   return json;
 }

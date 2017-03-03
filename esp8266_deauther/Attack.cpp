@@ -305,6 +305,9 @@ String Attack::getResults(){
   }
   json += "]";
   json += "}";
-  if(debug) Serial.println("done ");
+  if(debug){
+    Serial.println(json);
+    Serial.println("done ");
+  }
   return json;
 }

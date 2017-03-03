@@ -133,7 +133,10 @@ String APScan::getResults(){
     if((i!=results-1) && (i!=maxAPScanResults-1)) json += ",";
   }
   json += "] }";
-  if(debug) Serial.println("done");
+  if(debug){
+    Serial.println(json);
+    Serial.println("done");
+  }
   return json;
 }
 

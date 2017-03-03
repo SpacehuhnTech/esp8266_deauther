@@ -19,8 +19,6 @@ void ClientScan::start(int _time){
   
   results = 0;
   timeout = _time;
-  results = 0;
-  timeout = _time;
   sniffing = true;
 
   channelsNum = 0;
@@ -57,8 +55,7 @@ bool ClientScan::stop(){
     sniffing = false;
     wifi_promiscuous_enable(0);
 
-    Serial.println();
-    Serial.println("stopping client scan");
+    Serial.println("stopping client scan after "+(String)(curTime-startTime)+"ms");
     if(debug){
       for(int i=0;i<results && i<maxClientScanResults;i++){
         Serial.print(i);
@@ -68,9 +65,9 @@ bool ClientScan::stop(){
         Serial.print(getClientVendor(i));
         Serial.print(" ");
         Serial.print(getClientMac(i).toString());
-        Serial.print(" ");
-        Serial.print(getClientSelected(i));
-        Serial.println("");
+        /*Serial.print(" ");
+        Serial.print(getClientSelected(i));*/
+        Serial.println();
       }
     }
     return true;
@@ -132,7 +129,10 @@ String ClientScan::getResults(){
     if((i!=results-1) && (i!=maxClientScanResults-1)) json += ",";
   }
   json += "] }";
-  if(debug) Serial.println("done ");
+  if(debug){
+    Serial.println(json);
+    Serial.println("done ");
+  }
   return json;
   
 }
