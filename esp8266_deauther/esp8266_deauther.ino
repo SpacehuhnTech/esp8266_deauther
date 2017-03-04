@@ -79,6 +79,7 @@ void setup(){
 
   /* header links */
   server.on ("/style.css", loadStyle);
+  server.on ("/manifest.json", loadManifest);
 
   /* JSON */
   server.on("/APScanResults.json", sendAPResults);
@@ -123,6 +124,7 @@ void loadClients(){ server.send ( 200, "text/html", data_getClientsHTML()); }
 void loadAttack(){ server.send ( 200, "text/html", data_getAttackHTML() ); }
 void loadFunctionsJS(){ server.send( 200, "text/javascript", data_getFunctionsJS() ); }
 void loadStyle(){ server.send ( 200, "text/css", data_getStyle() ); }
+void loadManifest(){ server.send ( 200, "text/css", data_getManifest() ); }
 void loadSettings(){ server.send( 200, "text/html", data_getSettingsHTML() ); }
 
 
