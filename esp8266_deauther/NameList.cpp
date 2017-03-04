@@ -66,6 +66,7 @@ String NameList::getName(int num){
   for(int h=0;h<nameLength;h++){
     if(names[num][h] != 0x00) returnStr += (char)names[num][h];
   }
+  returnStr.trim();
   return returnStr;
 }
 
