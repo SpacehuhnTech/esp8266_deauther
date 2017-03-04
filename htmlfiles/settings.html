@@ -33,20 +33,36 @@
 			
 			<label for="ssid">SSID:</label>
 			<input type="text" id="ssid" minlength="1" maxlength="32">
-			
+			<br />
+			<label for="ssidHidden">hidden:</label>
+			<input type="checkbox" name="ssidHidden" id="ssidHidden" value="false">
 			<br />
 			
 			<label for="password">password:</label>
 			<input type="text" id="password" minlength="8" maxlength="32">
 			<p class="small">must have at least 8 characters! (needs restart)</p>
+			<br />
 			
+			<label for="apChannel">channel:</label>
+			<input type="number" id="apChannel" min="1" max="11">
+			
+			<br />
+			<br />
+			<p class="block bold">AP scan</p>
+			
+			<label for="apScanHidden">scan for hidden APs:</label>
+			<input type="checkbox" name="apScanHidden" id="apScanHidden" value="false">
+
+			<br />
 			<br />
 			<p class="block bold">Client Scan</p>
 			
 			<label for="scanTime">default scan time:</label>
 			<input type="number" id="scanTime" min="1" max="255">s
+			
 			<br />
 			<br />
+			
 			<p class="block bold">Attack</p>
 			
 			<label for="timeout">timeout:</label>
@@ -54,7 +70,7 @@
 			<p class="small">0 = no timeout</p>
 			
 			<label for="ssidEnc">beacon encrypted:</label>
-			<input type="checkbox" name="ssidEnc" id="ssidEnc" value="true">
+			<input type="checkbox" name="ssidEnc" id="ssidEnc" value="false">
 			<br />
 			
 			<label for="deauthReason">deauth reason:</label>
@@ -85,7 +101,10 @@
 	<script>
 		var nameListTable = document.getElementById('nameList');
 		var ssid = document.getElementById('ssid');
+		var ssidHidden = document.getElementById('ssidHidden');
 		var password = document.getElementById('password');
+		var apChannel = document.getElementById('apChannel');
+		var apScanHidden = document.getElementById('apScanHidden');
 		var scanTime = document.getElementById('scanTime');
 		var timeout = document.getElementById('timeout');
 		var deauthReason = document.getElementById('deauthReason');
@@ -100,12 +119,16 @@
 				res = JSON.parse(responseText);
 				
 				ssid.value = res.ssid;
+				ssidHidden.checked = res.ssidHidden;
 				password.value = res.password;
+				apChannel.value = res.apChannel;
+				apScanHidden.checked = res.apScanHidden;
 				scanTime.value = res.clientScanTime;
 				timeout.value = res.attackTimeout;
 				deauthReason.value = res.deauthReason;
 				packetRate.value = res.attackPacketRate;
 				ssidEnc.checked = res.attackEncrypted;
+				
 				
 				clientNames.innerHTML = "Client Names "+res.nameList.length+"/50";
 				
@@ -147,7 +170,10 @@
 			saved.innerHTML = "saving...";
 			var url = "settingsSave.json";
 			url += "?ssid="+ssid.value;
+			url += "&ssidHidden="+ssidHidden.checked;
 			url += "&password="+password.value;
+			url += "&apChannel="+apChannel.value;
+			url += "&apScanHidden="+apScanHidden.checked;
 			url += "&scanTime="+scanTime.value;
 			url += "&timeout="+timeout.value;
 			url += "&deauthReason="+deauthReason.value;

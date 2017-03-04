@@ -21,6 +21,9 @@ extern NameList nameList;
 #define attackPacketRateAdr 1093
 #define clientScanTimeAdr 1094
 #define attackEncryptedAdr 1095
+#define ssidHiddenAdr 1096
+#define apScanHiddenAdr 1097
+#define apChannelAdr 1098
 
 class Settings
 {
@@ -34,8 +37,12 @@ class Settings
 
     int ssidLen;
     String ssid = "";
+    bool ssidHidden;
     int passwordLen;
     String password = "";
+    int apChannel;
+
+    bool apScanHidden;
     
     uint8_t deauthReason;
     unsigned int attackTimeout;

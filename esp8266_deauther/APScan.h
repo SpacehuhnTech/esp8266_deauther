@@ -6,9 +6,12 @@
 #include <ESP8266WiFi.h>
 #include "Mac.h"
 #include "MacList.h"
+#include "Settings.h"
 
 extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
 extern const bool debug;
+
+extern Settings settings;
 
 class APScan{
   public:

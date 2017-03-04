@@ -11,7 +11,7 @@ bool APScan::start(){
     }
     aps._clear();
     for(int i=0;i<maxAPScanResults;i++) selected[i] = false;
-    results = WiFi.scanNetworks(false, true); // lets scanNetworks return hidden APs. (async = false & show_hidden = true)
+    results = WiFi.scanNetworks(false, settings.apScanHidden); // lets scanNetworks return hidden APs. (async = false & show_hidden = true)
     
     for(int i=0;i<results && i<maxAPScanResults;i++){
       Mac _ap;
