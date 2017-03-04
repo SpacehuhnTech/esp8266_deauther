@@ -140,6 +140,28 @@ String APScan::getResults(){
   return json;
 }
 
+String APScan::getResult(int i){
+  if(debug) Serial.print("getting AP scan result JSON for ID " + String(i));
+  String json = "{ \"aps\":[ ";
+  if(debug) Serial.print(".");
+  json += "{";
+  json += "\"i\":"+(String)i+",";
+  json += "\"c\":"+(String)getAPChannel(i)+",";
+  json += "\"m\":\""+getAPMac(i)+"\",";
+  json += "\"ss\":\""+getAPName(i)+"\",";
+  json += "\"r\":"+(String)getAPRSSI(i)+",";
+  json += "\"e\":"+(String)encryption[i]+",";
+  //json += "\"v\":\""+getAPVendor(i)+"\",";
+  json += "\"se\":"+(String)getAPSelected(i);
+  json += "}";
+  json += "] }";
+  if(debug){
+    Serial.println(json);
+    Serial.println("done");
+  }
+  return json;
+}
+
 void APScan::select(int num){
   if(debug) Serial.println("seect "+(String)num+" - "+!selected[num]);
   if(selected[num]){

@@ -19,6 +19,7 @@ class APScan{
     
     bool start();
     String getResults();
+    String getResult(int i);
     void select(int num);
     
     String getAPName(int num);
