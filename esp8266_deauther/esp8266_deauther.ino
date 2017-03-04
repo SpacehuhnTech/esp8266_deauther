@@ -136,7 +136,14 @@ void startAPScan(){
   }
 }
 
-void sendAPResults(){ server.send ( 200, "text/json", apScan.getResults()); }
+void sendAPResults(){ 
+  if(server.hasArg("apid")) {
+    int apid = server.arg("apid").toInt();
+    server.send ( 200, "text/json", apScan.getResult(apid)); 
+  } else {
+    server.send ( 200, "text/json", apScan.getResults()); 
+  }
+}
 
 void selectAP(){
   if(server.hasArg("num")) {
