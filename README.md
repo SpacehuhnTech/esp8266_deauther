@@ -100,12 +100,20 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 **don't forget to save!**
 
-**12** Download and open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
+**12** Download the project
 
-**13** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
+**13** Go to the SDK_fix folder of this project
+
+**14** Copy ESP8266WiFi.cpp and ESP8266WiFi.h
+
+**15** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
+
+**16** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
+
+**17** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
 If no port shows up you may have to reinstall the drivers.
 
-**14** Upload!
+**18** Upload!
 
 **Your ESP8266 Deauther is now ready!**
 
@@ -134,13 +142,13 @@ Happy hacking :)
 
 ## FAQ
 
-**Could it deauth multiple APs in the range?**
+**Could it auto-deauth all APs in the range?**
 
-It definitely could! But I will not implement this 'feature' for ethical and legal reasons.
+Yes, but I will not implement this 'feature' for ethical and legal reasons.
 
 **Can it sniff handshakes?**
 
-The ESP8266 has a promiscuous mode in which you can sniff nearly all packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
+The ESP8266 has a promiscuous mode in which you can sniff packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
 Maybe someone will find a way around this barrier but I wasn't able to.
 
 **espcomm_sync failed/espcomm_open when uploading**
@@ -152,7 +160,7 @@ Which drivers you need depends on the board, most boards use a cp2102, cp2104 or
 
 **AP scan doesn't work**
 
-There is a reported issue with the Internet Explorer: https://github.com/spacehuhn/esp8266_deauther/issues/5  
+There is a reported issue on this: https://github.com/spacehuhn/esp8266_deauther/issues/5  
 Try out switching the browser or open the website with another device.   
 
 **Deauth attack won't work**

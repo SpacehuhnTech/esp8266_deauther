@@ -33,6 +33,7 @@
 			<a href="index.html">APs</a>
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
+			<a href="settings.html">Settings</a>
 		</nav>
 		<div id="content">
 			<h1>Scan for WiFi access points</h1>
@@ -42,8 +43,7 @@
 			
 			<p class="block bold" id="networksFound">Networks found: 0</p>
 			<p class="small">
-				MAC: <span id="apMAC"></span><br />
-				Vendor: <span id="apVendor"></span>
+				MAC: <span id="apMAC"></span>
 			</p>
 			<br />
 			
@@ -54,6 +54,8 @@
 		<p class="small" id="wpa_info">
 			<br />
 			WPA* = WPA/WPA2 auto mode
+			<br>
+			continuous scan: <button onclick="startConScan()" id="startStopScan">start</button>
 		</p>
 			
 	</body>
@@ -63,10 +65,12 @@
 		var scanBtn = document.getElementById('apScanStart');
 		var scanInfo = document.getElementById('scanInfo');
 		var apMAC = document.getElementById('apMAC');
-		var apVendor = document.getElementById('apVendor');
+		var startStopScan = document.getElementById('startStopScan');
+		var autoScan = false;
+		var canScan = true;
 		
 		function toggleBtn(onoff){
-			if(onoff){
+			if(onoff && !autoScan){
 				scanInfo.style.visibility = 'hidden';
 				scanBtn.style.visibility = 'visible';
 			}else{
@@ -74,11 +78,19 @@
 				scanBtn.style.visibility = 'hidden';
 			}
 		}
-		
+			
 		function compare(a,b) {
-			if (a.rssi > b.rssi) return -1;
-			if (a.rssi < b.rssi) return 1;
+			if (a.r > b.r) return -1;
+			if (a.r < b.r) return 1;
 			return 0;
+		}
+		
+		function getEncryption(num){
+			if(num == 8) return "WPA*";
+			else if(num == 4) return "WPA2";
+			else if(num == 2) return "WPA";
+			else if(num == 7) return "none";
+			else if(num == 5) return "WEP";
 		}
 		
 		function getResults(){
@@ -88,39 +100,51 @@
 				res.aps = res.aps.sort(compare);
 				networkInfo.innerHTML = "Networks found: "+res.aps.length;
 				apMAC.innerHTML = "";
-				apVendor.innerHTML = "";
 				
 				var tr = '';
 				if(res.aps.length > 0) tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
 				
 				for(var i=0;i<res.aps.length;i++){
 					
-					if(res.aps[i].selected) tr += '<tr class="selected">';
+					if(res.aps[i].se == 1) tr += '<tr class="selected">';
 					else tr += '<tr>';
-					tr += '<td>'+res.aps[i].channel+'</td>';
-					tr += '<td>'+res.aps[i].ssid+'</td>';
-					tr += '<td>'+res.aps[i].rssi+' <meter value="'+res.aps[i].rssi+'" max="-30" min="-100" low="-80" high="-60" optimum="-50"></meter></td>';
-					tr += '<td>'+res.aps[i].encryption+'</td>';
+					tr += '<td>'+res.aps[i].c+'</td>';
+					tr += '<td>'+res.aps[i].ss+'</td>';
+					tr += '<td>'+res.aps[i].r+' <meter value="'+res.aps[i].r+'" max="-30" min="-100" low="-80" high="-60" optimum="-50"></meter></td>';
+					tr += '<td>'+getEncryption(res.aps[i].e)+'</td>';
 					
-					if(res.aps[i].selected){
-						tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.aps[i].id+')">deselect</button></td>';
-						apMAC.innerHTML = res.aps[i].mac;
-						apVendor.innerHTML = res.aps[i].vendor;
+					if(res.aps[i].se){
+						tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.aps[i].i+')">deselect</button></td>';
+						apMAC.innerHTML = res.aps[i].m;
 					}
-					else tr += '<td><button class="marginNull" onclick="select('+res.aps[i].id+')">select</button></td>';
+					else tr += '<td><button class="marginNull" onclick="select('+res.aps[i].i+')">select</button></td>';
 					tr += '</tr>';
 				}
 				table.innerHTML = tr;
+				canScan = true;
 			});
 		}
-		
+			
 		function scan(){
+			canScan = false;
 			toggleBtn(false);
 			getResponse("APScan.json",function(responseText){
 				if(responseText == "true") getResults();
 				else alert("error");
 				toggleBtn(true);
 			});
+		}
+		
+		function startConScan(){
+			if(autoScan){
+				autoScan = false;
+				startStopScan.innerHTML = "start";
+				toggleBtn(true);
+			}else{
+				autoScan = true;
+				startStopScan.innerHTML = "stop";
+				toggleBtn(false);
+			}
 		}
 		
 		function select(num){
@@ -131,5 +155,10 @@
 		}
 		
 		getResults();
+		
+		setInterval(function(){
+			if(autoScan && canScan) scan();
+		},1000);
+		
 	</script>
 </html>

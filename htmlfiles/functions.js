@@ -1,4 +1,4 @@
-function getResponse(adr, callback, timeoutCallback = function(){alert("timeout error. Please reload the site");}, timeout = 3000){
+function getResponse(adr, callback, timeoutCallback = function(){location.reload()}, timeout = 8000){
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if(xmlhttp.readyState == 4){
