@@ -103,7 +103,7 @@ void Settings::info(){
   Serial.println("attack packet rate: "+(String)attackPacketRate);
   Serial.println("client scan time: "+(String)clientScanTime);
   Serial.println("attack SSID encrypted: "+(String)attackEncrypted);
-  Serial.println("use built-in LED: "+(String)attackEncrypted);
+  Serial.println("use built-in LED: "+(String)useLed);
 }
 
 String Settings::get(){
