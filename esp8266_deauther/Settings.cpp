@@ -20,7 +20,7 @@ void Settings::load(){
     if((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 11){
       apChannel = (int)EEPROM.read(apChannelAdr);
     } else {
-      reset();
+      apChannel = 1;
     }
     
     apScanHidden = (bool)EEPROM.read(apScanHiddenAdr);
@@ -30,6 +30,7 @@ void Settings::load(){
     attackPacketRate = EEPROM.read(attackPacketRateAdr);
     clientScanTime = EEPROM.read(clientScanTimeAdr);
     attackEncrypted = (bool)EEPROM.read(attackEncryptedAdr);
+    useLed = (bool)EEPROM.read(useLedAdr);
   }
 }
 
@@ -51,6 +52,7 @@ void Settings::reset(){
   attackPacketRate = 10;
   clientScanTime = 15;
   attackEncrypted = false;
+  useLed = false;
   
   if(debug) Serial.println("done");
   
@@ -78,6 +80,7 @@ void Settings::save(){
   EEPROM.write(attackPacketRateAdr, attackPacketRate);
   EEPROM.write(clientScanTimeAdr, clientScanTime);
   EEPROM.write(attackEncryptedAdr, attackEncrypted);
+  EEPROM.write(useLedAdr, useLed);
   EEPROM.commit();
   
   if(debug){
@@ -100,6 +103,7 @@ void Settings::info(){
   Serial.println("attack packet rate: "+(String)attackPacketRate);
   Serial.println("client scan time: "+(String)clientScanTime);
   Serial.println("attack SSID encrypted: "+(String)attackEncrypted);
+  Serial.println("use built-in LED: "+(String)attackEncrypted);
 }
 
 String Settings::get(){
@@ -116,6 +120,7 @@ String Settings::get(){
   json += "\"attackPacketRate\":"+(String)attackPacketRate+",";
   json += "\"clientScanTime\":"+(String)clientScanTime+",";
   json += "\"attackEncrypted\":"+(String)attackEncrypted+",";
+  json += "\"useLed\":"+(String)useLed+",";
 
   json += "\"nameList\":[";
   for(int i=0;i<nameList.len;i++){

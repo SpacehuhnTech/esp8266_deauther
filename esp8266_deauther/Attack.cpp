@@ -231,11 +231,14 @@ void Attack::run(){
 }
 
 void Attack::start(int num){
+  Serial.println(num);
   if(!isRunning[num]){
+    Serial.println(num);
     isRunning[num] = true;
     stati[num] = "starting";
     prevTime[num] = millis();
     attackTimeoutCounter[num] = 0;
+    refreshLed();
     if(debug) Serial.println("starting "+(String)attackNames[num]+" attack");
     if(num == 1 && isRunning[2]) stop(2);
     else if(num == 2 && isRunning[1]) stop(1);
@@ -248,7 +251,8 @@ void Attack::stop(int num){
     isRunning[num] = false;
     stati[num] = "ready";
     prevTime[num] = millis();
-  }
+    refreshLed();
+  } 
 }
 
 void Attack::stopAll(){
@@ -311,3 +315,20 @@ String Attack::getResults(){
   }
   return json;
 }
+
+void Attack::refreshLed(){
+   int numberRunning = 0;
+   for(int i=0; i<sizeof(isRunning); i++){
+    if(isRunning[i]) numberRunning++;
+    if(debug) Serial.println(numberRunning);
+   }
+  if(numberRunning>=1 && settings.useLed){
+    if(debug) Serial.println("Attack LED : ON");
+    digitalWrite(BUILTIN_LED, LOW);
+  }
+  else if(numberRunning==0 || !settings.useLed){
+    if(debug) Serial.println("Attack LED : OFF");
+    digitalWrite(BUILTIN_LED, HIGH);
+  }
+}
+

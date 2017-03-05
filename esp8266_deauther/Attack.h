@@ -38,6 +38,7 @@ class Attack
     void stop(int num);
     void stopAll();
     String getResults();
+    void refreshLed();
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
@@ -109,6 +110,7 @@ class Attack
     int macListChangeCounter = 0;
     int attackTimeoutCounter[attacksNum];
     int channels[macListLen];
+    bool buildInLedStatus = false;
 };
 
 #endif
