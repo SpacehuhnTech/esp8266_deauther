@@ -24,6 +24,7 @@ extern NameList nameList;
 #define ssidHiddenAdr 1096
 #define apScanHiddenAdr 1097
 #define apChannelAdr 1098
+#define useLedAdr 1099
 
 class Settings
 {
@@ -50,6 +51,7 @@ class Settings
     
     int clientScanTime;
     bool attackEncrypted;
+    bool useLed;
   private:
 };
 

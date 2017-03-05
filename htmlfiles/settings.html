@@ -25,6 +25,9 @@
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
 			<a href="settings.html">Settings</a>
+			<ul class="right">
+				<a href="#" onclick="restartESP()">Restart</a>
+			<ul>
 		</nav>
 		<div id="content">
 			<h1>Settings</h1>
@@ -73,6 +76,10 @@
 			<input type="checkbox" name="ssidEnc" id="ssidEnc" value="false">
 			<br />
 			
+			<label for="useLed">Use LED:</label>
+			<input type="checkbox" name="useLed" id="useLed" value="false">
+			<br />
+			
 			<label for="deauthReason">deauth reason:</label>
 			<input type="number" id="deauthReason" min="1" max="45">
 			<p class="small">reason codes: <a target="_blank" href="http://www.aboutcher.co.uk/2012/07/linux-wifi-deauthenticated-reason-codes/">click</a></p>
@@ -82,7 +89,7 @@
 			<p class="small">only for deauth attack - may cause instability!</p>
 			<br />
 			<br />
-			<button class="warnBtn" onclick="resetSettings()">reset</button> <button onclick="saveSettings()">save</button><p class="small" id="saved"></p>
+			<button class="warnBtn" onclick="resetSettings()">reset</button> <button onclick="saveSettings()">save</button><p class="small" id="saved"></p><br \>
 			<br />
 			<br />
 			
@@ -112,6 +119,7 @@
 		var saved = document.getElementById('saved');
 		var clientNames = document.getElementById('clientNames');
 		var ssidEnc = document.getElementById('ssidEnc');
+		var useLed = document.getElementById('useLed');
 		var res;
 		
 		function getData(){
@@ -128,6 +136,7 @@
 				deauthReason.value = res.deauthReason;
 				packetRate.value = res.attackPacketRate;
 				ssidEnc.checked = res.attackEncrypted;
+				useLed.checked = res.useLed;
 				
 				
 				clientNames.innerHTML = "Client Names "+res.nameList.length+"/50";
@@ -179,6 +188,7 @@
 			url += "&deauthReason="+deauthReason.value;
 			url += "&packetRate="+packetRate.value;
 			url += "&ssidEnc="+ssidEnc.checked;
+			url += "&useLed="+useLed.checked;
 			
 			getResponse(url, function(responseText){
 				if(responseText == "true"){
@@ -201,6 +211,13 @@
 		
 		function clearNameList(){
 			getResponse("clearNameList.json", function(responseText){
+				if(responseText == "true") getData();
+				else alert("error");
+			});
+		}
+		
+		function restartESP(){
+			getResponse("restartESP.json", function(responseText){
 				if(responseText == "true") getData();
 				else alert("error");
 			});
