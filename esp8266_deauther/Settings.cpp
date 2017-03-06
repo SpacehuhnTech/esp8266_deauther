@@ -8,7 +8,7 @@ void Settings::load(){
   ssidLen = EEPROM.read(ssidLenAdr);
   passwordLen = EEPROM.read(passwordLenAdr);
   
-  if(ssidLen < 1 || ssidLen > 32 || passwordLen < 8 || passwordLen > 32) reset();
+  if(ssidLen < 1 || ssidLen > 32 || passwordLen < 8 && passwordLen != 0  || passwordLen > 32) reset();
   else{
     ssid = "";
     password = "";
