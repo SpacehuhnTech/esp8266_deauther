@@ -51,11 +51,12 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
+  pinMode(2, OUTPUT);
+  delay(50);
+  digitalWrite(2, HIGH);
+  
   EEPROM.begin(4096);
-
-  pinMode(BUILTIN_LED, OUTPUT);
-  digitalWrite(BUILTIN_LED, HIGH);
-
+  
   settings.load();
   if (debug) settings.info();
   nameList.load();
