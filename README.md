@@ -11,6 +11,8 @@ Build your own WiFi jammer with an ESP8266.
   - [How to protect against it](#how-to-protect-against-it)
 - [Disclaimer](#disclaimer)
 - [Installation](#installation)
+  - [Uploading the bin files](#uploading-the-bin-files)  
+  - [Compiling the source with Arduino](#compiling-the-source-with-arduino)
 - [How to use it](#how-to-use-it)
 - [FAQ](#faq)
 - [License](#license)
@@ -59,11 +61,28 @@ This attack shows how vulnerable the 802.11 WiFi standard is and that it has to 
 
 ## Installation
 
-The only thing you will need is a computer and an ESP8266 with at least 1Mb of flash memory.
+The only thing you will need is a computer and an ESP8266.  
 
 I recommend you to buy a USB breakout/developer board, because they have 4Mb flash and are very simple to use.
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
-(If you using an ESP-01 with just 512kb, you can comment out the mac vendor list in data.h.)
+
+You have 2 choices here. Uploading the bin files is easier but not as good for debugging, so keep that in mind in case you want to open an new issue. 
+
+### Uploading the bin files  
+
+**Note:** the 512kb version won't have the full MAC vendor list.  
+
+**0** Download the current release from [here](https://github.com/spacehuhn/esp8266_deauther/releases)  
+
+**1** Upload using the ESP8266 flash tool of your choice. I recommend using the [nodemcu-flasher](https://github.com/nodemcu/nodemcu-flasher).  
+
+**That's all! :)**
+
+Make sure you select the right com-port, the right upload size of your ESP8266 and the right bin file.  
+
+### Compiling the source with Arduino
+
+**0** Download the source code of this project.
 
 **1** Install [Arduino](https://www.arduino.cc/en/Main/Software) and open it.
 
@@ -100,20 +119,20 @@ It doesn’t matter which board you use, as long as it has an ESP8266 on it.
 
 **don't forget to save!**
 
-**12** Download the project
+**12** Go to the SDK_fix folder of this project
 
-**13** Go to the SDK_fix folder of this project
+**13** Copy ESP8266WiFi.cpp and ESP8266WiFi.h
 
-**14** Copy ESP8266WiFi.cpp and ESP8266WiFi.h
+**14** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
 
-**15** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
+**15** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
 
-**16** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
-
-**17** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
+**16** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
 If no port shows up you may have to reinstall the drivers.
 
-**18** Upload!
+**17** Upload!
+
+**Note:** If you use a 512kb version of the ESP8266, you need to comment out a part of the mac vendor list in data.h.
 
 **Your ESP8266 Deauther is now ready!**
 
