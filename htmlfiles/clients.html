@@ -86,7 +86,7 @@
 				clientsFound.innerHTML = "Client devices found: "+res.clients.length;
 				
 				var tr = '';
-				if(res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>Select</th></tr>';
+				if(res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>Connected to</th><th>Select</th></tr>';
 				
 				for(var i=0;i<res.clients.length;i++){
 					
@@ -96,6 +96,7 @@
 					tr += '<td>'+res.clients[i].v+'</td>';
 					tr += '<td>'+res.clients[i].n+' <a class="blue" onclick="changeName('+res.clients[i].i+')">edit</a></td>';
 					tr += '<td>'+res.clients[i].m+'</td>';
+					tr += '<td>'+res.clients[i].a+'</td>';
 					
 					if(res.clients[i].s == 1) tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.clients[i].i+')">deselect</button></td>';
 					else tr += '<td><button class="marginNull" onclick="select('+res.clients[i].i+')">select</button></td>';

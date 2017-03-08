@@ -76,6 +76,7 @@ bool ClientScan::stop(){
 }
 
 void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
+  int cliNbr;
   if(sniffing && len>27){
     from.set(buf[16],buf[17],buf[18],buf[19],buf[20],buf[21]);
     to.set(buf[22],buf[23],buf[24],buf[25],buf[26],buf[27]);
@@ -87,15 +88,19 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
           if(clientNum == -1 && results < maxClientScanResults){
             data_getVendor(to._get(0),to._get(1),to._get(2)).toCharArray(vendors[results],9);
             results++;
-            packets[clients.add(to)]++;
+            cliNbr = clients.add(to);
+            packets[cliNbr]++;
+            connectedToAp[cliNbr] = i;
           }else packets[clientNum]++;
-          /*if(debug){
+          /*
+          if(debug){
             Serial.print("found: ");
             from._print();
             Serial.print(" => ");
             to._print();
             Serial.println("");
-          }*/
+          }
+          */
         }
       }
     }
@@ -107,6 +112,7 @@ String ClientScan::getClientName(int num){ return nameList.get(clients._get(num)
 int ClientScan::getClientPackets(int num){ return packets[clients.getNum(clients._get(num))]; }
 String ClientScan::getClientVendor(int num){ return vendors[num]; }
 Mac ClientScan::getClientMac(int num){ return clients._get(num); }
+int ClientScan::getClientConnectedAp(int num){ return connectedToAp[num]; }
 bool ClientScan::getClientSelected(int num){ return selected[num]; }
 int ClientScan::getFirstClient(){
   for(int i=0;i<maxClientScanResults;i++){
@@ -124,7 +130,8 @@ String ClientScan::getResults(){
     json += "\"m\":\""+getClientMac(i).toString()+"\",";
     json += "\"n\":\""+(String)nameList.get(getClientMac(i))+"\",";
     json += "\"v\":\""+(String)getClientVendor(i)+"\",";
-    json += "\"s\":"+(String)getClientSelected(i);
+    json += "\"s\":"+(String)getClientSelected(i)+",";
+    json += "\"a\":\""+(String)apScan.getAPName(getClientConnectedAp(i))+"\"";
     json += "}";
     if((i!=results-1) && (i!=maxClientScanResults-1)) json += ",";
   }
