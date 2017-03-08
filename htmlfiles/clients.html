@@ -75,7 +75,10 @@
 			}
 		}
 		
-		function getResults(reload = false){
+		function getResults(reload){
+			if(reload === undefined){
+				reload = false;
+			}
 			getResponse("ClientScanResults.json",function(responseText){
 				res = JSON.parse(responseText);
 				res.clients = res.clients.sort(compare);
