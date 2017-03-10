@@ -213,7 +213,7 @@ void sendAttackInfo() {
 void startAttack() {
   if (server.hasArg("num")) {
     int _attackNum = server.arg("num").toInt();
-    if (apScan.getFirstTarget() > -1 || _attackNum == 2) {
+    if (apScan.getFirstTarget() > -1 || _attackNum == 2 || _attackNum == 3) {
       attack.start(server.arg("num").toInt());
       server.send ( 200, "text/json", "true");
     } else server.send( 200, "text/json", "false");
