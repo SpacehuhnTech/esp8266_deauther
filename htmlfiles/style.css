@@ -3,20 +3,21 @@
 	margin: 0;
 	padding: 0;
 	font-family: arial;
-	color: #432929;
+	color: #fafafa;
+	background-color: #000;
 }
 h1{
 	font-size: 22px;
 	margin-bottom: 0.6em;
-	background: #00B0FF;
-	color: #fff;
+	background: #004d40;
+	color: #fafafa;
 	padding:0.2em;
 	border-radius:4px;
 }
 button{
-	background: #00B0FF;
-	color: #fff;
-	border: 1px solid #8F8F8F;
+	background: #004d40;
+	color: #fafafa;
+	border: 1px solid #212121;
 	border-radius: 14px;
 	padding: 0.34em 0.3em;
 	margin-bottom: 0.6em;
@@ -27,7 +28,7 @@ button:hover{
 input{
 	height: 22px;
 	width: 120px;
-	border: 1px solid #A99D9D;
+	border: 1px solid #bdbdbd;
 	border-radius: 5px;
 	padding: 0.2em;
 	margin: 2px;
@@ -41,41 +42,41 @@ input[type="checkbox"]{
 }
 .warnBtn{
 	background: #c20000;
-	color: #fff;
+	color: #fafafa;
 }
 .warnBtn:hover{
 	background: #f00;
 	color: #000;
 }
 .selectedBtn{
-	background: #fff;
+	background: #fafafa;
 	color: #000;
 }
 .selectedBtn:hover{
-	background: #00B0FF;
-	color: #fff;
+	background: #004d40;
+	color: #fafafa;
 }
 .right{ float: right; }
 .bold{ font-weight: bold; }
 .block{ display: block; }
 .marginNull{ margin: 0}
-.blue{ color: #00B0FF }
-.small{ font-size: 14px; color: #727272 }
+.blue{ color: #004d40 }
+.small{ font-size: 14px; color: #bdbdbd }
 	
 /* Navigation */
 nav{
-	background: #222;
+	background: #000;
 }
 nav a{
-	background: #222;
-	color: #999;
+	background: #000;
+	color: #fafafa;
 	padding: 0.5em;
 	display: inline-block;
 	text-decoration: none;
 }
 nav a:hover{
 	background: #000;
-	color:#f0f0f0;
+	color: #fafafa;
 }
 	
 /* Content */
@@ -88,20 +89,20 @@ table{
 	max-width: 960px;
 	margin: 0 auto;
 	border-spacing: 0;
-	background: #222222;
+	background: #000;
 }
 table th{
-	background: #222222;
-	color: #f0f0f0;
+	background: #000;
+	color: #fafafa;
 }
 table td{
 	font-size: 14px;
-	background: #f0f0f0;
+	background: #000;
 }
 table th, table td{
 	text-align: center;
 	padding: 0.1em 0;
 }
 table .selected td{
-	background: #11a4cc;
+	background: #004d40;
 }
