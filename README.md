@@ -74,7 +74,7 @@ You have 2 choices here. Uploading the bin files is easier but not as good for d
 
 **0** Download the current release from [here](https://github.com/spacehuhn/esp8266_deauther/releases)  
 
-**1** Upload using the ESP8266 flash tool of your choice. I recommend using the [nodemcu-flasher](https://github.com/nodemcu/nodemcu-flasher).  
+**1** Upload using the ESP8266 flash tool of your choice. I recommend using the [nodemcu-flasher](https://github.com/nodemcu/nodemcu-flasher). If this doesn't work you can also use the official [esptool](https://github.com/espressif/esptool) from espressif.
 
 **That's all! :)**
 
