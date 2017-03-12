@@ -74,12 +74,17 @@ void setup() {
   /* HTML sites */
   server.onNotFound(load404);
 
-  server.on("/", loadIndex);
-  server.on("/index.html", loadIndex);
-  server.on("/clients.html", loadClients);
-  server.on("/attack.html", loadAttack);
-  server.on("/settings.html", loadSettings);
-  server.on("/functions.js", loadFunctionsJS);
+  server.on("/", loadIndexHTML);
+  server.on("/index", loadIndexHTML);
+  server.on("/clients", loadClientsHTML);
+  server.on("/attack", loadAttackHTML);
+  server.on("/settings", loadSettingsHTML);
+
+  server.on("/js/index.js", loadIndexJS);
+  server.on("/js/clients.js", loadClientsJS);
+  server.on("/js/attack.js", loadAttackJS);
+  server.on("/js/settings.js", loadSettingsJS);
+  server.on("/js/functions.js", loadFunctionsJS);
 
   /* header links */
   server.on ("/style.css", loadStyle);
@@ -123,31 +128,45 @@ void loop() {
   }
 }
 
-void load404() {
-  server.send ( 200, "text/html", data_get404());
+void loadIndexHTML() {
+  server.send ( 200, "text/html", data_getIndexHTML());
 }
-void loadIndex() {
-  server.send ( 200, "text/html", data_getIndexHTML() );
-}
-void loadClients() {
+void loadClientsHTML() {
   server.send ( 200, "text/html", data_getClientsHTML());
 }
-void loadAttack() {
-  server.send ( 200, "text/html", data_getAttackHTML() );
+void loadAttackHTML() {
+  server.send ( 200, "text/html", data_getAttackHTML());
 }
-void loadFunctionsJS() {
-  server.send( 200, "text/javascript", data_getFunctionsJS() );
+void loadSettingsHTML() {
+  server.send( 200, "text/html", data_getSettingsHTML());
 }
-void loadStyle() {
-  server.send ( 200, "text/css", data_getStyle() );
-}
-void loadManifest() {
-  server.send ( 200, "text/css", data_getManifest() );
-}
-void loadSettings() {
-  server.send( 200, "text/html", data_getSettingsHTML() );
+void load404() {
+  server.send ( 404, "text/html", data_get404());
 }
 
+void loadFunctionsJS() {
+  server.send( 200, "text/javascript", data_getFunctionsJS());
+}
+void loadIndexJS() {
+  server.send ( 200, "text/javascript", data_getIndexJS());
+}
+void loadClientsJS() {
+  server.send ( 200, "text/javascript", data_getClientsJS());
+}
+void loadAttackJS() {
+  server.send ( 200, "text/javascript", data_getAttackJS());
+}
+void loadSettingsJS() {
+  server.send( 200, "text/html", data_getSettingsJS());
+}
+
+void loadStyle() {
+  server.send ( 200, "text/css", data_getStyle());
+}
+
+void loadManifest() {
+  server.send ( 200, "text/css", data_getManifest());
+}
 
 //==========AP-Scan==========
 void startAPScan() {
@@ -273,7 +292,7 @@ void saveSettings() {
   }
   if (server.hasArg("password")) settings.password = server.arg("password");
   if (server.hasArg("apChannel")) {
-    if(server.arg("apChannel").toInt() >= 1 && server.arg("apChannel").toInt() <= 11){
+    if(server.arg("apChannel").toInt() >= 1 && server.arg("apChannel").toInt() <= 14){
       settings.apChannel = server.arg("apChannel").toInt();
     }
   }

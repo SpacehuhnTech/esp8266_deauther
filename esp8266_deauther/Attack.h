@@ -1,6 +1,8 @@
 #ifndef Attack_h
 #define Attack_h
 
+#define maxChannel 11
+
 #include <ESP8266WiFi.h>
 
 extern "C" {
