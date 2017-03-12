@@ -28,6 +28,13 @@
         $('#info1').html($('#input').val().length);
         $('#info2').html(input.length);
       }
+	  
+	  function byteAndmini(){
+		var input = "0x"+$('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).convertToHex(",0x");;
+        $('#output').val(input);
+        $('#info1').html($('#input').val().length);
+        $('#info2').html(input.length);
+	  }
     </script>
   </head>
   <body>
@@ -35,7 +42,8 @@
     <p id="info1"></p>
     <button onclick="mini()">minify</button>
     <button onclick="miniEsc()">minify + escape</button>
-    <button onclick="byte()">byte-ify</button><br />
+    <button onclick="byte()">byte-ify</button>
+	<button onclick="byteAndmini()">minify + byte-ify</button><br />
     <textarea id="output" rows="50" cols="100"></textarea><br />
     <p id="info2"></p>
   </body>

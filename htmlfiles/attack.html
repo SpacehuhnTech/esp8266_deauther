@@ -2,15 +2,6 @@
 	<head>
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="style.css">
-		<style>
-			nav a:nth-child(3){
-				background: #000;
-				color:#fff;
-			}
-			#saved{
-				display: inline;
-			}
-		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
 	</head>
@@ -20,6 +11,9 @@
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
 			<a href="settings.html">Settings</a>
+			<ul class="nav right">
+				<a href="#" onclick="restartESP()">Restart</a>
+			<ul>
 		</nav>
 		<div id="content">
 			<h1>Attack</h1>
@@ -40,16 +34,20 @@
 			</table>
 			
 			<p class="small">
-				<br>
-				<b>deauth [deauthentication attack]:</b><br>
+				<br />
+				<b>deauth [deauthentication attack]:</b><br />
 				Sends deauthentication frames and dissociation frames to the selected client(s) in the selected WiFi access point(s).
-				<br>
+				<br />
 				<b>Note: </b>
 				If no client is selected, the packets are sent as broadcast!
-				<br><br>
-				<b>beacon [beacon flood attack]:</b><br>
-				(clone:) spams beacon frames with a similar SSID as the selected WiFi access point(s).<br />
-				(list:) spams beacon frames with all SSIDs in the list below.
+				<br /><br />
+				<b>beacon [beacon flood attack]:</b><br />
+				(clone:) Spams beacon frames with a similar SSID as the selected WiFi access point(s).<br />
+				(list:) Spams beacon frames with all SSIDs in the list below.
+				<br /><br />
+				<b>probe request [probe request flood attack]:</b><br />
+				Spams probe request frames with all SSIDs in the list below.<br />
+				Usefull to confuse and spam WiFi trackers.
 			</p>
 			<br />
 			<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="cloneSSID()">clone</button> <button class="marginNull" onclick="addSSID()">add</button></p>
@@ -160,6 +158,12 @@
 			getResponse("resetSSID.json",getResults);
 		}
 		
+		function restartESP(){
+			getResponse("restartESP.json", function(responseText){
+				if(responseText == "true") getData();
+				else alert("error");
+			});
+		}
 		
 		getResults();
 		resultInterval = setInterval(getResults,3000);

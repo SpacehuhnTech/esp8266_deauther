@@ -1,4 +1,12 @@
-function getResponse(adr, callback, timeoutCallback = function(){location.reload()}, timeout = 8000){
+function getResponse(adr, callback, timeoutCallback, timeout){
+	if(timeoutCallback === undefined) { 
+		timeoutCallback = function(){
+			location.reload()
+		};
+	}
+	if(timeout === undefined) { 
+		timeout = 8000; 
+	}
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange = function() {
 		if(xmlhttp.readyState == 4){

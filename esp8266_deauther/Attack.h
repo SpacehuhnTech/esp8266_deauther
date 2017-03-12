@@ -14,7 +14,7 @@ extern "C" {
 #include "Settings.h"
 #include "SSIDList.h"
 
-#define attacksNum 3
+#define attacksNum 4
 #define macListLen 64
 #define macChangeInterval 4
 
@@ -38,14 +38,16 @@ class Attack
     void stop(int num);
     void stopAll();
     String getResults();
+    void refreshLed();
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
     void buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt);
+    void buildProbe(String _ssid, Mac _mac);
     bool send();
     
     //attack declarations
-    const String attackNames[attacksNum] = {"deauth","beacon (clone)","beacon (list)"};
+    const String attackNames[attacksNum] = {"deauth", "beacon (clone)", "beacon (list)", "probe request"};
     
     //attack infos
     String stati[attacksNum];
@@ -106,9 +108,23 @@ class Attack
       0x00, 0x00 //RSN capabilities
     };
 
+    uint8_t probePacket[25] = {
+      /*  0 - 1  */ 0x40, 0x00,                         //Type: Probe Request
+      /*  2 - 3  */ 0x00, 0x00,                         //Duration: 0 microseconds
+      /*  4 - 9  */ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, //Destination: Broadcast
+      /* 10 - 15 */ 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, //Source: random MAC
+      /* 16 - 21 */ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, //BSS Id: Broadcast
+      /* 22 - 23 */ 0x00, 0x00,                         //Sequence number (will be replaced by the SDK)
+      /*    24   */ 0x00                                //Tag Number: SSID parameter set (0)
+      /*           ,0x06,                              //Tag length
+                    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA //SSID
+       */
+    };
+
     int macListChangeCounter = 0;
     int attackTimeoutCounter[attacksNum];
     int channels[macListLen];
+    bool buildInLedStatus = false;
 };
 
 #endif

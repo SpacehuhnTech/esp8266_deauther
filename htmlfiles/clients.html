@@ -2,21 +2,6 @@
 	<head>
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="style.css">
-		<style>
-			#clientScanStatus{
-				margin-left: 1em;
-			}
-			nav a:nth-child(2){
-				background: #000;
-				color:#fff;
-			}
-			#clientScanStart{
-				margin-left: 30px;
-			}
-			#scanTime{
-				width: 60px;
-			}
-		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
 	</head>
@@ -26,6 +11,9 @@
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
 			<a href="settings.html">Settings</a>
+			<ul class="nav right">
+				<a href="#" onclick="restartESP()">Restart</a>
+			<ul>
 		</nav>
 		<div id="content">
 			<h1>Scan for client devices</h1>
@@ -72,7 +60,10 @@
 			}
 		}
 		
-		function getResults(reload = false){
+		function getResults(reload){
+			if(reload === undefined){
+				reload = false;
+			}
 			getResponse("ClientScanResults.json",function(responseText){
 				res = JSON.parse(responseText);
 				res.clients = res.clients.sort(compare);
@@ -80,7 +71,7 @@
 				clientsFound.innerHTML = "Client devices found: "+res.clients.length;
 				
 				var tr = '';
-				if(res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>Select</th></tr>';
+				if(res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th>Select</th></tr>';
 				
 				for(var i=0;i<res.clients.length;i++){
 					
@@ -90,6 +81,7 @@
 					tr += '<td>'+res.clients[i].v+'</td>';
 					tr += '<td>'+res.clients[i].n+' <a class="blue" onclick="changeName('+res.clients[i].i+')">edit</a></td>';
 					tr += '<td>'+res.clients[i].m+'</td>';
+					tr += '<td>'+res.clients[i].a+'</td>';
 					
 					if(res.clients[i].s == 1) tr += '<td><button class="marginNull selectedBtn" onclick="select('+res.clients[i].i+')">deselect</button></td>';
 					else tr += '<td><button class="marginNull" onclick="select('+res.clients[i].i+')">select</button></td>';
@@ -139,10 +131,17 @@
 			}
 		}
 		
+		function restartESP(){
+			getResponse("restartESP.json", function(responseText){
+				if(responseText == "true") getData();
+				else alert("error");
+			});
+		}
+		
 		getResponse("ClientScanTime.json",function(responseText){
 			scanTime.value = responseText;
 		});
-			
+
 		getResults();
 	</script>
 </html>

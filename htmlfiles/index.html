@@ -2,29 +2,6 @@
 	<head>
 		<meta charset="utf-8">
 		<link rel="stylesheet" href="style.css">
-		<style>
-			#apScanStatus{
-				margin-left: 1em;
-			}
-			nav a:first-child{
-				background: #000;
-				color:#fff;
-			}
-			#rssiBar{
-				width: 100px;
-				height: 15px;
-				background: #fff;
-			}
-			#rssiBar > div{
-				width: 52px;
-				height: 15px;
-				background: #c20000;
-			}
-			#wpa_info{
-				padding-left: 0.34em;
-			}
-			
-		</style>
 		<script src="functions.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=0.8">
 	</head>
@@ -34,6 +11,9 @@
 			<a href="clients.html">Clients</a>
 			<a href="attack.html">Attack</a>
 			<a href="settings.html">Settings</a>
+			<ul class="nav right">
+				<a href="#" onclick="restartESP()">Restart</a>
+			<ul>
 		</nav>
 		<div id="content">
 			<h1>Scan for WiFi access points</h1>
@@ -150,6 +130,13 @@
 		function select(num){
 			getResponse("APSelect.json?num="+num,function(responseText){
 				if(responseText == "true") getResults();
+				else alert("error");
+			});
+		}
+		
+		function restartESP(){
+			getResponse("restartESP.json", function(responseText){
+				if(responseText == "true") getData();
 				else alert("error");
 			});
 		}

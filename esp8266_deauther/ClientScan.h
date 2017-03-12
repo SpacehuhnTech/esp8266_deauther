@@ -37,6 +37,7 @@ class ClientScan{
     String getClientVendor(int num);
     Mac getClientMac(int num);
     bool getClientSelected(int num);
+    int getClientConnectedAp(int num);
     int getFirstClient();
 
     int results = 0;
@@ -56,6 +57,7 @@ class ClientScan{
     char vendors[maxClientScanResults][9];
     int packets[maxClientScanResults];
     bool selected[maxClientScanResults];
+    int connectedToAp[maxClientScanResults];
 
     int channels[13];
     int channelsNum = 0;
