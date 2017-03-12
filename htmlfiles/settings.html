@@ -65,9 +65,6 @@
 			<label for="useLed">use LED:</label>
 			<input type="checkbox" name="useLed" id="useLed" value="false">
 			<br />
-			<label for="channelHop">channel hopping:</label>
-			<input type="checkbox" name="channelHop" id="channelHop" value="false">
-			<br />
 			
 			<label for="deauthReason">deauth reason:</label>
 			<input type="number" id="deauthReason" min="1" max="45">
@@ -76,7 +73,12 @@
 			<label for="packetRate">packetrate:</label>
 			<input type="number" id="packetRate" min="1" max="100">pkts/s
 			<p class="small">only for deauth attack - may cause instability!</p>
+			
+			<label for="channelHop">channel hopping:</label>
+			<input type="checkbox" name="channelHop" id="channelHop" value="false">
+			<p class="small">only for deauth attack - packetrate will be ignored!</p>
 			<br />
+			
 			<br />
 			<button class="warnBtn" onclick="resetSettings()">reset</button> <button onclick="saveSettings()">save</button><p class="small" id="saved"></p><br \>
 			<br />
