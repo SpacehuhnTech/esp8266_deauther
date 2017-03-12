@@ -31,6 +31,7 @@ void Settings::load(){
     clientScanTime = EEPROM.read(clientScanTimeAdr);
     attackEncrypted = (bool)EEPROM.read(attackEncryptedAdr);
     useLed = (bool)EEPROM.read(useLedAdr);
+    channelHop = (bool)EEPROM.read(channelHopAdr);
   }
 }
 
@@ -53,6 +54,7 @@ void Settings::reset(){
   clientScanTime = 15;
   attackEncrypted = false;
   useLed = false;
+  channelHop = false;
   
   if(debug) Serial.println("done");
   
@@ -81,6 +83,7 @@ void Settings::save(){
   EEPROM.write(clientScanTimeAdr, clientScanTime);
   EEPROM.write(attackEncryptedAdr, attackEncrypted);
   EEPROM.write(useLedAdr, useLed);
+  EEPROM.write(channelHopAdr, channelHop);
   EEPROM.commit();
   
   if(debug){
@@ -104,6 +107,7 @@ void Settings::info(){
   Serial.println("client scan time: "+(String)clientScanTime);
   Serial.println("attack SSID encrypted: "+(String)attackEncrypted);
   Serial.println("use built-in LED: "+(String)useLed);
+  Serial.println("channel hopping: "+(String)channelHop);
 }
 
 String Settings::get(){
@@ -121,6 +125,7 @@ String Settings::get(){
   json += "\"clientScanTime\":"+(String)clientScanTime+",";
   json += "\"attackEncrypted\":"+(String)attackEncrypted+",";
   json += "\"useLed\":"+(String)useLed+",";
+  json += "\"channelHop\":"+(String)channelHop+",";
 
   json += "\"nameList\":[";
   for(int i=0;i<nameList.len;i++){

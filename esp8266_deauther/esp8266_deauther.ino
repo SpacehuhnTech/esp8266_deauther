@@ -294,6 +294,10 @@ void saveSettings() {
     else settings.useLed = true;
     attack.refreshLed();
   }
+  if (server.hasArg("channelHop")) {
+    if (server.arg("channelHop") == "false") settings.channelHop = false;
+    else settings.channelHop = true;
+  }
 
   settings.save();
   server.send( 200, "text/json", "true" );

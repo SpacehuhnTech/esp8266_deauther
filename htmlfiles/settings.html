@@ -76,8 +76,11 @@
 			<input type="checkbox" name="ssidEnc" id="ssidEnc" value="false">
 			<br />
 			
-			<label for="useLed">Use LED:</label>
+			<label for="useLed">use LED:</label>
 			<input type="checkbox" name="useLed" id="useLed" value="false">
+			<br />
+			<label for="channelHop">channel hopping:</label>
+			<input type="checkbox" name="channelHop" id="channelHop" value="false">
 			<br />
 			
 			<label for="deauthReason">deauth reason:</label>
@@ -120,6 +123,7 @@
 		var clientNames = document.getElementById('clientNames');
 		var ssidEnc = document.getElementById('ssidEnc');
 		var useLed = document.getElementById('useLed');
+		var channelHop = document.getElementById('channelHop');
 		var res;
 		
 		function getData(){
@@ -137,6 +141,7 @@
 				packetRate.value = res.attackPacketRate;
 				ssidEnc.checked = res.attackEncrypted;
 				useLed.checked = res.useLed;
+				channelHop.checked = res.channelHop;
 				
 				
 				clientNames.innerHTML = "Client Names "+res.nameList.length+"/50";
@@ -189,6 +194,7 @@
 			url += "&packetRate="+packetRate.value;
 			url += "&ssidEnc="+ssidEnc.checked;
 			url += "&useLed="+useLed.checked;
+			url += "&channelHop="+channelHop.checked;
 			
 			getResponse(url, function(responseText){
 				if(responseText == "true"){
