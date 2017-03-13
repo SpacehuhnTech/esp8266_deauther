@@ -46,87 +46,6 @@ void startWifi() {
   if (settings.ssid.length() < 1 || settings.ssid.length() > 32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
 }
 
-void setup() {
-
-  Serial.begin(115200);
-  delay(2000);
-
-  pinMode(2, OUTPUT);
-  delay(50);
-  digitalWrite(2, HIGH);
-  
-  EEPROM.begin(4096);
-  
-  settings.load();
-  if (debug) settings.info();
-  nameList.load();
-  ssidList.load();
-
-  Serial.println("");
-  Serial.println("starting...");
-
-  startWifi();
-  attack.stopAll();
-  attack.generate();
-
-  /* ========== Web Server ========== */
-
-  /* HTML sites */
-  server.onNotFound(load404);
-
-  server.on("/", loadIndexHTML);
-  server.on("/clients", loadClientsHTML);
-  server.on("/attack", loadAttackHTML);
-  server.on("/settings", loadSettingsHTML);
-
-  server.on("/js/index.js", loadIndexJS);
-  server.on("/js/clients.js", loadClientsJS);
-  server.on("/js/attack.js", loadAttackJS);
-  server.on("/js/settings.js", loadSettingsJS);
-  server.on("/js/functions.js", loadFunctionsJS);
-
-  /* header links */
-  server.on ("/style.css", loadStyle);
-  server.on ("/manifest.json", loadManifest);
-
-  /* JSON */
-  server.on("/APScanResults.json", sendAPResults);
-  server.on("/APScan.json", startAPScan);
-  server.on("/APSelect.json", selectAP);
-  server.on("/ClientScan.json", startClientScan);
-  server.on("/ClientScanResults.json", sendClientResults);
-  server.on("/ClientScanTime.json", sendClientScanTime);
-  server.on("/clientSelect.json", selectClient);
-  server.on("/setName.json", setClientName);
-  server.on("/attackInfo.json", sendAttackInfo);
-  server.on("/attackStart.json", startAttack);
-  server.on("/settings.json", getSettings);
-  server.on("/settingsSave.json", saveSettings);
-  server.on("/settingsReset.json", resetSettings);
-  server.on("/deleteName.json", deleteName);
-  server.on("/clearNameList.json", clearNameList);
-  server.on("/editNameList.json", editClientName);
-  server.on("/addSSID.json", addSSID);
-  server.on("/cloneSSID.json", cloneSSID);
-  server.on("/deleteSSID.json", deleteSSID);
-  server.on("/randomSSID.json", randomSSID);
-  server.on("/clearSSID.json", clearSSID);
-  server.on("/resetSSID.json", resetSSID);
-  server.on("/saveSSID.json", saveSSID);
-  server.on("/restartESP.json", restartESP);
-
-  server.begin();
-}
-
-void loop() {
-  if (clientScan.sniffing) {
-    if (clientScan.stop()) startWifi();
-  } else {
-    server.handleClient();
-    attack.run();
-  }
-}
-
 void loadIndexHTML() {server.send ( 200, "text/html", data_getIndexHTML());}
 void loadClientsHTML() {server.send ( 200, "text/html", data_getClientsHTML());}
 void loadAttackHTML() {server.send ( 200, "text/html", data_getAttackHTML());}
@@ -322,3 +241,83 @@ void editClientName() {
   }
 }
 
+void setup() {
+
+  Serial.begin(115200);
+  delay(2000);
+
+  pinMode(2, OUTPUT);
+  delay(50);
+  digitalWrite(2, HIGH);
+  
+  EEPROM.begin(4096);
+  
+  settings.load();
+  if (debug) settings.info();
+  nameList.load();
+  ssidList.load();
+
+  Serial.println("");
+  Serial.println("starting...");
+
+  startWifi();
+  attack.stopAll();
+  attack.generate();
+
+  /* ========== Web Server ========== */
+
+  /* HTML sites */
+  server.onNotFound(load404);
+
+  server.on("/", loadIndexHTML);
+  server.on("/clients", loadClientsHTML);
+  server.on("/attack", loadAttackHTML);
+  server.on("/settings", loadSettingsHTML);
+
+  server.on("/js/index.js", loadIndexJS);
+  server.on("/js/clients.js", loadClientsJS);
+  server.on("/js/attack.js", loadAttackJS);
+  server.on("/js/settings.js", loadSettingsJS);
+  server.on("/js/functions.js", loadFunctionsJS);
+
+  /* header links */
+  server.on ("/style.css", loadStyle);
+  server.on ("/manifest.json", loadManifest);
+
+  /* JSON */
+  server.on("/APScanResults.json", sendAPResults);
+  server.on("/APScan.json", startAPScan);
+  server.on("/APSelect.json", selectAP);
+  server.on("/ClientScan.json", startClientScan);
+  server.on("/ClientScanResults.json", sendClientResults);
+  server.on("/ClientScanTime.json", sendClientScanTime);
+  server.on("/clientSelect.json", selectClient);
+  server.on("/setName.json", setClientName);
+  server.on("/attackInfo.json", sendAttackInfo);
+  server.on("/attackStart.json", startAttack);
+  server.on("/settings.json", getSettings);
+  server.on("/settingsSave.json", saveSettings);
+  server.on("/settingsReset.json", resetSettings);
+  server.on("/deleteName.json", deleteName);
+  server.on("/clearNameList.json", clearNameList);
+  server.on("/editNameList.json", editClientName);
+  server.on("/addSSID.json", addSSID);
+  server.on("/cloneSSID.json", cloneSSID);
+  server.on("/deleteSSID.json", deleteSSID);
+  server.on("/randomSSID.json", randomSSID);
+  server.on("/clearSSID.json", clearSSID);
+  server.on("/resetSSID.json", resetSSID);
+  server.on("/saveSSID.json", saveSSID);
+  server.on("/restartESP.json", restartESP);
+
+  server.begin();
+}
+
+void loop() {
+  if (clientScan.sniffing) {
+    if (clientScan.stop()) startWifi();
+  } else {
+    server.handleClient();
+    attack.run();
+  }
+}
