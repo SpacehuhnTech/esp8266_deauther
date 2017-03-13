@@ -75,7 +75,6 @@ void setup() {
   server.onNotFound(load404);
 
   server.on("/", loadIndexHTML);
-  server.on("/index", loadIndexHTML);
   server.on("/clients", loadClientsHTML);
   server.on("/attack", loadAttackHTML);
   server.on("/settings", loadSettingsHTML);
