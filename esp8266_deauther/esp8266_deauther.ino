@@ -127,45 +127,21 @@ void loop() {
   }
 }
 
-void loadIndexHTML() {
-  server.send ( 200, "text/html", data_getIndexHTML());
-}
-void loadClientsHTML() {
-  server.send ( 200, "text/html", data_getClientsHTML());
-}
-void loadAttackHTML() {
-  server.send ( 200, "text/html", data_getAttackHTML());
-}
-void loadSettingsHTML() {
-  server.send( 200, "text/html", data_getSettingsHTML());
-}
-void load404() {
-  server.send ( 404, "text/html", data_get404());
-}
+void loadIndexHTML() {server.send ( 200, "text/html", data_getIndexHTML());}
+void loadClientsHTML() {server.send ( 200, "text/html", data_getClientsHTML());}
+void loadAttackHTML() {server.send ( 200, "text/html", data_getAttackHTML());}
+void loadSettingsHTML() {server.send( 200, "text/html", data_getSettingsHTML());}
+void load404() {server.send ( 404, "text/html", data_get404());}
 
-void loadFunctionsJS() {
-  server.send( 200, "text/javascript", data_getFunctionsJS());
-}
-void loadIndexJS() {
-  server.send ( 200, "text/javascript", data_getIndexJS());
-}
-void loadClientsJS() {
-  server.send ( 200, "text/javascript", data_getClientsJS());
-}
-void loadAttackJS() {
-  server.send ( 200, "text/javascript", data_getAttackJS());
-}
-void loadSettingsJS() {
-  server.send( 200, "text/html", data_getSettingsJS());
-}
+void loadFunctionsJS() {server.send( 200, "text/javascript", data_getFunctionsJS());}
+void loadIndexJS() {server.send ( 200, "text/javascript", data_getIndexJS());}
+void loadClientsJS() {server.send ( 200, "text/javascript", data_getClientsJS());}
+void loadAttackJS() {server.send ( 200, "text/javascript", data_getAttackJS());}
+void loadSettingsJS() {server.send( 200, "text/html", data_getSettingsJS());}
 
-void loadStyle() {
-  server.send ( 200, "text/css", data_getStyle());
-}
+void loadStyle() {server.send ( 200, "text/css", data_getStyle());}
 
-void loadManifest() {
-  server.send ( 200, "text/css", data_getManifest());
-}
+void loadManifest() {server.send ( 200, "text/css", data_getManifest());}
 
 //==========AP-Scan==========
 void startAPScan() {
