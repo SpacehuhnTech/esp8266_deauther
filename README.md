@@ -36,15 +36,15 @@ Because these management packets are unencrypted, you just need the mac address 
 
 ### What an ESP8266 is
 
-The [ESP8266](https://de.wikipedia.org/wiki/ESP8266) is a cheap micro controller with build in Wi-Fi. It contains a powerfull 160 MHz processor and it can be programed using [Arduino](https://www.arduino.cc/en/Main/Software).  
+The [ESP8266](https://de.wikipedia.org/wiki/ESP8266) is a cheap micro controller with built-in Wi-Fi. It contains a powerfull 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
 
 You can buy these chips for under $2 from China!
 
 ### How to protect against it
 
 With [802.11w-2009](https://en.wikipedia.org/wiki/IEEE_802.11w-2009) Wi-Fi got an update to encrypt management frames.
-So make sure your router is up to date and has management frame protection enabled. But be sure that your client device
-supports it too, both ends need to have it enabled!
+So make sure your router is up to date and has management frame protection enabled. But note that your client device needs to 
+support it too, both ends need to have it enabled!
 
 The only problem is that most devices don’t use it. I tested it with different Wi-Fi networks and devices, it worked every time! It seems that even newer devices which support frame protection don’t use it by default.
 
