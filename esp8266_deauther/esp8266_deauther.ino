@@ -8,6 +8,8 @@ extern "C" {
 #include "user_interface.h"
 }
 
+ESP8266WebServer server(80);
+
 #include <EEPROM.h>
 #include "data.h"
 #include "NameList.h"
@@ -20,8 +22,6 @@ extern "C" {
 /* ========== DEBUG ========== */
 const bool debug = true;
 /* ========== DEBUG ========== */
-
-ESP8266WebServer server(80);
 
 NameList nameList;
 
@@ -71,12 +71,14 @@ void startAPScan() {
 }
 
 void sendAPResults() {
+  apScan.sendResults();
+  /*
   if (server.hasArg("apid")) {
     int apid = server.arg("apid").toInt();
     server.send ( 200, "text/json", apScan.getResult(apid));
   } else {
     server.send ( 200, "text/json", apScan.getResults());
-  }
+  }*/
 }
 
 void selectAP() {
