@@ -27,7 +27,7 @@ void Mac::setMac(Mac adr){
 
 bool Mac::valid(){
   for(int i=0;i<6;i++){
-    if(adress[i] == 0xFF || adress[i] == 0x00) return false;
+    if(adress[i] != 0xFF && adress[i] != 0x00) return true;
   }
   return true;
 }
