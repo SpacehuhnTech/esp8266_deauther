@@ -15,7 +15,8 @@ It's odd that I have to say this, but don't just send your ebay or amazon links 
 It's enough to say what model or version it is.
 
 **Apply some common sense**  
-Also odd to mention this, but think about what you want to ask or answer and then post it.
+Also odd to mention this, but think about what you want to ask or answer and then post it.  
+***Use a clear, short headline with a good understandable description of your issue.***  
 Don't spam with issues, post or pictures! Be nice, understanding and help others. 
 Also note that this is an open source project. No one must help you, so be thankfull for every help you get.
 
