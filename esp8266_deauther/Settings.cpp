@@ -17,7 +17,7 @@ void Settings::load(){
     
     ssidHidden = (bool)EEPROM.read(ssidHiddenAdr);
 
-    if((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 11){
+    if((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 14){
       apChannel = (int)EEPROM.read(apChannelAdr);
     } else {
       apChannel = 1;

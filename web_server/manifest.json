@@ -1,0 +1,38 @@
+{
+"sites":[
+	"error404.html",
+	"style.css",
+	"functions.js",
+	"index.html",
+	"clients.html",
+	"attack.html",
+	"settings.html"
+],
+"json":[
+	"APScanResults.json",
+	"ClientScanResults.json",
+	"settings.json",
+	"attackInfo.json"
+],
+"commands":[
+	"APScan.json",
+	"APSelect.json",
+	"ClientScan.json",
+	"ClientScanTime.json", 
+	"clientSelect.json",
+	"setName.json",
+	"attackStart.json",
+	"settingsSave.json",
+	"settingsReset.json",
+	"deleteName.json",
+	"clearNameList.json",
+	"editNameList.json",
+	"addSSID.json",
+	"cloneSSID.json",
+	"deleteSSID.json",
+	"randomSSID.json",
+	"clearSSID.json",
+	"resetSSID.json",
+	"saveSSID.json"
+]
+}

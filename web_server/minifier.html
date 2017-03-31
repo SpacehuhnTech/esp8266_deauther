@@ -1,0 +1,50 @@
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script>
+      function miniEsc(){
+        var input = $('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).replace(/"/g, '\\"' );
+        $('#output').val(input);
+        $('#info1').html($('#input').val().length);
+        $('#info2').html(input.length);
+      }
+      
+      function mini(){
+        var input = $('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' );
+        $('#output').val(input);
+        $('#info1').html($('#input').val().length);
+        $('#info2').html(input.length);
+      }
+      
+      String.prototype.convertToHex = function (delim) {
+          return this.split("").map(function(c) {
+              return ("0" + c.charCodeAt(0).toString(16)).slice(-2);
+          }).join(delim || "");
+      };
+      
+      function byte(){
+        var input = $('#input').val().convertToHex(",0x");
+        $('#output').val("0x"+input);
+        $('#info1').html($('#input').val().length);
+        $('#info2').html(input.length);
+      }
+	  
+	  function byteAndmini(){
+		var input = "0x"+$('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).convertToHex(",0x");;
+        $('#output').val(input);
+        $('#info1').html($('#input').val().length);
+        $('#info2').html(input.length);
+	  }
+    </script>
+  </head>
+  <body>
+    <textarea id="input" rows="50" cols="100"></textarea><br />
+    <p id="info1"></p>
+    <button onclick="mini()">minify</button>
+    <button onclick="miniEsc()">minify + escape</button>
+    <button onclick="byte()">byte-ify</button>
+	<button onclick="byteAndmini()">minify + byte-ify</button><br />
+    <textarea id="output" rows="50" cols="100"></textarea><br />
+    <p id="info2"></p>
+  </body>
+</html>
