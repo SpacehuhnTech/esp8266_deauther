@@ -148,4 +148,6 @@ String ClientScan::getResults(){
 
 void ClientScan::select(int num){
   selected[num] = !selected[num];
+  if(selected[num]) selectedResults++;
+  else selectedResults--;
 }

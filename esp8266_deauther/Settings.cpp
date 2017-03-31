@@ -110,9 +110,10 @@ void Settings::info(){
   Serial.println("channel hopping: "+(String)channelHop);
 }
 
-String Settings::get(){
+void Settings::send(){
   if(debug) Serial.println("getting settings json");
   String json = "{";
+  size_t jsonSize = 0;
   
   json += "\"ssid\":\""+ssid+"\",";
   json += "\"ssidHidden\":"+(String)ssidHidden+",";
@@ -126,21 +127,43 @@ String Settings::get(){
   json += "\"attackEncrypted\":"+(String)attackEncrypted+",";
   json += "\"useLed\":"+(String)useLed+",";
   json += "\"channelHop\":"+(String)channelHop+",";
-
+  
   json += "\"nameList\":[";
+  
+  jsonSize += json.length();
+  
   for(int i=0;i<nameList.len;i++){
+    json = "";
     json += "{";
     json += "\"n\":\""+nameList.getName(i)+"\",";
     json += "\"m\":\""+nameList.getMac(i).toString()+"\",";
     json += "\"v\":\""+data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2))+"\"";
     json += "}";
     if(i!=nameList.len-1) json += ",";
+    jsonSize += json.length();
   }
-
-  json += "] }";
+  jsonSize += 2; //]}
+  
+  sendHeader(200, "text/json", jsonSize);
+  sendToBuffer(json);
+    
+  for(int i=0;i<nameList.len;i++){
+    json = "";
+    json += "{";
+    json += "\"n\":\""+nameList.getName(i)+"\",";
+    json += "\"m\":\""+nameList.getMac(i).toString()+"\",";
+    json += "\"v\":\""+data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2))+"\"";
+    json += "}";
+    if(i!=nameList.len-1) json += ",";
+    sendToBuffer(json);
+  }
+  sendToBuffer("]}");
+  
+  sendBuffer();
+  
   if(debug){
     Serial.println(json);
     Serial.println("done");
   }
-  return json;
+  
 }

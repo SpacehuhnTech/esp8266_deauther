@@ -177,7 +177,7 @@ void restartESP() {
 
 //==========Settings==========
 void getSettings() {
-  server.send ( 200, "text/json", settings.get() );
+  settings.send();
 }
 
 void saveSettings() {

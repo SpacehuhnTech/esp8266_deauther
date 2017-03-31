@@ -41,6 +41,7 @@ class ClientScan{
     int getFirstClient();
 
     int results = 0;
+    int selectedResults = 0;
     int timeout = 0;
     
     bool sniffing = false;

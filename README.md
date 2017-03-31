@@ -72,6 +72,7 @@ You have 2 choices here. Uploading the bin files is easier but not as good for d
 ### Uploading the bin files  
 
 **Note:** the 512kb version won't have the full MAC vendor list.  
+The NodeMCU and every other board which uses the ESP-12 has 4mb flash on it.
 
 **0** Download the current release from [here](https://github.com/spacehuhn/esp8266_deauther/releases)  
 
@@ -187,9 +188,9 @@ Try out switching the browser or open the website with another device.
 
 If you see 0 pkts/s on the website you've made a mistake. Check if you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!  
 If it can send packets but your target don't loose its connection then the Wi-Fi router uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks or they communicate via 5 GHz Wi-Fi, which the ESP8266 doesn't support.
+**Some users reported that it can help setting the packetrate to 100 in the settings (but be carefull with this setting)**
 
-
-###If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
+### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
 
 
 ## License
