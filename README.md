@@ -188,7 +188,6 @@ Try out switching the browser or open the website with another device.
 
 If you see 0 pkts/s on the website you've made a mistake. Check if you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!  
 If it can send packets but your target don't loose its connection then the Wi-Fi router uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks or they communicate via 5 GHz Wi-Fi, which the ESP8266 doesn't support.
-**Some users reported that it can help setting the packetrate to 100 in the settings (but be carefull with this setting)**
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
 
