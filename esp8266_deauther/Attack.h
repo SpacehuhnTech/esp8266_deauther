@@ -24,6 +24,7 @@ extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
 extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
 extern const bool debug;
+extern String attackMode;
 
 extern APScan apScan;
 extern ClientScan clientScan;

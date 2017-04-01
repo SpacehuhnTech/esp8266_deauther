@@ -181,7 +181,7 @@ void APScan::sendResults(){
 
 }
 
-String APScan::getResults(){
+String APScan::getResultsJSON(){
   if(debug) Serial.print("getting AP scan result JSON ");
   String json = "{ \"aps\":[ ";
   for(int i=0;i<results && i<maxAPScanResults;i++){
@@ -206,26 +206,42 @@ String APScan::getResults(){
   return json;
 }
 
-String APScan::getResult(int i){
-  if(debug) Serial.print("getting AP scan result JSON for ID " + String(i));
-  String json = "{ \"aps\":[ ";
-  if(debug) Serial.print(".");
-  json += "{";
-  json += "\"i\":"+(String)i+",";
-  json += "\"c\":"+(String)getAPChannel(i)+",";
-  json += "\"m\":\""+getAPMac(i)+"\",";
-  json += "\"ss\":\""+getAPName(i)+"\",";
-  json += "\"r\":"+(String)getAPRSSI(i)+",";
-  json += "\"e\":"+(String)encryption[i]+",";
-  //json += "\"v\":\""+getAPVendor(i)+"\",";
-  json += "\"se\":"+(String)getAPSelected(i);
-  json += "}";
-  json += "] }";
-  if(debug){
-    Serial.println(json);
-    Serial.println("done");
+void APScan::sort(){
+  if(debug) Serial.println("sorting APs ");
+
+  //bubble sort
+  for(int i=0;i<results-1;i++){
+    Serial.println("--------------");
+    for(int h=0;h<results-i-1;h++){
+      
+      if(rssi[h] < rssi[h+1]){
+        Serial.println("switched: "+(String)rssi[h]+" > "+(String)rssi[h+1]);
+        int tmpA = channels[h];
+        channels[h] = channels[h+1];
+        channels[h+1] = tmpA;
+        
+        tmpA = rssi[h];
+        rssi[h] = rssi[h+1];
+        rssi[h+1] = tmpA;
+        
+        tmpA = encryption[h];
+        encryption[h] = encryption[h+1];
+        encryption[h+1] = tmpA;
+        
+        String tmpB = names[h];
+        strncpy(names[h],names[h+1],32);
+        tmpB.toCharArray(names[h+1],32);
+        
+        bool tmpC = hidden[h];
+        hidden[h] = hidden[h+1];
+        hidden[h+1] = tmpC;
+        
+        tmpC = selected[h];
+        selected[h] = selected[h+1];
+        selected[h+1] = tmpC;
+      }else Serial.println((String)rssi[h]+" < "+(String)rssi[h+1]);
+    }
   }
-  return json;
 }
 
 void APScan::select(int num){

@@ -5,11 +5,15 @@ ClientScan::ClientScan(){
   zero.set(0x00,0x00,0x00,0x00,0x00,0x00);
 }
 
+void ClientScan::clearList(){
+  clients._clear();
+}
+
 void ClientScan::start(int _time){
   Serial.println();
   Serial.println("starting client scan");
   
-  clients._clear();
+  clearList();
   for(int i=0;i<maxClientScanResults;i++){
     selected[i] = false;
     packets[i] = 0;

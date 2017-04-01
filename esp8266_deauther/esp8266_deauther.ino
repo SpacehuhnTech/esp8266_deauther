@@ -1,11 +1,56 @@
+/*
+===========================================
+        Copyright 2017 Stefan Kremser
+        
+          github.com/spacehuhn
+          twitter.com/spacehuhn
+===========================================
+*/
+
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 
+//#define USE_DISPLAY // <-- uncomment that if you wanna use the display
+
+#ifdef USE_DISPLAY
+
+  #include <Wire.h>
+
+  //include the library you need
+  #include "SSD1306.h"
+  //#include "SH1106.h"
+
+  //button pins
+  #define upBtn D6
+  #define downBtn D7
+  #define selectBtn D5
+
+  #define buttonDelay 180 //delay in ms
+  
+  //render settings
+  #define fontSize 8
+  #define rowsPerSite 8
+
+  //create display(Adr, SDA-pin, SCL-pin)
+  SSD1306 display(0x3c, D2, D1);
+  //SH1106 display(0x3c, D2, D1);
+  
+  int rows = 3;
+  int curRow = 0;
+  int sites = 1;
+  int curSite = 1;
+  int lrow = 0;
+#endif
+
+String wifiMode = "";
+String attackMode = "";
+String scanMode = "scan";
+
 extern "C" {
-#include "user_interface.h"
+  #include "user_interface.h"
 }
 
 ESP8266WebServer server(80);
@@ -44,6 +89,13 @@ void startWifi() {
   Serial.println("Password: " + settings.password);
   if (settings.password.length() < 8) Serial.println("WARNING: password must have at least 8 characters!");
   if (settings.ssid.length() < 1 || settings.ssid.length() > 32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
+  wifiMode = "on";
+}
+
+void stopWifi(){
+  WiFi.disconnect();
+  wifi_set_opmode(STATION_MODE);
+  wifiMode = "off";
 }
 
 void loadIndexHTML() {server.send ( 200, "text/html", data_getIndexHTML());}
@@ -62,9 +114,15 @@ void loadStyle() {server.send ( 200, "text/css", data_getStyle());}
 
 void loadManifest() {server.send ( 200, "text/css", data_getManifest());}
 
+void startWiFi(bool start){
+  if(start) startWifi();
+  else stopWifi();
+  clientScan.clearList();
+}
+
 //==========AP-Scan==========
 void startAPScan() {
-  if (apScan.start()) {
+  if(apScan.start()) {
     server.send ( 200, "text/json", "true");
     attack.stopAll();
   }
@@ -248,6 +306,17 @@ void setup() {
   Serial.begin(115200);
   delay(2000);
 
+  #ifdef USE_DISPLAY
+    display.init();
+    display.setFont(Roboto_Mono_8);
+    display.flipScreenVertically();
+    drawInterface();
+    pinMode(upBtn, INPUT_PULLUP);
+    pinMode(downBtn, INPUT_PULLUP);
+    pinMode(selectBtn, INPUT_PULLUP);
+  #endif
+  
+  attackMode = "start";
   pinMode(2, OUTPUT);
   delay(50);
   digitalWrite(2, HIGH);
@@ -315,6 +384,30 @@ void setup() {
   server.begin();
 }
 
+#ifdef USE_DISPLAY
+void drawInterface(){
+  display.clear();
+
+  int _lrow = 0;
+  for(int i=curSite*rowsPerSite-rowsPerSite; i<curSite*rowsPerSite; i++){
+    if(i == 0) display.drawString(3, i*fontSize, "- wifi "+wifiMode);
+    else if(i == 1) display.drawString(3, i*fontSize, "- "+scanMode);
+    else if(i == 2) display.drawString(3, i*fontSize, "- "+attackMode+" attack");
+    else if(i-3 <= apScan.results){
+      display.drawString(3, _lrow*fontSize, apScan.getAPName(i-3));
+      if(apScan.getAPSelected(i-3)){
+        display.drawVerticalLine(1, _lrow*fontSize, fontSize);
+        display.drawVerticalLine(2, _lrow*fontSize, fontSize);
+      }
+    }
+    if(_lrow == lrow) display.drawVerticalLine(0, _lrow*fontSize, fontSize);
+    _lrow++;
+  }
+  
+  display.display();
+}
+#endif
+
 void loop() {
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
@@ -322,4 +415,52 @@ void loop() {
     server.handleClient();
     attack.run();
   }
+
+  #ifdef USE_DISPLAY
+    //go up
+    if(digitalRead(upBtn) == LOW && curRow > 0){
+      curRow--;
+      if(lrow-1 < 0){
+        lrow = rowsPerSite-1;
+        curSite--;
+      }else lrow--;
+      delay(buttonDelay);
+    //go down
+    }else if(digitalRead(downBtn) == LOW && curRow < rows-1){
+      curRow++;
+      if(lrow+1 >= rowsPerSite){
+        lrow = 0;
+        curSite++;
+      }else lrow++;
+      delay(buttonDelay);
+    //select
+    }else if(digitalRead(selectBtn) == LOW){
+      //WiFi on/off
+      if(curRow == 0){
+        if(wifiMode == "on") stopWifi();
+        else startWifi();
+      //scan for APs
+      }else if(curRow == 1){
+        scanMode = "scanning...";
+        drawInterface();
+        rows = 3;
+        apScan.start();
+        rows += apScan.results;
+        sites = rows/rowsPerSite;
+        if(rows%rowsPerSite > 0) sites++;
+        scanMode = "scan";
+        apScan.sort();
+      //start,stop attack
+      }else if(curRow == 2){
+        if(attackMode == "start" && apScan.getFirstTarget() > -1) attack.start(0);
+        else if(attackMode == "stop") attack.stop(0);
+      }else if(curRow >= 3){
+        attack.stop(0);
+        apScan.select(curRow-3);
+      }
+      delay(buttonDelay);
+    }
+    drawInterface();
+  #endif
+  
 }

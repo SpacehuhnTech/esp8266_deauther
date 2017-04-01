@@ -196,7 +196,7 @@ void Attack::run(){
     if(debug) Serial.println(" done");
     if(settings.attackTimeout > 0){
       attackTimeoutCounter[0]++;
-      if(attackTimeoutCounter[0] > settings.attackTimeout) stop(1);
+      if(attackTimeoutCounter[0] > settings.attackTimeout) stop(0);
     }
   }
 
@@ -316,6 +316,7 @@ void Attack::start(int num){
     attackTimeoutCounter[num] = 0;
     refreshLed();
     if(debug) Serial.println("starting "+(String)attackNames[num]+" attack...");
+    if(num == 0) attackMode = "stop";
     if(num == 1){
       stop(2);
       stop(3);
@@ -332,6 +333,7 @@ void Attack::start(int num){
 void Attack::stop(int num){
   if(isRunning[num]){
     if(debug) Serial.println("stopping "+(String)attackNames[num]+" attack...");
+    if(num == 0) attackMode = "start";
     isRunning[num] = false;
     stati[num] = "ready";
     prevTime[num] = millis();

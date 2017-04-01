@@ -26,6 +26,7 @@ class ClientScan{
     ClientScan();
 
     void start(int _time);
+    void clearList();
     bool stop();
     void packetSniffer(uint8_t *buf, uint16_t len);
     

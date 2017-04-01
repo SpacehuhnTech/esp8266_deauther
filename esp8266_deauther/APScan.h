@@ -23,8 +23,8 @@ class APScan{
     APScan();
     
     bool start();
-    String getResults();
-    String getResult(int i);
+    void sort();
+    String getResultsJSON();
     void select(int num);
     void sendResults();
     
