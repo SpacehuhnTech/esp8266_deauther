@@ -113,9 +113,9 @@ Make sure you select the right com-port, the right upload size of your ESP8266 a
 **11** Scroll down and before `#endif` add following lines:
 
 `typedef void (*freedom_outside_cb_t)(uint8 status);`  
-`int Wi-Fi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);`  
-`void Wi-Fi_unregister_send_pkt_freedom_cb(void);`  
-`int Wi-Fi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);`  
+`int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);`  
+`void wifi_unregister_send_pkt_freedom_cb(void);`  
+`int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);`  
 
 ![screenshot of notepad, copy paste the right code](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/notepad_screenshot_1.JPG)
 
