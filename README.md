@@ -110,21 +110,22 @@ Make sure you select the right com-port, the right upload size of your ESP8266 a
 **10** Open `user_interface.h` with a text editor
 
 **11** Scroll down and before `#endif` add following lines:
+```c++
+typedef void (*freedom_outside_cb_t)(uint8 status); 
+int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);  
+void wifi_unregister_send_pkt_freedom_cb(void);
+int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq); 
 
-`typedef void (*freedom_outside_cb_t)(uint8 status);`  
-`int Wi-Fi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);`  
-`void Wi-Fi_unregister_send_pkt_freedom_cb(void);`  
-`int Wi-Fi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);`  
-
+```
 ![screenshot of notepad, copy paste the right code](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/notepad_screenshot_1.JPG)
 
 **don't forget to save!**
 
 **12** Go to the SDK_fix folder of this project
 
-**13** Copy ESP8266Wi-Fi.cpp and ESP8266Wi-Fi.h
+**13** Copy ESP8266WiFi.cpp and ESP8266WiFi.h
 
-**14** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266Wi-Fi` > `src`
+**14** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
 
 **15** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
 
