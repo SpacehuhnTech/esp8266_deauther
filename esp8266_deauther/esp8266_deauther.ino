@@ -13,7 +13,7 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 
-//#define USE_DISPLAY // <-- uncomment that if you wanna use the display
+//#define USE_DISPLAY /* <-- uncomment that if you wanna use the display */
 
 #ifdef USE_DISPLAY
 
@@ -122,9 +122,23 @@ void startWiFi(bool start){
 
 //==========AP-Scan==========
 void startAPScan() {
+  scanMode = "scanning...";
+  #ifdef USE_DISPLAY
+    drawInterface();
+  #endif
   if(apScan.start()) {
+
+    #ifdef USE_DISPLAY
+    apScan.sort();
+    rows = 3;
+    rows += apScan.results;
+    sites = rows/rowsPerSite;
+    if(rows%rowsPerSite > 0) sites++;    
+    #endif
+    
     server.send ( 200, "text/json", "true");
     attack.stopAll();
+    scanMode = "scan";
   }
 }
 

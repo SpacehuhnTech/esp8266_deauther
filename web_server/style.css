@@ -101,6 +101,12 @@ nav a:hover {
 #content {
     padding: 0.34em;
 }
+#copyright{
+	margin-top: 15px;
+	padding-bottom: 15px;
+	font-size: 0.85em;
+	text-align: center;
+}
 table {
     padding: 0;
     width: 100%;
