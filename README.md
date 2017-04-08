@@ -82,6 +82,8 @@ The NodeMCU and every other board which uses the ESP-12 has 4mb flash on it.
 
 Make sure you select the right com-port, the right upload size of your ESP8266 and the right bin file.  
 
+If flashing the bin files with a flash tool is not working, try flashing the esp8266 with the Arduino IDE as shown below.
+
 ### Compiling the source with Arduino
 
 **0** Download the source code of this project.
@@ -125,14 +127,16 @@ Make sure you select the right com-port, the right upload size of your ESP8266 a
 
 **13** Copy ESP8266Wi-Fi.cpp and ESP8266Wi-Fi.h
 
-**14** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266Wi-Fi` > `src`
+**14** Paste these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
 
 **15** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
 
 **16** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
 If no port shows up you may have to reinstall the drivers.
 
-**17** Upload!
+**17** Depending on your board you may have to adjust the `Tools` > `Board` > `Flash Frequency` and the `Tools` > `Board` > `Flash Size`. In my case i had to use a `80MHz` Flash Frequency, and a `4M (1M SPIFFS)` Flash Size
+
+**18** Upload!
 
 **Note:** If you use a 512kb version of the ESP8266, you need to comment out a part of the mac vendor list in data.h.
 
@@ -170,7 +174,7 @@ Yes, but I will not implement this 'feature' for ethical and legal reasons.
 **Can it sniff handshakes?**
 
 The ESP8266 has a promiscuous mode in which you can sniff packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
-Maybe someone will find a way around this barrier.
+Maybe someone will find a way around this barrier in the future.
 
 **espcomm_sync failed/espcomm_open when uploading**
 
@@ -182,12 +186,12 @@ Which drivers you need depends on the board, most boards use a cp2102 or ch340.
 **AP scan doesn't work**
 
 There is a reported issue on this: https://github.com/spacehuhn/esp8266_deauther/issues/5  
-Try out switching the browser or open the website with another device.   
+Try switching the browser or opening the website with another device.   
 
 **Deauth attack won't work**
 
-If you see 0 pkts/s on the website you've made a mistake. Check if you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!  
-If it can send packets but your target don't loose its connection then the Wi-Fi router uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks or they communicate via 5 GHz Wi-Fi, which the ESP8266 doesn't support.
+If you see 0 pkts/s on the website then you've made a mistake. Check that have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
+If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
 
@@ -195,6 +199,8 @@ If it can send packets but your target don't loose its connection then the Wi-Fi
 ## License
 
 This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
+
+**The License file must be included in any redistributed version of this program**
 
 ## Sources and additional links
 
