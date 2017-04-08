@@ -89,10 +89,8 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
 
     for(int i=0;i<apScan.results;i++){
       if(apScan.isSelected(i)){
-        if(apScan.aps._get(i).compare(from) || apScan.aps._get(i).compare(to)){
-          int clientNum = -2;
-          if(apScan.aps._get(i).compare(from)) clientNum = clients.getNum(to);
-          else clientNum = clients.getNum(from);
+        if(apScan.aps._get(i).compare(from)){
+          int clientNum = clientNum = clients.getNum(to);
           if(clientNum == -1 && results < maxClientScanResults){
             data_getVendor(to._get(0),to._get(1),to._get(2)).toCharArray(vendors[results],9);
             results++;
