@@ -13,6 +13,7 @@ Deauthentication attack and other hacks using an ESP8266.
 - [Installation](#installation)
   - [Uploading the bin files](#uploading-the-bin-files)  
   - [Compiling the source with Arduino](#compiling-the-source-with-arduino)
+  - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
 - [FAQ](#faq)
 - [License](#license)
@@ -68,6 +69,7 @@ I recommend you to buy a USB breakout/developer board, because they have 4Mb fla
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
 
 You have 2 choices here. Uploading the bin files is easier but not as good for debugging, so keep that in mind in case you want to open an new issue. 
+**YOU ONLY NEED TO DO ONE OF THE INSTALLATION METHODS!**
 
 ### Uploading the bin files  
 
@@ -81,6 +83,8 @@ The NodeMCU and every other board which uses the ESP-12 has 4mb flash on it.
 **That's all! :)**
 
 Make sure you select the right com-port, the right upload size of your ESP8266 and the right bin file.  
+
+If flashing the bin files with a flash tool is not working, try flashing the esp8266 with the Arduino IDE as shown below.
 
 ### Compiling the source with Arduino
 
@@ -125,18 +129,60 @@ Make sure you select the right com-port, the right upload size of your ESP8266 a
 
 **13** Copy ESP8266Wi-Fi.cpp and ESP8266Wi-Fi.h
 
-**14** Past these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266Wi-Fi` > `src`
+**14** Paste these files here `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `libraries` > `ESP8266WiFi` > `src`
 
 **15** Open `esp8266_deauther` > `esp8266_deauther.ino` in Arduino
 
 **16** Select your ESP8266 board at `Tools` > `Board` and the right port at `Tools` > `Port`  
 If no port shows up you may have to reinstall the drivers.
 
-**17** Upload!
+**17** Depending on your board you may have to adjust the `Tools` > `Board` > `Flash Frequency` and the `Tools` > `Board` > `Flash Size`. In my case i had to use a `80MHz` Flash Frequency, and a `4M (1M SPIFFS)` Flash Size
+
+**18** Upload!
 
 **Note:** If you use a 512kb version of the ESP8266, you need to comment out a part of the mac vendor list in data.h.
 
 **Your ESP8266 Deauther is now ready!**
+
+
+### Adding OLED display
+
+![image of the esp8266 deauther with an OLED and three buttons](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/esp8266_with_oled.jpg)
+
+**0** Follow the steps [above](#compiling-the-source-with-arduino) to get your Arduino environment ready.
+
+**1** Install this OLED driver library: https://github.com/squix78/esp8266-oled-ssd1306
+
+**2** Custimize the code for your wiring.  
+		In `esp8266_deauther.ino` uncomment `#define USE_DISPLAY`.  
+		Then scroll down and custimize these lines for your setup.  
+		
+		  #include <Wire.h>
+
+		  //include the library you need
+		  #include "SSD1306.h"
+		  //#include "SH1106.h"
+
+		  //button pins
+		  #define upBtn D6
+		  #define downBtn D7
+		  #define selectBtn D5
+
+		  #define buttonDelay 180 //delay in ms
+		  
+		  //render settings
+		  #define fontSize 8
+		  #define rowsPerSite 8
+
+		  //create display(Adr, SDA-pin, SCL-pin)
+		  SSD1306 display(0x3c, D2, D1);
+		  //SH1106 display(0x3c, D2, D1);
+		  
+		  int rows = 3;
+		  int curRow = 0;
+		  int sites = 1;
+		  int curSite = 1;
+		  int lrow = 0;
 
 ## How to use it
 
@@ -170,7 +216,7 @@ Yes, but I will not implement this 'feature' for ethical and legal reasons.
 **Can it sniff handshakes?**
 
 The ESP8266 has a promiscuous mode in which you can sniff packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
-Maybe someone will find a way around this barrier.
+Maybe someone will find a way around this barrier in the future.
 
 **espcomm_sync failed/espcomm_open when uploading**
 
@@ -182,12 +228,12 @@ Which drivers you need depends on the board, most boards use a cp2102 or ch340.
 **AP scan doesn't work**
 
 There is a reported issue on this: https://github.com/spacehuhn/esp8266_deauther/issues/5  
-Try out switching the browser or open the website with another device.   
+Try switching the browser or opening the website with another device.   
 
 **Deauth attack won't work**
 
-If you see 0 pkts/s on the website you've made a mistake. Check if you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!  
-If it can send packets but your target don't loose its connection then the Wi-Fi router uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks or they communicate via 5 GHz Wi-Fi, which the ESP8266 doesn't support.
+If you see 0 pkts/s on the website then you've made a mistake. Check that have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
+If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
 
@@ -195,6 +241,8 @@ If it can send packets but your target don't loose its connection then the Wi-Fi
 ## License
 
 This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
+
+**The License file must be included in any redistributed version of this program**
 
 ## Sources and additional links
 
