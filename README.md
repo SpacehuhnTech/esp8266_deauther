@@ -155,9 +155,8 @@ If no port shows up you may have to reinstall the drivers.
 
 **2** Custimize the code for your wiring.  
 		In `esp8266_deauther.ino` uncomment `#define USE_DISPLAY`.  
-		Then scroll down and custimize these lines for your setup.  
-		
-		  #include <Wire.h>
+		Then scroll down and custimize these lines depending on your setup.  
+		I used a Wemos d1 mini with a SSD1306 128x64 OLED and 3 push buttons.  
 
 		  //include the library you need
 		  #include "SSD1306.h"
@@ -177,12 +176,6 @@ If no port shows up you may have to reinstall the drivers.
 		  //create display(Adr, SDA-pin, SCL-pin)
 		  SSD1306 display(0x3c, D2, D1);
 		  //SH1106 display(0x3c, D2, D1);
-		  
-		  int rows = 3;
-		  int curRow = 0;
-		  int sites = 1;
-		  int curSite = 1;
-		  int lrow = 0;
 
 ## How to use it
 
