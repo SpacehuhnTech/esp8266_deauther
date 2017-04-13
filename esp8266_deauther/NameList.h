@@ -11,9 +11,9 @@
 #define nameLength 18
 
 /*
-The NameList holds and saves all your custom device names in the EEPROM.
-You can modify the length above, but be careful the EEPROM size is limited.
-You may have to call nameList.clear() when uploading for the first time.
+  The NameList holds and saves all your custom device names in the EEPROM.
+  You can modify the length above, but be careful the EEPROM size is limited.
+  You may have to call nameList.clear() when uploading for the first time.
 */
 extern const bool debug;
 
@@ -32,7 +32,7 @@ class NameList
     int len = 0;
   private:
     void save();
-    
+
     MacList clients;
     uint8_t names[listLength][nameLength];
 };
