@@ -16,6 +16,7 @@ Deauthentication attack and other hacks using an ESP8266.
   - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
 - [FAQ](#faq)
+- [Videos](#videos)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
 
@@ -230,12 +231,21 @@ If it can send packets but your target doesn't loose its connection, then the Wi
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
 
+## Videos
+  
+[![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
+  
+[![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
+  
+[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
+  
+[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
 
 ## License
 
 This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
 
-**The License file must be included in any redistributed version of this program**
+**The License file must be included in any redistributed version of this program!**
 
 ## Sources and additional links
 
@@ -255,9 +265,3 @@ packet injection with ESP8266:
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009
 
 Wi-Fi_send_pkt_freedom function limitations: http://esp32.com/viewtopic.php?f=13&t=586&p=2648&hilit=Wi-Fi_send_pkt_freedom#p2648
-
-esp32 esp_Wi-Fi_internal function limitations: http://esp32.com/viewtopic.php?f=13&t=586&p=2648&hilit=Wi-Fi_send_pkt_freedom#p2648
-
-Videos:  
-[![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
-[![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
