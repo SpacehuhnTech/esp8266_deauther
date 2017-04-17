@@ -36,20 +36,16 @@ class Settings
     void save();
     String get();
     void info();
-
     int ssidLen;
     String ssid = "";
     bool ssidHidden;
     int passwordLen;
     String password = "";
     int apChannel;
-
     bool apScanHidden;
-    
     uint8_t deauthReason;
     unsigned int attackTimeout;
     int attackPacketRate;
-    
     int clientScanTime;
     bool attackEncrypted;
     bool useLed;

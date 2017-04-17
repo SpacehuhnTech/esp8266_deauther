@@ -1,7 +1,7 @@
 #include "NameList.h"
 
 NameList::NameList(){
-  if((listLength*nameLength+6)+1>maxSize) Serial.println("ERROR: EEPROM OVERFLOW!");
+  if((listLength*nameLength+6)+1>maxSize) Serial.println("ERROR: EEPROM overflow!");
 }
 
 void NameList::load(){
@@ -24,7 +24,7 @@ void NameList::clear(){
   clients._clear();
   EEPROM.write(romAdr,len);
   EEPROM.commit();
-  Serial.println("nameList cleared");
+  Serial.println("Name list cleared!");
 }
 
 void NameList::save(){
@@ -91,4 +91,3 @@ void NameList::edit(int num, String name){
     else names[num][i] = 0x00;
   }
 }
-

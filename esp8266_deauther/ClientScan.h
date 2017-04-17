@@ -28,10 +28,8 @@ class ClientScan{
     void start(int _time);
     bool stop();
     void packetSniffer(uint8_t *buf, uint16_t len);
-    
     String getResults();
     void select(int num);
-    
     String getClientName(int num);
     int getClientPackets(int num);
     String getClientVendor(int num);
@@ -39,26 +37,20 @@ class ClientScan{
     bool getClientSelected(int num);
     int getClientConnectedAp(int num);
     int getFirstClient();
-
     int results = 0;
     int timeout = 0;
-    
     bool sniffing = false;
   private:
     long startTime = 0;
-    
     Mac from;
     Mac to;
-
     Mac broadcast;
     Mac zero;
-    
     MacList clients;
     char vendors[maxClientScanResults][9];
     int packets[maxClientScanResults];
     bool selected[maxClientScanResults];
     int connectedToAp[maxClientScanResults];
-
     int channels[13];
     int channelsNum = 0;
     int curChannel = 0;

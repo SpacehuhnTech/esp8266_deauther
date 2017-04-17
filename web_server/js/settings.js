@@ -35,15 +35,15 @@ function getData() {
 
     clientNames.innerHTML = "Client Names " + res.nameList.length + "/50";
 
-    var tr = '<tr><th>MAC</th><th>Vendor</th><th>Name</th><th>X</th></tr>';
+    var tr = '<tr><th>MAC</th><th>Vendor</th><th>Name</th><th>Options</th></tr>';
 
     for (var i = 0; i < res.nameList.length; i++) {
 
       tr += '<tr>';
       tr += '<td>' + res.nameList[i].m + '</td>';
       tr += '<td>' + res.nameList[i].v + '</td>';
-      tr += '<td>' + res.nameList[i].n + ' <a class="blue" onclick="changeName(' + i + ')">edit</a></td>';
-      tr += '<td><button class="marginNull warnBtn" onclick="deleteName(' + i + ')">x</button></td>';
+      tr += '<td>' + res.nameList[i].n + ' <a class="blue" onclick="changeName(' + i + ')">Edit</a></td>';
+      tr += '<td><button class="marginNull warnBtn" onclick="deleteName(' + i + ')">Remove</button></td>';
 
       tr += '</tr>';
     }
@@ -57,7 +57,7 @@ function changeName(id) {
   if (newName != null) {
     getResponse("editNameList.json?id=" + id + "&name=" + newName, function(responseText) {
       if (responseText == "true") getData();
-      else alert("error");
+      else alert("Error!");
     });
   }
 }
@@ -65,12 +65,12 @@ function changeName(id) {
 function deleteName(id) {
   getResponse("deleteName.json?num=" + id, function(responseText) {
     if (responseText == "true") getData();
-    else alert("error");
+    else alert("Error!");
   });
 }
 
 function saveSettings() {
-  saved.innerHTML = "saving...";
+  saved.innerHTML = "Saving...";
   var url = "settingsSave.json";
   url += "?ssid=" + ssid.value;
   url += "&ssidHidden=" + ssidHidden.checked;
@@ -88,9 +88,9 @@ function saveSettings() {
   getResponse(url, function(responseText) {
     if (responseText == "true") {
       getData();
-      saved.innerHTML = "saved";
+      saved.innerHTML = "Saved";
     }
-    else alert("error");
+    else alert("Error!");
   });
 }
 
@@ -98,16 +98,16 @@ function resetSettings() {
   getResponse("settingsReset.json", function(responseText) {
     if (responseText == "true") {
       getData();
-      saved.innerHTML = "saved";
+      saved.innerHTML = "Saved";
     }
-    else alert("error");
+    else alert("Error!");
   });
 }
 
 function clearNameList() {
   getResponse("clearNameList.json", function(responseText) {
     if (responseText == "true") getData();
-    else alert("error");
+    else alert("Error!");
   });
 }
 

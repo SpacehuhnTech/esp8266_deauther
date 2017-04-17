@@ -12,65 +12,65 @@ function getResults() {
     res = JSON.parse(responseText);
     var aps = "";
     var clients = "";
-    var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
+    var tr = "<tr><th>Type</th><th>Status</th><th>Options</th></tr>";
     for (var i = 0; i < res.aps.length; i++) aps += "<li>" + res.aps[i] + "</li>";
-    for (var i = 0; i < res.clients.length; i++) clients += "<li>" + res.clients[i] + "</li>";
+      for (var i = 0; i < res.clients.length; i++) clients += "<li>" + res.clients[i] + "</li>";
 
-    selectedAPs.innerHTML = aps;
-    selectedClients.innerHTML = clients;
+        selectedAPs.innerHTML = aps;
+      selectedClients.innerHTML = clients;
 
-    for (var i = 0; i < res.attacks.length; i++) {
-      if (res.attacks[i].running) tr += "<tr class='selected'>";
-      else tr += "<tr>";
+      for (var i = 0; i < res.attacks.length; i++) {
+        if (res.attacks[i].running) tr += "<tr class='selected'>";
+        else tr += "<tr>";
 
-      tr += "<td>" + res.attacks[i].name + "</td>";
-      if (res.attacks[i].status == "ready") tr += "<td style='color:#1ecb1e'>" + res.attacks[i].status + "</td>";
-      else tr += "<td style='color:#f00'>" + res.attacks[i].status + "</td>";
-      if (res.attacks[i].running) tr += "<td><button class='marginNull selectedBtn' onclick='startStop(" + i + ")'>stop</button></td>";
-      else tr += "<td><button class='marginNull' onclick='startStop(" + i + ")'>start</button></td>";
+        tr += "<td>" + res.attacks[i].name + "</td>";
+        if (res.attacks[i].status == "ready") tr += "<td style='color:#1ecb1e'>" + res.attacks[i].status + "</td>";
+        else tr += "<td style='color:#f00'>" + res.attacks[i].status + "</td>";
+        if (res.attacks[i].running) tr += "<td><button class='marginNull selectedBtn' onclick='startStop(" + i + ")'>stop</button></td>";
+        else tr += "<td><button class='marginNull' onclick='startStop(" + i + ")'>start</button></td>";
 
-      tr += "</tr>";
-    }
-    table.innerHTML = tr;
+        tr += "</tr>";
+      }
+      table.innerHTML = tr;
 
-    ssidCounter.innerHTML = res.ssid.length + "/64";
+      ssidCounter.innerHTML = res.ssid.length + "/64";
 
-    var tr = "<tr><th>Name</th><th>X</th></tr>";
-    for (var i = 0; i < res.ssid.length; i++) {
-      tr += "<tr>";
-      tr += "<td>" + res.ssid[i] + "</td>";
-      tr += '<td><button class="marginNull warnBtn" onclick="deleteSSID(' + i + ')">x</button></td>';
-      tr += "</tr>";
-    }
-    ssidList.innerHTML = tr;
+      var tr = "<tr><th>SSID</th><th>Options</th></tr>";
+      for (var i = 0; i < res.ssid.length; i++) {
+        tr += "<tr>";
+        tr += "<td>" + res.ssid[i] + "</td>";
+        tr += '<td><button class="marginNull warnBtn" onclick="deleteSSID(' + i + ')">Remove</button></td>';
+        tr += "</tr>";
+      }
+      ssidList.innerHTML = tr;
 
-  }, function() {
-    clearInterval(resultInterval);
-    location.reload();
-  });
+    }, function() {
+      clearInterval(resultInterval);
+      location.reload();
+    });
 }
 
 function startStop(num) {
   getResponse("attackStart.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error");
+    else alert("Error");
   });
 }
 
 function addSSID() {
   saved.innerHTML = "";
-  if (res.ssid.length >= 64) alert("SSID list full :(");
+  if (res.ssid.length >= 64) alert("SSID list full!");
   else {
-    var _ssidName = prompt("new SSID:");
+    var _ssidName = prompt("New SSID:");
     if (_ssidName != null) getResponse("addSSID.json?name=" + _ssidName, getResults);
   }
 }
 
 function cloneSSID() {
   saved.innerHTML = "";
-  if (res.ssid.length >= 64) alert("SSID list full :(");
+  if (res.ssid.length >= 64) alert("SSID list full!");
   else {
-    var _ssidName = prompt("new SSID:");
+    var _ssidName = prompt("New SSID:");
     if (_ssidName != null) getResponse("cloneSSID.json?name=" + _ssidName, getResults);
   }
 }
@@ -89,11 +89,11 @@ function clearSSID() {
   getResponse("clearSSID.json", getResults);
 }
 function saveSSID() {
-  saved.innerHTML = "saved";
+  saved.innerHTML = "Saved";
   getResponse("saveSSID.json", getResults);
 }
 function resetSSID() {
-  saved.innerHTML = "saved";
+  saved.innerHTML = "Saved";
   getResponse("resetSSID.json", getResults);
 }
 

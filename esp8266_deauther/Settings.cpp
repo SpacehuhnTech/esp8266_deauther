@@ -24,7 +24,6 @@ void Settings::load(){
     }
     
     apScanHidden = (bool)EEPROM.read(apScanHiddenAdr);
-    
     deauthReason = EEPROM.read(deauthReasonAdr);
     attackTimeout = eepromReadInt(attackTimeoutAdr);
     attackPacketRate = EEPROM.read(attackPacketRateAdr);
@@ -36,27 +35,24 @@ void Settings::load(){
 }
 
 void Settings::reset(){
-  if(debug) Serial.print("reset settings...");
+  if(debug) Serial.print("Resetting settings..");
   
-  ssid = "pwned";
+  ssid = "WiFi";
   password = "deauther"; //must have at least 8 characters
   ssidHidden = false;
   apChannel = 1;
-
   ssidLen = ssid.length();
   passwordLen = password.length();
-  
   apScanHidden = true;
-    
   deauthReason = 0x01;
-  attackTimeout = 5*60;
+  attackTimeout = 0;
   attackPacketRate = 10;
   clientScanTime = 15;
-  attackEncrypted = false;
-  useLed = false;
+  attackEncrypted = true;
+  useLed = true;
   channelHop = false;
   
-  if(debug) Serial.println("done");
+  if(debug) Serial.println("Done!");
   
   save();
 }
@@ -64,21 +60,15 @@ void Settings::reset(){
 void Settings::save(){
   ssidLen = ssid.length();
   passwordLen = password.length();
-  
   EEPROM.write(ssidLenAdr, ssidLen);
   EEPROM.write(passwordLenAdr, passwordLen);
   for(int i=0;i<ssidLen;i++) EEPROM.write(ssidAdr+i,ssid[i]);
   for(int i=0;i<passwordLen;i++) EEPROM.write(passwordAdr+i,password[i]);
-
   EEPROM.write(ssidHiddenAdr, ssidHidden);
   EEPROM.write(apChannelAdr, apChannel);
-
   EEPROM.write(apScanHiddenAdr, apScanHidden);
-  
   EEPROM.write(deauthReasonAdr, deauthReason);
-
   eepromWriteInt(attackTimeoutAdr, attackTimeout);
-
   EEPROM.write(attackPacketRateAdr, attackPacketRate);
   EEPROM.write(clientScanTimeAdr, clientScanTime);
   EEPROM.write(attackEncryptedAdr, attackEncrypted);
@@ -88,30 +78,30 @@ void Settings::save(){
   
   if(debug){
     info();
-    Serial.println("settings saved");
+    Serial.println("Settings saved!");
   }
 }
 
 void Settings::info(){
-  Serial.println("settings:");
+  Serial.println("Settings:");
   Serial.println("SSID: "+ssid);
   Serial.println("SSID length: "+(String)ssidLen);
   Serial.println("SSID hidden: "+(String)ssidHidden);
-  Serial.println("password: "+password);
-  Serial.println("password length: "+(String)passwordLen);
-  Serial.println("channel: "+(String)apChannel);
+  Serial.println("Password: "+password);
+  Serial.println("Password length: "+(String)passwordLen);
+  Serial.println("Channel: "+(String)apChannel);
   Serial.println("Scan hidden APs: "+(String)apScanHidden);
-  Serial.println("deauth reson: "+(String)(int)deauthReason);
-  Serial.println("attack timeout: "+(String)attackTimeout);
-  Serial.println("attack packet rate: "+(String)attackPacketRate);
-  Serial.println("client scan time: "+(String)clientScanTime);
-  Serial.println("attack SSID encrypted: "+(String)attackEncrypted);
-  Serial.println("use built-in LED: "+(String)useLed);
-  Serial.println("channel hopping: "+(String)channelHop);
+  Serial.println("Deauth reson: "+(String)(int)deauthReason);
+  Serial.println("Attack timeout: "+(String)attackTimeout);
+  Serial.println("Attack packet rate: "+(String)attackPacketRate);
+  Serial.println("Client scan time: "+(String)clientScanTime);
+  Serial.println("Attack SSID encrypted: "+(String)attackEncrypted);
+  Serial.println("Use built-in LED: "+(String)useLed);
+  Serial.println("Channel hopping: "+(String)channelHop);
 }
 
 String Settings::get(){
-  if(debug) Serial.println("getting settings json");
+  if(debug) Serial.println("Getting settings json..");
   String json = "{";
   
   json += "\"ssid\":\""+ssid+"\",";
@@ -140,7 +130,7 @@ String Settings::get(){
   json += "] }";
   if(debug){
     Serial.println(json);
-    Serial.println("done");
+    Serial.println("Done!");
   }
   return json;
 }

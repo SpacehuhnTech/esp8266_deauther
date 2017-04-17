@@ -7,11 +7,11 @@ ClientScan::ClientScan(){
 
 void ClientScan::start(int _time){
   Serial.println();
-  Serial.println("starting client scan");
+  Serial.println("Starting client scan..");
   
   clients._clear();
   for(int i=0;i<maxClientScanResults;i++){
-    selected[i] = false;
+    selected[i] = true;
     packets[i] = 0;
   }
   
@@ -39,7 +39,7 @@ void ClientScan::start(int _time){
   wifi_set_channel(channels[curChannel]);
   wifi_promiscuous_enable(1);
 
-  if(debug) Serial.println("set channel to "+(String)channels[curChannel]);
+  if(debug) Serial.println("Setting channel to "+(String)channels[curChannel]);
   curChannel++;
 
   startTime = millis();
@@ -49,7 +49,7 @@ void ClientScan::start(int _time){
 bool ClientScan::stop(){
   long curTime = millis();
   if(curTime - startTime >= (timeout*1000)/channelsNum && curChannel<channelsNum){
-    if(debug) Serial.println("changing to channel "+(String)channels[curChannel]);
+    if(debug) Serial.println("Changing to channel "+(String)channels[curChannel]);
     wifi_set_channel(channels[curChannel]);
     curChannel++;
   }
@@ -57,7 +57,7 @@ bool ClientScan::stop(){
     sniffing = false;
     wifi_promiscuous_enable(0);
 
-    Serial.println("stopping client scan after "+(String)(curTime-startTime)+"ms");
+    Serial.println("Stopping client scan after "+(String)(curTime-startTime)+"ms");
     if(debug){
       for(int i=0;i<results && i<maxClientScanResults;i++){
         Serial.print(i);
@@ -67,8 +67,6 @@ bool ClientScan::stop(){
         Serial.print(getClientVendor(i));
         Serial.print(" ");
         Serial.print(getClientMac(i).toString());
-        /*Serial.print(" ");
-        Serial.print(getClientSelected(i));*/
         Serial.println();
       }
     }
@@ -94,19 +92,9 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len){
             packets[cliNbr]++;
             connectedToAp[cliNbr] = i;
           }else packets[clientNum]++;
-          /*
-          if(debug){
-            Serial.print("found: ");
-            from._print();
-            Serial.print(" => ");
-            to._print();
-            Serial.println("");
-          }
-          */
         }
       }
     }
-    
   }
 }
 
@@ -123,7 +111,7 @@ int ClientScan::getFirstClient(){
   return -1;
 }
 String ClientScan::getResults(){
-  if(debug) Serial.print("getting client scan result JSON ");
+  if(debug) Serial.print("Getting client scan result JSON..");
   String json = "{ \"clients\":[";
   for(int i=0;i<results && i<maxClientScanResults;i++){
     json += "{";
@@ -140,10 +128,9 @@ String ClientScan::getResults(){
   json += "] }";
   if(debug){
     Serial.println(json);
-    Serial.println("done ");
+    Serial.println("Done!");
   }
   return json;
-  
 }
 
 void ClientScan::select(int num){
