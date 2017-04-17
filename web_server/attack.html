@@ -1,63 +1,57 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="style.css">
-		<meta name="viewport" content="width=device-width, initial-scale=0.8">
-	</head>
-	<body>
-		<nav>
-			<a href="/">APs</a>
-			<a href="clients">Clients</a>
-			<a href="attack">Attack</a>
-			<a href="settings">Settings</a>
-			<ul class="nav right">
-				<a href="#" onclick="restartESP()">Restart</a>
-			<ul>
-		</nav>
-		<div id="content">
-			<h1>Attack</h1>
-			
-			<p class="block bold">Selected AP:</p>
-			<ul id="selectedAPs">
-			</ul>
-			
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=0.8">
+	<title>Attack - NodeMCU</title>
+</head>
+<body>
+	<nav>
+		<a href="/">Scan APs</a>
+		<a href="clients">Scan clients</a>
+		<a href="attack">Attack</a>
+		<a href="settings">Settings</a>
+		<span class="nav right">
+			<a href="#" onclick="restartESP()">Reboot</a>
+		</span>
+	</nav>
+	<div id="content">
+		<h1>Perform attack</h1>
+		<p class="block bold">Selected APs:</p>
+		<ul id="selectedAPs">
+		</ul>
+		<br />
+		<p class="block bold">Selected clients:</p>
+		<ul id="selectedClients">
+		</ul>
+		<br />
+		<table>
+		</table>
+		<p class="small">
 			<br />
-			
-			<p class="block bold">Selected Clients:</p>
-			<ul id="selectedClients">
-			</ul>
-			
+			<b>Deauth [deauthentication attack]:</b><br />
+			Sends deauthentication and dissociation frames to the selected client(s) in the selected WiFi AP(s).
 			<br />
-			
-			<table>
-			</table>
-			
-			<p class="small">
-				<br />
-				<b>deauth [deauthentication attack]:</b><br />
-				Sends deauthentication frames and dissociation frames to the selected client(s) in the selected WiFi access point(s).
-				<br />
-				<b>Note: </b>
-				If no client is selected, the packets are sent as broadcast!
-				<br /><br />
-				<b>beacon [beacon flood attack]:</b><br />
-				(clone:) Spams beacon frames with a similar SSID as the selected WiFi access point(s).<br />
-				(list:) Spams beacon frames with all SSIDs in the list below.
-				<br /><br />
-				<b>probe request [probe request flood attack]:</b><br />
-				Spams probe request frames with all SSIDs in the list below.<br />
-				Usefull to confuse and spam WiFi trackers.
-			</p>
-			<br />
-			<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">clear</button> <button class="marginNull" onclick="randomSSID()">random</button> <button class="marginNull" onclick="cloneSSID()">clone</button> <button class="marginNull" onclick="addSSID()">add</button></p>
-			<br />
-			<table>
-			</table>
-			<br />
-			<button class="marginNull warnBtn" onclick="resetSSID()">reset</button> <button class="marginNull" onclick="saveSSID()">save</button> <p class="small" id="saved">saved</p>
-		</div>
-		<script src="js/functions.js"></script>
-		<script src="js/attack.js"></script>
-	</body>
+			<b>Note: </b>
+			If no client is selected, the packets are sent as broadcast (to all clients)!
+			<br /><br />
+			<b>Beacon [beacon flood attack]:</b><br />
+			Clone: Spams beacon frames with a similar SSID as the selected WiFi AP(s).<br />
+			List: Spams beacon frames with all SSIDs in the list below.
+			<br /><br />
+			<b>Probe request [probe request flood attack]:</b><br />
+			Spams probe request frames with all SSIDs in the list below.<br />
+		</p>
+		<br />
+		<p class="block bold">SSIDs: <span id="ssidCounter">0/64</span> <button class="marginNull warnBtn" onclick="clearSSID()">Clear</button> <button class="marginNull" onclick="randomSSID()">Generate</button> <button class="marginNull" onclick="cloneSSID()">Clone</button> <button class="marginNull" onclick="addSSID()">Add</button></p>
+		<br />
+		<table>
+		</table>
+		<br />
+		<button class="marginNull warnBtn" onclick="resetSSID()">Reset</button> <button class="marginNull" onclick="saveSSID()">Save</button> <p class="small" id="saved">Saved</p>
+	</div>
+	<script src="js/functions.js"></script>
+	<script src="js/attack.js"></script>
+</body>
 </html>

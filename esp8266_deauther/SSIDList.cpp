@@ -1,7 +1,7 @@
 #include "SSIDList.h"
 
 SSIDList::SSIDList(){
-  if(listAdr+SSIDListLength*SSIDLength > 4096) Serial.println("WARNING: EEPROM overflow!");
+  if(listAdr+SSIDListLength*SSIDLength > 4096) Serial.println("ERROR: EEPROM overflow!");
 }
 
 void SSIDList::load(){
@@ -39,16 +39,16 @@ void SSIDList::addClone(String name){
   for(int c=0;c<SSIDListLength;c++){    
     _apName = name;    
       
-    if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";//e.g. "SAMPLEAP   "
+    if(c < _restSSIDLen) for(int d=0; d < _restSSIDLen-c; d++) _apName += " ";
     else if(c < _restSSIDLen*2){
       _apName = " "+_apName;
-      for(int d=0;d<(_restSSIDLen-1)-c/2;d++) _apName += " ";//e.g. " SAMPLEAP   "
+      for(int d=0;d<(_restSSIDLen-1)-c/2;d++) _apName += " ";
     }else if(c < _restSSIDLen*3){
       _apName = "."+_apName;
-      for(int d=0;d<(_restSSIDLen-1)-c/3;d++) _apName += " ";//e.g. ".SAMPLEAP   "
+      for(int d=0;d<(_restSSIDLen-1)-c/3;d++) _apName += " ";
     } else{
       for(int d=0; d < _restSSIDLen-2; d++) _apName += " ";
-      _apName += (String)c;//e.g. "SAMPLEAP        78"
+      _apName += (String)c;
     }
     add(_apName);
   }
@@ -81,7 +81,7 @@ void SSIDList::remove(int num){
 }
 
 void SSIDList::save(){
-  if(debug) Serial.print("saving SSIDList...");
+  if(debug) Serial.print("Saving SSID list..");
   EEPROM.write(lenAdr, len);
   for(int i=0;i<len;i++){
     for(int h=0;h<SSIDLength;h++){
@@ -89,7 +89,7 @@ void SSIDList::save(){
     }
   }
   EEPROM.commit();
-  if(debug) Serial.println("done");
+  if(debug) Serial.println("Done!");
 }
 
 void SSIDList::_random(){
@@ -100,6 +100,3 @@ void SSIDList::_random(){
     add(_rName);
   }
 }
-
-
-

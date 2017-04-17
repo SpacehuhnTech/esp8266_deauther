@@ -31,7 +31,7 @@ function getResults(reload) {
     clientsFound.innerHTML = "Client devices found: " + res.clients.length;
 
     var tr = '';
-    if (res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th>Select</th></tr>';
+    if (res.clients.length > 0) tr += '<tr><th>Packets</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th>Options</th></tr>';
 
     for (var i = 0; i < res.clients.length; i++) {
 
@@ -39,12 +39,12 @@ function getResults(reload) {
       else tr += '<tr>';
       tr += '<td>' + res.clients[i].p + '</td>';
       tr += '<td>' + res.clients[i].v + '</td>';
-      tr += '<td>' + res.clients[i].n + ' <a class="blue" onclick="changeName(' + res.clients[i].i + ')">edit</a></td>';
+      tr += '<td>' + res.clients[i].n + ' <a class="blue" onclick="changeName(' + res.clients[i].i + ')">Edit</a></td>';
       tr += '<td>' + res.clients[i].m + '</td>';
       tr += '<td>' + res.clients[i].a + '</td>';
 
-      if (res.clients[i].s == 1) tr += '<td><button class="marginNull selectedBtn" onclick="select(' + res.clients[i].i + ')">deselect</button></td>';
-      else tr += '<td><button class="marginNull" onclick="select(' + res.clients[i].i + ')">select</button></td>';
+      if (res.clients[i].s == 1) tr += '<td><button class="marginNull selectedBtn" onclick="select(' + res.clients[i].i + ')">Deselect</button></td>';
+      else tr += '<td><button class="marginNull" onclick="select(' + res.clients[i].i + ')">Select</button></td>';
 
       tr += '</tr>';
     }
@@ -63,10 +63,10 @@ function getResults(reload) {
 function scan() {
   getResponse("ClientScan.json?time=" + scanTime.value, function(responseText) {
     if (responseText == "true") {
-      scanStatus.innerHTML = "scanning...";
+      scanStatus.innerHTML = "Scanning...";
       toggleBtn(false);
       setTimeout(function() {
-        scanStatus.innerHTML = "reconnecting...";
+        scanStatus.innerHTML = "Reconnecting...";
         getResults(true);
       }, scanTime.value * 1000);
     }
@@ -77,7 +77,7 @@ function scan() {
 function select(num) {
   getResponse("clientSelect.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error :/");
+    else alert("Error!");
   });
 }
 
@@ -86,7 +86,7 @@ function changeName(id) {
   if (newName != null) {
     getResponse("setName.json?id=" + id + "&name=" + newName, function(responseText) {
       if (responseText == "true") getResults();
-      else alert("error");
+      else alert("Error!");
     });
   }
 }

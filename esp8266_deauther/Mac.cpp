@@ -56,5 +56,3 @@ bool Mac::compare(Mac target){
   }
   return true;
 }
-
-

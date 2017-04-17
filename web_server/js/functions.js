@@ -23,6 +23,6 @@ function getResponse(adr, callback, timeoutCallback, timeout){
 function restartESP() {
   getResponse("restartESP.json", function(responseText) {
     if (responseText == "true") getData();
-    else alert("error");
+    else alert("Error!");
   });
 }

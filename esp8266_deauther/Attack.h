@@ -24,7 +24,6 @@ extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
 extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
 extern const bool debug;
-
 extern APScan apScan;
 extern ClientScan clientScan;
 extern Settings settings;
@@ -42,7 +41,6 @@ class Attack
     String getResults();
     void refreshLed();
   private:
-
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
     void buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt);
     void buildProbe(String _ssid, Mac _mac);

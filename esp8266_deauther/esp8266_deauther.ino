@@ -1,5 +1,4 @@
 #include <Arduino.h>
-
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
@@ -36,7 +35,7 @@ void sniffer(uint8_t *buf, uint16_t len) {
 }
 
 void startWifi() {
-  Serial.println("starting WiFi AP");
+  Serial.println("Starting WiFi AP..");
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
   WiFi.softAP((const char*)settings.ssid.c_str(), (const char*)settings.password.c_str(), settings.apChannel, settings.ssidHidden); //for an open network without a password change to:  WiFi.softAP(ssid);
@@ -72,13 +71,6 @@ void startAPScan() {
 
 void sendAPResults() {
   apScan.sendResults();
-  /*
-  if (server.hasArg("apid")) {
-    int apid = server.arg("apid").toInt();
-    server.send ( 200, "text/json", apScan.getResult(apid));
-  } else {
-    server.send ( 200, "text/json", apScan.getResults());
-  }*/
 }
 
 void selectAP() {
@@ -95,7 +87,7 @@ void startClientScan() {
     server.send(200, "text/json", "true");
     clientScan.start(server.arg("time").toInt());
     attack.stopAll();
-  } else server.send( 200, "text/json", "Error: no selected access point");
+  } else server.send( 200, "text/json", "ERROR: Please select AP first!");
 }
 
 void sendClientResults() {
@@ -244,24 +236,17 @@ void editClientName() {
 }
 
 void setup() {
-
   Serial.begin(115200);
   delay(2000);
-
   pinMode(2, OUTPUT);
   delay(50);
   digitalWrite(2, HIGH);
-  
   EEPROM.begin(4096);
-  
   settings.load();
   if (debug) settings.info();
   nameList.load();
   ssidList.load();
-
-  Serial.println("");
-  Serial.println("starting...");
-
+  Serial.println("Starting...");
   startWifi();
   attack.stopAll();
   attack.generate();

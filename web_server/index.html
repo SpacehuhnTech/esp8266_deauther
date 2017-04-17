@@ -1,43 +1,42 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<link rel="stylesheet" href="style.css">
-		<meta name="viewport" content="width=device-width, initial-scale=0.8">
-	</head>
-	<body>
-		<nav>
-			<a href="/">APs</a>
-			<a href="clients">Clients</a>
-			<a href="attack">Attack</a>
-			<a href="settings">Settings</a>
-			<ul class="nav right">
-				<a href="#" onclick="restartESP()">Restart</a>
-			<ul>
-		</nav>
-		<div id="content">
-			<h1>Scan for WiFi access points</h1>
-			
-			<button onclick="scan()" id="apScanStart">scan</button>
-			<a id="scanInfo">scanning...</a>
-			
-			<p class="block bold" id="networksFound">Networks found: 0</p>
-			<p class="small">
-				MAC: <span id="apMAC"></span>
-			</p>
-			<br />
-			
-		</div>
-		
-		<table>
-		</table>
-		<p class="small" id="wpa_info">
-			<br />
-			WPA* = WPA/WPA2 auto mode
-			<br>
-			continuous scan: <button onclick="startConScan()" id="startStopScan">start</button>
+<head>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="style.css">
+	<meta name="viewport" content="width=device-width, initial-scale=0.8">
+	<title>Scan for APs - NodeMCU</title>
+
+</head>
+<body>
+	<nav>
+		<a href="/">Scan APs</a>
+		<a href="clients">Scan clients</a>
+		<a href="attack">Attack</a>
+		<a href="settings">Settings</a>
+		<span class="nav right">
+			<a href="#" onclick="restartESP()">Reboot</a>
+		</span>
+	</nav>
+	<div id="content">
+		<h1>Scan for WiFi APs</h1>
+		<button onclick="scan();" id="apScanStart">Scan</button>
+		<a id="scanInfo">Scanning..</a>
+		<p class="small">Note: Auto-scanning on page load enabled!</p>
+		<p class="small">Note: Auto-selecting APs enabled!</p>
+		<br />
+		<p class="block bold" id="networksFound">APs found: 0</p>
+		<p class="small">
+		MAC: <span id="apMAC"></span>
 		</p>
-		<script src="js/functions.js"></script>
-		<script src="js/index.js"></script>
-	</body>
+		<br />
+	</div>
+	<table>
+	</table>
+	<br>
+	<p class="small" id="wpa_info">
+		Continuous scan: <button onclick="startConScan()" id="startStopScan">Start</button>
+	</p>
+	<script src="js/functions.js"></script>
+	<script src="js/index.js"></script>
+</body>
 </html>

@@ -40,7 +40,7 @@ function getResults() {
     apMAC.innerHTML = "";
 
     var tr = '';
-    if (res.aps.length > 0) tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
+    if (res.aps.length > 0) tr += '<tr><th>Channel</th><th>SSID</th><th>RSSI</th><th>Encryption</th><th>Options</th></tr>';
 
     for (var i = 0; i < res.aps.length; i++) {
 
@@ -52,10 +52,10 @@ function getResults() {
       tr += '<td>' + getEncryption(res.aps[i].e) + '</td>';
 
       if (res.aps[i].se) {
-        tr += '<td><button class="marginNull selectedBtn" onclick="select(' + res.aps[i].i + ')">deselect</button></td>';
+        tr += '<td><button class="marginNull selectedBtn" onclick="select(' + res.aps[i].i + ')">Deselect</button></td>';
         apMAC.innerHTML = res.aps[i].m;
       }
-      else tr += '<td><button class="marginNull" onclick="select(' + res.aps[i].i + ')">select</button></td>';
+      else tr += '<td><button class="marginNull" onclick="select(' + res.aps[i].i + ')">Select</button></td>';
       tr += '</tr>';
     }
     table.innerHTML = tr;
@@ -68,7 +68,7 @@ function scan() {
   toggleBtn(false);
   getResponse("APScan.json", function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error");
+    else alert("Error!");
     toggleBtn(true);
   });
 }
@@ -76,11 +76,11 @@ function scan() {
 function startConScan() {
   if (autoScan) {
     autoScan = false;
-    startStopScan.innerHTML = "start";
+    startStopScan.innerHTML = "Start";
     toggleBtn(true);
   } else {
     autoScan = true;
-    startStopScan.innerHTML = "stop";
+    startStopScan.innerHTML = "Stop";
     toggleBtn(false);
   }
 }
@@ -88,7 +88,7 @@ function startConScan() {
 function select(num) {
   getResponse("APSelect.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error");
+    else alert("Error!");
   });
 }
 

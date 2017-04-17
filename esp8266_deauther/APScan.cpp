@@ -6,11 +6,11 @@ APScan::APScan(){
 
 bool APScan::start(){
     if(debug){
-      Serial.println("starting AP scan...");
-      Serial.println("MAC - Ch - RSSI - Encrypt. - SSID - Hidden");// - Vendor");
+      Serial.println("Starting AP scan..");
+      Serial.println("MAC - Ch - RSSI - Encrypt. - SSID - Hidden");
     }
     aps._clear();
-    for(int i=0;i<maxAPScanResults;i++) selected[i] = false;
+    for(int i=0;i<maxAPScanResults;i++) selected[i] = true; //Auto select APs
     results = WiFi.scanNetworks(false, settings.apScanHidden); // lets scanNetworks return hidden APs. (async = false & show_hidden = true)
     
     for(int i=0;i<results && i<maxAPScanResults;i++){
@@ -24,7 +24,6 @@ bool APScan::start(){
       String _ssid = WiFi.SSID(i);
       _ssid.replace("\"","\\\"");
       _ssid.toCharArray(names[i],33);
-      //data_getVendor(WiFi.BSSID(i)[0],WiFi.BSSID(i)[1],WiFi.BSSID(i)[2]).toCharArray(vendors[i],9);
       if(debug){
         Serial.print((String)i);
         Serial.print(" - ");
@@ -39,44 +38,11 @@ bool APScan::start(){
         Serial.print(names[i]);
         Serial.print(" - ");
         Serial.print(hidden[i]);
-        //Serial.print(" - ");
-        //Serial.print(vendors[i]);
         Serial.println();
       }
     }
-
-    //for debugging the APScan crash bug
-    /*
-    if(debug){
-      for(int i=results;i<maxAPScanResults;i++){
-        Mac _ap;
-        _ap.set(random(255),random(255),random(255),random(255),random(255),random(255));
-        aps.add(_ap);
-        channels[i] = random(1,12);
-        rssi[i] = random(-30,-90);
-        encryption[i] = ENC_TYPE_NONE;
-        String _ssid = "test_dbeJwq3tPtJsuWtgULgShD9dxXV";
-        _ssid.toCharArray(names[i],33);
-
-        Serial.print((String)i);
-        Serial.print(" - ");
-        _ap._print();
-        Serial.print(" - ");
-        Serial.print(channels[i]);
-        Serial.print(" - ");
-        Serial.print(rssi[i]);
-        Serial.print(" - ");
-        Serial.print(getEncryption(encryption[i]));
-        Serial.print(" - ");
-        Serial.print(names[i]);
-        Serial.println();
-
-        results++;
-      }
-    }
-    */
     
-    if(debug) Serial.println("scan done");
+    if(debug) Serial.println("Scan done!");
     return true;
 }
 
@@ -106,7 +72,6 @@ String APScan::getAPName(int num){
     return names[num]; 
 }
 String APScan::getAPEncryption(int num){ return getEncryption(encryption[num]); }
-//String APScan::getAPVendor(int num){ return vendors[num]; }
 String APScan::getAPMac(int num){ return aps._get(num).toString(); }
 bool APScan::getAPSelected(int num){ return selected[num]; }
 bool APScan::isHidden(int num){ return hidden[num]; }
@@ -121,31 +86,17 @@ int APScan::getFirstTarget(){
 }
 
 void APScan::sendResults(){
-  if(debug) Serial.print("sending AP scan result JSON ");
+  if(debug) Serial.print("Sending AP scan result JSON..");
 
-  size_t _size = 10; // {"aps":[]}
+  size_t _size = 10;
   for(int i=0;i<results && i<maxAPScanResults;i++){
-    /*
-      _size++; // {
-      _size += 5; // "i": ,
-      _size += String(i).length();
-      _size += 5; // "c": ,
-      _size += String(getAPChannel(i)).length();
-      _size += 24; // "m":"d4:21:22:da:85:f3",
-      _size += 8; // "ss":" ",
-      _size += getAPName(i).length();
-      _size += 5; // "r": ,
-      _size += String(getAPRSSI(i)).length();
-      _size += 6; // "e": ,
-      _size += 6; // "se":0
-      _size++; // }*/
       _size += 61;
       _size += String(i).length();
       _size += String(getAPChannel(i)).length();
       _size += getAPName(i).length();
       _size += String(getAPRSSI(i)).length();
       
-      if((i!=results-1) && (i!=maxAPScanResults-1)) _size++; // ,
+      if((i!=results-1) && (i!=maxAPScanResults-1)) _size++;
   }
 
   sendHeader(200, "text/json", _size);
@@ -165,7 +116,6 @@ void APScan::sendResults(){
     json += "\"ss\":\""+getAPName(i)+"\",";
     json += "\"r\":"+(String)getAPRSSI(i)+",";
     json += "\"e\":"+(String)encryption[i]+",";
-    //json += "\"v\":\""+getAPVendor(i)+"\",";
     json += "\"se\":"+(String)getAPSelected(i);
     json += "}";
     if((i!=results-1) && (i!=maxAPScanResults-1)) json += ",";
@@ -177,12 +127,12 @@ void APScan::sendResults(){
   sendToBuffer(json);
   sendBuffer();
     
-  if(debug) Serial.println("done");
+  if(debug) Serial.println("Done!");
 
 }
 
 String APScan::getResults(){
-  if(debug) Serial.print("getting AP scan result JSON ");
+  if(debug) Serial.print("Getting AP scan result JSON..");
   String json = "{ \"aps\":[ ";
   for(int i=0;i<results && i<maxAPScanResults;i++){
     if(debug) Serial.print(".");
@@ -193,7 +143,6 @@ String APScan::getResults(){
     json += "\"ss\":\""+getAPName(i)+"\",";
     json += "\"r\":"+(String)getAPRSSI(i)+",";
     json += "\"e\":"+(String)encryption[i]+",";
-    //json += "\"v\":\""+getAPVendor(i)+"\",";
     json += "\"se\":"+(String)getAPSelected(i);
     json += "}";
     if((i!=results-1) && (i!=maxAPScanResults-1)) json += ",";
@@ -201,13 +150,13 @@ String APScan::getResults(){
   json += "] }";
   if(debug){
     Serial.println(json);
-    Serial.println("done");
+    Serial.println("Done!");
   }
   return json;
 }
 
 String APScan::getResult(int i){
-  if(debug) Serial.print("getting AP scan result JSON for ID " + String(i));
+  if(debug) Serial.print("Getting AP scan result JSON for ID " + String(i));
   String json = "{ \"aps\":[ ";
   if(debug) Serial.print(".");
   json += "{";
@@ -217,19 +166,19 @@ String APScan::getResult(int i){
   json += "\"ss\":\""+getAPName(i)+"\",";
   json += "\"r\":"+(String)getAPRSSI(i)+",";
   json += "\"e\":"+(String)encryption[i]+",";
-  //json += "\"v\":\""+getAPVendor(i)+"\",";
   json += "\"se\":"+(String)getAPSelected(i);
   json += "}";
   json += "] }";
+
   if(debug){
     Serial.println(json);
-    Serial.println("done");
+    Serial.println("Done!");
   }
   return json;
 }
 
 void APScan::select(int num){
-  if(debug) Serial.println("seect "+(String)num+" - "+!selected[num]);
+  if(debug) Serial.println("Select "+(String)num+" - "+!selected[num]);
   if(selected[num]){
     selected[num] = false;
     selectedSum--;
