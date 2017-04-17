@@ -13,7 +13,7 @@ extern void sendToBuffer(String str);
 extern void sendHeader(int code, String type, size_t _size);
 
 extern const bool debug;
-extern String data_getVendor(uint8_t first,uint8_t second,uint8_t third);
+extern String data_getVendor(uint8_t first, uint8_t second, uint8_t third);
 extern void eepromWriteInt(int adr, int val);
 extern int eepromReadInt(int adr);
 extern NameList nameList;
@@ -51,11 +51,11 @@ class Settings
     int apChannel;
 
     bool apScanHidden;
-    
+
     uint8_t deauthReason;
     unsigned int attackTimeout;
     int attackPacketRate;
-    
+
     int clientScanTime;
     bool attackEncrypted;
     bool useLed;
