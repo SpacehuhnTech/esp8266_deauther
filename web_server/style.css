@@ -19,7 +19,7 @@ button {
     background: #00B0FF;
     color: #fff;
     border: 1px solid #8F8F8F;
-    border-radius: 14px;
+    border-radius: 2px;
     padding: 0.34em 0.3em;
     margin-bottom: 0.6em;
 }
@@ -100,6 +100,12 @@ nav a:hover {
 
 #content {
     padding: 0.34em;
+}
+#copyright{
+	margin-top: 15px;
+	padding-bottom: 15px;
+	font-size: 0.85em;
+	text-align: center;
 }
 table {
     padding: 0;
