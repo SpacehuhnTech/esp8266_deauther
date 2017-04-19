@@ -194,7 +194,7 @@ You can now scan for networks...
 scan for client devices... 
 ![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG)
 
-Note: While scanning the ESP8266 will shut down it's access point, so you may have to go to your settings and reconnect to the Wi-Fi network manually.
+Note: While scanning the ESP8266 will shut down its access point, so you may have to go to your settings and reconnect to the Wi-Fi network manually.
 
 ...and start different attacks.
 ![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
