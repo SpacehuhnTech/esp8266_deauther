@@ -38,7 +38,7 @@ Because these management packets are unencrypted, you just need the mac address 
 
 ### What an ESP8266 is
 
-The [ESP8266](https://de.wikipedia.org/wiki/ESP8266) is a cheap micro controller with built-in Wi-Fi. It contains a powerfull 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
+The [ESP8266](https://en.wikipedia.org/wiki/ESP8266) is a cheap micro controller with built-in Wi-Fi. It contains a powerful 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
 
 You can buy these chips for under $2 from China!
 
@@ -154,9 +154,9 @@ If no port shows up you may have to reinstall the drivers.
 
 **1** Install this OLED driver library: https://github.com/squix78/esp8266-oled-ssd1306
 
-**2** Custimize the code for your wiring.  
+**2** Customize the code for your wiring.  
 		In `esp8266_deauther.ino` uncomment `#define USE_DISPLAY`.  
-		Then scroll down and custimize these lines depending on your setup.  
+		Then scroll down and customize these lines depending on your setup.  
 		I used a Wemos d1 mini with a SSD1306 128x64 OLED and 3 push buttons.  
 
 		  //include the library you need
@@ -194,7 +194,7 @@ You can now scan for networks...
 scan for client devices... 
 ![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG)
 
-Note: While scanning the ESP8266 will shut down its access point, so you may have to go to your settings and reconnect to the Wi-Fi network manually.
+Note: While scanning the ESP8266 will shut down it's access point, so you may have to go to your settings and reconnect to the Wi-Fi network manually.
 
 ...and start different attacks.
 ![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
@@ -226,7 +226,7 @@ Try switching the browser or opening the website with another device.
 
 **Deauth attack won't work**
 
-If you see 0 pkts/s on the website then you've made a mistake. Check that have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
+If you see 0 pkts/s on the website then you've made a mistake. Check that you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
 If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
