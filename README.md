@@ -50,15 +50,17 @@ support it too, both ends need to have it enabled!
 
 The only problem is that most devices don’t use it. I tested it with different Wi-Fi networks and devices, it worked every time! It seems that even newer devices which support frame protection don’t use it by default.
 
+I made a [Deauth Detector](https://github.com/spacehuhn/DeauthDetector) using the same chip to indicate if such an attack is running against a nearby network. It doesn't protect you against it, but it can help you figure out if and when an attack is running.  
+
 ## Disclaimer
 
 Use it only for testing purposes on your own devices!  
 I don't take any responsibility for what you do with this program.  
 
-Please check the legal regulations in your country before using it. Jamming transmitters are illegal in most countries 
-and this device can fall into the same category (even if it’s technically not the same).
+Please check the legal regulations in your country before using it. 
+**It is not a jammer device as claimed falsely by a lot of people.** Its attack, how it works and how to protect against is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block any communications on any frequency.
 
-My intention with this project is to draw attention to this issue. 
+My intention with this project is to draw more attention to this issue. 
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.
 **A solution is already there, why don’t we use it?**
 
