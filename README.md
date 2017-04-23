@@ -60,7 +60,7 @@ Use it only for testing purposes on your own devices!
 I don't take any responsibility for what you do with this program.  
 
 Please check the legal regulations in your country before using it.  
-**It is not a jammer device as claimed falsely by many people.** Its attack, how it works and how to protect against it is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block any communications on any frequency.  
+**It is not a frequency jammer as claimed falsely by many people.** Its attack, how it works and how to protect against it is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block or disrupt any other communications or frequencies.  
 
 My intention with this project is to draw more attention to this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
