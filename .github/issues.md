@@ -31,6 +31,9 @@ Make sure your issue is related to this project and doesn't occur when uploading
 **Post as much information as possible**  
 What installation method, OS, browser and ESP8266 version are you useing?
 If your dealing with a bug in the webinterface, check if the browsers developer tools show you an error.  
+
+**Send the serial log**
+Use the serial monitor in Arduino to look for possible erros and post it if necessary.
 If you have a very long error log use [pastebin](http://pastebin.com/).  
 
 **Try out the testing branch**  
