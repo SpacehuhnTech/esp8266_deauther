@@ -1,20 +1,13 @@
 var table = document.getElementsByTagName('table')[0];
-var networkInfo = document.getElementById('networksFound');
-var scanBtn = document.getElementById('apScanStart');
-var scanInfo = document.getElementById('scanInfo');
-var apMAC = document.getElementById('apMAC');
-var startStopScan = document.getElementById('startStopScan');
+var networkInfo = getE('networksFound');
+var scanInfo = getE('scanInfo');
+var apMAC = getE('apMAC');
+var startStopScan = getE('startStopScan');
 var autoScan = false;
-var canScan = true;
 
-function toggleBtn(onoff) {
-  if (onoff && !autoScan) {
-    scanInfo.style.visibility = 'hidden';
-    scanBtn.style.visibility = 'visible';
-  } else {
-    scanInfo.style.visibility = 'visible';
-    scanBtn.style.visibility = 'hidden';
-  }
+function toggleScan(onoff) {
+  if (onoff && !autoScan) scanInfo.style.visibility = 'hidden';
+  else scanInfo.style.visibility = 'visible';
 }
 
 function compare(a, b) {
@@ -32,11 +25,11 @@ function getEncryption(num) {
 }
 
 function getResults() {
-  toggleBtn(true);
+  toggleScan(true);
   getResponse("APScanResults.json", function(responseText) {
     var res = JSON.parse(responseText);
     res.aps = res.aps.sort(compare);
-    networkInfo.innerHTML = "Networks found: " + res.aps.length;
+    networkInfo.innerHTML = res.aps.length;
     apMAC.innerHTML = "";
 
     var tr = '';
@@ -59,41 +52,23 @@ function getResults() {
       tr += '</tr>';
     }
     table.innerHTML = tr;
-    canScan = true;
   });
 }
 
 function scan() {
-  canScan = false;
-  toggleBtn(false);
+  toggleScan(false);
   getResponse("APScan.json", function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error");
-    toggleBtn(true);
+    else showMessage("response error APScan.json");
+	toggleScan(true);
   });
-}
-
-function startConScan() {
-  if (autoScan) {
-    autoScan = false;
-    startStopScan.innerHTML = "start";
-    toggleBtn(true);
-  } else {
-    autoScan = true;
-    startStopScan.innerHTML = "stop";
-    toggleBtn(false);
-  }
 }
 
 function select(num) {
   getResponse("APSelect.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error");
+    else showMessage("response error APSelect.json");
   });
 }
 
 getResults();
-
-setInterval(function() {
-  if (autoScan && canScan) scan();
-}, 1000);

@@ -7,7 +7,7 @@
 
 #define listAdr 2048
 #define lenAdr 2047
-#define SSIDListLength 64
+#define SSIDListLength 48
 #define SSIDLength 32
 
 extern const bool debug;

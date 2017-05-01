@@ -5,6 +5,16 @@ Deauthentication attack and other hacks using an ESP8266.
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
 
+**Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!**  
+
+I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
+All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
+
+**This project is a proof of concept for testing and education.**  
+Neither the ESP8266, nor the SDK was meant and build for such purposes.  
+Bugs can occur!  
+
+
 ## Contents
 - [Introduction](#introduction)
   - [What it is](#what-it-is)
@@ -12,13 +22,13 @@ Deauthentication attack and other hacks using an ESP8266.
   - [What an ESP8266 is](#what-an-esp8266-is)
   - [How to protect against it](#how-to-protect-against-it)
 - [Disclaimer](#disclaimer)
+- [Videos](#videos)
 - [Installation](#installation)
   - [Uploading the bin files](#uploading-the-bin-files)  
   - [Compiling the source with Arduino](#compiling-the-source-with-arduino)
   - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
 - [FAQ](#faq)
-- [Videos](#videos)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
 
@@ -62,9 +72,21 @@ I don't take any responsibility for what you do with this program.
 Please check the legal regulations in your country before using it.  
 **It is not a jammer device as claimed falsely by many people.** Its attack, how it works and how to protect against it is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block any communications on any frequency.  
 
+Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
+
 My intention with this project is to draw more attention to this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
 **A solution is already there, why don’t we use it?**  
+
+## Videos
+  
+[![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
+  
+[![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
+  
+[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
+  
+[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
 
 ## Installation
 
@@ -235,21 +257,12 @@ If it can send packets but your target doesn't loose its connection, then the Wi
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
 
-## Videos
-  
-[![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
-  
-[![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
-  
-[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
-  
-[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
-
 ## License
 
 This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
 
-**The License file must be included in any redistributed version of this program!**
+**The License file must be included in any redistributed version of this program!**  
+Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
 
 ## Sources and additional links
 

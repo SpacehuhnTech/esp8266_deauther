@@ -5,34 +5,43 @@ Settings::Settings() {
 }
 
 void Settings::load() {
+
+  if(EEPROM.read(checkNumAdr) != checkNum){
+    reset();
+    return;
+  }
+  
   ssidLen = EEPROM.read(ssidLenAdr);
   passwordLen = EEPROM.read(passwordLenAdr);
 
-  if (ssidLen < 1 || ssidLen > 32 || passwordLen < 8 && passwordLen != 0  || passwordLen > 32) reset();
-  else {
-    ssid = "";
-    password = "";
-    for (int i = 0; i < ssidLen; i++) ssid += (char)EEPROM.read(ssidAdr + i);
-    for (int i = 0; i < passwordLen; i++) password += (char)EEPROM.read(passwordAdr + i);
-
-    ssidHidden = (bool)EEPROM.read(ssidHiddenAdr);
-
-    if ((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 14) {
-      apChannel = (int)EEPROM.read(apChannelAdr);
-    } else {
-      apChannel = 1;
-    }
-
-    apScanHidden = (bool)EEPROM.read(apScanHiddenAdr);
-
-    deauthReason = EEPROM.read(deauthReasonAdr);
-    attackTimeout = eepromReadInt(attackTimeoutAdr);
-    attackPacketRate = EEPROM.read(attackPacketRateAdr);
-    clientScanTime = EEPROM.read(clientScanTimeAdr);
-    attackEncrypted = (bool)EEPROM.read(attackEncryptedAdr);
-    useLed = (bool)EEPROM.read(useLedAdr);
-    channelHop = (bool)EEPROM.read(channelHopAdr);
+  if (ssidLen < 1 || ssidLen > 32 || passwordLen < 8 && passwordLen != 0  || passwordLen > 32){
+    reset();
+    return;
   }
+  
+  ssid = "";
+  password = "";
+  for (int i = 0; i < ssidLen; i++) ssid += (char)EEPROM.read(ssidAdr + i);
+  for (int i = 0; i < passwordLen; i++) password += (char)EEPROM.read(passwordAdr + i);
+  
+  ssidHidden = (bool)EEPROM.read(ssidHiddenAdr);
+
+  if ((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 14) {
+    apChannel = (int)EEPROM.read(apChannelAdr);
+  } else {
+    apChannel = 1;
+  }
+
+  apScanHidden = (bool)EEPROM.read(apScanHiddenAdr);
+
+  deauthReason = EEPROM.read(deauthReasonAdr);
+  attackTimeout = eepromReadInt(attackTimeoutAdr);
+  attackPacketRate = EEPROM.read(attackPacketRateAdr);
+  clientScanTime = EEPROM.read(clientScanTimeAdr);
+  attackEncrypted = (bool)EEPROM.read(attackEncryptedAdr);
+  useLed = (bool)EEPROM.read(useLedAdr);
+  channelHop = (bool)EEPROM.read(channelHopAdr);
+  multiAPs = (bool)EEPROM.read(multiAPsAdr);
 }
 
 void Settings::reset() {
@@ -53,8 +62,9 @@ void Settings::reset() {
   attackPacketRate = 10;
   clientScanTime = 15;
   attackEncrypted = false;
-  useLed = false;
+  useLed = true;
   channelHop = false;
+  multiAPs = false;
 
   if (debug) Serial.println("done");
 
@@ -84,6 +94,8 @@ void Settings::save() {
   EEPROM.write(attackEncryptedAdr, attackEncrypted);
   EEPROM.write(useLedAdr, useLed);
   EEPROM.write(channelHopAdr, channelHop);
+  EEPROM.write(multiAPsAdr, multiAPs);
+  EEPROM.write(checkNumAdr, checkNum);
   EEPROM.commit();
 
   if (debug) {
@@ -93,7 +105,7 @@ void Settings::save() {
 }
 
 void Settings::info() {
-  Serial.println("settings:");
+  Serial.println("Settings:");
   Serial.println("SSID: " + ssid);
   Serial.println("SSID length: " + (String)ssidLen);
   Serial.println("SSID hidden: " + (String)ssidHidden);
@@ -108,13 +120,36 @@ void Settings::info() {
   Serial.println("attack SSID encrypted: " + (String)attackEncrypted);
   Serial.println("use built-in LED: " + (String)useLed);
   Serial.println("channel hopping: " + (String)channelHop);
+  Serial.println("multiple APs: " + (String)multiAPs);
+}
+
+size_t Settings::getSize(){
+    String json = "{";
+    size_t jsonSize = 0;
+  
+    json += "\"ssid\":\"" + ssid + "\",";
+    json += "\"ssidHidden\":" + (String)ssidHidden + ",";
+    json += "\"password\":\"" + password + "\",";
+    json += "\"apChannel\":" + (String)apChannel + ",";
+    json += "\"apScanHidden\":" + (String)apScanHidden + ",";
+    json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
+    json += "\"attackTimeout\":" + (String)attackTimeout + ",";
+    json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
+    json += "\"clientScanTime\":" + (String)clientScanTime + ",";
+    json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
+    json += "\"useLed\":" + (String)useLed + ",";
+    json += "\"channelHop\":" + (String)channelHop + ",";
+    json += "\"multiAPs\":" + (String)multiAPs + "}";
+    jsonSize += json.length();
+  
+    return jsonSize;
 }
 
 void Settings::send() {
   if (debug) Serial.println("getting settings json");
+  sendHeader(200, "text/json", getSize());
+  
   String json = "{";
-  size_t jsonSize = 0;
-
   json += "\"ssid\":\"" + ssid + "\",";
   json += "\"ssidHidden\":" + (String)ssidHidden + ",";
   json += "\"password\":\"" + password + "\",";
@@ -127,43 +162,10 @@ void Settings::send() {
   json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
   json += "\"useLed\":" + (String)useLed + ",";
   json += "\"channelHop\":" + (String)channelHop + ",";
-
-  json += "\"nameList\":[";
-
-  jsonSize += json.length();
-
-  for (int i = 0; i < nameList.len; i++) {
-    json = "";
-    json += "{";
-    json += "\"n\":\"" + nameList.getName(i) + "\",";
-    json += "\"m\":\"" + nameList.getMac(i).toString() + "\",";
-    json += "\"v\":\"" + data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2)) + "\"";
-    json += "}";
-    if (i != nameList.len - 1) json += ",";
-    jsonSize += json.length();
-  }
-  jsonSize += 2; //]}
-
-  sendHeader(200, "text/json", jsonSize);
+  json += "\"multiAPs\":" + (String)multiAPs + "}";
   sendToBuffer(json);
-
-  for (int i = 0; i < nameList.len; i++) {
-    json = "";
-    json += "{";
-    json += "\"n\":\"" + nameList.getName(i) + "\",";
-    json += "\"m\":\"" + nameList.getMac(i).toString() + "\",";
-    json += "\"v\":\"" + data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2)) + "\"";
-    json += "}";
-    if (i != nameList.len - 1) json += ",";
-    sendToBuffer(json);
-  }
-  sendToBuffer("]}");
-
   sendBuffer();
 
-  if (debug) {
-    Serial.println(json);
-    Serial.println("done");
-  }
+  if(debug) Serial.println("\ndone");
 
 }

@@ -1,16 +1,17 @@
 <html>
   <head>
-    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="jquery.js"></script>
     <script>
+		
       function miniEsc(){
-        var input = $('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).replace(/"/g, '\\"' );
+        var input = $('#input').val().replace(/\/\*(\*(?!\/)|[^*])*\*\//g, '').replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).replace(/"/g, '\\"' );
         $('#output').val(input);
         $('#info1').html($('#input').val().length);
         $('#info2').html(input.length);
       }
       
       function mini(){
-        var input = $('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' );
+        var input = $('#input').val().replace(/\/\*(\*(?!\/)|[^*])*\*\//g, '').replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' );
         $('#output').val(input);
         $('#info1').html($('#input').val().length);
         $('#info2').html(input.length);
@@ -30,7 +31,7 @@
       }
 	  
 	  function byteAndmini(){
-		var input = "0x"+$('#input').val().replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).convertToHex(",0x");;
+		var input = "0x"+$('#input').val().replace(/\/\*(\*(?!\/)|[^*])*\*\//g, '').replace(/\r\n|\r|\n/g," ").replace( /\s\s+/g, ' ' ).convertToHex(",0x");
         $('#output').val(input);
         $('#info1').html($('#input').val().length);
         $('#info2').html(input.length);
