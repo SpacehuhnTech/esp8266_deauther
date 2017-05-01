@@ -1,0 +1,70 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ESP8266 Deauther</title>
+		<meta name="description" content="Wi-Fi Deauthenticator">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="js/functions.js"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<nav>
+			<a href="apscan.html">APs</a>
+			<a href="stations.html">Stations</a>
+			<a href="attack.html">Attacks</a>
+			<a href="settings.html">Settings</a>
+			<a class="right" href="info.html">Info</a>
+		</nav>
+		<div id="error"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<h1 class="header">Scan for Wi-Fi Stations</h1>
+			
+					<label for="scanTime">Scan time:</label>
+					<input type="number" id="scanTime" value="10">s
+					
+					<button onclick="scan()" id="startScan" class="right button-primary">start</button>
+					<a id="clientScanStatus" class="right padding">scanning...</a>
+					<br />
+					<p class="warn">The access point will be unavailable while scanning and you may have to reconnect!<p>
+					<p>Client devices found: <span id="clientsFound">0</span></p>
+					<br />
+					<table></table>
+					
+					<p class="block bold" >Saved clients: <span id="clientNames"></span></p>
+					<table id="nameList"></table>
+					
+					<button class="button-warn left" onclick="clearNameList()">clear</button>
+					<br class="clear" />
+					<p>Add client:</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-4">
+					<label>MAC <input type="text" placeholder="AA:BB:CC:DD:EE:FF" id="cMac"/></label>
+				</div>
+				<div class="col-4">
+					<label>Name <input type="text" placeholder="EXAMPLE" id="cName"/></label>
+				</div>
+				<div class="col-4">
+					<button class="button-primary" onclick="addClient()">add</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<div id="copyright">
+						version 1.4<br />
+						Copyright (c) 2017 Stefan Kremser<br />
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
+					</div>
+					
+					<script src="js/stations.js"></script>
+					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

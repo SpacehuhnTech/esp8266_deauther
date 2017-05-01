@@ -32,6 +32,10 @@ extern NameList nameList;
 #define apChannelAdr 1098
 #define useLedAdr 1099
 #define channelHopAdr 1100
+#define multiAPsAdr 1101
+
+#define checkNumAdr 1102
+#define checkNum 14
 
 class Settings
 {
@@ -49,18 +53,18 @@ class Settings
     int passwordLen;
     String password = "";
     int apChannel;
-
     bool apScanHidden;
-
     uint8_t deauthReason;
     unsigned int attackTimeout;
     int attackPacketRate;
-
     int clientScanTime;
     bool attackEncrypted;
     bool useLed;
     bool channelHop;
+    bool multiAPs;
+    
   private:
+    size_t getSize();
 };
 
 #endif

@@ -4,4 +4,4 @@
 **4** copy the results  
 **5** go to data.h and replace the array (of the changed html file) with the copied bytes  
 
-** now upload your new sketch :)**
+**now compile and upload your new sketch :)**

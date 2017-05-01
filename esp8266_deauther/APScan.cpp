@@ -251,6 +251,11 @@ void APScan::sort() {
         tmpC = selected[h];
         selected[h] = selected[h + 1];
         selected[h + 1] = tmpC;
+
+        Mac tmpMac = aps._get(h);
+        aps.set(h,aps._get(h+1));
+        aps.set(h+1,tmpMac);
+        
       } else Serial.println((String)rssi[h] + " < " + (String)rssi[h + 1]);
     }
   }
@@ -258,13 +263,14 @@ void APScan::sort() {
 
 void APScan::select(int num) {
   if (debug) Serial.println("select " + (String)num + " - " + !selected[num]);
-  if (selected[num]) {
-    selected[num] = false;
-    selectedSum--;
-  } else {
-    selected[num] = true;
-    selectedSum++;
+  if(!settings.multiAPs){
+    for (int i = 0; i < maxAPScanResults; i++){
+      if(i != num) selected[i] = false;
+    }
   }
+  selected[num] = !selected[num];
+  if (selected[num]) selectedSum--;
+  else selectedSum++;
 }
 
 bool APScan::isSelected(int num) {

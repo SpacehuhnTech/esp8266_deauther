@@ -29,8 +29,8 @@ class ClientScan {
     void clearList();
     bool stop();
     void packetSniffer(uint8_t *buf, uint16_t len);
-
-    String getResults();
+    int add(Mac adr);
+    void send();
     void select(int num);
 
     String getClientName(int num);
@@ -47,6 +47,8 @@ class ClientScan {
 
     bool sniffing = false;
   private:
+    size_t getSize();
+    
     long startTime = 0;
 
     Mac from;

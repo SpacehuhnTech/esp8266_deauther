@@ -1,9 +1,7 @@
 /*
   ===========================================
-        Copyright 2017 Stefan Kremser
-
-          github.com/spacehuhn
-          twitter.com/spacehuhn
+       Copyright (c) 2017 Stefan Kremser
+              github.com/spacehuhn
   ===========================================
 */
 
@@ -12,45 +10,48 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
+#include <FS.h>
 
-//#define USE_DISPLAY /* <-- uncomment that if you wanna use the display */
+#define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
+//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 
 #ifdef USE_DISPLAY
-
-#include <Wire.h>
-
-//include the library you need
-#include "SSD1306.h"
-//#include "SH1106.h"
-
-//button pins
-#define upBtn D6
-#define downBtn D7
-#define selectBtn D5
-
-#define buttonDelay 180 //delay in ms
-
-//render settings
-#define fontSize 8
-#define rowsPerSite 8
-
-//create display(Adr, SDA-pin, SCL-pin)
-SSD1306 display(0x3c, D2, D1);
-//SH1106 display(0x3c, D2, D1);
-
-int rows = 3;
-int curRow = 0;
-int sites = 1;
-int curSite = 1;
-int lrow = 0;
+  #include <Wire.h>
+  
+  //include the library you need
+  #include "SSD1306.h"
+  //#include "SH1106.h"
+  
+  //button pins
+  #define upBtn D6
+  #define downBtn D7
+  #define selectBtn D5
+  
+  #define buttonDelay 180 //delay in ms
+  
+  //render settings
+  #define fontSize 8
+  #define rowsPerSite 8
+  
+  //create display(Adr, SDA-pin, SCL-pin)
+  SSD1306 display(0x3c, D2, D1);
+  //SH1106 display(0x3c, D2, D1);
+  
+  int rows = 3;
+  int curRow = 0;
+  int sites = 1;
+  int curSite = 1;
+  int lrow = 0;
 #endif
 
 String wifiMode = "";
 String attackMode = "";
 String scanMode = "SCAN";
 
+bool warning = true;
+
 extern "C" {
-#include "user_interface.h"
+  #include "user_interface.h"
 }
 
 ESP8266WebServer server(80);
@@ -81,12 +82,12 @@ void sniffer(uint8_t *buf, uint16_t len) {
 }
 
 void startWifi() {
-  Serial.println("starting WiFi AP");
+  Serial.println("\nStarting WiFi AP:");
   WiFi.mode(WIFI_STA);
   wifi_set_promiscuous_rx_cb(sniffer);
   WiFi.softAP((const char*)settings.ssid.c_str(), (const char*)settings.password.c_str(), settings.apChannel, settings.ssidHidden); //for an open network without a password change to:  WiFi.softAP(ssid);
-  Serial.println("SSID:     " + settings.ssid);
-  Serial.println("Password: " + settings.password);
+  Serial.println("SSID     : '" + settings.ssid+"'");
+  Serial.println("Password : '" + settings.password+"'");
   Serial.println("-----------------------------------------------");
   if (settings.password.length() < 8) Serial.println("WARNING: password must have at least 8 characters!");
   if (settings.ssid.length() < 1 || settings.ssid.length() > 32) Serial.println("WARNING: SSID length must be between 1 and 32 characters!");
@@ -102,44 +103,55 @@ void stopWifi() {
 }
 
 void loadIndexHTML() {
-  server.send ( 200, "text/html", data_getIndexHTML());
+  if(warning){
+    sendFile(200, "text/html", data_indexHTML, sizeof(data_indexHTML));
+  }else{
+    sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
+  }
 }
-void loadClientsHTML() {
-  server.send ( 200, "text/html", data_getClientsHTML());
+void loadAPScanHTML() {
+  warning = false;
+  sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
+}
+void loadStationsHTML() {
+  sendFile(200, "text/html", data_stationHTML, sizeof(data_stationHTML));
 }
 void loadAttackHTML() {
-  server.send ( 200, "text/html", data_getAttackHTML());
+  sendFile(200, "text/html", data_attackHTML, sizeof(data_attackHTML));
 }
 void loadSettingsHTML() {
-  server.send( 200, "text/html", data_getSettingsHTML());
+  sendFile(200, "text/html", data_settingsHTML, sizeof(data_settingsHTML));
 }
 void load404() {
-  server.send ( 404, "text/html", data_get404());
+  sendFile(200, "text/html", data_error404, sizeof(data_error404));
+}
+void loadInfoHTML(){
+  sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
+}
+void loadLicense(){
+  sendFile(200, "text/plain", data_license, sizeof(data_license));
 }
 
 void loadFunctionsJS() {
-  server.send( 200, "text/javascript", data_getFunctionsJS());
+  sendFile(200, "text/javascript", data_functionsJS, sizeof(data_functionsJS));
 }
-void loadIndexJS() {
-  server.send ( 200, "text/javascript", data_getIndexJS());
+void loadAPScanJS() {
+  sendFile(200, "text/javascript", data_apscanJS, sizeof(data_apscanJS));
 }
-void loadClientsJS() {
-  server.send ( 200, "text/javascript", data_getClientsJS());
+void loadStationsJS() {
+  sendFile(200, "text/javascript", data_stationsJS, sizeof(data_stationsJS));
 }
 void loadAttackJS() {
-  server.send ( 200, "text/javascript", data_getAttackJS());
+  sendFile(200, "text/javascript", data_attackJS, sizeof(data_attackJS));
 }
 void loadSettingsJS() {
-  server.send( 200, "text/html", data_getSettingsJS());
+  sendFile(200, "text/javascript", data_settingsJS, sizeof(data_settingsJS));
 }
 
 void loadStyle() {
-  server.send ( 200, "text/css", data_getStyle());
+  sendFile(200, "text/css;charset=UTF-8", data_styleCSS, sizeof(data_styleCSS));
 }
 
-void loadManifest() {
-  server.send ( 200, "text/css", data_getManifest());
-}
 
 void startWiFi(bool start) {
   if (start) startWifi();
@@ -171,13 +183,6 @@ void startAPScan() {
 
 void sendAPResults() {
   apScan.sendResults();
-  /*
-    if (server.hasArg("apid")) {
-    int apid = server.arg("apid").toInt();
-    server.send ( 200, "text/json", apScan.getResult(apid));
-    } else {
-    server.send ( 200, "text/json", apScan.getResults());
-    }*/
 }
 
 void selectAP() {
@@ -198,7 +203,7 @@ void startClientScan() {
 }
 
 void sendClientResults() {
-  server.send( 200, "text/json", clientScan.getResults() );
+  clientScan.send();
 }
 void sendClientScanTime() {
   server.send( 200, "text/json", (String)settings.clientScanTime );
@@ -212,22 +217,76 @@ void selectClient() {
   }
 }
 
+void addClientFromList(){
+  if(server.hasArg("num")) {
+    int _num = server.arg("num").toInt();
+    clientScan.add(nameList.getMac(_num));
+    
+    server.send( 200, "text/json", "true");
+  }else server.send( 200, "text/json", "false");
+}
+
 void setClientName() {
   if (server.hasArg("id") && server.hasArg("name")) {
-    nameList.add(clientScan.getClientMac(server.arg("id").toInt()), server.arg("name"));
+    if(server.arg("name").length()>0){
+      nameList.add(clientScan.getClientMac(server.arg("id").toInt()), server.arg("name"));
+      server.send( 200, "text/json", "true");
+    }
+    else server.send( 200, "text/json", "false");
+  }
+}
+
+void deleteName() {
+  if (server.hasArg("num")) {
+    int _num = server.arg("num").toInt();
+    nameList.remove(_num);
     server.send( 200, "text/json", "true");
+  }else server.send( 200, "text/json", "false");
+}
+
+void clearNameList() {
+  nameList.clear();
+  server.send( 200, "text/json", "true" );
+}
+
+void editClientName() {
+  if (server.hasArg("id") && server.hasArg("name")) {
+    nameList.edit(server.arg("id").toInt(), server.arg("name"));
+    server.send( 200, "text/json", "true");
+  }else server.send( 200, "text/json", "false");
+}
+
+void addClient(){
+  if(server.hasArg("mac") && server.hasArg("name")){
+    String macStr = server.arg("mac");
+    macStr.replace(":","");
+    Serial.println("add "+macStr+" - "+server.arg("name"));
+    if(macStr.length() < 12 || macStr.length() > 12) server.send( 200, "text/json", "false");
+    else{
+      Mac _newClient;
+      for(int i=0;i<6;i++){
+        const char* val = macStr.substring(i*2,i*2+2).c_str();
+        uint8_t valByte = strtoul(val, NULL, 16);
+        Serial.print(valByte,HEX);
+        Serial.print(":");
+        _newClient.setAt(valByte,i);
+      }
+      Serial.println();
+      nameList.add(_newClient,server.arg("name"));
+      server.send( 200, "text/json", "true");
+    }
   }
 }
 
 //==========Attack==========
 void sendAttackInfo() {
-  server.send( 200, "text/json", attack.getResults());
+  attack.sendResults();
 }
 
 void startAttack() {
   if (server.hasArg("num")) {
     int _attackNum = server.arg("num").toInt();
-    if (apScan.getFirstTarget() > -1 || _attackNum == 2 || _attackNum == 3) {
+    if (apScan.getFirstTarget() > -1 || _attackNum == 1 || _attackNum == 2) {
       attack.start(server.arg("num").toInt());
       server.send ( 200, "text/json", "true");
     } else server.send( 200, "text/json", "false");
@@ -312,6 +371,10 @@ void saveSettings() {
     if (server.arg("channelHop") == "false") settings.channelHop = false;
     else settings.channelHop = true;
   }
+  if (server.hasArg("multiAPs")) {
+    if (server.arg("multiAPs") == "false") settings.multiAPs = false;
+    else settings.multiAPs = true;
+  }
 
   settings.save();
   server.send( 200, "text/json", "true" );
@@ -320,109 +383,6 @@ void saveSettings() {
 void resetSettings() {
   settings.reset();
   server.send( 200, "text/json", "true" );
-}
-
-void deleteName() {
-  if (server.hasArg("num")) {
-    int _num = server.arg("num").toInt();
-    nameList.remove(_num);
-    server.send( 200, "text/json", "true");
-  }
-}
-
-void clearNameList() {
-  nameList.clear();
-  server.send( 200, "text/json", "true" );
-}
-
-void editClientName() {
-  if (server.hasArg("id") && server.hasArg("name")) {
-    nameList.edit(server.arg("id").toInt(), server.arg("name"));
-    server.send( 200, "text/json", "true");
-  }
-}
-
-void setup() {
-
-  Serial.begin(115200);
-  delay(2000);
-
-#ifdef USE_DISPLAY
-  display.init();
-  display.setFont(Roboto_Mono_8);
-  display.flipScreenVertically();
-  drawInterface();
-  pinMode(upBtn, INPUT_PULLUP);
-  pinMode(downBtn, INPUT_PULLUP);
-  pinMode(selectBtn, INPUT_PULLUP);
-#endif
-
-  attackMode = "START";
-  pinMode(2, OUTPUT);
-  delay(50);
-  digitalWrite(2, HIGH);
-
-  EEPROM.begin(4096);
-
-  settings.load();
-  if (debug) settings.info();
-  nameList.load();
-  ssidList.load();
-
-  Serial.println("");
-  Serial.println("starting...");
-
-  startWifi();
-  attack.stopAll();
-  attack.generate();
-
-  /* ========== Web Server ========== */
-
-  /* HTML sites */
-  server.onNotFound(load404);
-
-  server.on("/", loadIndexHTML);
-  server.on("/clients", loadClientsHTML);
-  server.on("/attack", loadAttackHTML);
-  server.on("/settings", loadSettingsHTML);
-
-  server.on("/js/index.js", loadIndexJS);
-  server.on("/js/clients.js", loadClientsJS);
-  server.on("/js/attack.js", loadAttackJS);
-  server.on("/js/settings.js", loadSettingsJS);
-  server.on("/js/functions.js", loadFunctionsJS);
-
-  /* header links */
-  server.on ("/style.css", loadStyle);
-  server.on ("/manifest.json", loadManifest);
-
-  /* JSON */
-  server.on("/APScanResults.json", sendAPResults);
-  server.on("/APScan.json", startAPScan);
-  server.on("/APSelect.json", selectAP);
-  server.on("/ClientScan.json", startClientScan);
-  server.on("/ClientScanResults.json", sendClientResults);
-  server.on("/ClientScanTime.json", sendClientScanTime);
-  server.on("/clientSelect.json", selectClient);
-  server.on("/setName.json", setClientName);
-  server.on("/attackInfo.json", sendAttackInfo);
-  server.on("/attackStart.json", startAttack);
-  server.on("/settings.json", getSettings);
-  server.on("/settingsSave.json", saveSettings);
-  server.on("/settingsReset.json", resetSettings);
-  server.on("/deleteName.json", deleteName);
-  server.on("/clearNameList.json", clearNameList);
-  server.on("/editNameList.json", editClientName);
-  server.on("/addSSID.json", addSSID);
-  server.on("/cloneSSID.json", cloneSSID);
-  server.on("/deleteSSID.json", deleteSSID);
-  server.on("/randomSSID.json", randomSSID);
-  server.on("/clearSSID.json", clearSSID);
-  server.on("/resetSSID.json", resetSSID);
-  server.on("/saveSSID.json", saveSSID);
-  server.on("/restartESP.json", restartESP);
-
-  server.begin();
 }
 
 #ifdef USE_DISPLAY
@@ -449,6 +409,100 @@ void drawInterface() {
 }
 #endif
 
+void setup() {
+
+  Serial.begin(115200);
+  if(debug){
+    delay(2000);
+    Serial.println("\nStarting...\n");
+  }
+  
+#ifdef USE_DISPLAY
+  display.init();
+  display.setFont(Roboto_Mono_8);
+  display.flipScreenVertically();
+  drawInterface();
+  pinMode(upBtn, INPUT_PULLUP);
+  pinMode(downBtn, INPUT_PULLUP);
+  pinMode(selectBtn, INPUT_PULLUP);
+#endif
+
+  attackMode = "START";
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
+
+  EEPROM.begin(4096);
+  SPIFFS.begin();
+  
+  settings.load();
+  if (debug) settings.info();
+  nameList.load();
+  ssidList.load();
+
+#ifdef resetPin
+  pinMode(resetPin, INPUT_PULLUP);
+  if(digitalRead(resetPin) == LOW) settings.reset();
+#endif
+
+  startWifi();
+  attack.stopAll();
+  attack.generate();
+
+  /* ========== Web Server ========== */
+
+  /* HTML */
+  server.onNotFound(load404);
+
+  server.on("/", loadIndexHTML);
+  server.on("/index.html", loadIndexHTML);
+  server.on("/apscan.html", loadAPScanHTML);
+  server.on("/stations.html", loadStationsHTML);
+  server.on("/attack.html", loadAttackHTML);
+  server.on("/settings.html", loadSettingsHTML);
+  server.on("/info.html", loadInfoHTML);
+  server.on("/license", loadLicense);
+
+  /* JS */
+  server.on("/js/apscan.js", loadAPScanJS);
+  server.on("/js/stations.js", loadStationsJS);
+  server.on("/js/attack.js", loadAttackJS);
+  server.on("/js/settings.js", loadSettingsJS);
+  server.on("/js/functions.js", loadFunctionsJS);
+
+  /* CSS */
+  server.on ("/style.css", loadStyle);
+
+  /* JSON */
+  server.on("/APScanResults.json", sendAPResults);
+  server.on("/APScan.json", startAPScan);
+  server.on("/APSelect.json", selectAP);
+  server.on("/ClientScan.json", startClientScan);
+  server.on("/ClientScanResults.json", sendClientResults);
+  server.on("/ClientScanTime.json", sendClientScanTime);
+  server.on("/clientSelect.json", selectClient);
+  server.on("/setName.json", setClientName);
+  server.on("/addClientFromList.json", addClientFromList);
+  server.on("/attackInfo.json", sendAttackInfo);
+  server.on("/attackStart.json", startAttack);
+  server.on("/settings.json", getSettings);
+  server.on("/settingsSave.json", saveSettings);
+  server.on("/settingsReset.json", resetSettings);
+  server.on("/deleteName.json", deleteName);
+  server.on("/clearNameList.json", clearNameList);
+  server.on("/editNameList.json", editClientName);
+  server.on("/addSSID.json", addSSID);
+  server.on("/cloneSSID.json", cloneSSID);
+  server.on("/deleteSSID.json", deleteSSID);
+  server.on("/randomSSID.json", randomSSID);
+  server.on("/clearSSID.json", clearSSID);
+  server.on("/resetSSID.json", resetSSID);
+  server.on("/saveSSID.json", saveSSID);
+  server.on("/restartESP.json", restartESP);
+  server.on("/addClient.json",addClient);
+
+  server.begin();
+}
+
 void loop() {
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
@@ -457,7 +511,16 @@ void loop() {
     attack.run();
   }
 
+  if(Serial.available()){
+    String input = Serial.readString();
+    if(input == "reset" || input == "reset\n" || input == "reset\r" || input == "reset\r\n"){
+      settings.reset();
+    }
+  }
+
 #ifdef USE_DISPLAY
+
+
   //go up
   if (digitalRead(upBtn) == LOW && curRow > 0) {
     curRow--;
@@ -466,7 +529,8 @@ void loop() {
       curSite--;
     } else lrow--;
     delay(buttonDelay);
-    //go down
+
+  // ===== go down ===== 
   } else if (digitalRead(downBtn) == LOW && curRow < rows - 1) {
     curRow++;
     if (lrow + 1 >= rowsPerSite) {
@@ -474,28 +538,27 @@ void loop() {
       curSite++;
     } else lrow++;
     delay(buttonDelay);
-    //select
+    
+  // ===== select ===== 
   } else if (digitalRead(selectBtn) == LOW) {
     //WiFi on/off
     if (curRow == 0) {
       if (wifiMode == "ON") stopWifi();
       else startWifi();
-      //scan for APs
+    
+    // ===== scan for APs ===== 
     } else if (curRow == 1) {
-      scanMode = "scanning...";
+      startAPScan();
       drawInterface();
-      rows = 3;
-      apScan.start();
-      rows += apScan.results;
-      sites = rows / rowsPerSite;
-      if (rows % rowsPerSite > 0) sites++;
-      scanMode = "SCAN";
-      apScan.sort();
-      //start,stop attack
+
+    // ===== start,stop attack ===== 
     } else if (curRow == 2) {
       if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
       else if (attackMode == "STOP") attack.stop(0);
-    } else if (curRow >= 3) {
+    } 
+    
+    // ===== select APs ===== 
+    else if (curRow >= 3) {
       attack.stop(0);
       apScan.select(curRow - 3);
     }

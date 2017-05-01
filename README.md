@@ -1,7 +1,19 @@
 # ESP8266 Deauther
 Deauthentication attack and other hacks using an ESP8266.
 
-![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)
+![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)  
+
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
+
+**Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!**  
+
+I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
+All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
+
+**This project is a proof of concept for testing and education.**  
+Neither the ESP8266, nor the SDK was meant and build for such purposes.  
+Bugs can occur!  
+
 
 ## Contents
 - [Introduction](#introduction)
@@ -10,13 +22,13 @@ Deauthentication attack and other hacks using an ESP8266.
   - [What an ESP8266 is](#what-an-esp8266-is)
   - [How to protect against it](#how-to-protect-against-it)
 - [Disclaimer](#disclaimer)
+- [Videos](#videos)
 - [Installation](#installation)
   - [Uploading the bin files](#uploading-the-bin-files)  
   - [Compiling the source with Arduino](#compiling-the-source-with-arduino)
   - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
 - [FAQ](#faq)
-- [Videos](#videos)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
 
@@ -38,7 +50,7 @@ Because these management packets are unencrypted, you just need the mac address 
 
 ### What an ESP8266 is
 
-The [ESP8266](https://de.wikipedia.org/wiki/ESP8266) is a cheap micro controller with built-in Wi-Fi. It contains a powerfull 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
+The [ESP8266](https://en.wikipedia.org/wiki/ESP8266) is a cheap micro controller with built-in Wi-Fi. It contains a powerful 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
 
 You can buy these chips for under $2 from China!
 
@@ -50,17 +62,31 @@ support it too, both ends need to have it enabled!
 
 The only problem is that most devices don’t use it. I tested it with different Wi-Fi networks and devices, it worked every time! It seems that even newer devices which support frame protection don’t use it by default.
 
+I made a [Deauth Detector](https://github.com/spacehuhn/DeauthDetector) using the same chip to indicate if such an attack is running against a nearby network. It doesn't protect you against it, but it can help you figure out if and when an attack is running.  
+
 ## Disclaimer
 
 Use it only for testing purposes on your own devices!  
 I don't take any responsibility for what you do with this program.  
 
-Please check the legal regulations in your country before using it. Jamming transmitters are illegal in most countries 
-and this device can fall into the same category (even if it’s technically not the same).
+Please check the legal regulations in your country before using it.  
+**It is not a frequency jammer as claimed falsely by many people.** Its attack, how it works and how to protect against it is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block or disrupt any other communications or frequencies.  
 
-My intention with this project is to draw attention to this issue. 
-This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.
-**A solution is already there, why don’t we use it?**
+Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
+
+My intention with this project is to draw more attention to this issue.  
+This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
+**A solution is already there, why don’t we use it?**  
+
+## Videos
+  
+[![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
+  
+[![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
+  
+[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
+  
+[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
 
 ## Installation
 
@@ -154,9 +180,9 @@ If no port shows up you may have to reinstall the drivers.
 
 **1** Install this OLED driver library: https://github.com/squix78/esp8266-oled-ssd1306
 
-**2** Custimize the code for your wiring.  
+**2** Customize the code for your wiring.  
 		In `esp8266_deauther.ino` uncomment `#define USE_DISPLAY`.  
-		Then scroll down and custimize these lines depending on your setup.  
+		Then scroll down and customize these lines depending on your setup.  
 		I used a Wemos d1 mini with a SSD1306 128x64 OLED and 3 push buttons.  
 
 		  //include the library you need
@@ -226,26 +252,17 @@ Try switching the browser or opening the website with another device.
 
 **Deauth attack won't work**
 
-If you see 0 pkts/s on the website then you've made a mistake. Check that have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
+If you see 0 pkts/s on the website then you've made a mistake. Check that you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
 If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
 
 ### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
-
-## Videos
-  
-[![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
-  
-[![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
-  
-[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
-  
-[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
 
 ## License
 
 This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
 
-**The License file must be included in any redistributed version of this program!**
+**The License file must be included in any redistributed version of this program!**  
+Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
 
 ## Sources and additional links
 
