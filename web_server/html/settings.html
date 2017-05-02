@@ -1,0 +1,177 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>ESP8266 Deauther</title>
+		<meta name="description" content="Wi-Fi Deauthenticator">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="js/functions.js"></script>
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<nav>
+			<a href="apscan.html">APs</a>
+			<a href="stations.html">Stations</a>
+			<a href="attack.html">Attacks</a>
+			<a href="settings.html">Settings</a>
+			<a class="right" href="info.html">Info</a>
+		</nav>
+		<div id="error"></div>
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<h1 class="header">Settings</h1>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<h2>Wi-Fi</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="ssid">SSID</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="ssid" minlength="1" maxlength="32">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="ssidHidden">Hide SSID</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="ssidHidden" id="ssidHidden" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="password">Password (min.8 chars)</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="password" minlength="8" maxlength="32">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="apChannel">Channel</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="apChannel" min="1" max="14">
+				</div>
+			</div>
+			<br />
+			<div class="row">
+				<div class="col-12">
+					<h2>AP Scan</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="apScanHidden">Scan Hidden APs</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="apScanHidden" id="apScanHidden" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="multiAPs">Select multiple SSIDs</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="multiAPs" id="multiAPs" value="false">
+				</div>
+			</div>
+			<br />
+			<div class="row">
+				<div class="col-12">
+					<h2>Station Scan</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="scanTime">Default Scan Time</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="scanTime" min="1" max="255"> s
+				</div>
+			</div>
+			<br />
+			<div class="row">
+				<div class="col-12">
+					<h2>Attack</h2>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="timeout">Timeout</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="timeout" min="-1" max="65536"> s
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="ssidEnc">WPA2 Beacons</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="ssidEnc" id="ssidEnc" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="useLed">Use LED</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="useLed" id="useLed" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="deauthReason">Deauth Reason-Code</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="deauthReason" min="1" max="45">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="packetRate">Packetrate (<span class="red">may cause instability!</span>)</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="packetRate" min="1" max="50"> pkts/s
+				</div>
+			</div>
+			<!--
+			<div class="row">
+				<div class="col-6">
+					<label for="channelHop">Channel Hopping</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="channelHop" id="channelHop" value="false">
+				</div>
+			</div>
+			-->
+			<div class="row">
+				<div class="col-12">
+					<br />
+					<button class="button-warn" onclick="resetSettings()">reset</button> 
+					<button class="button-warn" onclick="restart()">restart</button> 
+					<button class="button-primary right" onclick="saveSettings()">save</button>
+					<br class="clear" />
+					<p id="saved"></p>
+					<br class="clear" />
+
+					<div id="copyright">
+						version 1.4<br />
+						Copyright (c) 2017 Stefan Kremser<br />
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
+					</div>
+						
+					<script src="js/settings.js"></script>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

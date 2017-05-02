@@ -16,7 +16,7 @@ extern "C" {
 #include "Settings.h"
 #include "SSIDList.h"
 
-#define attacksNum 4
+#define attacksNum 3
 #define macListLen 64
 #define macChangeInterval 4
 
@@ -24,6 +24,9 @@ extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
 extern String data_getVendor(uint8_t first, uint8_t second, uint8_t third);
 extern const bool debug;
+extern void addLog(String str);
+extern void openLog();
+extern void closeLog();
 extern String attackMode;
 
 extern APScan apScan;
@@ -40,17 +43,21 @@ class Attack
     void start(int num);
     void stop(int num);
     void stopAll();
-    String getResults();
+    void sendResults();
+    size_t getSize();
     void refreshLed();
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
     void buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt);
+    void _log(int num);
     void buildProbe(String _ssid, Mac _mac);
     bool send();
 
+    void sendDeauths(Mac from, Mac to);
+    
     //attack declarations
-    const String attackNames[attacksNum] = {"deauth", "beacon (clone)", "beacon (list)", "probe request"};
+    const String attackNames[attacksNum] = {"Deauth", "Beacon", "Probe-Request"};
 
     //attack infos
     String stati[attacksNum];

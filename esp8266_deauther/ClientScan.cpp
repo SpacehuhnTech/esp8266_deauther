@@ -81,8 +81,18 @@ bool ClientScan::stop() {
   return false;
 }
 
+int ClientScan::add(Mac adr){
+  int clientNum = clients.getNum(adr);
+  if (clientNum == -1 && results < maxClientScanResults) {
+    data_getVendor(adr._get(0), adr._get(1), adr._get(2)).toCharArray(vendors[results], 9);
+    connectedToAp[results] = -1;
+    results++;
+    int clientNum = clients.add(adr);
+  }
+  return clientNum;
+}
+
 void ClientScan::packetSniffer(uint8_t *buf, uint16_t len) {
-  int cliNbr;
   if (sniffing && len > 27) {
     from.set(buf[16], buf[17], buf[18], buf[19], buf[20], buf[21]);
     to.set(buf[22], buf[23], buf[24], buf[25], buf[26], buf[27]);
@@ -90,23 +100,18 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len) {
     for (int i = 0; i < apScan.results; i++) {
       if (apScan.isSelected(i)) {
         if (apScan.aps._get(i).compare(from)) {
-          int clientNum = clientNum = clients.getNum(to);
+          int clientNum = add(to);
+          connectedToAp[clientNum] = i;
+          packets[clientNum]++;
           if (clientNum == -1 && results < maxClientScanResults) {
-            data_getVendor(to._get(0), to._get(1), to._get(2)).toCharArray(vendors[results], 9);
-            results++;
-            cliNbr = clients.add(to);
-            packets[cliNbr]++;
-            connectedToAp[cliNbr] = i;
-          } else packets[clientNum]++;
-
-          if (debug) {
-            Serial.print("found: ");
-            from._print();
-            Serial.print(" => ");
-            to._print();
-            Serial.println("");
+            if (debug) {
+              Serial.print("found: ");
+              from._print();
+              Serial.print(" => ");
+              to._print();
+              Serial.println("");
+            }
           }
-
         }
       }
     }
@@ -138,32 +143,84 @@ int ClientScan::getFirstClient() {
   }
   return -1;
 }
-String ClientScan::getResults() {
-  if (debug) Serial.print("getting client scan result JSON ");
-  String json = "{ \"clients\":[";
-  for (int i = 0; i < results && i < maxClientScanResults; i++) {
-    json += "{";
-    json += "\"i\":" + (String)i + ",";
-    json += "\"p\":" + (String)getClientPackets(i) + ",";
-    json += "\"m\":\"" + getClientMac(i).toString() + "\",";
-    json += "\"n\":\"" + (String)nameList.get(getClientMac(i)) + "\",";
-    json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
-    json += "\"s\":" + (String)getClientSelected(i) + ",";
-    json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
-    json += "}";
-    if ((i != results - 1) && (i != maxClientScanResults - 1)) json += ",";
-  }
-  json += "] }";
-  if (debug) {
-    Serial.println(json);
-    Serial.println("done ");
-  }
-  return json;
-
-}
 
 void ClientScan::select(int num) {
   selected[num] = !selected[num];
   if (selected[num]) selectedResults++;
   else selectedResults--;
+}
+
+size_t ClientScan::getSize(){
+  size_t jsonSize = 0;
+  String json = "{\"clients\":[";
+  jsonSize += json.length();
+  for (int i = 0; i < results && i < maxClientScanResults; i++) {
+      json = "{";
+      json += "\"i\":" + (String)i + ",";
+      json += "\"p\":" + (String)getClientPackets(i) + ",";
+      json += "\"m\":\"" + getClientMac(i).toString() + "\",";
+      json += "\"n\":\"" + (String)nameList.get(getClientMac(i)) + "\",";
+      json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
+      json += "\"s\":" + (String)getClientSelected(i) + ",";
+      if(getClientConnectedAp(i)>=0) json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
+      else json += "\"a\":\"?\"";
+      json += "}";
+      if ((i != results - 1) && (i != maxClientScanResults - 1)) json += ",";
+      jsonSize += json.length();
+  }
+  json = "],\"nameList\":[";
+  jsonSize += json.length();
+  
+  for (int i = 0; i < nameList.len; i++) {
+    json = "{";
+    json += "\"n\":\"" + nameList.getName(i) + "\",";
+    json += "\"m\":\"" + nameList.getMac(i).toString() + "\"";
+    //json += "\"v\":\"" + data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2)) + "\"";
+    json += "}";
+    if (i != nameList.len - 1) json += ",";
+    jsonSize += json.length();
+  }
+  jsonSize += 2;
+    
+  return jsonSize;
+}
+
+void ClientScan::send() {
+  size_t _size = getSize();
+  sendHeader(200, "text/json", _size);
+  if (debug) Serial.println("getting settings json ("+(String)_size+")");
+
+  String json;
+  sendToBuffer("{\"clients\":[");
+  for (int i = 0; i < results && i < maxClientScanResults; i++) {
+      json = "{";
+      json += "\"i\":" + (String)i + ",";
+      json += "\"p\":" + (String)getClientPackets(i) + ",";
+      json += "\"m\":\"" + getClientMac(i).toString() + "\",";
+      json += "\"n\":\"" + (String)nameList.get(getClientMac(i)) + "\",";
+      json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
+      json += "\"s\":" + (String)getClientSelected(i) + ",";
+      if(getClientConnectedAp(i)>=0) json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
+      else json += "\"a\":\"?\"";
+      json += "}";
+      if ((i != results - 1) && (i != maxClientScanResults - 1)) json += ",";
+      sendToBuffer(json);
+  }
+  sendToBuffer("],\"nameList\":[");
+  
+  for (int i = 0; i < nameList.len; i++) {
+    json = "{";
+    json += "\"n\":\"" + nameList.getName(i) + "\",";
+    json += "\"m\":\"" + nameList.getMac(i).toString() + "\"";
+    //json += "\"v\":\"" + data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2)) + "\"";
+    json += "}";
+    if (i != nameList.len - 1) json += ",";
+    sendToBuffer(json);
+  }
+  sendToBuffer("]}");
+
+  sendBuffer();
+
+  if(debug) Serial.println("\ndone");
+
 }

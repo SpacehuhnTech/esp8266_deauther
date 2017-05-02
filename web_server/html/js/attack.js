@@ -1,9 +1,9 @@
-var selectedAPs = document.getElementById("selectedAPs");
-var selectedClients = document.getElementById("selectedClients");
+var selectedAPs = getE("selectedAPs");
+var selectedClients = getE("selectedClients");
 var table = document.getElementsByTagName("table")[0];
 var ssidList = document.getElementsByTagName("table")[1];
-var saved = document.getElementById("saved");
-var ssidCounter = document.getElementById("ssidCounter");
+var saved = getE("saved");
+var ssidCounter = getE("ssidCounter");
 var resultInterval;
 var res;
 
@@ -13,7 +13,7 @@ function getResults() {
     var aps = "";
     var clients = "";
     var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
-    for (var i = 0; i < res.aps.length; i++) aps += "<li>" + res.aps[i] + "</li>";
+    for (var i = 0; i < res.aps.length; i++) aps += "<li>" + res.aps[i] + " <button onclick='cloneSSID(\""+res.aps[i]+"\")'>clone</button></li>";
     for (var i = 0; i < res.clients.length; i++) clients += "<li>" + res.clients[i] + "</li>";
 
     selectedAPs.innerHTML = aps;
@@ -24,8 +24,8 @@ function getResults() {
       else tr += "<tr>";
 
       tr += "<td>" + res.attacks[i].name + "</td>";
-      if (res.attacks[i].status == "ready") tr += "<td style='color:#1ecb1e'>" + res.attacks[i].status + "</td>";
-      else tr += "<td style='color:#f00'>" + res.attacks[i].status + "</td>";
+      if (res.attacks[i].status == "ready") tr += "<td class='green'>" + res.attacks[i].status + "</td>";
+      else tr += "<td class='red'>" + res.attacks[i].status + "</td>";
       if (res.attacks[i].running) tr += "<td><button class='marginNull selectedBtn' onclick='startStop(" + i + ")'>stop</button></td>";
       else tr += "<td><button class='marginNull' onclick='startStop(" + i + ")'>start</button></td>";
 
@@ -33,46 +33,43 @@ function getResults() {
     }
     table.innerHTML = tr;
 
-    ssidCounter.innerHTML = res.ssid.length + "/64";
+    ssidCounter.innerHTML = res.ssid.length + "/48";
 
     var tr = "<tr><th>Name</th><th>X</th></tr>";
     for (var i = 0; i < res.ssid.length; i++) {
       tr += "<tr>";
       tr += "<td>" + res.ssid[i] + "</td>";
-      tr += '<td><button class="marginNull warnBtn" onclick="deleteSSID(' + i + ')">x</button></td>';
+      tr += '<td><button class="marginNull button-warn" onclick="deleteSSID(' + i + ')">x</button></td>';
       tr += "</tr>";
     }
     ssidList.innerHTML = tr;
 
   }, function() {
     clearInterval(resultInterval);
-    location.reload();
+    showMessage("error loading attackInfo.json");
   });
 }
 
 function startStop(num) {
   getResponse("attackStart.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else alert("error");
+    else showMessage("response error attackStart.json");
   });
 }
 
 function addSSID() {
   saved.innerHTML = "";
-  if (res.ssid.length >= 64) alert("SSID list full :(");
+  if (res.ssid.length >= 64) showMessage("SSID list full :(", 2500);
   else {
     var _ssidName = prompt("new SSID:");
     if (_ssidName != null) getResponse("addSSID.json?name=" + _ssidName, getResults);
   }
 }
 
-function cloneSSID() {
+function cloneSSID(_ssidName) {
   saved.innerHTML = "";
-  if (res.ssid.length >= 64) alert("SSID list full :(");
-  else {
-    var _ssidName = prompt("new SSID:");
-    if (_ssidName != null) getResponse("cloneSSID.json?name=" + _ssidName, getResults);
-  }
+  if (res.ssid.length >= 64) showMessage("SSID list full :(", 2500);
+  else if(_ssidName != null) getResponse("cloneSSID.json?name=" + _ssidName, getResults);
 }
 
 function deleteSSID(num) {
@@ -98,4 +95,4 @@ function resetSSID() {
 }
 
 getResults();
-resultInterval = setInterval(getResults, 3000);
+resultInterval = setInterval(getResults, 1000);

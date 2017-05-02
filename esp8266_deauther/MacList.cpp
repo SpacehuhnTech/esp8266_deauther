@@ -12,7 +12,7 @@ bool MacList::contains(Mac adr) {
 }
 
 int MacList::add(Mac adr) {
-  if (num < len && adr.valid()) {
+  if(num < len && adr.valid()) {
     if (!contains(adr)) {
       macAdrs[num].setMac(adr);
       num++;
