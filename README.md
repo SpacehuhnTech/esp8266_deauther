@@ -242,7 +242,7 @@ Maybe someone will find a way around this barrier in the future.
 
 The ESP upload tool can't communicate with the chip, make sure the right port is selected!  
 You can also try out different USB ports and cables.  
-If this doesn't solve it you may have to install USB drivers.  
+If this doesn't solve it, you may have to install USB drivers.  
 Which drivers you need depends on the board, most boards use a cp2102 or ch340.
 
 **AP scan doesn't work**
@@ -252,14 +252,14 @@ Try switching the browser or opening the website with another device.
 
 **Deauth attack won't work**
 
-If you see 0 pkts/s on the website then you've made a mistake. Check that you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
+If you see 0 pkts/s on the website, then you've made a mistake. Check that you have followed the installation steps correctly and that the right SDK is installed, it must be version 2.0.0!
 If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
 
-### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
+### If you have other questions or problems with the ESP8266, you can also check out the official [community forum](http://www.esp8266.com/).
 
 ## License
 
-This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
+This project is licensed under the MIT License - see the [license file](LICENSE) for details.
 
 **The License file must be included in any redistributed version of this program!**  
 Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
