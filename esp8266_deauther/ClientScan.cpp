@@ -145,9 +145,19 @@ int ClientScan::getFirstClient() {
 }
 
 void ClientScan::select(int num) {
-  selected[num] = !selected[num];
-  if (selected[num]) selectedResults++;
-  else selectedResults--;
+  if(num < 0){
+    if(num == -1){
+      for(int i=0; i<results; i++){selected[i] = true;}
+      selectedResults = results;
+    } else {
+      for(int i=0; i<results; i++){selected[i] = false;}
+      selectedResults = 0;
+    }  
+  } else {
+    selected[num] = !selected[num];
+    if (selected[num]) selectedResults++;
+    else selectedResults--;
+  }
 }
 
 size_t ClientScan::getSize(){

@@ -35,7 +35,7 @@ function getResults() {
     clientsFound.innerHTML = res.clients.length;
 
     var tr = '';
-    if (res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th>Select</th></tr>';
+    if (res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th><button class="marginNull button-primary" onclick="select(-1)">select</button>&nbsp|&nbsp<button class="marginNull button-primary" onclick="select(-2)">deselect</button>&nbspall</th></tr>';
 
     for (var i = 0; i < res.clients.length; i++) {
 

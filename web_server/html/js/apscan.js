@@ -33,8 +33,13 @@ function getResults() {
     apMAC.innerHTML = "";
 
     var tr = '';
-    if (res.aps.length > 0) tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
-
+    if (res.aps.length > 0) {
+		tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th>';
+		
+		if (res.multiAPs == 1) tr += '<th><button class="marginNull button-primary" onclick="select(-1)">select</button>&nbsp|&nbsp<button class="marginNull button-primary" onclick="select(-2)">deselect</button>&nbspall</th></tr>';
+		else tr += '<th>Select</th></tr>'
+	}	
+	
     for (var i = 0; i < res.aps.length; i++) {
 
       if (res.aps[i].se == 1) tr += '<tr class="selected">';
