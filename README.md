@@ -86,8 +86,6 @@ This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to
   
 [![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
   
-[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
-
 ## Installation
 
 The only thing you will need is a computer and an ESP8266.  
