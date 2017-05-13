@@ -25,7 +25,7 @@ class NameList
     void clear();
     void add(Mac client, String name);
     void edit(int num, String name);
-    String get(Mac client);
+    int get(Mac client);
     String getName(int num);
     Mac getMac(int num);
     void remove(int num);

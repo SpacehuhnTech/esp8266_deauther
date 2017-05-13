@@ -120,7 +120,7 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len) {
 }
 
 String ClientScan::getClientName(int num) {
-  return nameList.get(clients._get(num));
+  return nameList.getName(nameList.get(clients._get(num)));
 }
 int ClientScan::getClientPackets(int num) {
   return packets[clients.getNum(clients._get(num))];
@@ -169,7 +169,8 @@ size_t ClientScan::getSize(){
       json += "\"i\":" + (String)i + ",";
       json += "\"p\":" + (String)getClientPackets(i) + ",";
       json += "\"m\":\"" + getClientMac(i).toString() + "\",";
-      json += "\"n\":\"" + (String)nameList.get(getClientMac(i)) + "\",";
+      json += "\"n\":\"" + (String)nameList.getName(nameList.get(getClientMac(i))) + "\",";
+      json += "\"l\":" + (String)nameList.get(getClientMac(i)) + ",";
       json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
       json += "\"s\":" + (String)getClientSelected(i) + ",";
       if(getClientConnectedAp(i)>=0) json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
@@ -207,7 +208,8 @@ void ClientScan::send() {
       json += "\"i\":" + (String)i + ",";
       json += "\"p\":" + (String)getClientPackets(i) + ",";
       json += "\"m\":\"" + getClientMac(i).toString() + "\",";
-      json += "\"n\":\"" + (String)nameList.get(getClientMac(i)) + "\",";
+      json += "\"n\":\"" + (String)nameList.getName(nameList.get(getClientMac(i))) + "\",";
+      json += "\"l\":" + (String)nameList.get(getClientMac(i)) + ",";
       json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
       json += "\"s\":" + (String)getClientSelected(i) + ",";
       if(getClientConnectedAp(i)>=0) json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
