@@ -128,7 +128,7 @@ function editNameList(id) {
   var newName = prompt("Name for " + res.nameList[id].m);
   
   if (newName != null) {
-    getResponse("editNameList.json" + "?id=" + id + "&name=" + newName, function(responseText) {
+    getResponse("editNameList.json?id=" + id + "&name=" + newName, function(responseText) {
       if(responseText == "true") getResults();
       else showMessage("response error editNameList.json");
     });
