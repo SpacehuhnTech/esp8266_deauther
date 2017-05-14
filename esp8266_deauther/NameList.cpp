@@ -50,13 +50,7 @@ void NameList::add(Mac client, String name) {
   NameList::save();
 }
 
-int NameList::get(Mac client) {
-  String returnStr;
-  int clientNum = clients.getNum(client);
-  return clientNum;
-}
-
-String NameList::getName(int num) {
+String NameList::get(int num) {
   String returnStr;
   if (num >= 0) {
     for (int h = 0; h < nameLength; h++) {
@@ -69,6 +63,21 @@ String NameList::getName(int num) {
 
 Mac NameList::getMac(int num) {
   return clients._get(num);
+}
+
+String NameList::getByMac(Mac client) {
+  String returnStr;
+  int clientNum = clients.getNum(client);
+  if (clientNum > -1) {
+    for (int h = 0; h < nameLength; h++) {
+      if (names[clientNum][h] != 0x00) returnStr += (char)names[clientNum][h];
+    }
+  }
+return returnStr;
+}
+
+int NameList::getNumByMac(Mac client) {
+  return clients.getNum(client);
 }
 
 void NameList::remove(int num) {

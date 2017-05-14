@@ -99,7 +99,7 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len) {
 
     for (int i = 0; i < apScan.results; i++) {
       if (apScan.isSelected(i)) {
-        if (apScan.aps._get(i).compare(from)) {
+        if (apScan.aps._get(i).compare(from) && !broadcast.compare(to)) {
           int clientNum = add(to);
           connectedToAp[clientNum] = i;
           packets[clientNum]++;
@@ -115,12 +115,11 @@ void ClientScan::packetSniffer(uint8_t *buf, uint16_t len) {
         }
       }
     }
-
   }
 }
 
 String ClientScan::getClientName(int num) {
-  return nameList.getName(nameList.get(clients._get(num)));
+  return nameList.getByMac(getClientMac(num));
 }
 int ClientScan::getClientPackets(int num) {
   return packets[clients.getNum(clients._get(num))];
@@ -169,8 +168,8 @@ size_t ClientScan::getSize(){
       json += "\"i\":" + (String)i + ",";
       json += "\"p\":" + (String)getClientPackets(i) + ",";
       json += "\"m\":\"" + getClientMac(i).toString() + "\",";
-      json += "\"n\":\"" + (String)nameList.getName(nameList.get(getClientMac(i))) + "\",";
-      json += "\"l\":" + (String)nameList.get(getClientMac(i)) + ",";
+      json += "\"n\":\"" + (String)nameList.getByMac(getClientMac(i)) + "\",";
+      json += "\"l\":" + (String)nameList.getNumByMac(getClientMac(i)) + ",";
       json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
       json += "\"s\":" + (String)getClientSelected(i) + ",";
       if(getClientConnectedAp(i)>=0) json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
@@ -184,7 +183,7 @@ size_t ClientScan::getSize(){
   
   for (int i = 0; i < nameList.len; i++) {
     json = "{";
-    json += "\"n\":\"" + nameList.getName(i) + "\",";
+    json += "\"n\":\"" + nameList.get(i) + "\",";
     json += "\"m\":\"" + nameList.getMac(i).toString() + "\"";
     //json += "\"v\":\"" + data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2)) + "\"";
     json += "}";
@@ -208,8 +207,8 @@ void ClientScan::send() {
       json += "\"i\":" + (String)i + ",";
       json += "\"p\":" + (String)getClientPackets(i) + ",";
       json += "\"m\":\"" + getClientMac(i).toString() + "\",";
-      json += "\"n\":\"" + (String)nameList.getName(nameList.get(getClientMac(i))) + "\",";
-      json += "\"l\":" + (String)nameList.get(getClientMac(i)) + ",";
+      json += "\"n\":\"" + (String)nameList.getByMac(getClientMac(i)) + "\",";
+      json += "\"l\":" + (String)nameList.getNumByMac(getClientMac(i)) + ",";
       json += "\"v\":\"" + (String)getClientVendor(i) + "\",";
       json += "\"s\":" + (String)getClientSelected(i) + ",";
       if(getClientConnectedAp(i)>=0) json += "\"a\":\"" + (String)apScan.getAPName(getClientConnectedAp(i)) + "\"";
@@ -222,7 +221,7 @@ void ClientScan::send() {
   
   for (int i = 0; i < nameList.len; i++) {
     json = "{";
-    json += "\"n\":\"" + nameList.getName(i) + "\",";
+    json += "\"n\":\"" + nameList.get(i) + "\",";
     json += "\"m\":\"" + nameList.getMac(i).toString() + "\"";
     //json += "\"v\":\"" + data_getVendor(nameList.getMac(i)._get(0), nameList.getMac(i)._get(1), nameList.getMac(i)._get(2)) + "\"";
     json += "}";
