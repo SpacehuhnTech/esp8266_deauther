@@ -226,7 +226,8 @@ String APScan::getResultsJSON() {
 void APScan::sort() {
   if (debug) Serial.println("sorting APs ");
 
-  //bubble sort
+  /* I know, it's bubble sort... but it works and that's the main thing! ;) (feel free to improve it tho) */
+  
   for (int i = 0; i < results - 1; i++) {
     Serial.println("--------------");
     for (int h = 0; h < results - i - 1; h++) {
@@ -269,8 +270,8 @@ void APScan::sort() {
 void APScan::select(int num) {
   if (debug) Serial.println("select " + (String)num + " - " + !selected[num]);
   if(num < 0) {
-    if (num == -1){
-      if (settings.multiAPs) {
+    if(num == -1){
+      if(settings.multiAPs) {
         selectedSum = results;
         for (int i = 0; i < results; i++) selected[i] = true;
       }
@@ -281,13 +282,13 @@ void APScan::select(int num) {
   } else if(!settings.multiAPs) {
     for (int i = 0; i < maxAPScanResults; i++){
       if(i != num) selected[i] = false;
-      selected[num] = !selected[num];
-      selectedSum = 1;
+      else selected[num] = !selected[num];
     }
+    selectedSum = 1;
   } else {
-     selected[num] = !selected[num];
-     if (selected[num]) selectedSum--;
+     if(selected[num]) selectedSum--;
      else selectedSum++;
+     selected[num] = !selected[num];
   }
 }
 

@@ -255,14 +255,14 @@ void Attack::start(int num) {
 }
 
 void Attack::stop(int num) {
-  if (isRunning[num]) {
+  if(isRunning[num]) {
     if (debug) Serial.println("stopping " + (String)attackNames[num] + " attack...");
     if (num == 0) attackMode = "START";
     isRunning[num] = false;
-    stati[num] = "ready";
     prevTime[num] = millis();
     refreshLed();
   }
+  stati[num] = "ready";
 }
 
 void Attack::stopAll() {
