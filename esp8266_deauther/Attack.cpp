@@ -96,6 +96,8 @@ void Attack::buildProbe(String _ssid, Mac _mac) {
   for (int i = 0; i < len; i++) packet[packetSize + i] = _ssid[i];
   packetSize += len;
 
+  for (int i = 0; i < sizeof(probePacket_RateTag); i++) packet[packetSize + i] = probePacket_RateTag[i];
+  packetSize += sizeof(probePacket_RateTag);
 }
 
 bool Attack::send() {
@@ -218,15 +220,18 @@ void Attack::run() {
 
     for (int a = 0; a < ssidList.len; a++) {
       buildProbe(ssidList.get(a), beaconAdrs._get(a));
-      if (send()) packetsCounter[2]++;
+      if(send()) packetsCounter[2]++;
+      if(send()) packetsCounter[2]++;
     }
 
-    stati[2] = (String)(packetsCounter[2] * 10) + "pkts/s";
+    stati[2] = (String)(packetsCounter[2]) + "pkts/s";
     packetsCounter[2] = 0;
     macListChangeCounter++;
     if (macListChangeCounter >= macChangeInterval && macChangeInterval > 0) {
       generate();
-      macListChangeCounter = 0;
+      /*ssidList.clear();
+      ssidList._random();
+      macListChangeCounter = 0;*/
     }
     if (debug) Serial.println("done");
     if (settings.attackTimeout > 0) {
@@ -248,8 +253,10 @@ void Attack::start(int num) {
     refreshLed();
     if (debug) Serial.println("starting " + (String)attackNames[num] + " attack...");
     if (num == 0) attackMode = "STOP";
-    for (int i = 0; i < attacksNum; i++){
-      if(i != num) stop(i);
+    if(!settings.multiAttacks){
+      for (int i = 0; i < attacksNum; i++){
+        if(i != num) stop(i);
+      }
     }
   }else stop(num);
 }

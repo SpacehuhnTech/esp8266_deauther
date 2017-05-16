@@ -42,6 +42,7 @@ void Settings::load() {
   useLed = (bool)EEPROM.read(useLedAdr);
   channelHop = (bool)EEPROM.read(channelHopAdr);
   multiAPs = (bool)EEPROM.read(multiAPsAdr);
+  multiAttacks = (bool)EEPROM.read(multiAttacksAdr);
 }
 
 void Settings::reset() {
@@ -65,6 +66,7 @@ void Settings::reset() {
   useLed = true;
   channelHop = false;
   multiAPs = false;
+  multiAttacks = false;
 
   if (debug) Serial.println("done");
 
@@ -95,6 +97,7 @@ void Settings::save() {
   EEPROM.write(useLedAdr, useLed);
   EEPROM.write(channelHopAdr, channelHop);
   EEPROM.write(multiAPsAdr, multiAPs);
+  EEPROM.write(multiAttacksAdr, multiAttacks);
   EEPROM.write(checkNumAdr, checkNum);
   EEPROM.commit();
 
@@ -121,6 +124,7 @@ void Settings::info() {
   Serial.println("use built-in LED: " + (String)useLed);
   Serial.println("channel hopping: " + (String)channelHop);
   Serial.println("multiple APs: " + (String)multiAPs);
+  Serial.println("multiple Attacks: " + (String)multiAttacks);
 }
 
 size_t Settings::getSize(){
@@ -139,7 +143,8 @@ size_t Settings::getSize(){
     json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
     json += "\"useLed\":" + (String)useLed + ",";
     json += "\"channelHop\":" + (String)channelHop + ",";
-    json += "\"multiAPs\":" + (String)multiAPs + "}";
+    json += "\"multiAPs\":" + (String)multiAPs + ",";
+    json += "\"multiAttacks\":" + (String)multiAttacks + "}";
     jsonSize += json.length();
   
     return jsonSize;
@@ -162,7 +167,8 @@ void Settings::send() {
   json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
   json += "\"useLed\":" + (String)useLed + ",";
   json += "\"channelHop\":" + (String)channelHop + ",";
-  json += "\"multiAPs\":" + (String)multiAPs + "}";
+  json += "\"multiAPs\":" + (String)multiAPs + ",";
+  json += "\"multiAttacks\":" + (String)multiAttacks + "}";
   sendToBuffer(json);
   sendBuffer();
 

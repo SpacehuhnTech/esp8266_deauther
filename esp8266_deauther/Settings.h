@@ -33,6 +33,7 @@ extern NameList nameList;
 #define useLedAdr 1099
 #define channelHopAdr 1100
 #define multiAPsAdr 1101
+#define multiAttacksAdr 1102
 
 #define checkNumAdr 1102
 #define checkNum 14
@@ -62,6 +63,7 @@ class Settings
     bool useLed;
     bool channelHop;
     bool multiAPs;
+    bool multiAttacks;
     
   private:
     size_t getSize();

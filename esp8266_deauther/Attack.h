@@ -18,7 +18,7 @@ extern "C" {
 
 #define attacksNum 3
 #define macListLen 64
-#define macChangeInterval 4
+#define macChangeInterval 6
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -129,6 +129,16 @@ class Attack
       /*           ,0x06,                              //Tag length
                     0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA //SSID
       */
+    };
+
+    uint8_t probePacket_RateTag[6] = {
+      0x01, //Tag Number: Supported Rates (1)
+      0x04, //Tag length: 4
+      //Supported Rates:
+      0x82, //1Mbit/s
+      0x84, //2Mbit/s
+      0x8b, //5.5Mbit/s
+      0x96 //11Mbit/s
     };
 
     int macListChangeCounter = 0;

@@ -13,6 +13,7 @@ var ssidEnc = getE('ssidEnc');
 var useLed = getE('useLed');
 /*var channelHop = getE('channelHop');*/
 var multiAPs = getE('multiAPs');
+var multiAttacks = getE('multiAttacks');
 var cMac = getE('cMac');
 var cName = getE('cName');
 var res;
@@ -38,6 +39,7 @@ function getData() {
 	useLed.checked = res.useLed;
 	/*channelHop.checked = res.channelHop;*/
 	multiAPs.checked = res.multiAPs;
+	multiAttacks.checked = res.multiAttacks;
   });
 }
 
@@ -56,7 +58,8 @@ function saveSettings() {
   url += "&ssidEnc=" + ssidEnc.checked;
   url += "&useLed=" + useLed.checked;
   /*url += "&channelHop=" + channelHop.checked;*/
-  url += "&multiAPs="+ multiAPs.checked;
+  url += "&multiAPs="+multiAPs.checked;
+  url += "&multiAttacks="+multiAttacks.checked;
 
   getResponse(url, function(responseText) {
     if (responseText == "true") {

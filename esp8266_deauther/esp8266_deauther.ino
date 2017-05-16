@@ -375,6 +375,10 @@ void saveSettings() {
     if (server.arg("multiAPs") == "false") settings.multiAPs = false;
     else settings.multiAPs = true;
   }
+  if (server.hasArg("multiAttacks")) {
+    if (server.arg("multiAttacks") == "false") settings.multiAttacks = false;
+    else settings.multiAttacks = true;
+  }
 
   settings.save();
   server.send( 200, "text/json", "true" );
