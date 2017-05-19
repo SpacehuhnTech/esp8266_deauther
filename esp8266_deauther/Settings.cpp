@@ -43,6 +43,8 @@ void Settings::load() {
   channelHop = (bool)EEPROM.read(channelHopAdr);
   multiAPs = (bool)EEPROM.read(multiAPsAdr);
   multiAttacks = (bool)EEPROM.read(multiAttacksAdr);
+  macInterval = eepromReadInt(macIntervalAdr);
+  beaconInterval = (bool)EEPROM.read(beaconIntervalAdr);
 }
 
 void Settings::reset() {
@@ -67,6 +69,8 @@ void Settings::reset() {
   channelHop = false;
   multiAPs = false;
   multiAttacks = false;
+  macInterval = 4;
+  beaconInterval = false;
 
   if (debug) Serial.println("done");
 
@@ -99,6 +103,8 @@ void Settings::save() {
   EEPROM.write(multiAPsAdr, multiAPs);
   EEPROM.write(multiAttacksAdr, multiAttacks);
   EEPROM.write(checkNumAdr, checkNum);
+  eepromWriteInt(macIntervalAdr, macInterval);
+  EEPROM.write(beaconIntervalAdr, beaconInterval);
   EEPROM.commit();
 
   if (debug) {
@@ -125,6 +131,8 @@ void Settings::info() {
   Serial.println("channel hopping: " + (String)channelHop);
   Serial.println("multiple APs: " + (String)multiAPs);
   Serial.println("multiple Attacks: " + (String)multiAttacks);
+  Serial.println("mac change interval: " + (String)macInterval);
+  Serial.println("1s beacon interval: " + (String)beaconInterval);
 }
 
 size_t Settings::getSize(){
@@ -144,7 +152,9 @@ size_t Settings::getSize(){
     json += "\"useLed\":" + (String)useLed + ",";
     json += "\"channelHop\":" + (String)channelHop + ",";
     json += "\"multiAPs\":" + (String)multiAPs + ",";
-    json += "\"multiAttacks\":" + (String)multiAttacks + "}";
+    json += "\"multiAttacks\":" + (String)multiAttacks + ",";
+    json += "\"macInterval\":" + (String)macInterval + ",";
+    json += "\"beaconInterval\":" + (String)beaconInterval + "}";
     jsonSize += json.length();
   
     return jsonSize;
@@ -168,7 +178,9 @@ void Settings::send() {
   json += "\"useLed\":" + (String)useLed + ",";
   json += "\"channelHop\":" + (String)channelHop + ",";
   json += "\"multiAPs\":" + (String)multiAPs + ",";
-  json += "\"multiAttacks\":" + (String)multiAttacks + "}";
+  json += "\"multiAttacks\":" + (String)multiAttacks + ",";
+  json += "\"macInterval\":" + (String)macInterval + ",";
+  json += "\"beaconInterval\":" + (String)beaconInterval + "}";
   sendToBuffer(json);
   sendBuffer();
 

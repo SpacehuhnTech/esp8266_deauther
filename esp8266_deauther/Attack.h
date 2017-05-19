@@ -18,7 +18,6 @@ extern "C" {
 
 #define attacksNum 3
 #define macListLen 64
-#define macChangeInterval 6
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);

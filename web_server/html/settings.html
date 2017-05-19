@@ -116,7 +116,15 @@
 					<label for="ssidEnc">WPA2 Beacons</label>
 				</div>
 				<div class="col-6">
-					<input type="checkbox" name="ssidEnc" id="ssidEnc" value="false">
+					<input type="checkbox" id="ssidEnc" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="beaconInterval">1s Beacon Interval (default: 100ms)</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="beaconInterval" value="false">
 				</div>
 			</div>
 			<div class="row">
@@ -124,7 +132,7 @@
 					<label for="useLed">Use LED</label>
 				</div>
 				<div class="col-6">
-					<input type="checkbox" name="useLed" id="useLed" value="false">
+					<input type="checkbox" id="useLed" value="false">
 				</div>
 			</div>
 			<div class="row">
@@ -148,9 +156,18 @@
 					<label for="multiAttacks">Multiple Attacks</label>
 				</div>
 				<div class="col-6">
-					<input type="checkbox" name="multiAttacks" id="multiAttacks" value="false">
+					<input type="checkbox" id="multiAttacks" value="false">
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="macInterval">MAC Change Interval (used for beacons & probes)</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="macInterval" min="0" max="65000">s
+				</div>
+			</div>
+			
 			
 			<!--
 			<div class="row">

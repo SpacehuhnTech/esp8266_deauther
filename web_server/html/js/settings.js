@@ -16,6 +16,8 @@ var multiAPs = getE('multiAPs');
 var multiAttacks = getE('multiAttacks');
 var cMac = getE('cMac');
 var cName = getE('cName');
+var macInterval = getE('macInterval');
+var beaconInterval = getE('beaconInterval');
 var res;
 
 function getData() {
@@ -40,6 +42,8 @@ function getData() {
 	/*channelHop.checked = res.channelHop;*/
 	multiAPs.checked = res.multiAPs;
 	multiAttacks.checked = res.multiAttacks;
+	macInterval.value = res.macInterval;
+	beaconInterval.checked = res.beaconInterval;
   });
 }
 
@@ -60,6 +64,8 @@ function saveSettings() {
   /*url += "&channelHop=" + channelHop.checked;*/
   url += "&multiAPs="+multiAPs.checked;
   url += "&multiAttacks="+multiAttacks.checked;
+  url += "&macInterval="+macInterval.value;
+  url += "&beaconInterval="+beaconInterval.checked;
 
   getResponse(url, function(responseText) {
     if (responseText == "true") {

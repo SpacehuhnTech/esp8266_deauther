@@ -362,6 +362,10 @@ void saveSettings() {
     if (server.arg("apScanHidden") == "false") settings.apScanHidden = false;
     else settings.apScanHidden = true;
   }
+  if (server.hasArg("beaconInterval")) {
+    if (server.arg("beaconInterval") == "false") settings.beaconInterval = false;
+    else settings.beaconInterval = true;
+  }
   if (server.hasArg("useLed")) {
     if (server.arg("useLed") == "false") settings.useLed = false;
     else settings.useLed = true;
@@ -379,6 +383,8 @@ void saveSettings() {
     if (server.arg("multiAttacks") == "false") settings.multiAttacks = false;
     else settings.multiAttacks = true;
   }
+
+  if(server.hasArg("macInterval")) settings.macInterval = server.arg("macInterval").toInt();
 
   settings.save();
   server.send( 200, "text/json", "true" );

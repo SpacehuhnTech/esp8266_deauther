@@ -34,6 +34,8 @@ extern NameList nameList;
 #define channelHopAdr 1100
 #define multiAPsAdr 1101
 #define multiAttacksAdr 1102
+#define macIntervalAdr 1103
+#define beaconIntervalAdr 1105
 
 #define checkNumAdr 1102
 #define checkNum 14
@@ -64,6 +66,8 @@ class Settings
     bool channelHop;
     bool multiAPs;
     bool multiAttacks;
+    int macInterval;
+    bool beaconInterval;
     
   private:
     size_t getSize();
