@@ -301,27 +301,32 @@ void addSSID() {
     }else{
       ssidList.add(server.arg("ssid"));
     }
+    attack.ssidChange = true;
     server.send( 200, "text/json", "true");
   }else server.send( 200, "text/json", "false");
 }
 
 void deleteSSID() {
   ssidList.remove(server.arg("num").toInt());
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
 void randomSSID() {
   ssidList._random();
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
 void clearSSID() {
   ssidList.clear();
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
 void resetSSID() {
   ssidList.load();
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 

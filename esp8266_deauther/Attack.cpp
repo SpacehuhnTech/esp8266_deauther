@@ -132,6 +132,7 @@ void Attack::changeRandom(int num){
     ssidList.clear();
     ssidList._random();
     randomCounter = 0;
+    ssidChange = true;
   }
 }
 
@@ -269,6 +270,7 @@ void Attack::run() {
       ssidList.clear();
       ssidList._random();
       randomCounter = 0;
+      ssidChange = true;
     }
     else randomCounter++;
   }
@@ -371,17 +373,19 @@ size_t Attack::getSize(){
   }
   json += "],";
   jsonSize += json.length();
-  
-  json = "\"ssid\":[";
-  jsonSize += json.length();
-  for (int i = 0; i < ssidList.len; i++) {
-    json = "\"" + ssidList.get(i) + "\"";
-    if (i != ssidList.len - 1) json += ",";
+
+  if(ssidChange){
+    json = "\"ssid\":[";
+    jsonSize += json.length();
+    for (int i = 0; i < ssidList.len; i++) {
+      json = "\"" + ssidList.get(i) + "\"";
+      if (i != ssidList.len - 1) json += ",";
+      jsonSize += json.length();
+    }
+    json = "],";
     jsonSize += json.length();
   }
-  
-  json = "],";
-  json += "\"randomMode\":" + (String)randomMode + "}";
+  json = "\"randomMode\":" + (String)randomMode + "}";
   jsonSize += json.length();
 
   return jsonSize;
@@ -427,17 +431,24 @@ void Attack::sendResults(){
     json += "\"running\":" + (String)isRunning[i] + "";
     json += "}";
     if (i != attacksNum - 1) json += ",";
-  }  
-  json += "],\"ssid\":[";
+  }
+  json += "],";
   sendToBuffer(json);
   
-  for (int i = 0; i < ssidList.len; i++) {
-    json = "\"" + ssidList.get(i) + "\"";
-    if (i != ssidList.len - 1) json += ",";
+  if(ssidChange){
+    json = "\"ssid\":[";
     sendToBuffer(json);
+    for (int i = 0; i < ssidList.len; i++) {
+      json = "\"" + ssidList.get(i) + "\"";
+      if (i != ssidList.len - 1) json += ",";
+      sendToBuffer(json);
+    }
+    json = "],";
+    sendToBuffer(json);
+    ssidChange = false;
   }
-  json = "],";
-  json += "\"randomMode\":" + (String)randomMode + "}";
+  
+  json = "\"randomMode\":" + (String)randomMode + "}";
   sendToBuffer(json);
   
   sendBuffer();

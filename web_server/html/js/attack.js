@@ -9,10 +9,10 @@ var num = getE("num");
 var randomIntrvl = getE("randomIntrvl");
 var randomBtn = getE("randomBtn");
 var resultInterval;
-var res;
+var data;
 function getResults() {
   getResponse("attackInfo.json", function(responseText) {
-    res = JSON.parse(responseText);
+    var res = JSON.parse(responseText);
     var aps = "";
     var clients = "";
     var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
@@ -39,16 +39,19 @@ function getResults() {
     }
     table.innerHTML = tr;
 
-    ssidCounter.innerHTML = res.ssid.length + "/48";
-
-    var tr = "<tr><th>Name</th><th>X</th></tr>";
-    for (var i = 0; i < res.ssid.length; i++) {
-      tr += "<tr>";
-      tr += "<td>" + res.ssid[i] + "</td>";
-      tr += '<td><button class="marginNull button-warn" onclick="deleteSSID(' + i + ')">x</button></td>';
-      tr += "</tr>";
-    }
-    ssidList.innerHTML = tr;
+	if(typeof res.ssid != 'undefined'){
+		data = res;
+		ssidCounter.innerHTML = res.ssid.length + "/48";
+		
+		var tr = "<tr><th>Name</th><th>X</th></tr>";
+		for (var i = 0; i < res.ssid.length; i++) {
+		  tr += "<tr>";
+		  tr += "<td>" + res.ssid[i] + "</td>";
+		  tr += '<td><button class="marginNull button-warn" onclick="deleteSSID(' + i + ')">x</button></td>';
+		  tr += "</tr>";
+		}
+		ssidList.innerHTML = tr;
+	}
 
   }, function() {
     clearInterval(resultInterval);
@@ -68,7 +71,7 @@ function addSSID() {
 	
 	var _ssidName = ssid.value;
 	if(_ssidName.length > 0){
-		if(res.ssid.length >= 64) showMessage("SSID list full :(", 2500);
+		if(data.ssid.length >= 64) showMessage("SSID list full :(", 2500);
 		else{
 			saved.innerHTML = "";
 			getResponse("addSSID.json?ssid=" + _ssidName + "&num="+num.value, getResults);
@@ -78,7 +81,7 @@ function addSSID() {
 
 function cloneSSID(_ssidName) {
   ssid.value = _ssidName;
-  num.value = 48 - res.ssid.length;
+  num.value = 48 - data.ssid.length;
 }
 
 function deleteSSID(num) {
