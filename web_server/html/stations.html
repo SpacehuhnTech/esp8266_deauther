@@ -30,16 +30,21 @@
 					<a id="clientScanStatus" class="right padding">scanning...</a>
 					<br />
 					<p class="warn">The access point will be unavailable while scanning and you may have to reconnect!<p>
-					<p>Client devices found: <span id="clientsFound">0</span></p>
+					<p>
+						Stations found: <span id="clientsFound">0</span>
+						<br />
+						<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
+						<button class="marginNull button-primary right" onclick="select(-1)">select all</button>
+					</p>
 					<br />
 					<table></table>
 					
-					<p class="block bold" >Saved clients: <span id="clientNames"></span></p>
+					<p class="block bold" >Saved stations: <span id="clientNames"></span></p>
 					<table id="nameList"></table>
 					
 					<button class="button-warn left" onclick="clearNameList()">clear</button>
 					<br class="clear" />
-					<p>Add client:</p>
+					<p>Add station:</p>
 				</div>
 			</div>
 			<div class="row">

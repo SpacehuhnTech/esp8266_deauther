@@ -38,8 +38,7 @@ function getResults() {
 		
     var tr = '';
     if (res.aps.length > 0) {
-		tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th>';
-		tr += '<th>Select</th></tr>'
+		tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
 	}	
 	
     for (var i = 0; i < res.aps.length; i++) {
