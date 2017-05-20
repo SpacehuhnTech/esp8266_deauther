@@ -294,13 +294,15 @@ void startAttack() {
 }
 
 void addSSID() {
-  ssidList.add(server.arg("name"));
-  server.send( 200, "text/json", "true");
-}
-
-void cloneSSID() {
-  ssidList.addClone(server.arg("name"));
-  server.send( 200, "text/json", "true");
+  if(server.hasArg("ssid") && server.hasArg("num")){
+    int num = server.arg("num").toInt();
+    if(num > 0){
+      ssidList.addClone(server.arg("ssid"),num);
+    }else{
+      ssidList.add(server.arg("ssid"));
+    }
+    server.send( 200, "text/json", "true");
+  }else server.send( 200, "text/json", "false");
 }
 
 void deleteSSID() {
@@ -331,6 +333,11 @@ void saveSSID() {
 void restartESP() {
   server.send( 200, "text/json", "true");
   ESP.reset();
+}
+
+void enableRandom(){
+  attack.changeRandom(server.arg("interval").toInt());
+  server.send( 200, "text/json", "true");
 }
 
 //==========Settings==========
@@ -501,7 +508,6 @@ void setup() {
   server.on("/clearNameList.json", clearNameList);
   server.on("/editNameList.json", editClientName);
   server.on("/addSSID.json", addSSID);
-  server.on("/cloneSSID.json", cloneSSID);
   server.on("/deleteSSID.json", deleteSSID);
   server.on("/randomSSID.json", randomSSID);
   server.on("/clearSSID.json", clearSSID);
@@ -509,6 +515,7 @@ void setup() {
   server.on("/saveSSID.json", saveSSID);
   server.on("/restartESP.json", restartESP);
   server.on("/addClient.json",addClient);
+  server.on("/enableRandom.json",enableRandom);
 
   server.begin();
 }

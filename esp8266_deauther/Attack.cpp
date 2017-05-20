@@ -123,6 +123,18 @@ bool Attack::send() {
   return true;
 }
 
+void Attack::changeRandom(int num){
+  randomMode = !randomMode;
+  randomInterval = num;
+  if(debug) Serial.println("changing randomMode: " + (String)randomMode);
+  if(randomMode){
+    if(debug) Serial.println(" generate random SSIDs");
+    ssidList.clear();
+    ssidList._random();
+    randomCounter = 0;
+  }
+}
+
 void Attack::sendDeauths(Mac from, Mac to){
   for(int i=0;i<settings.attackPacketRate;i++){
     buildDeauth(from, to, 0xc0, settings.deauthReason );
@@ -240,9 +252,6 @@ void Attack::run() {
     macListChangeCounter++;
     if(settings.macInterval > 0){
       if (macListChangeCounter >= settings.macInterval) generate();
-      /*ssidList.clear();
-      ssidList._random();
-      macListChangeCounter = 0;*/
     }
     
     if (debug) Serial.println("done");
@@ -252,6 +261,18 @@ void Attack::run() {
     }
   }
 
+  //Random-Mode Interval
+  if((isRunning[1] || isRunning[2]) && randomMode && currentMillis - randomTime >= 1000){
+    randomTime = millis();
+    if(randomCounter >= randomInterval){
+      if(debug) Serial.println(" generate random SSIDs");
+      ssidList.clear();
+      ssidList._random();
+      randomCounter = 0;
+    }
+    else randomCounter++;
+  }
+  
 }
 
 void Attack::start(int num) {
@@ -281,7 +302,6 @@ void Attack::stop(int num) {
     prevTime[num] = millis();
     refreshLed();
   }
-  
   stati[num] = "ready";
 }
 
@@ -309,6 +329,8 @@ void Attack::_log(int num){
 }
 
 size_t Attack::getSize(){
+  if(apScan.selectedSum == 0) stati[0] = "no AP";
+  
   size_t jsonSize = 0;
   
   String json = "{\"aps\":[";
@@ -358,7 +380,8 @@ size_t Attack::getSize(){
     jsonSize += json.length();
   }
   
-  json = "]}";
+  json = "],";
+  json += "\"randomMode\":" + (String)randomMode + "}";
   jsonSize += json.length();
 
   return jsonSize;
@@ -413,7 +436,8 @@ void Attack::sendResults(){
     if (i != ssidList.len - 1) json += ",";
     sendToBuffer(json);
   }
-  json = "]}";
+  json = "],";
+  json += "\"randomMode\":" + (String)randomMode + "}";
   sendToBuffer(json);
   
   sendBuffer();

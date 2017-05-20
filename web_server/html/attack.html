@@ -38,10 +38,61 @@
 					<table>
 					</table>
 					
-					<p>
+					<br />
+					
+					<label class="left"><input type="number" id="randomIntrvl" value="5" min="1" max="65000"/>s</label>
+					<button class="right" id="randomBtn" onclick="random()">Enable Random</button>
+					
+					<p class="clear">
+						<br />
 						<span class="warn">INFO: </span><span class="bold">You may loose connection when starting the attack.</span><br />
 						Change the channel in the settings to the same of the selected AP to prevent this.
-						<br />
+					</p>
+					
+					<hr />
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="ssid">SSID</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="ssid" minlength="1" maxlength="32" placeholder="SSID">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="num">Number of Clones</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="num" min="0" max="48" value="0">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					
+					<button class="button-primary col-4" onclick="addSSID()">add</button>
+					
+					<br class="clear" />
+					<hr />
+					
+					<p class="left">SSIDs: <span id="ssidCounter">0/48</span>
+						<div class="right">
+							<button class="button-warn" onclick="clearSSID()">clear</button> 
+							<button onclick="randomSSID()">random</button> 
+						</div>
+					</p>
+					<br />
+					<table></table>
+					<br />
+					<button class="marginNull button-warn" onclick="resetSSID()">reset</button> 
+					<button class="marginNull button-primary right" onclick="saveSSID()">save</button> 
+					<p class="small" id="saved">saved</p>
+					
+					<p>
 						<br />
 						<span class="bold">Deauth [deauthentication attack]:</span><br />
 						Sends deauthentication and dissociation frames to the selected station(s) and access point(s).<br />
@@ -52,21 +103,6 @@
 						<span class="bold">Probe-Request [probe request flood]:</span><br />
 						Sends probe request frames with the SSIDs in the list below.
 					</p>
-					<br />
-					<p class="left">SSIDs: <span id="ssidCounter">0/48</span>
-					<div class="right">
-						<button class="button-warn" onclick="clearSSID()">clear</button> 
-						<button onclick="randomSSID()">random</button> 
-						<button onclick="cloneSSID(prompt('new SSID:'))">clone</button> 
-						<button class="button-primary" onclick="addSSID()">add</button></p>
-					</div>
-					<br />
-					<table></table>
-					<br />
-					<button class="marginNull button-warn" onclick="resetSSID()">reset</button> 
-					<button class="marginNull button-primary right" onclick="saveSSID()">save</button> 
-					<p class="small" id="saved">saved</p>
-					
 					<div id="copyright">
 						version 1.4<br />
 						Copyright (c) 2017 Stefan Kremser<br />

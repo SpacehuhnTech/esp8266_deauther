@@ -45,6 +45,7 @@ class Attack
     void sendResults();
     size_t getSize();
     void refreshLed();
+    void changeRandom(int num);
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
@@ -137,13 +138,18 @@ class Attack
       0x82, //1Mbit/s
       0x84, //2Mbit/s
       0x8b, //5.5Mbit/s
-      0x96 //11Mbit/s
+      0x96  //11Mbit/s
     };
 
     int macListChangeCounter = 0;
     int attackTimeoutCounter[attacksNum];
     int channels[macListLen];
     bool buildInLedStatus = false;
+
+    bool randomMode = false;
+    int randomInterval = 5;
+    int randomCounter = 0;
+    long randomTime = 0;
 };
 
 #endif
