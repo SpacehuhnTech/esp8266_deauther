@@ -5,7 +5,7 @@ Deauthentication attack and other hacks using an ESP8266.
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
 
-**Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!**  
+**Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
 
 I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
 All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
@@ -259,10 +259,14 @@ If it can send packets but your target doesn't loose its connection, then the Wi
 
 ## License
 
-This project is licensed under the MIT License - see the [license file](LICENSE) file for details.
+[!License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
 
-**The License file must be included in any redistributed version of this program!**  
-Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
+This project is licensed under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0). See the [license file](LICENSE) for details.  
+
+**If you want to use my project for a commercial project, you can contact me and ask for permission.**  
+My Twitter: [twitter.com/spacehuhn](http://twitter.com/spacehuhn)  
+
+**Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
 
 ## Sources and additional links
 
