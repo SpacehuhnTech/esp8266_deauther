@@ -6,6 +6,7 @@ Deauthentication attack and other hacks using an ESP8266.
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
 
 **Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
+**Unauthorized selling of my software in any way is not allowed!**  
 
 I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
 All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
@@ -84,10 +85,10 @@ This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to
   
 [![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
   
-[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
-  
-[![NodeMCU ESP8266 Tutorial 02: WiFi Hack with ESP8266 (NodeMCU WiFi Jammer)](https://img.youtube.com/vi/MOscKnm8IcY/0.jpg)](https://www.youtube.com/watch?v=MOscKnm8IcY)
+[![WiFi Tutorial "Deauthing Made Simple"](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
 
+[![Seguridad Inalámbrica | Explicación de Wifi Deauther en Español](https://img.youtube.com/vi/YYsSDXRgD10/0.jpg)](https://www.youtube.com/watch?v=YYsSDXRgD10)
+  
 ## Installation
 
 The only thing you will need is a computer and an ESP8266.  
@@ -242,7 +243,7 @@ Maybe someone will find a way around this barrier in the future.
 
 The ESP upload tool can't communicate with the chip, make sure the right port is selected!  
 You can also try out different USB ports and cables.  
-If this doesn't solve it you may have to install USB drivers.  
+If this doesn't solve it, you may have to install USB drivers.  
 Which drivers you need depends on the board, most boards use a cp2102 or ch340.
 
 **AP scan doesn't work**
@@ -252,10 +253,10 @@ Try switching the browser or opening the website with another device.
 
 **Deauth attack won't work**
 
-If you see 0 pkts/s on the website then you've made a mistake. Check that you have followed the the installation steps correctly and that the right SDK installed, it must be version 2.0.0!
+If you see 0 pkts/s on the website, then you've made a mistake. Check that you have followed the installation steps correctly and that the right SDK is installed, it must be version 2.0.0!
 If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
 
-### If you have other questions or problems with the ESP8266 you can also check out the official [community forum](http://www.esp8266.com/).
+### If you have other questions or problems with the ESP8266, you can also check out the official [community forum](http://www.esp8266.com/).
 
 ## License
 
@@ -285,4 +286,4 @@ packet injection with ESP8266:
 
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009
 
-Wi-Fi_send_pkt_freedom function limitations: http://esp32.com/viewtopic.php?f=13&t=586&p=2648&hilit=Wi-Fi_send_pkt_freedom#p2648
+Wi-Fi_send_pkt_freedom function limitations: https://esp32.com/viewtopic.php?t=586
