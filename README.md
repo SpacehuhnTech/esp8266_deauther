@@ -97,7 +97,7 @@ The only things you will need are a computer and an ESP8266 board.
 I recommend you to buy a USB breakout/developer board, because they have 4Mb flash and are very simple to use.
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
 
-You have 2 choices here. Uploading the bin files is easier but not as good for debugging, so keep that in mind in case you want to open an new issue. 
+You have 2 choices here. Uploading the bin files is easier but not as good for debugging.  
 **YOU ONLY NEED TO DO ONE OF THE INSTALLATION METHODS!**
 
 ### Uploading the bin files  
@@ -208,7 +208,7 @@ If no port shows up you may have to reinstall the drivers.
 
 ## How to use it
 
-First start your ESP8266 by giving it power.  
+First start your ESP8266 by plugging it in and giving it power.  
 
 You can use your smartphone if you have a USB OTG cable.
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_2.jpg)
@@ -227,12 +227,10 @@ Note: While scanning the ESP8266 will shut down its access point, so you may hav
 ...and start different attacks.
 ![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
 
-Happy hacking :) 
-
 ## How to reset it
 
 Method 1: Connect pin 4 (D2 on the NodeMCU) to GND and plug the device in.  
-Method 2: Connect your device, open up the serial monitor in Arduino, change the baudrate to 115200, type in "reset" and click send.  
+Method 2: Connect your device, open up the serial monitor in Arduino, set baudrate to 115200, type in "reset" and click send.  
 
 ## FAQ
 
@@ -240,7 +238,7 @@ The FAQ was moved over to the [Wiki](https://github.com/spacehuhn/esp8266_deauth
 
 ## License
 
-[[!License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
 
 This project is licensed under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0). See the [license file](LICENSE) for details.  
 
