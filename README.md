@@ -1,17 +1,17 @@
 # ESP8266 Deauther
-Deauthentication attack and other hacks using an ESP8266.
+Deauthentication attack and other 'hacks' using an ESP8266.
 
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)  
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
 
 **Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
-**Unauthorized selling of my software in any way is not allowed!**  
+**Unauthorized selling in any way is not allowed (see #license)!**  
 
 I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
 All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
 
-**This project is a proof of concept for testing and education.**  
+**This project is a proof of concept for testing and education only.**  
 Neither the ESP8266, nor the SDK was meant and build for such purposes.  
 Bugs can occur!  
 
@@ -74,11 +74,11 @@ I don't take any responsibility for what you do with this program.
 Please check the legal regulations in your country before using it.  
 **It is not a frequency jammer as claimed falsely by many people.** Its attack, how it works and how to protect against it is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block or disrupt any other communications or frequencies.  
 
-Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
+Referring to this project as "jammer" is prohibited! Name the project by its correct name.
 
 My intention with this project is to draw more attention to this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
-**A solution is already there, why don’t we use it?**  
+**A solution is already there, why don't we use it?**  
 
 ## Videos
   
@@ -92,7 +92,7 @@ This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to
   
 ## Installation
 
-The only thing you will need is a computer and an ESP8266.  
+The only things you will need are a computer and an ESP8266 board.  
 
 I recommend you to buy a USB breakout/developer board, because they have 4Mb flash and are very simple to use.
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
@@ -103,7 +103,7 @@ You have 2 choices here. Uploading the bin files is easier but not as good for d
 ### Uploading the bin files  
 
 **Note:** the 512kb version won't have the full MAC vendor list.  
-The NodeMCU and every other board which uses the ESP-12 has 4mb flash on it.
+The NodeMCU and every other board use the ESP-12 which has 4mb flash on it.
 
 **0** Download the current release from [here](https://github.com/spacehuhn/esp8266_deauther/releases)  
 
@@ -232,16 +232,15 @@ Happy hacking :)
 ## How to reset it
 
 Method 1: Connect pin 4 (D2 on the NodeMCU) to GND and plug the device in.  
-Method 2: Connect your device, open up the serial monitor in Arduino, type in "reset" and click send.  
+Method 2: Connect your device, open up the serial monitor in Arduino, change the baudrate to 115200, type in "reset" and click send.  
 
 ## FAQ
 
-The FAQ was moved over to the Wiki.
-Click [here](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ) to get there.  
+The FAQ was moved over to the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ).  
 
 ## License
 
-[!License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
+[[!License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
 
 This project is licensed under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0). See the [license file](LICENSE) for details.  
 
