@@ -47,7 +47,7 @@ class Attack
     void refreshLed();
     void changeRandom(int num);
 
-    bool ssidChange = false;
+    bool ssidChange = true;
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);

@@ -80,6 +80,30 @@ void sniffer(uint8_t *buf, uint16_t len) {
   clientScan.packetSniffer(buf, len);
 }
 
+#ifdef USE_DISPLAY
+void drawInterface() {
+  display.clear();
+
+  int _lrow = 0;
+  for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
+    if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
+    else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
+    else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
+    else if (i - 3 <= apScan.results) {
+      display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
+      if (apScan.getAPSelected(i - 3)) {
+        display.drawVerticalLine(1, _lrow * fontSize, fontSize);
+        display.drawVerticalLine(2, _lrow * fontSize, fontSize);
+      }
+    }
+    if (_lrow == lrow) display.drawVerticalLine(0, _lrow * fontSize, fontSize);
+    _lrow++;
+  }
+
+  display.display();
+}
+#endif
+
 void startWifi() {
   Serial.println("\nStarting WiFi AP:");
   WiFi.mode(WIFI_STA);
@@ -405,30 +429,6 @@ void resetSettings() {
   settings.reset();
   server.send( 200, "text/json", "true" );
 }
-
-#ifdef USE_DISPLAY
-void drawInterface() {
-  display.clear();
-
-  int _lrow = 0;
-  for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
-    if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
-    else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
-    else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
-    else if (i - 3 <= apScan.results) {
-      display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
-      if (apScan.getAPSelected(i - 3)) {
-        display.drawVerticalLine(1, _lrow * fontSize, fontSize);
-        display.drawVerticalLine(2, _lrow * fontSize, fontSize);
-      }
-    }
-    if (_lrow == lrow) display.drawVerticalLine(0, _lrow * fontSize, fontSize);
-    _lrow++;
-  }
-
-  display.display();
-}
-#endif
 
 void setup() {
 

@@ -9,7 +9,8 @@ var num = getE("num");
 var randomIntrvl = getE("randomIntrvl");
 var randomBtn = getE("randomBtn");
 var resultInterval;
-var data;
+var data = {};
+
 function getResults() {
   getResponse("attackInfo.json", function(responseText) {
     var res = JSON.parse(responseText);
@@ -40,13 +41,13 @@ function getResults() {
     table.innerHTML = tr;
 
 	if(typeof res.ssid != 'undefined'){
-		data = res;
-		ssidCounter.innerHTML = res.ssid.length + "/48";
+		data = res.ssid;
+		ssidCounter.innerHTML = data.length + "/48";
 		
 		var tr = "<tr><th>Name</th><th>X</th></tr>";
-		for (var i = 0; i < res.ssid.length; i++) {
+		for (var i = 0; i < data.length; i++) {
 		  tr += "<tr>";
-		  tr += "<td>" + res.ssid[i] + "</td>";
+		  tr += "<td>" + data[i] + "</td>";
 		  tr += '<td><button class="marginNull button-warn" onclick="deleteSSID(' + i + ')">x</button></td>';
 		  tr += "</tr>";
 		}
@@ -71,7 +72,7 @@ function addSSID() {
 	
 	var _ssidName = ssid.value;
 	if(_ssidName.length > 0){
-		if(data.ssid.length >= 64) showMessage("SSID list full :(", 2500);
+		if(data.length >= 64) showMessage("SSID list full :(", 2500);
 		else{
 			saved.innerHTML = "";
 			getResponse("addSSID.json?ssid=" + _ssidName + "&num="+num.value, getResults);
@@ -81,7 +82,7 @@ function addSSID() {
 
 function cloneSSID(_ssidName) {
   ssid.value = _ssidName;
-  num.value = 48 - data.ssid.length;
+  num.value = 48 - data.length;
 }
 
 function deleteSSID(num) {
