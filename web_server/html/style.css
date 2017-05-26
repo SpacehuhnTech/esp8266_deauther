@@ -7,6 +7,18 @@
 	border-radius:4px;
 	margin-top: 0;
 }
+input,
+.button,
+button,
+textarea{
+	border-radius: 4px;
+	border: 1px solid #bbb;
+	padding: 0 6px;
+}
+textarea{
+	width: 96%;
+	height: 350px;
+}
 nav, 
 nav a{
 	background: #222;
@@ -73,6 +85,9 @@ td{
 .padding{
 	padding: 0 1rem;
 }
+.fullWidth{
+	width: 100%
+}
 #error{
 	text-align: center;
 	color: #fff;
@@ -91,8 +106,6 @@ a{
 	cursor: pointer;
 }
 input{
-	border-radius: 4px;
-	border: 1px solid #bbb;
 	padding: 3px;
 }
 .button,
@@ -100,7 +113,6 @@ button,
 input[type="submit"],
 input[type="reset"],
 input[type="button"] {
-  padding: 0 6px;
   display: inline-block;
   height: 31px;
   color: #555;
@@ -113,8 +125,6 @@ input[type="button"] {
   text-decoration: none;
   white-space: nowrap;
   background-color: transparent;
-  border-radius: 4px;
-  border: 1px solid #bbb;
   cursor: pointer;
   box-sizing: border-box; }
 .button:hover,
