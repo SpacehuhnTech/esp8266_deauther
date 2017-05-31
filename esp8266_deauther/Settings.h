@@ -36,6 +36,7 @@ extern NameList nameList;
 #define multiAttacksAdr 1102
 #define macIntervalAdr 1103
 #define beaconIntervalAdr 1105
+#define ledPinAdr 1106
 
 #define checkNumAdr 1102
 #define checkNum 14
@@ -68,6 +69,7 @@ class Settings
     bool multiAttacks;
     int macInterval;
     bool beaconInterval;
+    int ledPin;
     
   private:
     size_t getSize();

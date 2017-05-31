@@ -457,8 +457,8 @@ void setup() {
 #endif
 
   attackMode = "START";
-  pinMode(2, OUTPUT);
-  digitalWrite(2, HIGH);
+  pinMode(settings.ledPin, OUTPUT);
+  digitalWrite(settings.ledPin, HIGH);
 
   EEPROM.begin(4096);
   SPIFFS.begin();

@@ -6,24 +6,24 @@ Settings::Settings() {
 
 void Settings::load() {
 
-  if(EEPROM.read(checkNumAdr) != checkNum){
+  if (EEPROM.read(checkNumAdr) != checkNum) {
     reset();
     return;
   }
-  
+
   ssidLen = EEPROM.read(ssidLenAdr);
   passwordLen = EEPROM.read(passwordLenAdr);
 
-  if (ssidLen < 1 || ssidLen > 32 || passwordLen < 8 && passwordLen != 0  || passwordLen > 32){
+  if (ssidLen < 1 || ssidLen > 32 || passwordLen < 8 && passwordLen != 0  || passwordLen > 32) {
     reset();
     return;
   }
-  
+
   ssid = "";
   password = "";
   for (int i = 0; i < ssidLen; i++) ssid += (char)EEPROM.read(ssidAdr + i);
   for (int i = 0; i < passwordLen; i++) password += (char)EEPROM.read(passwordAdr + i);
-  
+
   ssidHidden = (bool)EEPROM.read(ssidHiddenAdr);
 
   if ((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 14) {
@@ -45,6 +45,7 @@ void Settings::load() {
   multiAttacks = (bool)EEPROM.read(multiAttacksAdr);
   macInterval = eepromReadInt(macIntervalAdr);
   beaconInterval = (bool)EEPROM.read(beaconIntervalAdr);
+  ledPin = (int)EEPROM.read(ledPinAdr);
 }
 
 void Settings::reset() {
@@ -71,6 +72,7 @@ void Settings::reset() {
   multiAttacks = false;
   macInterval = 4;
   beaconInterval = false;
+  ledPin = 2;
 
   if (debug) Serial.println("done");
 
@@ -105,6 +107,7 @@ void Settings::save() {
   EEPROM.write(checkNumAdr, checkNum);
   eepromWriteInt(macIntervalAdr, macInterval);
   EEPROM.write(beaconIntervalAdr, beaconInterval);
+  EEPROM.write(ledPinAdr, ledPin);
   EEPROM.commit();
 
   if (debug) {
@@ -133,37 +136,39 @@ void Settings::info() {
   Serial.println("multiple Attacks: " + (String)multiAttacks);
   Serial.println("mac change interval: " + (String)macInterval);
   Serial.println("1s beacon interval: " + (String)beaconInterval);
+  Serial.println("LED Pin: " + (String)ledPin);
 }
 
-size_t Settings::getSize(){
-    String json = "{";
-    size_t jsonSize = 0;
-  
-    json += "\"ssid\":\"" + ssid + "\",";
-    json += "\"ssidHidden\":" + (String)ssidHidden + ",";
-    json += "\"password\":\"" + password + "\",";
-    json += "\"apChannel\":" + (String)apChannel + ",";
-    json += "\"apScanHidden\":" + (String)apScanHidden + ",";
-    json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
-    json += "\"attackTimeout\":" + (String)attackTimeout + ",";
-    json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
-    json += "\"clientScanTime\":" + (String)clientScanTime + ",";
-    json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
-    json += "\"useLed\":" + (String)useLed + ",";
-    json += "\"channelHop\":" + (String)channelHop + ",";
-    json += "\"multiAPs\":" + (String)multiAPs + ",";
-    json += "\"multiAttacks\":" + (String)multiAttacks + ",";
-    json += "\"macInterval\":" + (String)macInterval + ",";
-    json += "\"beaconInterval\":" + (String)beaconInterval + "}";
-    jsonSize += json.length();
-  
-    return jsonSize;
+size_t Settings::getSize() {
+  String json = "{";
+  size_t jsonSize = 0;
+
+  json += "\"ssid\":\"" + ssid + "\",";
+  json += "\"ssidHidden\":" + (String)ssidHidden + ",";
+  json += "\"password\":\"" + password + "\",";
+  json += "\"apChannel\":" + (String)apChannel + ",";
+  json += "\"apScanHidden\":" + (String)apScanHidden + ",";
+  json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
+  json += "\"attackTimeout\":" + (String)attackTimeout + ",";
+  json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
+  json += "\"clientScanTime\":" + (String)clientScanTime + ",";
+  json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
+  json += "\"useLed\":" + (String)useLed + ",";
+  json += "\"channelHop\":" + (String)channelHop + ",";
+  json += "\"multiAPs\":" + (String)multiAPs + ",";
+  json += "\"multiAttacks\":" + (String)multiAttacks + ",";
+  json += "\"macInterval\":" + (String)macInterval + ",";
+  json += "\"beaconInterval\":" + (String)beaconInterval + ",";
+  json += "\"ledPin\":" + (String)ledPin + "}";
+  jsonSize += json.length();
+
+  return jsonSize;
 }
 
 void Settings::send() {
   if (debug) Serial.println("getting settings json");
   sendHeader(200, "text/json", getSize());
-  
+
   String json = "{";
   json += "\"ssid\":\"" + ssid + "\",";
   json += "\"ssidHidden\":" + (String)ssidHidden + ",";
@@ -184,6 +189,6 @@ void Settings::send() {
   sendToBuffer(json);
   sendBuffer();
 
-  if(debug) Serial.println("\ndone");
+  if (debug) Serial.println("\ndone");
 
 }
