@@ -38,8 +38,8 @@ extern NameList nameList;
 #define beaconIntervalAdr 1105
 #define ledPinAdr 1106
 
-#define checkNumAdr 1102
-#define checkNum 14
+#define checkNumAdr 2001
+#define checkNum 73
 
 class Settings
 {
