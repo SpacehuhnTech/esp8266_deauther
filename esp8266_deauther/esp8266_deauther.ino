@@ -29,6 +29,7 @@
   #define upBtn 12 //GPIO 12 = D6
   #define downBtn 13 //GPIO 13 = D7
   #define selectBtn 14 //GPIO 14 = D5
+  #define displayBtn 0 //GPIO 0 = FLASH BUTTON
   
   #define buttonDelay 180 //delay in ms
   
@@ -44,6 +45,7 @@
 
   bool canBtnPress = true;
   int buttonPressed = 0; //0 = UP, 1 = DOWN, 2 = SELECT, 3 = DISPLAY
+  bool displayOn = true;
 #endif
 
 String wifiMode = "";
@@ -85,25 +87,27 @@ void sniffer(uint8_t *buf, uint16_t len) {
 
 #ifdef USE_DISPLAY
 void drawInterface() {
-  display.clear();
+  if(displayOn){
+    display.clear();
 
-  int _lrow = 0;
-  for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
-    if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
-    else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
-    else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
-    else if (i - 3 <= apScan.results) {
-      display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
-      if (apScan.getAPSelected(i - 3)) {
-        display.drawVerticalLine(1, _lrow * fontSize, fontSize);
-        display.drawVerticalLine(2, _lrow * fontSize, fontSize);
+    int _lrow = 0;
+    for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
+      if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
+      else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
+      else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
+      else if (i - 3 <= apScan.results) {
+        display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
+        if (apScan.getAPSelected(i - 3)) {
+          display.drawVerticalLine(1, _lrow * fontSize, fontSize);
+          display.drawVerticalLine(2, _lrow * fontSize, fontSize);
+        }
       }
+      if (_lrow == lrow) display.drawVerticalLine(0, _lrow * fontSize, fontSize);
+      _lrow++;
     }
-    if (_lrow == lrow) display.drawVerticalLine(0, _lrow * fontSize, fontSize);
-    _lrow++;
+  
+    display.display();
   }
-
-  display.display();
 }
 #endif
 
@@ -449,6 +453,7 @@ void setup() {
   pinMode(upBtn, INPUT_PULLUP);
   pinMode(downBtn, INPUT_PULLUP);
   pinMode(selectBtn, INPUT_PULLUP);
+  pinMode(displayBtn, INPUT_PULLUP);
 #endif
 
   attackMode = "START";
@@ -544,11 +549,12 @@ void loop() {
 
 #ifdef USE_DISPLAY
 
-  if (digitalRead(upBtn) == LOW || digitalRead(downBtn) == LOW || digitalRead(selectBtn) == LOW){
+  if (digitalRead(upBtn) == LOW || digitalRead(downBtn) == LOW || digitalRead(selectBtn) == LOW || digitalRead(displayBtn) == LOW){
     if(canBtnPress){
       if(digitalRead(upBtn) == LOW) buttonPressed = 0;
       else if(digitalRead(downBtn) == LOW) buttonPressed = 1;
       else if(digitalRead(selectBtn) == LOW) buttonPressed = 2;
+      else if(digitalRead(displayBtn) == LOW) buttonPressed = 3;
       canBtnPress = false;
     }
   }else if(!canBtnPress){
@@ -593,6 +599,12 @@ void loop() {
         attack.stop(0);
         apScan.select(curRow - 3);
       }
+    }
+    else if (buttonPressed == 3) {
+      displayOn = !displayOn;
+      display.clear();
+      display.display();
+      Serial.println("BUTTON PRESSED!");
     }
   }
   drawInterface();
