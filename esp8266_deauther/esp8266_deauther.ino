@@ -12,7 +12,7 @@
 #include <FS.h>
 
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 
 #ifdef USE_DISPLAY
   #include <Wire.h>
@@ -20,11 +20,15 @@
   //include the library you need
   #include "SSD1306.h"
   //#include "SH1106.h"
+
+  //create display(Adr, SDA-pin, SCL-pin)
+  SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
+  //SH1106 display(0x3c, 5, 4);
   
   //button pins
-  #define upBtn D6
-  #define downBtn D7
-  #define selectBtn D5
+  #define upBtn 12 //GPIO 12 = D6
+  #define downBtn 13 //GPIO 13 = D7
+  #define selectBtn 14 //GPIO 14 = D5
   
   #define buttonDelay 180 //delay in ms
   
@@ -32,15 +36,14 @@
   #define fontSize 8
   #define rowsPerSite 8
   
-  //create display(Adr, SDA-pin, SCL-pin)
-  SSD1306 display(0x3c, D2, D1);
-  //SH1106 display(0x3c, D2, D1);
-  
   int rows = 3;
   int curRow = 0;
   int sites = 1;
   int curSite = 1;
   int lrow = 0;
+
+  bool canBtnPress = true;
+  int buttonPressed = 0; //0 = UP, 1 = DOWN, 2 = SELECT, 3 = DISPLAY
 #endif
 
 String wifiMode = "";
@@ -541,49 +544,56 @@ void loop() {
 
 #ifdef USE_DISPLAY
 
-
-  //go up
-  if (digitalRead(upBtn) == LOW && curRow > 0) {
-    curRow--;
-    if (lrow - 1 < 0) {
-      lrow = rowsPerSite - 1;
-      curSite--;
-    } else lrow--;
-    delay(buttonDelay);
-
-  // ===== go down ===== 
-  } else if (digitalRead(downBtn) == LOW && curRow < rows - 1) {
-    curRow++;
-    if (lrow + 1 >= rowsPerSite) {
-      lrow = 0;
-      curSite++;
-    } else lrow++;
-    delay(buttonDelay);
-    
-  // ===== select ===== 
-  } else if (digitalRead(selectBtn) == LOW) {
-    //WiFi on/off
-    if (curRow == 0) {
-      if (wifiMode == "ON") stopWifi();
-      else startWifi();
-    
-    // ===== scan for APs ===== 
-    } else if (curRow == 1) {
-      startAPScan();
-      drawInterface();
-
-    // ===== start,stop attack ===== 
-    } else if (curRow == 2) {
-      if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
-      else if (attackMode == "STOP") attack.stop(0);
-    } 
-    
-    // ===== select APs ===== 
-    else if (curRow >= 3) {
-      attack.stop(0);
-      apScan.select(curRow - 3);
+  if (digitalRead(upBtn) == LOW || digitalRead(downBtn) == LOW || digitalRead(selectBtn) == LOW){
+    if(canBtnPress){
+      if(digitalRead(upBtn) == LOW) buttonPressed = 0;
+      else if(digitalRead(downBtn) == LOW) buttonPressed = 1;
+      else if(digitalRead(selectBtn) == LOW) buttonPressed = 2;
+      canBtnPress = false;
     }
-    delay(buttonDelay);
+  }else if(!canBtnPress){
+    canBtnPress = true;
+    
+    // ===== UP =====
+    if (buttonPressed == 0 && curRow > 0) {
+      curRow--;
+      if (lrow - 1 < 0) {
+        lrow = rowsPerSite - 1;
+        curSite--;
+      } else lrow--;
+  
+    // ===== DOWN ===== 
+    } else if (buttonPressed == 1 && curRow < rows - 1) {
+      curRow++;
+      if (lrow + 1 >= rowsPerSite) {
+        lrow = 0;
+        curSite++;
+      } else lrow++;
+      
+    // ===== SELECT ===== 
+    } else if (buttonPressed == 2) {
+      //WiFi on/off
+      if (curRow == 0) {
+        if (wifiMode == "ON") stopWifi();
+        else startWifi();
+      
+      // ===== scan for APs ===== 
+      } else if (curRow == 1) {
+        startAPScan();
+        drawInterface();
+  
+      // ===== start,stop attack ===== 
+      } else if (curRow == 2) {
+        if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
+        else if (attackMode == "STOP") attack.stop(0);
+      } 
+      
+      // ===== select APs ===== 
+      else if (curRow >= 3) {
+        attack.stop(0);
+        apScan.select(curRow - 3);
+      }
+    }
   }
   drawInterface();
 #endif
