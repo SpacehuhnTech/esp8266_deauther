@@ -31,8 +31,6 @@
   #define selectBtn 14 //GPIO 14 = D5
   #define displayBtn 0 //GPIO 0 = FLASH BUTTON
   
-  #define buttonDelay 180 //delay in ms
-  
   //render settings
   #define fontSize 8
   #define rowsPerSite 8
@@ -425,7 +423,8 @@ void saveSettings() {
     if (server.arg("multiAttacks") == "false") settings.multiAttacks = false;
     else settings.multiAttacks = true;
   }
-
+  
+  if (server.hasArg("ledPin")) settings.ledPin = server.arg("ledPin").toInt();
   if(server.hasArg("macInterval")) settings.macInterval = server.arg("macInterval").toInt();
 
   settings.save();
@@ -440,25 +439,13 @@ void resetSettings() {
 void setup() {
 
   Serial.begin(115200);
+  
   if(debug){
     delay(2000);
     Serial.println("\nStarting...\n");
   }
-  
-#ifdef USE_DISPLAY
-  display.init();
-  display.setFont(Roboto_Mono_8);
-  display.flipScreenVertically();
-  drawInterface();
-  pinMode(upBtn, INPUT_PULLUP);
-  pinMode(downBtn, INPUT_PULLUP);
-  pinMode(selectBtn, INPUT_PULLUP);
-  pinMode(displayBtn, INPUT_PULLUP);
-#endif
 
   attackMode = "START";
-  pinMode(settings.ledPin, OUTPUT);
-  digitalWrite(settings.ledPin, HIGH);
 
   EEPROM.begin(4096);
   SPIFFS.begin();
@@ -467,11 +454,6 @@ void setup() {
   if (debug) settings.info();
   nameList.load();
   ssidList.load();
-
-#ifdef resetPin
-  pinMode(resetPin, INPUT_PULLUP);
-  if(digitalRead(resetPin) == LOW) settings.reset();
-#endif
 
   startWifi();
   attack.stopAll();
@@ -530,6 +512,26 @@ void setup() {
   server.on("/enableRandom.json",enableRandom);
 
   server.begin();
+
+#ifdef USE_DISPLAY
+  display.init();
+  display.setFont(Roboto_Mono_8);
+  display.flipScreenVertically();
+  pinMode(upBtn, INPUT_PULLUP);
+  pinMode(downBtn, INPUT_PULLUP);
+  pinMode(selectBtn, INPUT_PULLUP);
+  if(displayBtn == 0) pinMode(displayBtn, INPUT);
+  else pinMode(displayBtn, INPUT_PULLUP);
+#endif
+
+#ifdef resetPin
+  pinMode(resetPin, INPUT_PULLUP);
+  if(digitalRead(resetPin) == LOW) settings.reset();
+#endif
+
+  pinMode(settings.ledPin, OUTPUT);
+  digitalWrite(settings.ledPin, HIGH);
+  
 }
 
 void loop() {
@@ -600,11 +602,11 @@ void loop() {
         apScan.select(curRow - 3);
       }
     }
+    // ===== DISPLAY ===== 
     else if (buttonPressed == 3) {
       displayOn = !displayOn;
       display.clear();
       display.display();
-      Serial.println("BUTTON PRESSED!");
     }
   }
   drawInterface();

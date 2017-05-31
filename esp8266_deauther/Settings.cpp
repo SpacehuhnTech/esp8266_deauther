@@ -185,7 +185,8 @@ void Settings::send() {
   json += "\"multiAPs\":" + (String)multiAPs + ",";
   json += "\"multiAttacks\":" + (String)multiAttacks + ",";
   json += "\"macInterval\":" + (String)macInterval + ",";
-  json += "\"beaconInterval\":" + (String)beaconInterval + "}";
+  json += "\"beaconInterval\":" + (String)beaconInterval + ",";
+  json += "\"ledPin\":" + (String)ledPin + "}";
   sendToBuffer(json);
   sendBuffer();
 

@@ -18,6 +18,7 @@ var cMac = getE('cMac');
 var cName = getE('cName');
 var macInterval = getE('macInterval');
 var beaconInterval = getE('beaconInterval');
+var ledPin = getE('ledPin');
 var res;
 
 function getData() {
@@ -44,6 +45,7 @@ function getData() {
 	multiAttacks.checked = res.multiAttacks;
 	macInterval.value = res.macInterval;
 	beaconInterval.checked = res.beaconInterval;
+	ledPin.value = res.ledPin;
   });
 }
 
@@ -66,6 +68,7 @@ function saveSettings() {
   url += "&multiAttacks="+multiAttacks.checked;
   url += "&macInterval="+macInterval.value;
   url += "&beaconInterval="+beaconInterval.checked;
+  url += "&ledPin="+ledPin.value;
 
   getResponse(url, function(responseText) {
     if (responseText == "true") {
