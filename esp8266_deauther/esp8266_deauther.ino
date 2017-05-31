@@ -13,6 +13,7 @@
 
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 //#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+//#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
 #ifdef USE_DISPLAY
   #include <Wire.h>
@@ -438,11 +439,10 @@ void resetSettings() {
 
 void setup() {
   
-  // for the Pocket WiFi ESP8266
-  /*
+#ifdef USE_LED16
   pinMode(16, OUTPUT);
   digitalWrite(16, LOW);
-  */
+#endif
   
   Serial.begin(115200);
 
