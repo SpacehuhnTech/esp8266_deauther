@@ -39,7 +39,7 @@ extern NameList nameList;
 #define ledPinAdr 1106
 
 #define checkNumAdr 2001
-#define checkNum 73
+#define checkNum 15
 
 class Settings
 {

@@ -437,13 +437,14 @@ void resetSettings() {
 }
 
 void setup() {
-
-  Serial.begin(115200);
   
-  if(debug){
-    delay(2000);
-    Serial.println("\nStarting...\n");
-  }
+  // for the Pocket WiFi ESP8266
+  /*
+  pinMode(16, OUTPUT);
+  digitalWrite(16, LOW);
+  */
+  
+  Serial.begin(115200);
 
   attackMode = "START";
 
@@ -515,13 +516,26 @@ void setup() {
 
 #ifdef USE_DISPLAY
   display.init();
-  display.setFont(Roboto_Mono_8);
   display.flipScreenVertically();
   pinMode(upBtn, INPUT_PULLUP);
   pinMode(downBtn, INPUT_PULLUP);
   pinMode(selectBtn, INPUT_PULLUP);
   if(displayBtn == 0) pinMode(displayBtn, INPUT);
   else pinMode(displayBtn, INPUT_PULLUP);
+
+  display.clear();
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(0, 0, "ESP8266");
+  display.setFont(ArialMT_Plain_24);
+  display.drawString(0, 16, "Deauther");
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(0, 40, "Copyright (c) 2017");
+  display.drawString(0, 50, "Stefan Kremser");
+  display.display();
+
+  display.setFont(Roboto_Mono_8);
+  
+  delay(2000);
 #endif
 
 #ifdef resetPin
@@ -531,10 +545,18 @@ void setup() {
 
   pinMode(settings.ledPin, OUTPUT);
   digitalWrite(settings.ledPin, HIGH);
+
+  if(debug){
+    Serial.println("\nStarting...\n");
+#ifndef USE_DISPLAY
+    delay(2000);
+#endif
+  }
   
 }
 
 void loop() {
+  
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
   } else {
