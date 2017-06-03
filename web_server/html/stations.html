@@ -21,43 +21,50 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-12">
-					<h1 class="header">Scan for Wi-Fi Stations</h1>
-			
-					<label for="scanTime">Scan time:</label>
-					<input type="number" id="scanTime" value="10">s
+					<h1>Scan for Wi-Fi Stations</h1>
 					
-					<button onclick="scan()" id="startScan" class="right button-primary">start</button>
-					<a id="clientScanStatus" class="right padding">scanning...</a>
-					<br />
-					<p class="warn">The access point will be unavailable while scanning and you may have to reconnect!<p>
+					<p>
+						<label for="scanTime">Scan time:</label>
+						<input type="number" id="scanTime" value="10"> s
+						<button onclick="scan()" id="startScan" class="right button-primary">Start</button>
+					</p>
+
+					<p><a id="clientScanStatus" class="right padding">Scanning...</a></p>
+
+					<div class="warn">The access point will be unavailable while scanning and you may have to reconnect.</div>
+					
 					<p>Client devices found: <span id="clientsFound">0</span></p>
 					<br />
+
 					<table></table>
 					
-					<p class="block bold" >Saved clients: <span id="clientNames"></span></p>
+					<h2>Saved Clients <small>(<span id="clientNames">0</span>)</small></h2>
 					<table id="nameList"></table>
 					
-					<button class="button-warn left" onclick="clearNameList()">clear</button>
-					<br class="clear" />
-					<p>Add client:</p>
+					<p><button class="button-warn" onclick="clearNameList()">Clear</button></p>
+
+					<h2>Add Client</h2>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-4">
-					<label>MAC <input type="text" placeholder="AA:BB:CC:DD:EE:FF" id="cMac"/></label>
+					<label>MAC <br/>
+					<input type="text" placeholder="AA:BB:CC:DD:EE:FF" id="cMac"/></label>
 				</div>
 				<div class="col-4">
-					<label>Name <input type="text" placeholder="EXAMPLE" id="cName"/></label>
+					<label>Name <br/>
+					<input type="text" placeholder="Example Name" id="cName"/></label>
 				</div>
 				<div class="col-4">
-					<button class="button-primary" onclick="addClient()">add</button>
+					<br/>
+					<button class="button-primary" onclick="addClient()">Add</button>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-12">
 					<div id="copyright">
-						version 1.4<br />
-						Copyright (c) 2017 Stefan Kremser<br />
+						Version 1.4<br />
+						Copyright &copy; 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
 					</div>
 					
