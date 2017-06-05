@@ -82,7 +82,8 @@ function addSSID() {
 
 function cloneSSID(_ssidName) {
   ssid.value = _ssidName;
-  num.value = 48 - data.length;
+  if(data.length > 0) num.value = 48 - data.length;
+  else num.value = 48;
 }
 
 function deleteSSID(num) {

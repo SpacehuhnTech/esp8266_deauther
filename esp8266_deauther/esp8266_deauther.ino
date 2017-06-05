@@ -171,6 +171,7 @@ void loadStationsJS() {
   sendFile(200, "text/javascript", data_stationsJS, sizeof(data_stationsJS));
 }
 void loadAttackJS() {
+  attack.ssidChange = true;
   sendFile(200, "text/javascript", data_attackJS, sizeof(data_attackJS));
 }
 void loadSettingsJS() {
