@@ -33,9 +33,13 @@ extern NameList nameList;
 #define useLedAdr 1099
 #define channelHopAdr 1100
 #define multiAPsAdr 1101
+#define multiAttacksAdr 1102
+#define macIntervalAdr 1103
+#define beaconIntervalAdr 1105
+#define ledPinAdr 1106
 
-#define checkNumAdr 1102
-#define checkNum 14
+#define checkNumAdr 2001
+#define checkNum 15
 
 class Settings
 {
@@ -62,6 +66,10 @@ class Settings
     bool useLed;
     bool channelHop;
     bool multiAPs;
+    bool multiAttacks;
+    int macInterval;
+    bool beaconInterval;
+    int ledPin;
     
   private:
     size_t getSize();

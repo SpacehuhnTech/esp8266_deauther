@@ -32,11 +32,11 @@ void SSIDList::add(String name) {
   }
 }
 
-void SSIDList::addClone(String name) {
+void SSIDList::addClone(String name, int num) {
   int _restSSIDLen = SSIDLength - name.length();
   String _apName;
 
-  for (int c = 0; c < SSIDListLength; c++) {
+  for (int c = 0; c < SSIDListLength && c < num; c++) {
     _apName = name;
 
     if (c < _restSSIDLen) for (int d = 0; d < _restSSIDLen - c; d++) _apName += " "; //e.g. "SAMPLEAP   "

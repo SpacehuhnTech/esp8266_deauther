@@ -113,18 +113,34 @@
 			</div>
 			<div class="row">
 				<div class="col-6">
-					<label for="ssidEnc">WPA2 Beacons</label>
+					<label for="useLed">Use LED</label>
 				</div>
 				<div class="col-6">
-					<input type="checkbox" name="ssidEnc" id="ssidEnc" value="false">
+					<input type="checkbox" id="useLed" value="false">
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-6">
-					<label for="useLed">Use LED</label>
+					<label for="ledPin">LED Pin (restart needed)</label>
 				</div>
 				<div class="col-6">
-					<input type="checkbox" name="useLed" id="useLed" value="false">
+					<input type="number" id="ledPin" min="0" max="18">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="ssidEnc">WPA2 Beacons</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="ssidEnc" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="beaconInterval">1s Beacon Interval (default: 100ms)</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="beaconInterval" value="false">
 				</div>
 			</div>
 			<div class="row">
@@ -143,6 +159,24 @@
 					<input type="number" id="packetRate" min="1" max="50"> pkts/s
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="multiAttacks">Multiple Attacks</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="multiAttacks" value="false">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="macInterval">MAC Change Interval (used for beacons & probes)</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="macInterval" min="0" max="65000">s
+				</div>
+			</div>
+			
+			
 			<!--
 			<div class="row">
 				<div class="col-6">
@@ -164,7 +198,7 @@
 					<br class="clear" />
 
 					<div id="copyright">
-						version 1.4<br />
+						version 1.5<br />
 						Copyright (c) 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
 					</div>
