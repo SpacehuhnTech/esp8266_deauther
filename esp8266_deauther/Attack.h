@@ -18,7 +18,6 @@ extern "C" {
 
 #define attacksNum 3
 #define macListLen 64
-#define macChangeInterval 4
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
@@ -46,6 +45,9 @@ class Attack
     void sendResults();
     size_t getSize();
     void refreshLed();
+    void changeRandom(int num);
+
+    bool ssidChange = true;
   private:
 
     void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
@@ -131,10 +133,25 @@ class Attack
       */
     };
 
+    uint8_t probePacket_RateTag[6] = {
+      0x01, //Tag Number: Supported Rates (1)
+      0x04, //Tag length: 4
+      //Supported Rates:
+      0x82, //1Mbit/s
+      0x84, //2Mbit/s
+      0x8b, //5.5Mbit/s
+      0x96  //11Mbit/s
+    };
+
     int macListChangeCounter = 0;
     int attackTimeoutCounter[attacksNum];
     int channels[macListLen];
     bool buildInLedStatus = false;
+
+    bool randomMode = false;
+    int randomInterval = 5;
+    int randomCounter = 0;
+    long randomTime = 0;
 };
 
 #endif

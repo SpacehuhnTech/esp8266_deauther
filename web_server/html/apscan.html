@@ -29,16 +29,22 @@
 					<p>
 						Networks found: <span id="networksFound">0</span><br />
 						MAC: <span id="apMAC"></span>
+						<span id="selectAllBtns" style="visibility:'hidden'">
+							<br />
+							<button class="button-primary left" onclick="select(-2)">Deselect All</button>
+							<button class="button-primary right" onclick="select(-1)">Select All</button>
+						</span>
 					</p>
 					<br />
 				
 					<table></table>
 					
+					<div class="warn">You may have to reload the site to see the results.</div>
 					<p>WPA* = WPA/WPA2 auto mode</p>
 					
 					<div id="copyright">
-						Version 1.4<br />
-						Copyright &copy; 2017 Stefan Kremser<br />
+						Version 1.5<br />
+						Copyright (c) 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
 					</div>
 					

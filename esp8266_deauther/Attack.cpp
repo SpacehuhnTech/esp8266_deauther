@@ -17,6 +17,8 @@ void Attack::generate() {
     for (int i = 0; i < 6; i++) _randomBeaconMac.setAt(_randomMacBuffer[i], i);
   } while (beaconAdrs.add(_randomBeaconMac) >= 0);
   if (debug) Serial.println("done");
+
+  macListChangeCounter = 0;
 }
 
 void Attack::buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason) {
@@ -46,6 +48,11 @@ void Attack::buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt) {
   for (int i = 0; i < sizeof(beaconPacket_header); i++) {
     packet[i] = beaconPacket_header[i];
     packetSize++;
+  }
+
+  if(settings.beaconInterval){
+    beaconPacket_header[32] = 0xe8;
+    beaconPacket_header[33] = 0x03;
   }
 
   for (int i = 0; i < 6; i++) {
@@ -96,6 +103,8 @@ void Attack::buildProbe(String _ssid, Mac _mac) {
   for (int i = 0; i < len; i++) packet[packetSize + i] = _ssid[i];
   packetSize += len;
 
+  for (int i = 0; i < sizeof(probePacket_RateTag); i++) packet[packetSize + i] = probePacket_RateTag[i];
+  packetSize += sizeof(probePacket_RateTag);
 }
 
 bool Attack::send() {
@@ -112,6 +121,19 @@ bool Attack::send() {
   }
   delay(1); //less packets are beeing dropped
   return true;
+}
+
+void Attack::changeRandom(int num){
+  randomMode = !randomMode;
+  randomInterval = num;
+  if(debug) Serial.println("changing randomMode: " + (String)randomMode);
+  if(randomMode){
+    if(debug) Serial.println(" generate random SSIDs");
+    ssidList.clear();
+    ssidList._random();
+    randomCounter = 0;
+    ssidChange = true;
+  }
 }
 
 void Attack::sendDeauths(Mac from, Mac to){
@@ -183,8 +205,10 @@ void Attack::run() {
     }
   }
 
-  /* =============== Beacon list Attack =============== */
-  if (isRunning[1] && currentMillis - prevTime[1] >= 100) {
+  /* =============== Beacon Attack =============== */
+  int beaconsPerSecond = 10;
+  if(settings.beaconInterval) beaconsPerSecond = 1;
+  if (isRunning[1] && currentMillis - prevTime[1] >= 1000/beaconsPerSecond) {
     if (debug) Serial.print("running " + (String)attackNames[1] + " attack...");
     prevTime[1] = millis();
 
@@ -197,17 +221,18 @@ void Attack::run() {
       if (send()) packetsCounter[1]++;
     }
 
-    stati[1] = (String)(packetsCounter[1] * 10) + "pkts/s";
+    stati[1] = (String)(packetsCounter[1] * beaconsPerSecond) + "pkts/s";
     packetsCounter[1] = 0;
+    
     macListChangeCounter++;
-    if (macListChangeCounter / 10 >= macChangeInterval && macChangeInterval > 0) {
-      generate();
-      macListChangeCounter = 0;
+    if(settings.macInterval > 0){
+      if (macListChangeCounter / beaconsPerSecond >= settings.macInterval) generate();
     }
+    
     if (debug) Serial.println(" done");
     if (settings.attackTimeout > 0) {
       attackTimeoutCounter[1]++;
-      if (attackTimeoutCounter[1] / 10 > settings.attackTimeout) stop(1);
+      if (attackTimeoutCounter[1] / beaconsPerSecond > settings.attackTimeout) stop(1);
     }
   }
 
@@ -218,16 +243,18 @@ void Attack::run() {
 
     for (int a = 0; a < ssidList.len; a++) {
       buildProbe(ssidList.get(a), beaconAdrs._get(a));
-      if (send()) packetsCounter[2]++;
+      if(send()) packetsCounter[2]++;
+      if(send()) packetsCounter[2]++;
     }
 
-    stati[2] = (String)(packetsCounter[2] * 10) + "pkts/s";
+    stati[2] = (String)(packetsCounter[2]) + "pkts/s";
     packetsCounter[2] = 0;
+
     macListChangeCounter++;
-    if (macListChangeCounter >= macChangeInterval && macChangeInterval > 0) {
-      generate();
-      macListChangeCounter = 0;
+    if(settings.macInterval > 0){
+      if (macListChangeCounter >= settings.macInterval) generate();
     }
+    
     if (debug) Serial.println("done");
     if (settings.attackTimeout > 0) {
       attackTimeoutCounter[2]++;
@@ -235,6 +262,19 @@ void Attack::run() {
     }
   }
 
+  //Random-Mode Interval
+  if((isRunning[1] || isRunning[2]) && randomMode && currentMillis - randomTime >= 1000){
+    randomTime = millis();
+    if(randomCounter >= randomInterval){
+      if(debug) Serial.println(" generate random SSIDs");
+      ssidList.clear();
+      ssidList._random();
+      randomCounter = 0;
+      ssidChange = true;
+    }
+    else randomCounter++;
+  }
+  
 }
 
 void Attack::start(int num) {
@@ -248,21 +288,23 @@ void Attack::start(int num) {
     refreshLed();
     if (debug) Serial.println("starting " + (String)attackNames[num] + " attack...");
     if (num == 0) attackMode = "STOP";
-    for (int i = 0; i < attacksNum; i++){
-      if(i != num) stop(i);
+    if(!settings.multiAttacks){
+      for (int i = 0; i < attacksNum; i++){
+        if(i != num) stop(i);
+      }
     }
   }else stop(num);
 }
 
 void Attack::stop(int num) {
-  if (isRunning[num]) {
+  if(isRunning[num]) {
     if (debug) Serial.println("stopping " + (String)attackNames[num] + " attack...");
     if (num == 0) attackMode = "START";
     isRunning[num] = false;
-    stati[num] = "ready";
     prevTime[num] = millis();
     refreshLed();
   }
+  stati[num] = "ready";
 }
 
 void Attack::stopAll() {
@@ -289,6 +331,8 @@ void Attack::_log(int num){
 }
 
 size_t Attack::getSize(){
+  if(apScan.selectedSum == 0) stati[0] = "no AP";
+  
   size_t jsonSize = 0;
   
   String json = "{\"aps\":[";
@@ -329,16 +373,19 @@ size_t Attack::getSize(){
   }
   json += "],";
   jsonSize += json.length();
-  
-  json = "\"ssid\":[";
-  jsonSize += json.length();
-  for (int i = 0; i < ssidList.len; i++) {
-    json = "\"" + ssidList.get(i) + "\"";
-    if (i != ssidList.len - 1) json += ",";
+
+  if(ssidChange){
+    json = "\"ssid\":[";
+    jsonSize += json.length();
+    for (int i = 0; i < ssidList.len; i++) {
+      json = "\"" + ssidList.get(i) + "\"";
+      if (i != ssidList.len - 1) json += ",";
+      jsonSize += json.length();
+    }
+    json = "],";
     jsonSize += json.length();
   }
-  
-  json = "]}";
+  json = "\"randomMode\":" + (String)randomMode + "}";
   jsonSize += json.length();
 
   return jsonSize;
@@ -384,16 +431,24 @@ void Attack::sendResults(){
     json += "\"running\":" + (String)isRunning[i] + "";
     json += "}";
     if (i != attacksNum - 1) json += ",";
-  }  
-  json += "],\"ssid\":[";
+  }
+  json += "],";
   sendToBuffer(json);
   
-  for (int i = 0; i < ssidList.len; i++) {
-    json = "\"" + ssidList.get(i) + "\"";
-    if (i != ssidList.len - 1) json += ",";
+  if(ssidChange){
+    json = "\"ssid\":[";
     sendToBuffer(json);
+    for (int i = 0; i < ssidList.len; i++) {
+      json = "\"" + ssidList.get(i) + "\"";
+      if (i != ssidList.len - 1) json += ",";
+      sendToBuffer(json);
+    }
+    json = "],";
+    sendToBuffer(json);
+    ssidChange = false;
   }
-  json = "]}";
+  
+  json = "\"randomMode\":" + (String)randomMode + "}";
   sendToBuffer(json);
   
   sendBuffer();
@@ -408,11 +463,11 @@ void Attack::refreshLed() {
   }
   if (numberRunning >= 1 && settings.useLed) {
     if (debug) Serial.println("Attack LED : ON");
-    digitalWrite(2, LOW);
+    digitalWrite(settings.ledPin, LOW);
   }
   else if (numberRunning == 0 || !settings.useLed) {
     if (debug) Serial.println("Attack LED : OFF");
-    digitalWrite(2, HIGH);
+    digitalWrite(settings.ledPin, HIGH);
   }
 }
 

@@ -9,11 +9,11 @@
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <ESP8266mDNS.h>
 #include <FS.h>
 
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 //#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+//#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
 #ifdef USE_DISPLAY
   #include <Wire.h>
@@ -21,27 +21,30 @@
   //include the library you need
   #include "SSD1306.h"
   //#include "SH1106.h"
+
+  //create display(Adr, SDA-pin, SCL-pin)
+  SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
+  //SH1106 display(0x3c, 5, 4);
   
   //button pins
-  #define upBtn D6
-  #define downBtn D7
-  #define selectBtn D5
-  
-  #define buttonDelay 180 //delay in ms
+  #define upBtn 12 //GPIO 12 = D6
+  #define downBtn 13 //GPIO 13 = D7
+  #define selectBtn 14 //GPIO 14 = D5
+  #define displayBtn 0 //GPIO 0 = FLASH BUTTON
   
   //render settings
   #define fontSize 8
   #define rowsPerSite 8
-  
-  //create display(Adr, SDA-pin, SCL-pin)
-  SSD1306 display(0x3c, D2, D1);
-  //SH1106 display(0x3c, D2, D1);
   
   int rows = 3;
   int curRow = 0;
   int sites = 1;
   int curSite = 1;
   int lrow = 0;
+
+  bool canBtnPress = true;
+  int buttonPressed = 0; //0 = UP, 1 = DOWN, 2 = SELECT, 3 = DISPLAY
+  bool displayOn = true;
 #endif
 
 String wifiMode = "";
@@ -80,6 +83,32 @@ SSIDList ssidList;
 void sniffer(uint8_t *buf, uint16_t len) {
   clientScan.packetSniffer(buf, len);
 }
+
+#ifdef USE_DISPLAY
+void drawInterface() {
+  if(displayOn){
+    display.clear();
+
+    int _lrow = 0;
+    for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
+      if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
+      else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
+      else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
+      else if (i - 3 <= apScan.results) {
+        display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
+        if (apScan.getAPSelected(i - 3)) {
+          display.drawVerticalLine(1, _lrow * fontSize, fontSize);
+          display.drawVerticalLine(2, _lrow * fontSize, fontSize);
+        }
+      }
+      if (_lrow == lrow) display.drawVerticalLine(0, _lrow * fontSize, fontSize);
+      _lrow++;
+    }
+  
+    display.display();
+  }
+}
+#endif
 
 void startWifi() {
   Serial.println("\nStarting WiFi AP:");
@@ -142,6 +171,7 @@ void loadStationsJS() {
   sendFile(200, "text/javascript", data_stationsJS, sizeof(data_stationsJS));
 }
 void loadAttackJS() {
+  attack.ssidChange = true;
   sendFile(200, "text/javascript", data_attackJS, sizeof(data_attackJS));
 }
 void loadSettingsJS() {
@@ -294,32 +324,39 @@ void startAttack() {
 }
 
 void addSSID() {
-  ssidList.add(server.arg("name"));
-  server.send( 200, "text/json", "true");
-}
-
-void cloneSSID() {
-  ssidList.addClone(server.arg("name"));
-  server.send( 200, "text/json", "true");
+  if(server.hasArg("ssid") && server.hasArg("num")){
+    int num = server.arg("num").toInt();
+    if(num > 0){
+      ssidList.addClone(server.arg("ssid"),num);
+    }else{
+      ssidList.add(server.arg("ssid"));
+    }
+    attack.ssidChange = true;
+    server.send( 200, "text/json", "true");
+  }else server.send( 200, "text/json", "false");
 }
 
 void deleteSSID() {
   ssidList.remove(server.arg("num").toInt());
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
 void randomSSID() {
   ssidList._random();
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
 void clearSSID() {
   ssidList.clear();
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
 void resetSSID() {
   ssidList.load();
+  attack.ssidChange = true;
   server.send( 200, "text/json", "true");
 }
 
@@ -331,6 +368,11 @@ void saveSSID() {
 void restartESP() {
   server.send( 200, "text/json", "true");
   ESP.reset();
+}
+
+void enableRandom(){
+  attack.changeRandom(server.arg("interval").toInt());
+  server.send( 200, "text/json", "true");
 }
 
 //==========Settings==========
@@ -362,6 +404,10 @@ void saveSettings() {
     if (server.arg("apScanHidden") == "false") settings.apScanHidden = false;
     else settings.apScanHidden = true;
   }
+  if (server.hasArg("beaconInterval")) {
+    if (server.arg("beaconInterval") == "false") settings.beaconInterval = false;
+    else settings.beaconInterval = true;
+  }
   if (server.hasArg("useLed")) {
     if (server.arg("useLed") == "false") settings.useLed = false;
     else settings.useLed = true;
@@ -375,6 +421,13 @@ void saveSettings() {
     if (server.arg("multiAPs") == "false") settings.multiAPs = false;
     else settings.multiAPs = true;
   }
+  if (server.hasArg("multiAttacks")) {
+    if (server.arg("multiAttacks") == "false") settings.multiAttacks = false;
+    else settings.multiAttacks = true;
+  }
+  
+  if (server.hasArg("ledPin")) settings.ledPin = server.arg("ledPin").toInt();
+  if(server.hasArg("macInterval")) settings.macInterval = server.arg("macInterval").toInt();
 
   settings.save();
   server.send( 200, "text/json", "true" );
@@ -385,51 +438,16 @@ void resetSettings() {
   server.send( 200, "text/json", "true" );
 }
 
-#ifdef USE_DISPLAY
-void drawInterface() {
-  display.clear();
-
-  int _lrow = 0;
-  for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
-    if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
-    else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
-    else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
-    else if (i - 3 <= apScan.results) {
-      display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
-      if (apScan.getAPSelected(i - 3)) {
-        display.drawVerticalLine(1, _lrow * fontSize, fontSize);
-        display.drawVerticalLine(2, _lrow * fontSize, fontSize);
-      }
-    }
-    if (_lrow == lrow) display.drawVerticalLine(0, _lrow * fontSize, fontSize);
-    _lrow++;
-  }
-
-  display.display();
-}
-#endif
-
 void setup() {
-
-  Serial.begin(115200);
-  if(debug){
-    delay(2000);
-    Serial.println("\nStarting...\n");
-  }
   
-#ifdef USE_DISPLAY
-  display.init();
-  display.setFont(Roboto_Mono_8);
-  display.flipScreenVertically();
-  drawInterface();
-  pinMode(upBtn, INPUT_PULLUP);
-  pinMode(downBtn, INPUT_PULLUP);
-  pinMode(selectBtn, INPUT_PULLUP);
+#ifdef USE_LED16
+  pinMode(16, OUTPUT);
+  digitalWrite(16, LOW);
 #endif
+  
+  Serial.begin(115200);
 
   attackMode = "START";
-  pinMode(2, OUTPUT);
-  digitalWrite(2, HIGH);
 
   EEPROM.begin(4096);
   SPIFFS.begin();
@@ -438,11 +456,6 @@ void setup() {
   if (debug) settings.info();
   nameList.load();
   ssidList.load();
-
-#ifdef resetPin
-  pinMode(resetPin, INPUT_PULLUP);
-  if(digitalRead(resetPin) == LOW) settings.reset();
-#endif
 
   startWifi();
   attack.stopAll();
@@ -491,7 +504,6 @@ void setup() {
   server.on("/clearNameList.json", clearNameList);
   server.on("/editNameList.json", editClientName);
   server.on("/addSSID.json", addSSID);
-  server.on("/cloneSSID.json", cloneSSID);
   server.on("/deleteSSID.json", deleteSSID);
   server.on("/randomSSID.json", randomSSID);
   server.on("/clearSSID.json", clearSSID);
@@ -499,11 +511,53 @@ void setup() {
   server.on("/saveSSID.json", saveSSID);
   server.on("/restartESP.json", restartESP);
   server.on("/addClient.json",addClient);
+  server.on("/enableRandom.json",enableRandom);
 
   server.begin();
+
+#ifdef USE_DISPLAY
+  display.init();
+  display.flipScreenVertically();
+  pinMode(upBtn, INPUT_PULLUP);
+  pinMode(downBtn, INPUT_PULLUP);
+  pinMode(selectBtn, INPUT_PULLUP);
+  if(displayBtn == 0) pinMode(displayBtn, INPUT);
+  else pinMode(displayBtn, INPUT_PULLUP);
+
+  display.clear();
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(0, 0, "ESP8266");
+  display.setFont(ArialMT_Plain_24);
+  display.drawString(0, 16, "Deauther");
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(0, 40, "Copyright (c) 2017");
+  display.drawString(0, 50, "Stefan Kremser");
+  display.display();
+
+  display.setFont(Roboto_Mono_8);
+  
+  delay(2000);
+#endif
+
+#ifdef resetPin
+  pinMode(resetPin, INPUT_PULLUP);
+  if(digitalRead(resetPin) == LOW) settings.reset();
+#endif
+
+  pinMode(settings.ledPin, OUTPUT);
+  digitalWrite(settings.ledPin, HIGH);
+
+  if(debug){
+    Serial.println("\nStarting...\n");
+#ifndef USE_DISPLAY
+    delay(2000);
+#endif
+  }
+  
 }
 
 void loop() {
+  
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
   } else {
@@ -520,49 +574,63 @@ void loop() {
 
 #ifdef USE_DISPLAY
 
-
-  //go up
-  if (digitalRead(upBtn) == LOW && curRow > 0) {
-    curRow--;
-    if (lrow - 1 < 0) {
-      lrow = rowsPerSite - 1;
-      curSite--;
-    } else lrow--;
-    delay(buttonDelay);
-
-  // ===== go down ===== 
-  } else if (digitalRead(downBtn) == LOW && curRow < rows - 1) {
-    curRow++;
-    if (lrow + 1 >= rowsPerSite) {
-      lrow = 0;
-      curSite++;
-    } else lrow++;
-    delay(buttonDelay);
-    
-  // ===== select ===== 
-  } else if (digitalRead(selectBtn) == LOW) {
-    //WiFi on/off
-    if (curRow == 0) {
-      if (wifiMode == "ON") stopWifi();
-      else startWifi();
-    
-    // ===== scan for APs ===== 
-    } else if (curRow == 1) {
-      startAPScan();
-      drawInterface();
-
-    // ===== start,stop attack ===== 
-    } else if (curRow == 2) {
-      if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
-      else if (attackMode == "STOP") attack.stop(0);
-    } 
-    
-    // ===== select APs ===== 
-    else if (curRow >= 3) {
-      attack.stop(0);
-      apScan.select(curRow - 3);
+  if (digitalRead(upBtn) == LOW || digitalRead(downBtn) == LOW || digitalRead(selectBtn) == LOW || digitalRead(displayBtn) == LOW){
+    if(canBtnPress){
+      if(digitalRead(upBtn) == LOW) buttonPressed = 0;
+      else if(digitalRead(downBtn) == LOW) buttonPressed = 1;
+      else if(digitalRead(selectBtn) == LOW) buttonPressed = 2;
+      else if(digitalRead(displayBtn) == LOW) buttonPressed = 3;
+      canBtnPress = false;
     }
-    delay(buttonDelay);
+  }else if(!canBtnPress){
+    canBtnPress = true;
+    
+    // ===== UP =====
+    if (buttonPressed == 0 && curRow > 0) {
+      curRow--;
+      if (lrow - 1 < 0) {
+        lrow = rowsPerSite - 1;
+        curSite--;
+      } else lrow--;
+  
+    // ===== DOWN ===== 
+    } else if (buttonPressed == 1 && curRow < rows - 1) {
+      curRow++;
+      if (lrow + 1 >= rowsPerSite) {
+        lrow = 0;
+        curSite++;
+      } else lrow++;
+      
+    // ===== SELECT ===== 
+    } else if (buttonPressed == 2) {
+      //WiFi on/off
+      if (curRow == 0) {
+        if (wifiMode == "ON") stopWifi();
+        else startWifi();
+      
+      // ===== scan for APs ===== 
+      } else if (curRow == 1) {
+        startAPScan();
+        drawInterface();
+  
+      // ===== start,stop attack ===== 
+      } else if (curRow == 2) {
+        if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
+        else if (attackMode == "STOP") attack.stop(0);
+      } 
+      
+      // ===== select APs ===== 
+      else if (curRow >= 3) {
+        attack.stop(0);
+        apScan.select(curRow - 3);
+      }
+    }
+    // ===== DISPLAY ===== 
+    else if (buttonPressed == 3) {
+      displayOn = !displayOn;
+      display.clear();
+      display.display();
+    }
   }
   drawInterface();
 #endif

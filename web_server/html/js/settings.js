@@ -13,8 +13,12 @@ var ssidEnc = getE('ssidEnc');
 var useLed = getE('useLed');
 /*var channelHop = getE('channelHop');*/
 var multiAPs = getE('multiAPs');
+var multiAttacks = getE('multiAttacks');
 var cMac = getE('cMac');
 var cName = getE('cName');
+var macInterval = getE('macInterval');
+var beaconInterval = getE('beaconInterval');
+var ledPin = getE('ledPin');
 var res;
 
 function getData() {
@@ -38,6 +42,10 @@ function getData() {
 	useLed.checked = res.useLed;
 	/*channelHop.checked = res.channelHop;*/
 	multiAPs.checked = res.multiAPs;
+	multiAttacks.checked = res.multiAttacks;
+	macInterval.value = res.macInterval;
+	beaconInterval.checked = res.beaconInterval;
+	ledPin.value = res.ledPin;
   });
 }
 
@@ -56,7 +64,11 @@ function saveSettings() {
   url += "&ssidEnc=" + ssidEnc.checked;
   url += "&useLed=" + useLed.checked;
   /*url += "&channelHop=" + channelHop.checked;*/
-  url += "&multiAPs="+ multiAPs.checked;
+  url += "&multiAPs="+multiAPs.checked;
+  url += "&multiAttacks="+multiAttacks.checked;
+  url += "&macInterval="+macInterval.value;
+  url += "&beaconInterval="+beaconInterval.checked;
+  url += "&ledPin="+ledPin.value;
 
   getResponse(url, function(responseText) {
     if (responseText == "true") {

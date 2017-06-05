@@ -23,27 +23,25 @@
 				<div class="col-12">
 					<h1>Scan for Wi-Fi Stations</h1>
 					
-					<p>
-						<label for="scanTime">Scan time:</label>
-						<input type="number" id="scanTime" value="10"> s
-						<button onclick="scan()" id="startScan" class="right button-primary">Start</button>
-					</p>
-
-					<p><a id="clientScanStatus" class="right padding">Scanning...</a></p>
-
-					<div class="warn">The access point will be unavailable while scanning and you may have to reconnect.</div>
-					
-					<p>Client devices found: <span id="clientsFound">0</span></p>
+					<button onclick="scan()" id="startScan" class="right button-primary">start</button>
+					<a id="clientScanStatus" class="right padding">scanning...</a>
 					<br />
-
+					<p class="warn">The access point will be unavailable while scanning and you may have to reconnect!<p>
+					<p>
+						Stations found: <span id="clientsFound">0</span>
+						<br />
+						<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
+						<button class="marginNull button-primary right" onclick="select(-1)">select all</button>
+					</p>
+					<br />
 					<table></table>
 					
-					<h2>Saved Clients <small>(<span id="clientNames">0</span>)</small></h2>
+					<p class="block bold" >Saved stations: <span id="clientNames"></span></p>
 					<table id="nameList"></table>
 					
-					<p><button class="button-warn" onclick="clearNameList()">Clear</button></p>
-
-					<h2>Add Client</h2>
+					<button class="button-warn left" onclick="clearNameList()">clear</button>
+					<br class="clear" />
+					<p>Add station:</p>
 				</div>
 			</div>
 			<div class="row">
@@ -63,8 +61,8 @@
 			<div class="row">
 				<div class="col-12">
 					<div id="copyright">
-						Version 1.4<br />
-						Copyright &copy; 2017 Stefan Kremser<br />
+						Version 1.5<br />
+						Copyright (c) 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
 					</div>
 					

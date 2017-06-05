@@ -36,14 +36,15 @@ function getResults() {
 
     var tr = '';
     if (res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th>Select</th></tr>';
-
+	
     for (var i = 0; i < res.clients.length; i++) {
 
       if (res.clients[i].s == 1) tr += '<tr class="selected">';
       else tr += '<tr>';
       tr += '<td>' + res.clients[i].p + '</td>';
       tr += '<td>' + res.clients[i].v + '</td>';
-      tr += '<td>' + res.clients[i].n + ' <a onclick="changeName(' + res.clients[i].i + ')">edit</a></td>';
+      if(res.clients[i].l >= 0) tr += '<td>' + res.clients[i].n + ' <a onclick="editNameList(' + res.clients[i].l + ')">edit</a></td>';
+	  else tr += '<td><a onclick="setName(' + res.clients[i].i + ')">set</a></td>';
       tr += '<td>' + res.clients[i].m + '</td>';
       tr += '<td>' + res.clients[i].a + '</td>';
 
@@ -62,7 +63,7 @@ function getResults() {
 
       tr += '<tr>';
       tr += '<td>' + res.nameList[i].m + '</td>';
-      tr += '<td>' + res.nameList[i].n + ' <a onclick="changeName(' + i + ')">edit</a></td>';
+      tr += '<td>' + res.nameList[i].n + ' <a onclick="editNameList(' + i + ')">edit</a></td>';
       tr += '<td><button class="marginNull button-warn" onclick="deleteName(' + i + ')">x</button></td>';
 	  tr += '<td><button class="marginNull button-primary" onclick="add(' + i + ')">add</button></td>';
       tr += '</tr>';
@@ -110,8 +111,20 @@ function addClient(){
 	});
 }
 
-function changeName(id) {
+function setName(id) {
+  var newName = prompt("Name for " + res.clients[id].m);
+
+  if (newName != null) {
+    getResponse("setName.json?id=" + id + "&name=" + newName, function(responseText) {
+      if(responseText == "true") getResults();
+      else showMessage("response error editNameList.json");
+    });
+  }
+}
+
+function editNameList(id) {
   var newName = prompt("Name for " + res.nameList[id].m);
+  
   if (newName != null) {
     getResponse("editNameList.json?id=" + id + "&name=" + newName, function(responseText) {
       if(responseText == "true") getResults();

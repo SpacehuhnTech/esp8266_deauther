@@ -1,20 +1,23 @@
 # ESP8266 Deauther
+Deauthentication attack and other 'hacks' using an ESP8266.
 
-Deauthentication attack and other hacks using an ESP8266. This is a modified version of the original software with a nice and modern user interface (see section [How to use it](#how-to-use-it) at the end).
-
-![ESP8266 deauther with a smartphone](screenshots/web_screenshot_2.png)  
+![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)  
 
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
 
-**Any redistributing, advertising or selling of this project as *jammer* without clearly stating it as a pentesting device for testing purposes only, is prohibited!**  
+**Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
+**Unauthorized selling of this project in any way is not allowed (see [license](#license))!**  
 
 I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
 All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
 
-**This project is a proof of concept for testing and education.**  
+**This project is a proof of concept for testing and education only.**  
 Neither the ESP8266, nor the SDK was meant and build for such purposes.  
 Bugs can occur!  
 
+**New official supported boards available!**  
+Go to [Supported Devices](#supported-devices) for more.  
+[![WiFi Deauther Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg)](#supported-devices)  
 
 ## Contents
 - [Introduction](#introduction)
@@ -23,12 +26,14 @@ Bugs can occur!
   - [What an ESP8266 is](#what-an-esp8266-is)
   - [How to protect against it](#how-to-protect-against-it)
 - [Disclaimer](#disclaimer)
+- [Supported Devices](#supported-devices)
 - [Videos](#videos)
 - [Installation](#installation)
   - [Uploading the bin files](#uploading-the-bin-files)  
   - [Compiling the source with Arduino](#compiling-the-source-with-arduino)
   - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
+- [How to reset it](#how-to-reset-it)
 - [FAQ](#faq)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
@@ -73,11 +78,27 @@ I don't take any responsibility for what you do with this program.
 Please check the legal regulations in your country before using it.  
 **It is not a frequency jammer as claimed falsely by many people.** Its attack, how it works and how to protect against it is described above. It uses valid Wi-Fi frames described in the official 802.11 standard and doesn't block or disrupt any other communications or frequencies.  
 
-Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
+Referring to this project as "jammer" is prohibited! Name the project by its correct name.
 
 My intention with this project is to draw more attention to this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
-**A solution is already there, why don’t we use it?**  
+**A solution is already there, why don't we use it?**  
+
+## Supported Devices
+
+You can flash the code to every ESP8266. Depending on the module or development board, there might be 
+differences in the stability and performance.
+
+**Officially supported devices:**
+- WiFi Deauther (Pocket WiFi)
+	- [AliExpress](https://goo.gl/JAXhTg)
+	- [tindie](https://goo.gl/hv2MTj)
+- WiFi Deauther OLED (Pocket WiFi)
+	- [AliExpress](https://goo.gl/P30vNz)
+	- [tindie](https://goo.gl/XsCoJ6)
+	
+Any other products that come with this projects preflashed are not approved and commit a copyright infringement!
+
 
 ## Videos
   
@@ -85,22 +106,24 @@ This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to
   
 [![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
   
-[![WiFi Jamming Tutorial "Deauthing Made Simple" ](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
+[![WiFi Tutorial "Deauthing Made Simple"](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
+
+[![Seguridad Inalámbrica | Explicación de Wifi Deauther en Español](https://img.youtube.com/vi/YYsSDXRgD10/0.jpg)](https://www.youtube.com/watch?v=YYsSDXRgD10)
   
 ## Installation
 
-The only thing you will need is a computer and an ESP8266.  
+The only things you will need are a computer and an ESP8266 board.  
 
 I recommend you to buy a USB breakout/developer board, because they have 4Mb flash and are very simple to use.
 It doesn’t matter which board you use, as long as it has an ESP8266 on it.  
 
-You have 2 choices here. Uploading the bin files is easier but not as good for debugging, so keep that in mind in case you want to open an new issue. 
+You have 2 choices here. Uploading the bin files is easier but not as good for debugging.  
 **YOU ONLY NEED TO DO ONE OF THE INSTALLATION METHODS!**
 
 ### Uploading the bin files  
 
 **Note:** the 512kb version won't have the full MAC vendor list.  
-The NodeMCU and every other board which uses the ESP-12 has 4mb flash on it.
+The NodeMCU and every other board use the ESP-12 which has 4mb flash on it.
 
 **0** Download the current release from [here](https://github.com/spacehuhn/esp8266_deauther/releases)  
 
@@ -205,7 +228,7 @@ If no port shows up you may have to reinstall the drivers.
 
 ## How to use it
 
-First start your ESP8266 by giving it power.  
+First start your ESP8266 by plugging it in and giving it power.  
 
 You can use your smartphone if you have a USB OTG cable.
 ![esp8266 deauther with a smartphone](screenshots/smartphone_esp_2.jpg)
@@ -224,44 +247,25 @@ Note: While scanning the ESP8266 will shut down its access point, so you may hav
 ...and start different attacks.
 ![webinterface attack menu](screenshots/web_screenshot_3.png)
 
-Happy hacking :)
+## How to reset it
+
+Method 1: Connect pin 4 (D2 on the NodeMCU) to GND and plug the device in.  
+Method 2: Connect your device, open up the serial monitor in Arduino, set baudrate to 115200, type in "reset" and click send.  
 
 ## FAQ
 
-**Could it auto-deauth all APs in the range?**
-
-Yes, but I will not implement this 'feature' for ethical and legal reasons.
-
-**Can it sniff handshakes?**
-
-The ESP8266 has a promiscuous mode in which you can sniff packets, but handshake packets are dropped and there is no other way to get them with the functions provided by the SDK.  
-Maybe someone will find a way around this barrier in the future.
-
-**espcomm_sync failed/espcomm_open when uploading**
-
-The ESP upload tool can't communicate with the chip, make sure the right port is selected!  
-You can also try out different USB ports and cables.  
-If this doesn't solve it, you may have to install USB drivers.  
-Which drivers you need depends on the board, most boards use a cp2102 or ch340.
-
-**AP scan doesn't work**
-
-There is a reported issue on this: https://github.com/spacehuhn/esp8266_deauther/issues/5  
-Try switching the browser or opening the website with another device.   
-
-**Deauth attack won't work**
-
-If you see 0 pkts/s on the website, then you've made a mistake. Check that you have followed the installation steps correctly and that the right SDK is installed, it must be version 2.0.0!
-If it can send packets but your target doesn't loose its connection, then the Wi-Fi router either uses [802.11w](#how-to-protect-against-it) and it's protected against such attacks, or it communicates on the 5GHz band, which the ESP8266 doesn't support because of its 2.4GHz antenna.
-
-### If you have other questions or problems with the ESP8266, you can also check out the official [community forum](http://www.esp8266.com/).
+The FAQ was moved over to the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ).  
 
 ## License
 
-This project is licensed under the MIT License - see the [license file](LICENSE) for details.
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
 
-**The License file must be included in any redistributed version of this program!**  
-Any redistributing, advertising or selling of this project as "jammer" without clearly stating it as a pentesting device for testing purposes only, is prohibited!  
+This project is licensed under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0). See the [license file](LICENSE) for details.  
+
+**If you want to use my project for a commercial project, you can contact me and ask for permission.**  
+My Twitter: [twitter.com/spacehuhn](http://twitter.com/spacehuhn)  
+
+**Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
 
 ## Sources and additional links
 
@@ -280,4 +284,4 @@ packet injection with ESP8266:
 
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009
 
-Wi-Fi_send_pkt_freedom function limitations: http://esp32.com/viewtopic.php?f=13&t=586&p=2648&hilit=Wi-Fi_send_pkt_freedom#p2648
+Wi-Fi_send_pkt_freedom function limitations: https://esp32.com/viewtopic.php?t=586

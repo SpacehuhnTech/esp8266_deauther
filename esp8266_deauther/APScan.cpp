@@ -135,7 +135,7 @@ int APScan::getFirstTarget() {
 void APScan::sendResults() {
   if (debug) Serial.print("sending AP scan result JSON ");
 
-  size_t _size = 10; // {"aps":[]}
+  size_t _size = 25; // {"aps":[ ... ],"multiAPs":"1"}
   for (int i = 0; i < results && i < maxAPScanResults; i++) {
     /*
       _size++; // {
@@ -185,7 +185,12 @@ void APScan::sendResults() {
     sendToBuffer(json);
 
   }
-  json = "]}";
+
+  json = "],\"multiAPs\":\"";
+  if(settings.multiAPs) json += "1";
+  else json += "0";
+  json += "\"}";
+  
   sendToBuffer(json);
   sendBuffer();
 
@@ -221,7 +226,8 @@ String APScan::getResultsJSON() {
 void APScan::sort() {
   if (debug) Serial.println("sorting APs ");
 
-  //bubble sort
+  /* I know, it's bubble sort... but it works and that's the main thing! ;) (feel free to improve it tho) */
+  
   for (int i = 0; i < results - 1; i++) {
     Serial.println("--------------");
     for (int h = 0; h < results - i - 1; h++) {
@@ -263,14 +269,27 @@ void APScan::sort() {
 
 void APScan::select(int num) {
   if (debug) Serial.println("select " + (String)num + " - " + !selected[num]);
-  if(!settings.multiAPs){
+  if(num < 0) {
+    if(num == -1){
+      if(settings.multiAPs) {
+        selectedSum = results;
+        for (int i = 0; i < results; i++) selected[i] = true;
+      }
+    } else {
+      selectedSum = 0;
+      for (int i = 0; i < maxAPScanResults; i++) selected[i] = false;
+    }
+  } else if(!settings.multiAPs) {
     for (int i = 0; i < maxAPScanResults; i++){
       if(i != num) selected[i] = false;
+      else selected[num] = !selected[num];
     }
+    selectedSum = 1;
+  } else {
+     if(selected[num]) selectedSum--;
+     else selectedSum++;
+     selected[num] = !selected[num];
   }
-  selected[num] = !selected[num];
-  if (selected[num]) selectedSum--;
-  else selectedSum++;
 }
 
 bool APScan::isSelected(int num) {

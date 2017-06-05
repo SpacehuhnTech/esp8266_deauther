@@ -3,6 +3,7 @@ var networkInfo = getE('networksFound');
 var scanInfo = getE('scanInfo');
 var apMAC = getE('apMAC');
 var startStopScan = getE('startStopScan');
+var selectAllBtns = getE('selectAllBtns');
 var autoScan = false;
 
 function toggleScan(onoff) {
@@ -31,10 +32,15 @@ function getResults() {
     res.aps = res.aps.sort(compare);
     networkInfo.innerHTML = res.aps.length;
     apMAC.innerHTML = "";
-
+	
+	if (res.multiAPs == 1) selectAllBtns.style.visibility = 'visible';
+	else selectAllBtns.style.visibility = 'hidden';
+		
     var tr = '';
-    if (res.aps.length > 0) tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
-
+    if (res.aps.length > 0) {
+		tr += '<tr><th>Ch</th><th>SSID</th><th>RSSI</th><th>Encrypt.</th><th>Select</th></tr>';
+	}	
+	
     for (var i = 0; i < res.aps.length; i++) {
 
       if (res.aps[i].se == 1) tr += '<tr class="selected">';
