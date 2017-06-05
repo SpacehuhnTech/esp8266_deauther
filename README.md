@@ -15,6 +15,9 @@ All necessary information is described below. Do not open issues about this proj
 Neither the ESP8266, nor the SDK was meant and build for such purposes.  
 Bugs can occur!  
 
+**New official supported boards available!**  
+Go to [Supported Devices](#supported-devices) for more.  
+[![WiFi Deauther Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg)](#supported-devices)  
 
 ## Contents
 - [Introduction](#introduction)
@@ -23,6 +26,7 @@ Bugs can occur!
   - [What an ESP8266 is](#what-an-esp8266-is)
   - [How to protect against it](#how-to-protect-against-it)
 - [Disclaimer](#disclaimer)
+- [Supported Devices](#supported-devices)
 - [Videos](#videos)
 - [Installation](#installation)
   - [Uploading the bin files](#uploading-the-bin-files)  
@@ -79,6 +83,22 @@ Referring to this project as "jammer" is prohibited! Name the project by its cor
 My intention with this project is to draw more attention to this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
 **A solution is already there, why don't we use it?**  
+
+## Supported Devices
+
+You can flash the code to every ESP8266. Depending on the module or development board, there might be 
+differences in the stability and performance.
+
+**Officially supported devices:**
+- WiFi Deauther (Pocket WiFi)
+	- [AliExpress](https://goo.gl/JAXhTg)
+	- [tindie](https://goo.gl/hv2MTj)
+- WiFi Deauther OLED (Pocket WiFi)
+	- [AliExpress](https://goo.gl/P30vNz)
+	- [tindie](https://goo.gl/XsCoJ6)
+	
+Any other products that come with this projects preflashed are not approved and commit a copyright infringement!
+
 
 ## Videos
   
