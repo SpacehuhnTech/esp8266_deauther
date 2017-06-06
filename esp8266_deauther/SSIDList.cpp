@@ -39,10 +39,12 @@ void SSIDList::addClone(String name, int num) {
   for (int c = 0; c < SSIDListLength && c < num; c++) {
     _apName = name;
 
-    if (c < _restSSIDLen) for (int d = 0; d < _restSSIDLen - c; d++) _apName += " "; //e.g. "SAMPLEAP   "
-    else if (c < _restSSIDLen * 2) {
-      _apName = " " + _apName;
-      for (int d = 0; d < (_restSSIDLen - 1) - c / 2; d++) _apName += " "; //e.g. " SAMPLEAP   "
+    if (c < _restSSIDLen){
+      for (int d = 0; d < _restSSIDLen - c; d++) _apName += " "; //e.g. "SAMPLEAP   "
+    } else if (c < _restSSIDLen * 2) {
+      //_apName = " " + _apName;
+      _apName = "\u200B"+_apName;
+      for (int d = 0; d < (_restSSIDLen - 3) - c / 2; d++) _apName += " "; //e.g. "SAMPLEAP   " (zero widtdh char at the beginning)
     } else if (c < _restSSIDLen * 3) {
       _apName = "." + _apName;
       for (int d = 0; d < (_restSSIDLen - 1) - c / 3; d++) _apName += " "; //e.g. ".SAMPLEAP   "

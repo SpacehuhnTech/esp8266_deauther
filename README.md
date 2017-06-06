@@ -274,7 +274,7 @@ deauth attack: https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack
 deauth frame: https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/
 
 ESP8266: 
-* https://de.wikipedia.org/wiki/ESP8266
+* https://en.wikipedia.org/wiki/ESP8266
 * https://espressif.com/en/products/hardware/esp8266ex/overview
 
 packet injection with ESP8266: 
