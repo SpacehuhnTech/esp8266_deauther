@@ -21,47 +21,51 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-12">
-					<h1 class="header">Scan for Wi-Fi Stations</h1>
-			
-					<label for="scanTime">Scan time:</label>
-					<input type="number" id="scanTime" value="10">s
+					<h1>Scan for Wi-Fi Stations</h1>
 					
-					<button onclick="scan()" id="startScan" class="right button-primary">start</button>
-					<a id="clientScanStatus" class="right padding">scanning...</a>
-					<br />
 					<p class="warn">The access point will be unavailable while scanning and you may have to reconnect!<p>
-					<p>
-						Stations found: <span id="clientsFound">0</span>
-						<br />
-						<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
-						<button class="marginNull button-primary right" onclick="select(-1)">select all</button>
-					</p>
+
+					<button onclick="scan()" id="startScan" class="right button-primary">Start</button>
+					<a id="clientScanStatus" class="right padding">Scanning...</a>
 					<br />
+					
+					<h2>Scan Results</h2>
+					<p>Stations found: <span id="clientsFound">0</span></p>
+
+					<p>
+						<button class="marginNull button-primary" onclick="select(-2)">Deselect All</button>
+						<button class="marginNull button-primary right" onclick="select(-1)">Select All</button>
+					</p>
+
 					<table></table>
 					
-					<p class="block bold" >Saved stations: <span id="clientNames"></span></p>
+					<h2>Saved Stations</h2>
+					<span id="clientNames"></span>
 					<table id="nameList"></table>
 					
-					<button class="button-warn left" onclick="clearNameList()">clear</button>
+					<button class="button-warn" onclick="clearNameList()">Clear</button>
 					<br class="clear" />
-					<p>Add station:</p>
+					<h2>Add Station</h2>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-4">
-					<label>MAC <input type="text" placeholder="AA:BB:CC:DD:EE:FF" id="cMac"/></label>
+					<label>MAC <br/>
+					<input type="text" placeholder="AA:BB:CC:DD:EE:FF" id="cMac"/></label>
 				</div>
 				<div class="col-4">
-					<label>Name <input type="text" placeholder="EXAMPLE" id="cName"/></label>
+					<label>Name <br/>
+					<input type="text" placeholder="Example Name" id="cName"/></label>
 				</div>
 				<div class="col-4">
-					<button class="button-primary" onclick="addClient()">add</button>
+					<br/>
+					<button class="button-primary" onclick="addClient()">Add</button>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-12">
 					<div id="copyright">
-						version 1.5<br />
+						Version 1.5<br />
 						Copyright (c) 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
 					</div>

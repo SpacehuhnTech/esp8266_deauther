@@ -21,35 +21,31 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-12">
-					<h1 class="header">Scan for Wi-Fi access points</h1>
+					<h1>Scan for Wi-Fi Access Points</h1>
 					
-					<a id="scanInfo">scanning...</a>
+					<div class="warn">You may have to reload the site to see the results.</div>
+
+					<span id="scanInfo">Scanning...</span>
 					<button onclick="scan()" id="apScanStart" class="right button-primary">scan</button>
 					
+					<h2>Scan Results</h2>
 					<p>
-						Networks found: 
-						<span id="networksFound">0</span>
-						<br />
-						MAC: <span id="apMAC"></span>
-						<span id="selectAllBtns" style="visibility:'hidden'">
+						Networks found: <span id="networksFound">0</span><br />
+						MAC: <span id="apMAC"></span><br>
+						<span id="selectAllBtns" style="visibility:hidden">
 							<br />
-							<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
-							<button class="marginNull button-primary right" onclick="select(-1)">select all</button>
+							<button class="button-primary left" onclick="select(-2)">Deselect All</button>
+							<button class="button-primary right" onclick="select(-1)">Select All</button>
 						</span>
 					</p>
 					<br />
 				
 					<table></table>
 					
-					<p class="small">
-						<span class="warn">INFO: </span><span class="bold">You may have to reload the site to see the results.</span>
-						<br />
-						<br />
-						WPA* = WPA/WPA2 auto mode
-					</p>
+					<p>WPA* = WPA/WPA2 auto mode</p>
 					
 					<div id="copyright">
-						version 1.5<br />
+						Version 1.5<br />
 						Copyright (c) 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a><br />
 					</div>

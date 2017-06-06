@@ -1,246 +1,272 @@
-/* Global */
-.header{
-	font-size: 1.6rem;
-	background: #00B0FF;
-	color: #fff;
-	padding:0.2rem;
-	border-radius:4px;
-	margin-top: 0;
-}
-input,
-.button,
-button,
-textarea{
-	border-radius: 4px;
-	border: 1px solid #bbb;
-	padding: 0 6px;
-}
-textarea{
-	width: 96%;
-	height: 350px;
-}
-nav, 
-nav a{
-	background: #222;
-}
-nav a{
-	color: #999;
-	padding: .5em;
-	display: inline-block;
-	text-decoration: none;
-}
-nav a:hover{
-	background: #000;
-	color:#f0f0f0;
-}
-meter{
-	width: 45px;
-}
-h2{
-	font-size: 1.5rem;
-	border-bottom: 1px solid #A5A5A5;
-	margin: 0;
-}
-table{
-	width: 100%;
-	text-align:center;
-	border: none;
-    border-collapse: collapse;
-}
-td{
-	font-weight: normal;
-	font-size: 0.85em;
-}
-.bottom-border{
-	border-bottom: 1px solid #c3c3c3;
-}
-.selected{
-	background: #00B0FF;
-}
-.left{
-	float: left;
-}
-.right{
-	float: right;
-}
-.bold{
-	font-weight: bold;
-}
-.clear{
-	clear: both;
-}
-.warn{
-	font-weight: bold;
-	color: #f00;
-}
-.middle{
-	text-align: center;
-}
-.red{
-	color:#f00;
-}
-.green{
-	color:#1ecb1e;
-}
-.padding{
-	padding: 0 1rem;
-}
-.fullWidth{
-	width: 100%
-}
-#error{
-	text-align: center;
-	color: #fff;
-	background: #f00;
-}
-#copyright{
-	text-align: center;
-	margin-top: 3em;
-	margin-bottom: 3em;
-}
-.selectedBtn{
-	background: #fff;
-}
-a{
-	color: #39C2FF;
-	cursor: pointer;
-}
-input{
-	padding: 3px;
-}
-.button,
-button,
-input[type="submit"],
-input[type="reset"],
-input[type="button"] {
-  display: inline-block;
-  height: 31px;
-  color: #555;
-  text-align: center;
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 30px;
-  letter-spacing: .1rem;
-  text-transform: uppercase;
-  text-decoration: none;
-  white-space: nowrap;
-  background-color: transparent;
-  cursor: pointer;
-  box-sizing: border-box; }
-.button:hover,
-button:hover,
-input[type="submit"]:hover,
-input[type="reset"]:hover,
-input[type="button"]:hover{
-  color: #333;
-  border-color: #888;
-  outline: 0;
-}
-.button-primary{
-  color: #FFF;
-  background-color: #33C3F0;
-  border-color: #33C3F0;
-}
-.button-primary:hover {
-  color: #FFF;
-  background-color: #1EAEDB;
-  border-color: #1EAEDB;
-}
-.button-warn{
-	background: #f00;
-	color: #fff;
-}
-
-/**
-*** SIMPLE GRID
-*** (C) ZACH COLE 2016
-**/
-
-/*@import url(https://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic);*/
-/* UNIVERSAL */
-
 html,
 body {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
-  left: 0;
-  top: 0;
-  font-size: 100%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #333;
+  background-color: #fff;
 }
 
-/* ROOT FONT STYLES */
-
-* {
-  font-family: /*'Lato',*/ Helvetica, sans-serif;
-  color: #333447;
-  line-height: 1.5;
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.1;
+  color: inherit; 
 }
-
-/* TYPOGRAPHY */
 
 h1 {
-  font-size: 2.5rem;
+  font-size: 2.5rem; 
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 2rem;
 }
 
 h2 {
-  font-size: 2rem;
+  font-size: 2rem; 
 }
 
 h3 {
-  font-size: 1.375rem;
+  font-size: 1.75rem; 
 }
 
 h4 {
-  font-size: 1.125rem;
+  font-size: 1.5rem; 
 }
 
 h5 {
-  font-size: 1rem;
+  font-size: 1.25rem; 
+  margin-bottom: 1rem;
 }
 
 h6 {
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
-
-p {
-  /*font-size: 1.125rem;*/
-  font-weight: 200;
-  /*line-height: 1.8;*/
-}
-
-.font-light {
-  font-weight: 300;
-}
-
-.font-regular {
-  font-weight: 400;
-}
-
-.font-heavy {
-  font-weight: 700;
-}
-
-/* POSITIONING */
-
-.left {
-  text-align: left;
-}
+  
+/*
+ * General
+ */
 
 .right {
-  text-align: right;
+  float: right;
 }
 
-.center {
+/*
+ * Navigation
+ */
+
+nav {
+  background: #0086ad;
+}
+  
+nav a {
+  padding: 15px;
+  padding-bottom: 13px;
+  color: white;
+  display: inline-block;
+  text-decoration: none;
+  font-size: larger;
+}
+  
+nav a:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Fit all the links in the nav on small devices */
+@media only screen and (max-width: 415px) {
+  nav a {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
+
+/*
+ * Error and Warning
+ */
+  
+.warn {
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  color: #7d581a;
+  background-color: #fff7cf;
+  border-color: #efda7a;
+  }
+
+#error {
+  margin: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  color: #a94442;
+  background-color: #f2dede;
+  border-color: #ebcccc; 
+}
+
+/* Unfortunately #error is always there. */
+/* So hide it with :empty */
+#error:empty {
+  display: none;
+}
+  
+/*
+ * Table
+ */
+
+table {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 1rem;
+  background-color: transparent;
+  border-collapse: collapse;
+}
+table th,
+table td {
+  padding: 0.75rem;
+  margin: 0;
+  vertical-align: middle;
+  text-align: left;
+  border-bottom: 1px solid #eceeef;
+}
+table th {
+  background: rgba(0, 0, 0, 0.03);
+  font-weight: bold;
+  vertical-align: bottom;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  border-top: 2px solid rgba(0, 0, 0, 0.1); 
+}
+  
+  table tr.selected {
+    background: #93d3e7;
+  }
+
+/*
+ * Button
+ */
+
+button {
+  text-transform: capitalize;
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.02);
+  display: inline-block;
+  font-weight: normal;
   text-align: center;
-  margin-left: auto;
-  margin-right: auto;
+  white-space: nowrap;
+  vertical-align: middle;
+  user-select: none;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  line-height: 1.25;
+  border-radius: 0.25rem;
+  transition: all 0.2s ease-in-out; 
 }
 
-.justify {
-  text-align: justify;
+button:focus, button:hover {
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }
+button:focus {
+  outline: 0;
+  box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.25); 
+}
+button:disabled {
+  opacity: .65; 
+}
+
+.button-primary {
+  color: #fff;
+  background-color: #0275d8;
+  border-color: #0275d8; 
+}
+.button-primary:hover {
+  color: #fff;
+  background-color: #025aa5;
+  border-color: #01549b;
+}
+.button-primary:focus {
+  box-shadow: 0 0 0 2px rgba(2, 117, 216, 0.5); 
+}
+.button-primary:disabled {
+  background-color: #0275d8;
+  border-color: #0275d8; 
+}
+.button-primary:active {
+  color: #fff;
+  background-color: #025aa5;
+  background-image: none;
+  border-color: #01549b;
+}
+
+.button-warn {
+  color: #fff;
+  background-color: #d9534f;
+  border-color: #d9534f; 
+}
+.button-warn:hover {
+  color: #fff;
+  background-color: #c9302c;
+  border-color: #c12e2a;
+}
+.button-warn:focus{
+  box-shadow: 0 0 0 2px rgba(217, 83, 79, 0.5);
+}
+.button-warn:disabled {
+  background-color: #d9534f;
+  border-color: #d9534f;
+}
+.button-warn:active{
+  color: #fff;
+  background-color: #c9302c;
+  background-image: none;
+  border-color: #c12e2a;
+}
+
+/*
+ * Input
+ */
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+}
+input[type="text"],
+input[type="number"] {
+  display: inline-block;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #555;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+  -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+  -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+
+/*
+ * Footer
+ */
+
+#copyright {
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+/**
+*** SIMPLE GRID
+*** (C) ZACH COLE 2016
+**/
 
 /* ==== GRID SYSTEM ==== */
 

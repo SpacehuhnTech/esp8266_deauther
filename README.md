@@ -151,13 +151,13 @@ If flashing the bin files with a flash tool is not working, try flashing the esp
 
 **6** Select version `2.0.0` and click on `Install` (**must be version 2.0.0!**)
 
-![screenshot of arduino, selecting the right version](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_1.JPG)
+![screenshot of arduino, selecting the right version](screenshots/arduino_screenshot_1.JPG)
 
 **7** Go to `File` > `Preferences`
 
 **8** Open the folder path under `More preferences can be edited directly in the file`
 
-![screenshot of arduino, opening folder path](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_2.JPG)
+![screenshot of arduino, opening folder path](screenshots/arduino_screenshot_2.JPG)
 
 **9** Go to `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `tools` > `sdk` > `include`
 
@@ -170,7 +170,7 @@ If flashing the bin files with a flash tool is not working, try flashing the esp
 `void wifi_unregister_send_pkt_freedom_cb(void);`  
 `int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);`  
 
-![screenshot of notepad, copy paste the right code](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/notepad_screenshot_1.JPG)
+![screenshot of notepad, copy paste the right code](screenshots/notepad_screenshot_1.JPG)
 
 **don't forget to save!**
 
@@ -196,7 +196,7 @@ If no port shows up you may have to reinstall the drivers.
 
 ### Adding OLED display
 
-![image of the esp8266 deauther with an OLED and three buttons](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/esp8266_with_oled.jpg)
+![image of the esp8266 deauther with an OLED and three buttons](screenshots/esp8266_with_oled.jpg)
 
 **0** Follow the steps [above](#compiling-the-source-with-arduino) to get your Arduino environment ready.
 
@@ -231,21 +231,21 @@ If no port shows up you may have to reinstall the drivers.
 First start your ESP8266 by plugging it in and giving it power.  
 
 You can use your smartphone if you have a USB OTG cable.
-![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_2.jpg)
+![esp8266 deauther with a smartphone](screenshots/smartphone_esp_2.jpg)
 
 Scan for Wi-Fi networks and connect to `pwned`. The password is `deauther`.  
 Once connected, you can open up your browser and go to `192.168.4.1`.  
 
 You can now scan for networks...
-![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
+![webinterface AP scanner](screenshots/web_screenshot_1.png)
 
 scan for client devices... 
-![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG)
+![webinterface client scanner](screenshots/web_screenshot_2.png)
 
 Note: While scanning the ESP8266 will shut down its access point, so you may have to go to your settings and reconnect to the Wi-Fi network manually.
 
 ...and start different attacks.
-![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
+![webinterface attack menu](screenshots/web_screenshot_3.png)
 
 ## How to reset it
 
