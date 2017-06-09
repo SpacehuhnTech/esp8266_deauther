@@ -3,7 +3,9 @@ Deauthentication attack and other 'hacks' using an ESP8266.
 
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)  
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=RCHANSVSX9M8C)
+[**Support me and my projects on Patreon!**  
+<img width="450" alt="Support me on Patreon" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/testing/screenshots/patreon.png">](https://www.patreon.com/spacehuhn)  
+
 
 **Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
 **Unauthorized selling of this project in any way is not allowed (see [license](#license))!**  
