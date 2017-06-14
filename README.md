@@ -35,6 +35,7 @@ Go to [Supported Devices](#supported-devices) for more.
   - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
 - [How to reset it](#how-to-reset-it)
+- [Alternative Designs](#alternative-designs)
 - [FAQ](#faq)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
@@ -252,6 +253,18 @@ Note: While scanning the ESP8266 will shut down its access point, so you may hav
 
 Method 1: Connect pin 4 (D2 on the NodeMCU) to GND and plug the device in.  
 Method 2: Connect your device, open up the serial monitor in Arduino, set baudrate to 115200, type in "reset" and click send.  
+
+
+## Alternative Designs
+
+![Screenshot of 'Wi-PWN'](https://raw.githubusercontent.com/samdenty99/Wi-PWN/master/pictures/secondary-banner.png)  
+[Wi-PWN](https://github.com/samdenty99/Wi-PWN) - By @samdenty99  
+
+![Screenshot of 'Modern and Consistent'](https://raw.githubusercontent.com/Wandmalfarbe/esp8266_deauther/master/screenshots/web_screenshot_1.png)
+[Modern and Consistent](https://github.com/Wandmalfarbe/esp8266_deauther) - By @Wandmalfarbe  
+
+![Screenshot of 'hax0r deauther skin'](https://camo.githubusercontent.com/38d6b29df9eab0ca5717260b6086e6da212ff126/68747470733a2f2f696d6167652e70726e747363722e636f6d2f696d6167652f56476379594c46465376755172695439443972565f672e706e67)
+[hax0r deauther skin]() - By @ EnigmaPROGRAMS  
 
 
 ## FAQ
