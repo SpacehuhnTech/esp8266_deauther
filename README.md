@@ -3,22 +3,14 @@ Deauthentication attack and other 'hacks' using an ESP8266.
 
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)  
 
-[**Support me and my projects on Patreon!**  
-<img width="450" alt="Support me on Patreon" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/patreon.png">](https://www.patreon.com/spacehuhn)  
+**Support me and my projects on [Patreon!](https://www.patreon.com/spacehuhn)**  
+[<img width="200" alt="Support me on Patreon" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/patreon.png">](https://www.patreon.com/spacehuhn)  
 
-
-**Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
-
-I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
-All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
-
-**This project is a proof of concept for testing and education only.**  
-Neither the ESP8266, nor the SDK was meant and build for such purposes.  
-Bugs can occur!  
+I disabled the issue section because of the flood of invalid questions. All the information you need is described here. Don't open issues about this project on my other projects or you will be blocked immediately!  
 
 **New official supported boards available!**  
-Go to [Supported Devices](#supported-devices) for more.  
-[![WiFi Deauther Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg)](#supported-devices)  
+Go to [Supported Devices](#supported-devices) for more information.  
+[<img height="350" alt="WiFi Deauther Board" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg">](#supported-devices)  
 
 ## Contents
 - [Introduction](#introduction)
@@ -73,6 +65,10 @@ The only problem is that most devices don’t use it. I tested it with different
 I made a [Deauth Detector](https://github.com/spacehuhn/DeauthDetector) using the same chip to indicate if such an attack is running against a nearby network. It doesn't protect you against it, but it can help you figure out if and when an attack is running.  
 
 ## Disclaimer
+
+**This project is a proof of concept for testing and education only.**  
+Neither the ESP8266, nor the SDK was meant and build for such purposes.  
+Bugs can occur!  
 
 Use it only for testing purposes on your own devices!  
 I don't take any responsibility for what you do with this program.  
