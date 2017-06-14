@@ -258,13 +258,13 @@ Method 2: Connect your device, open up the serial monitor in Arduino, set baudra
 ## Alternative Designs
 
 ![Screenshot of 'Wi-PWN'](https://raw.githubusercontent.com/samdenty99/Wi-PWN/master/pictures/secondary-banner.png)  
-[Wi-PWN](https://github.com/samdenty99/Wi-PWN) - By @samdenty99  
+[Wi-PWN](https://github.com/samdenty99/Wi-PWN) - By [@samdenty99](https://github.com/samdenty99)  
 
 ![Screenshot of 'Modern and Consistent'](https://raw.githubusercontent.com/Wandmalfarbe/esp8266_deauther/master/screenshots/web_screenshot_1.png)
-[Modern and Consistent](https://github.com/Wandmalfarbe/esp8266_deauther) - By @Wandmalfarbe  
+[Modern and Consistent](https://github.com/Wandmalfarbe/esp8266_deauther) - By [@Wandmalfarbe](https://github.com/Wandmalfarbe)  
 
 ![Screenshot of 'hax0r deauther skin'](https://camo.githubusercontent.com/38d6b29df9eab0ca5717260b6086e6da212ff126/68747470733a2f2f696d6167652e70726e747363722e636f6d2f696d6167652f56476379594c46465376755172695439443972565f672e706e67)
-[hax0r deauther skin]() - By @ EnigmaPROGRAMS  
+[hax0r deauther skin](https://github.com/EnigmaPROGRAMS/esp8266_deauther) - By [@EnigmaPROGRAMS](https://github.com/EnigmaPROGRAMS)  
 
 
 ## FAQ
