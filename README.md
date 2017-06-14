@@ -8,8 +8,7 @@ Deauthentication attack and other 'hacks' using an ESP8266.
 
 I disabled the issue section because of the flood of invalid questions. All the information you need is described here. Don't open issues about this project on my other projects or you will be blocked immediately!  
 
-**New official supported boards available!**  
-Go to [Supported Devices](#supported-devices) for more information.  
+**New official [Supported Devices](#supported-devices) available!**  
 [<img height="350" alt="WiFi Deauther Board" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg">](#supported-devices)  
 
 ## Contents
