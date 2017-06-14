@@ -1,11 +1,12 @@
 /* Global */
 .header{
 	font-size: 1.6rem;
-	background: #00B0FF;
+	background: #000;
 	color: #fff;
 	padding:0.2rem;
 	border-radius:4px;
 	margin-top: 0;
+  text-align: center;
 }
 input,
 .button,
@@ -14,6 +15,7 @@ textarea{
 	border-radius: 4px;
 	border: 1px solid #bbb;
 	padding: 0 6px;
+
 }
 textarea{
 	width: 96%;
@@ -21,10 +23,10 @@ textarea{
 }
 nav, 
 nav a{
-	background: #222;
+	background: #000;
 }
 nav a{
-	color: #999;
+	color: #FFF;
 	padding: .5em;
 	display: inline-block;
 	text-decoration: none;
@@ -115,7 +117,7 @@ input[type="reset"],
 input[type="button"] {
   display: inline-block;
   height: 31px;
-  color: #555;
+  color: #000;
   text-align: center;
   font-size: 11px;
   font-weight: 600;
@@ -138,26 +140,27 @@ input[type="button"]:hover{
 }
 .button-primary{
   color: #FFF;
-  background-color: #33C3F0;
-  border-color: #33C3F0;
+  background-color: #000;
+  border-color: #000;
 }
 .button-primary:hover {
   color: #FFF;
-  background-color: #1EAEDB;
-  border-color: #1EAEDB;
+  background-color: #001;
+  border-color: #001;
 }
 .button-warn{
-	background: #f00;
-	color: #fff;
+	background: #000;
+	color: #FF0;
+}
+.button-warn:hover {
+  background: #000;
+  color: #FF0000;
 }
 
 /**
 *** SIMPLE GRID
 *** (C) ZACH COLE 2016
 **/
-
-/*@import url(https://fonts.googleapis.com/css?family=Lato:400,300,300italic,400italic,700,700italic);*/
-/* UNIVERSAL */
 
 html,
 body {
@@ -173,7 +176,7 @@ body {
 /* ROOT FONT STYLES */
 
 * {
-  font-family: /*'Lato',*/ Helvetica, sans-serif;
+  font-family: Consolas, monaco, monospace;
   color: #333447;
   line-height: 1.5;
 }
