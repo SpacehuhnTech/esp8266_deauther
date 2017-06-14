@@ -8,7 +8,6 @@ Deauthentication attack and other 'hacks' using an ESP8266.
 
 
 **Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
-**Unauthorized selling of this project in any way is not allowed (see [license](#license))!**  
 
 I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
 All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
@@ -82,7 +81,7 @@ Please check the legal regulations in your country before using it.
 
 Referring to this project as "jammer" is prohibited! Name the project by its correct name.
 
-My intention with this project is to draw more attention to this issue.  
+My intention with this project is to draw more attention on this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
 **A solution is already there, why don't we use it?**  
 
@@ -91,15 +90,13 @@ This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to
 You can flash the code to every ESP8266. Depending on the module or development board, there might be 
 differences in the stability and performance.
 
-**Officially supported devices:**
-- WiFi Deauther (Pocket WiFi)
-	- [AliExpress](https://goo.gl/JAXhTg)
-	- [tindie](https://goo.gl/hv2MTj)
-- WiFi Deauther OLED (Pocket WiFi)
-	- [AliExpress](https://goo.gl/P30vNz)
-	- [tindie](https://goo.gl/XsCoJ6)
-	
-Any other products that come with this projects preflashed are not approved and commit a copyright infringement!
+**Officially supported devices:**  
+- WiFi Deauther (Pocket WiFi)  
+	- [AliExpress](https://goo.gl/JAXhTg)  
+	- [tindie](https://goo.gl/hv2MTj)  
+- WiFi Deauther OLED (Pocket WiFi)  
+	- [AliExpress](https://goo.gl/P30vNz)  
+	- [tindie](https://goo.gl/XsCoJ6)  
 
 
 ## Videos
@@ -228,6 +225,7 @@ If no port shows up you may have to reinstall the drivers.
 		  SSD1306 display(0x3c, D2, D1);
 		  //SH1106 display(0x3c, D2, D1);
 
+		  
 ## How to use it
 
 First start your ESP8266 by plugging it in and giving it power.  
@@ -249,25 +247,24 @@ Note: While scanning the ESP8266 will shut down its access point, so you may hav
 ...and start different attacks.
 ![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
 
+
 ## How to reset it
 
 Method 1: Connect pin 4 (D2 on the NodeMCU) to GND and plug the device in.  
 Method 2: Connect your device, open up the serial monitor in Arduino, set baudrate to 115200, type in "reset" and click send.  
 
+
 ## FAQ
 
 The FAQ was moved over to the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ).  
 
+
 ## License
 
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
-
-This project is licensed under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0). See the [license file](LICENSE) for details.  
-
-**If you want to use my project for a commercial project, you can contact me and ask for permission.**  
-My Twitter: [twitter.com/spacehuhn](http://twitter.com/spacehuhn)  
+This software is licensed under the MIT License. See the [license file](LICENSE) for details.  
 
 **Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
+
 
 ## Sources and additional links
 
