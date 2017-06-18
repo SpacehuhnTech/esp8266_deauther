@@ -56,7 +56,6 @@ class Settings
     void save();
     void send();
     void info();
-    void syncMacInterface();
 
     int ssidLen;
     String ssid = "";
@@ -76,11 +75,15 @@ class Settings
     bool multiAttacks;
     int macInterval;
     bool beaconInterval;
-    int ledPin;
+    int ledPin = 0;
+    int prevLedPin = 0;
     Mac defaultMacAP;
     Mac macAP;
     bool isMacAPRand;
     bool isSettingsLoaded = 0;
+    void syncMacInterface();
+    void setLedPin(int newLedPin);
+    bool pinStateOff = true;  // When attack is off, pin state is HIGH
     
   private:
     size_t getSize();

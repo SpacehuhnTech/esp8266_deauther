@@ -26,6 +26,21 @@ void Settings::syncMacInterface(){
   }
 }
 
+void Settings::setLedPin(int newLedPin){
+  prevLedPin = ledPin;
+  if(newLedPin > 0 && newLedPin != prevLedPin){
+    ledPin = newLedPin;
+    pinMode(ledPin, OUTPUT);
+    if(!prevLedPin == 0){
+      digitalWrite(ledPin, digitalRead(prevLedPin));
+      digitalWrite(prevLedPin, pinStateOff);
+      pinMode(prevLedPin, INPUT);
+    }else{
+      digitalWrite(ledPin, pinStateOff);
+    }
+  }
+}
+
 void Settings::load() {
 
   if (EEPROM.read(checkNumAdr) != checkNum) {
@@ -72,7 +87,7 @@ void Settings::load() {
   multiAttacks = (bool)EEPROM.read(multiAttacksAdr);
   macInterval = eepromReadInt(macIntervalAdr);
   beaconInterval = (bool)EEPROM.read(beaconIntervalAdr);
-  ledPin = (int)EEPROM.read(ledPinAdr);
+  setLedPin((int)EEPROM.read(ledPinAdr));
   isSettingsLoaded = 1;
 }
 

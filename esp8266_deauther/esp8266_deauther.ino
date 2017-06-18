@@ -445,7 +445,7 @@ void saveSettings() {
     else settings.multiAttacks = true;
   }
   
-  if (server.hasArg("ledPin")) settings.ledPin = server.arg("ledPin").toInt();
+  if (server.hasArg("ledPin")) settings.setLedPin(server.arg("ledPin").toInt());
   if(server.hasArg("macInterval")) settings.macInterval = server.arg("macInterval").toInt();
 
   settings.save();
@@ -478,6 +478,8 @@ void setup() {
   settings.syncMacInterface();
   nameList.load();
   ssidList.load();
+
+  attack.refreshLed();
 
   delay(500); // Prevent bssid leak
 
@@ -567,9 +569,6 @@ void setup() {
   pinMode(resetPin, INPUT_PULLUP);
   if(digitalRead(resetPin) == LOW) settings.reset();
 #endif
-
-  pinMode(settings.ledPin, OUTPUT);
-  digitalWrite(settings.ledPin, HIGH);
 
   if(debug){
     Serial.println("\nStarting...\n");
