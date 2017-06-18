@@ -392,6 +392,25 @@ void saveSettings() {
       settings.apChannel = server.arg("apChannel").toInt();
     }
   }
+  if (server.hasArg("macAp")) {
+    String macStr = server.arg("macAp");
+    macStr.replace(":","");
+    Mac tempMac;
+     if(macStr.length() == 12){
+       for(int i=0;i<6;i++){
+         const char* val = macStr.substring(i*2,i*2+2).c_str();
+         uint8_t valByte = strtoul(val, NULL, 16);
+         tempMac.setAt(valByte,i);
+       }
+       if(tempMac.valid()) settings.macAP.set(tempMac);
+     } else if(macStr.length() == 0){
+       settings.macAP.set(settings.defaultMacAP);
+     }
+  }
+  if (server.hasArg("randMacAp")) {
+    if (server.arg("randMacAp") == "false") settings.isMacAPRand = false;
+    else settings.isMacAPRand = true;
+  }
   if (server.hasArg("ssidEnc")) {
     if (server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
     else settings.attackEncrypted = true;
@@ -439,6 +458,8 @@ void resetSettings() {
 }
 
 void setup() {
+
+  randomSeed(os_random());
   
 #ifdef USE_LED16
   pinMode(16, OUTPUT);
@@ -446,14 +467,15 @@ void setup() {
 #endif
   
   Serial.begin(115200);
-
+  
   attackMode = "START";
 
   EEPROM.begin(4096);
   SPIFFS.begin();
-  
+
   settings.load();
   if (debug) settings.info();
+  settings.syncMacInterface();
   nameList.load();
   ssidList.load();
 
@@ -553,11 +575,9 @@ void setup() {
     delay(2000);
 #endif
   }
-  
 }
 
 void loop() {
-  
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
   } else {

@@ -8,6 +8,10 @@
 #include "MacList.h"
 #include "NameList.h"
 
+extern "C" {
+  #include "user_interface.h"
+}
+
 extern void sendBuffer();
 extern void sendToBuffer(String str);
 extern void sendHeader(int code, String type, size_t _size);
@@ -37,6 +41,8 @@ extern NameList nameList;
 #define macIntervalAdr 1103
 #define beaconIntervalAdr 1105
 #define ledPinAdr 1106
+#define macAPAdr 1107
+#define isMacAPRandAdr 1113
 
 #define checkNumAdr 2001
 #define checkNum 15
@@ -50,6 +56,7 @@ class Settings
     void save();
     void send();
     void info();
+    void syncMacInterface();
 
     int ssidLen;
     String ssid = "";
@@ -70,6 +77,10 @@ class Settings
     int macInterval;
     bool beaconInterval;
     int ledPin;
+    Mac defaultMacAP;
+    Mac macAP;
+    bool isMacAPRand;
+    bool isSettingsLoaded = 0;
     
   private:
     size_t getSize();
