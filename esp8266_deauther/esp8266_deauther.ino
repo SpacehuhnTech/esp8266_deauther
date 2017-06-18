@@ -479,6 +479,8 @@ void setup() {
   nameList.load();
   ssidList.load();
 
+  delay(500); // Prevent bssid leak
+
   startWifi();
   attack.stopAll();
   attack.generate();

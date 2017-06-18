@@ -45,7 +45,7 @@ extern NameList nameList;
 #define isMacAPRandAdr 1113
 
 #define checkNumAdr 2001
-#define checkNum 15
+#define checkNum 16
 
 class Settings
 {
