@@ -18,8 +18,6 @@ extern "C" {
 
 #define attacksNum 3
 #define macListLen 64
-#define PIN_STATE_OFF false
-#define PIN_STATE_ON true
 
 extern void PrintHex8(uint8_t *data, uint8_t length);
 extern void getRandomVendorMac(uint8_t *buf);
