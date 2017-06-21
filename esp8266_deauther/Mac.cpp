@@ -15,14 +15,20 @@ void Mac::set(uint8_t first, uint8_t second, uint8_t third, uint8_t fourth, uint
   adress[5] = sixth;
 }
 
-void Mac::setAt(uint8_t first, int num) {
-  if (num > -1 && num < 6) adress[num] = first;
+void Mac::set(uint8_t* mac) {
+  for(int i=0; i<6 || i<sizeof(mac); i++){
+    adress[i] = mac[i];
+  }
 }
 
-void Mac::setMac(Mac adr) {
+void Mac::set(Mac adr) {
   for (int i = 0; i < 6; i++) {
     adress[i] = adr._get(i);
   }
+}
+
+void Mac::setAt(uint8_t first, int num) {
+  if (num > -1 && num < 6) adress[num] = first;
 }
 
 bool Mac::valid() {
@@ -52,6 +58,10 @@ void Mac::_println() {
   Serial.println(Mac::toString());
 }
 
+uint8_t* Mac::_get() {
+  return adress;
+}
+
 uint8_t Mac::_get(int num) {
   return adress[num];
 }
@@ -61,6 +71,12 @@ bool Mac::compare(Mac target) {
     if (adress[i] != target._get(i)) return false;
   }
   return true;
+}
+
+void Mac::randomize() {
+  uint8_t randomMac[6];
+  getRandomVendorMac(randomMac);
+  this->set(randomMac);
 }
 
 

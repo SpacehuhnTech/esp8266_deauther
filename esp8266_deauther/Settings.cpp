@@ -1,7 +1,44 @@
 #include "Settings.h"
 
 Settings::Settings() {
+  uint8_t tempMAC[6];
+  defaultMacAP.set(WiFi.softAPmacAddress(tempMAC));
+  if(!defaultMacAP.valid()) defaultMacAP.randomize();
+}
 
+void Settings::syncMacInterface(){
+  if(debug) Serial.println("Trying to sync the MAC addr with settings");
+  if(isSettingsLoaded){
+    Mac macToSync;
+    if(isMacAPRand){
+      macToSync.randomize();
+      wifi_set_macaddr(SOFTAP_IF, macToSync._get());
+      if(debug) Serial.println("Synced with a random mac addr : " + macToSync.toString());
+    }else if(macAP.valid()){
+      macToSync = macAP;
+      wifi_set_macaddr(SOFTAP_IF, macToSync._get());
+      if(debug) Serial.println("Synced with saved mac addr : " + macToSync.toString());
+    }else{
+      if(debug) Serial.println("Could not sync because of invalid settings !");
+    }
+  }else{
+    if(debug) Serial.println("Could not sync because settings are not loaded !");
+  }
+}
+
+void Settings::setLedPin(int newLedPin){
+  prevLedPin = ledPin;
+  if(newLedPin > 0 && newLedPin != prevLedPin){
+    ledPin = newLedPin;
+    pinMode(ledPin, OUTPUT);
+    if(!prevLedPin == 0){
+      digitalWrite(ledPin, digitalRead(prevLedPin));
+      digitalWrite(prevLedPin, pinStateOff);
+      pinMode(prevLedPin, INPUT);
+    }else{
+      digitalWrite(ledPin, pinStateOff);
+    }
+  }
 }
 
 void Settings::load() {
@@ -31,6 +68,11 @@ void Settings::load() {
   } else {
     apChannel = 1;
   }
+  for(int i=0; i<6; i++){
+    macAP.setAt((uint8_t)EEPROM.read(macAPAdr+i),i);
+  }
+  if(!macAP.valid()) macAP.set(defaultMacAP);
+  isMacAPRand = (bool)EEPROM.read(isMacAPRandAdr);
 
   apScanHidden = (bool)EEPROM.read(apScanHiddenAdr);
 
@@ -45,7 +87,8 @@ void Settings::load() {
   multiAttacks = (bool)EEPROM.read(multiAttacksAdr);
   macInterval = eepromReadInt(macIntervalAdr);
   beaconInterval = (bool)EEPROM.read(beaconIntervalAdr);
-  ledPin = (int)EEPROM.read(ledPinAdr);
+  setLedPin((int)EEPROM.read(ledPinAdr));
+  isSettingsLoaded = 1;
 }
 
 void Settings::reset() {
@@ -58,6 +101,8 @@ void Settings::reset() {
 
   ssidLen = ssid.length();
   passwordLen = password.length();
+  macAP = defaultMacAP;
+  isMacAPRand = 0;
 
   apScanHidden = true;
 
@@ -90,6 +135,12 @@ void Settings::save() {
 
   EEPROM.write(ssidHiddenAdr, ssidHidden);
   EEPROM.write(apChannelAdr, apChannel);
+
+  EEPROM.write(isMacAPRandAdr, isMacAPRand);
+
+  for(int i=0; i<6; i++){
+    EEPROM.write(macAPAdr+i, macAP._get(i));
+  }
 
   EEPROM.write(apScanHiddenAdr, apScanHidden);
 
@@ -124,6 +175,9 @@ void Settings::info() {
   Serial.println("password: " + password);
   Serial.println("password length: " + (String)passwordLen);
   Serial.println("channel: " + (String)apChannel);
+  Serial.println("Default MAC AP: " + defaultMacAP.toString());
+  Serial.println("Saved MAC AP: " + macAP.toString());
+  Serial.println("MAC AP random: " + (String)isMacAPRand);
   Serial.println("Scan hidden APs: " + (String)apScanHidden);
   Serial.println("deauth reson: " + (String)(int)deauthReason);
   Serial.println("attack timeout: " + (String)attackTimeout);
@@ -147,6 +201,8 @@ size_t Settings::getSize() {
   json += "\"ssidHidden\":" + (String)ssidHidden + ",";
   json += "\"password\":\"" + password + "\",";
   json += "\"apChannel\":" + (String)apChannel + ",";
+  json += "\"macAp\":\"" + macAP.toString() + "\",";
+  json += "\"randMacAp\":" + (String)isMacAPRand + ",";
   json += "\"apScanHidden\":" + (String)apScanHidden + ",";
   json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
   json += "\"attackTimeout\":" + (String)attackTimeout + ",";
@@ -174,6 +230,8 @@ void Settings::send() {
   json += "\"ssidHidden\":" + (String)ssidHidden + ",";
   json += "\"password\":\"" + password + "\",";
   json += "\"apChannel\":" + (String)apChannel + ",";
+  json += "\"macAp\":\"" + macAP.toString() + "\",";
+  json += "\"randMacAp\":" + (String)isMacAPRand + ",";
   json += "\"apScanHidden\":" + (String)apScanHidden + ",";
   json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
   json += "\"attackTimeout\":" + (String)attackTimeout + ",";

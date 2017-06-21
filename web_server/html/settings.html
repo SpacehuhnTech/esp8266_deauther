@@ -61,6 +61,22 @@
 					<input type="number" id="apChannel" min="1" max="14">
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="apChannel">MAC</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="macAp" min="1" max="14">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="ssidHidden">Random MAC</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="randMacAp" id="randMacAp" value="false">
+				</div>
+			</div>
 			<br />
 			<div class="row">
 				<div class="col-12">
@@ -121,7 +137,7 @@
 			</div>
 			<div class="row">
 				<div class="col-6">
-					<label for="ledPin">LED Pin (restart needed)</label>
+					<label for="ledPin">LED Pin</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="ledPin" min="0" max="18">
