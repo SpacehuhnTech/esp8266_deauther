@@ -12,7 +12,7 @@
 #include <FS.h>
 
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 //#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
 #ifdef USE_DISPLAY
@@ -94,7 +94,7 @@ void drawInterface() {
       if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
       else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
       else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
-      else if (i - 3 <= apScan.results) {
+      else if (i - 3 < apScan.results) {
         display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
         if (apScan.getAPSelected(i - 3)) {
           display.drawVerticalLine(1, _lrow * fontSize, fontSize);
@@ -603,7 +603,8 @@ void loop() {
       
     // ===== SELECT ===== 
     } else if (buttonPressed == 2) {
-      //WiFi on/off
+      
+      // ===== WiFi on/off =====
       if (curRow == 0) {
         if (wifiMode == "ON") stopWifi();
         else startWifi();
