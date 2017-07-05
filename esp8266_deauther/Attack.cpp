@@ -1,7 +1,6 @@
 #include "Attack.h"
 
 Attack::Attack() {
-  randomSeed(os_random());
 }
 
 void Attack::generate() {
@@ -13,8 +12,7 @@ void Attack::generate() {
 
   for (int i = 0; i < macListLen; i++) channels[i] = random(1, maxChannel);
   do {
-    getRandomVendorMac(_randomMacBuffer);
-    for (int i = 0; i < 6; i++) _randomBeaconMac.setAt(_randomMacBuffer[i], i);
+    _randomBeaconMac.randomize();
   } while (beaconAdrs.add(_randomBeaconMac) >= 0);
   if (debug) Serial.println("done");
 
@@ -162,7 +160,7 @@ void Attack::run() {
       if (apScan.isSelected(a)) {
         Mac _ap;
         int _ch = apScan.getAPChannel(a);
-        _ap.setMac(apScan.aps._get(a));
+        _ap.set(apScan.aps._get(a));
 
         wifi_set_channel(_ch);
 
@@ -317,7 +315,7 @@ void Attack::_log(int num){
   for(int a=0;a<apScan.results;a++){
     if(apScan.isSelected(a)){
       Mac _ap;
-      _ap.setMac(apScan.aps._get(a));
+      _ap.set(apScan.aps._get(a));
       addLog(_ap.toString());
     }
   }
@@ -463,11 +461,11 @@ void Attack::refreshLed() {
   }
   if (numberRunning >= 1 && settings.useLed) {
     if (debug) Serial.println("Attack LED : ON");
-    digitalWrite(settings.ledPin, LOW);
+    digitalWrite(settings.ledPin, !settings.pinStateOff);
   }
   else if (numberRunning == 0 || !settings.useLed) {
     if (debug) Serial.println("Attack LED : OFF");
-    digitalWrite(settings.ledPin, HIGH);
+    digitalWrite(settings.ledPin, settings.pinStateOff);
   }
 }
 

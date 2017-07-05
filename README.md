@@ -3,23 +3,13 @@ Deauthentication attack and other 'hacks' using an ESP8266.
 
 ![esp8266 deauther with a smartphone](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_esp_1.jpg)  
 
-[**Support me and my projects on Patreon!**  
-<img width="450" alt="Support me on Patreon" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/patreon.png">](https://www.patreon.com/spacehuhn)  
+**Support me and my projects on [Patreon!](https://www.patreon.com/spacehuhn)**  
+[<img width="200" alt="Support me on Patreon" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/patreon.png">](https://www.patreon.com/spacehuhn)  
 
+I disabled the issue section because of the flood of invalid questions. All the information you need is described here. Don't open issues about this project on my other projects or you will be blocked immediately!  
 
-**Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
-**Unauthorized selling of this project in any way is not allowed (see [license](#license))!**  
-
-I disabled the issue section because of the flood of invalid questions, unrelated to this project.  
-All necessary information is described below. Do not open issues about this project on any other of my projects, otherwise you will be blocked immediately!  
-
-**This project is a proof of concept for testing and education only.**  
-Neither the ESP8266, nor the SDK was meant and build for such purposes.  
-Bugs can occur!  
-
-**New official supported boards available!**  
-Go to [Supported Devices](#supported-devices) for more.  
-[![WiFi Deauther Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg)](#supported-devices)  
+**New official [Supported Devices](#supported-devices) available!**  
+[<img height="350" alt="WiFi Deauther Board" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/wifi_deauther_board.jpg">](#supported-devices)  
 
 ## Contents
 - [Introduction](#introduction)
@@ -36,6 +26,7 @@ Go to [Supported Devices](#supported-devices) for more.
   - [Adding OLED display](#adding-oled-display)
 - [How to use it](#how-to-use-it)
 - [How to reset it](#how-to-reset-it)
+- [Alternative Designs](#alternative-designs)
 - [FAQ](#faq)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
@@ -74,6 +65,10 @@ I made a [Deauth Detector](https://github.com/spacehuhn/DeauthDetector) using th
 
 ## Disclaimer
 
+**This project is a proof of concept for testing and education only.**  
+Neither the ESP8266, nor the SDK was meant and build for such purposes.  
+Bugs can occur!  
+
 Use it only for testing purposes on your own devices!  
 I don't take any responsibility for what you do with this program.  
 
@@ -82,7 +77,7 @@ Please check the legal regulations in your country before using it.
 
 Referring to this project as "jammer" is prohibited! Name the project by its correct name.
 
-My intention with this project is to draw more attention to this issue.  
+My intention with this project is to draw more attention on this issue.  
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
 **A solution is already there, why don't we use it?**  
 
@@ -91,15 +86,13 @@ This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to
 You can flash the code to every ESP8266. Depending on the module or development board, there might be 
 differences in the stability and performance.
 
-**Officially supported devices:**
-- WiFi Deauther (Pocket WiFi)
-	- [AliExpress](https://goo.gl/JAXhTg)
-	- [tindie](https://goo.gl/hv2MTj)
-- WiFi Deauther OLED (Pocket WiFi)
-	- [AliExpress](https://goo.gl/P30vNz)
-	- [tindie](https://goo.gl/XsCoJ6)
-	
-Any other products that come with this projects preflashed are not approved and commit a copyright infringement!
+**Officially supported devices:**  
+- WiFi Deauther (Pocket WiFi)  
+	- [AliExpress](https://goo.gl/JAXhTg)  
+	- [tindie](https://goo.gl/hv2MTj)  
+- WiFi Deauther OLED (Pocket WiFi)  
+	- [AliExpress](https://goo.gl/P30vNz)  
+	- [tindie](https://goo.gl/XsCoJ6)  
 
 
 ## Videos
@@ -228,6 +221,7 @@ If no port shows up you may have to reinstall the drivers.
 		  SSD1306 display(0x3c, D2, D1);
 		  //SH1106 display(0x3c, D2, D1);
 
+		  
 ## How to use it
 
 First start your ESP8266 by plugging it in and giving it power.  
@@ -249,25 +243,36 @@ Note: While scanning the ESP8266 will shut down its access point, so you may hav
 ...and start different attacks.
 ![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
 
+
 ## How to reset it
 
 Method 1: Connect pin 4 (D2 on the NodeMCU) to GND and plug the device in.  
 Method 2: Connect your device, open up the serial monitor in Arduino, set baudrate to 115200, type in "reset" and click send.  
 
+
+## Alternative Designs
+
+![Screenshot of 'Wi-PWN'](https://raw.githubusercontent.com/samdenty99/Wi-PWN/master/pictures/secondary-banner.png)  
+[Wi-PWN](https://github.com/samdenty99/Wi-PWN) - By [@samdenty99](https://github.com/samdenty99)  
+
+![Screenshot of 'Modern and Consistent'](https://raw.githubusercontent.com/Wandmalfarbe/esp8266_deauther/master/screenshots/web_screenshot_1.png)
+[Modern and Consistent](https://github.com/Wandmalfarbe/esp8266_deauther) - By [@Wandmalfarbe](https://github.com/Wandmalfarbe)  
+
+![Screenshot of 'hax0r deauther skin'](https://camo.githubusercontent.com/38d6b29df9eab0ca5717260b6086e6da212ff126/68747470733a2f2f696d6167652e70726e747363722e636f6d2f696d6167652f56476379594c46465376755172695439443972565f672e706e67)
+[hax0r deauther skin](https://github.com/EnigmaPROGRAMS/esp8266_deauther) - By [@EnigmaPROGRAMS](https://github.com/EnigmaPROGRAMS)  
+
+
 ## FAQ
 
 The FAQ was moved over to the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ).  
 
+
 ## License
 
-[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](http://creativecommons.org/licenses/by-nc/4.0/)
-
-This project is licensed under Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0). See the [license file](LICENSE) for details.  
-
-**If you want to use my project for a commercial project, you can contact me and ask for permission.**  
-My Twitter: [twitter.com/spacehuhn](http://twitter.com/spacehuhn)  
+This software is licensed under the MIT License. See the [license file](LICENSE) for details.  
 
 **Referring to this project as "jammer" is prohibited! Name the project by its correct name.**  
+
 
 ## Sources and additional links
 

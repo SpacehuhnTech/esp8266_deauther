@@ -12,7 +12,7 @@
 #include <FS.h>
 
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 //#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
 #ifdef USE_DISPLAY
@@ -94,7 +94,7 @@ void drawInterface() {
       if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
       else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
       else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
-      else if (i - 3 <= apScan.results) {
+      else if (i - 3 < apScan.results) {
         display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
         if (apScan.getAPSelected(i - 3)) {
           display.drawVerticalLine(1, _lrow * fontSize, fontSize);
@@ -392,6 +392,25 @@ void saveSettings() {
       settings.apChannel = server.arg("apChannel").toInt();
     }
   }
+  if (server.hasArg("macAp")) {
+    String macStr = server.arg("macAp");
+    macStr.replace(":","");
+    Mac tempMac;
+     if(macStr.length() == 12){
+       for(int i=0;i<6;i++){
+         const char* val = macStr.substring(i*2,i*2+2).c_str();
+         uint8_t valByte = strtoul(val, NULL, 16);
+         tempMac.setAt(valByte,i);
+       }
+       if(tempMac.valid()) settings.macAP.set(tempMac);
+     } else if(macStr.length() == 0){
+       settings.macAP.set(settings.defaultMacAP);
+     }
+  }
+  if (server.hasArg("randMacAp")) {
+    if (server.arg("randMacAp") == "false") settings.isMacAPRand = false;
+    else settings.isMacAPRand = true;
+  }
   if (server.hasArg("ssidEnc")) {
     if (server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
     else settings.attackEncrypted = true;
@@ -426,7 +445,7 @@ void saveSettings() {
     else settings.multiAttacks = true;
   }
   
-  if (server.hasArg("ledPin")) settings.ledPin = server.arg("ledPin").toInt();
+  if (server.hasArg("ledPin")) settings.setLedPin(server.arg("ledPin").toInt());
   if(server.hasArg("macInterval")) settings.macInterval = server.arg("macInterval").toInt();
 
   settings.save();
@@ -439,6 +458,8 @@ void resetSettings() {
 }
 
 void setup() {
+
+  randomSeed(os_random());
   
 #ifdef USE_LED16
   pinMode(16, OUTPUT);
@@ -446,16 +467,21 @@ void setup() {
 #endif
   
   Serial.begin(115200);
-
+  
   attackMode = "START";
 
   EEPROM.begin(4096);
   SPIFFS.begin();
-  
+
   settings.load();
   if (debug) settings.info();
+  settings.syncMacInterface();
   nameList.load();
   ssidList.load();
+
+  attack.refreshLed();
+
+  delay(500); // Prevent bssid leak
 
   startWifi();
   attack.stopAll();
@@ -544,20 +570,15 @@ void setup() {
   if(digitalRead(resetPin) == LOW) settings.reset();
 #endif
 
-  pinMode(settings.ledPin, OUTPUT);
-  digitalWrite(settings.ledPin, HIGH);
-
   if(debug){
     Serial.println("\nStarting...\n");
 #ifndef USE_DISPLAY
     delay(2000);
 #endif
   }
-  
 }
 
 void loop() {
-  
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
   } else {
@@ -603,7 +624,8 @@ void loop() {
       
     // ===== SELECT ===== 
     } else if (buttonPressed == 2) {
-      //WiFi on/off
+      
+      // ===== WiFi on/off =====
       if (curRow == 0) {
         if (wifiMode == "ON") stopWifi();
         else startWifi();

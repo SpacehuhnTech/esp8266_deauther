@@ -2,6 +2,8 @@ var ssid = getE('ssid');
 var ssidHidden = getE('ssidHidden');
 var password = getE('password');
 var apChannel = getE('apChannel');
+var macAp = getE('macAp');
+var randMacAp = getE('randMacAp');
 var apScanHidden = getE('apScanHidden');
 var scanTime = getE('scanTime');
 var timeout = getE('timeout');
@@ -33,6 +35,8 @@ function getData() {
 	ssidHidden.checked = res.ssidHidden;
 	password.value = res.password;
 	apChannel.value = res.apChannel;
+	macAp.value = res.macAp;
+	randMacAp.checked = res.randMacAp;
 	apScanHidden.checked = res.apScanHidden;
 	scanTime.value = res.clientScanTime;
 	timeout.value = res.attackTimeout;
@@ -56,6 +60,8 @@ function saveSettings() {
   url += "&ssidHidden=" + ssidHidden.checked;
   url += "&password=" + password.value;
   url += "&apChannel=" + apChannel.value;
+  url += "&macAp=" + macAp.value;
+  url += "&randMacAp=" + randMacAp.checked;
   url += "&apScanHidden=" + apScanHidden.checked;
   url += "&scanTime=" + scanTime.value;
   url += "&timeout=" + timeout.value;

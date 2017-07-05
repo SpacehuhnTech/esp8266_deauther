@@ -10,10 +10,17 @@ bool APScan::start() {
     Serial.println("MAC - Ch - RSSI - Encrypt. - SSID - Hidden");// - Vendor");
   }
   aps._clear();
-  for (int i = 0; i < maxAPScanResults; i++) selected[i] = false;
+  results = 0;
+  for (int i = 0; i < maxAPScanResults; i++){
+    selected[i] = false;
+    String("").toCharArray(names[i], 33);
+  }
   results = WiFi.scanNetworks(false, settings.apScanHidden); // lets scanNetworks return hidden APs. (async = false & show_hidden = true)
+  if(results > maxAPScanResults) results = maxAPScanResults;
 
-  for (int i = 0; i < results && i < maxAPScanResults; i++) {
+  if (debug) Serial.println("Scan results: "+(String)results);
+  
+  for (int i = 0; i < results; i++) {
     Mac _ap;
     _ap.set(WiFi.BSSID(i)[0], WiFi.BSSID(i)[1], WiFi.BSSID(i)[2], WiFi.BSSID(i)[3], WiFi.BSSID(i)[4], WiFi.BSSID(i)[5]);
     aps.add(_ap);
