@@ -58,7 +58,7 @@ Because these management packets are unencrypted, you just need the mac address 
 
 ### What an ESP8266 is
 
-The [ESP8266](https://en.wikipedia.org/wiki/ESP8266) is a cheap micro controller with built-in Wi-Fi. It contains a powerful 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
+The [ESP8266](https://en.wikipedia.org/wiki/ESP8266) is a cheap microcontroller with built-in Wi-Fi. It contains a powerful 160 MHz processor and it can be programmed using [Arduino](https://www.arduino.cc/en/Main/Software).  
 
 You can buy these chips for under $2 from China!
 
