@@ -143,7 +143,7 @@ void loadAPScanHTML() {
   sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
 }
 void loadStationsHTML() {
-  sendFile(200, "text/html", data_stationHTML, sizeof(data_stationHTML));
+  sendFile(200, "text/html", data_stationsHTML, sizeof(data_stationsHTML));
 }
 void loadAttackHTML() {
   sendFile(200, "text/html", data_attackHTML, sizeof(data_attackHTML));
@@ -152,7 +152,7 @@ void loadSettingsHTML() {
   sendFile(200, "text/html", data_settingsHTML, sizeof(data_settingsHTML));
 }
 void load404() {
-  sendFile(200, "text/html", data_error404, sizeof(data_error404));
+  sendFile(200, "text/html", data_errorHTML, sizeof(data_errorHTML));
 }
 void loadInfoHTML(){
   sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
@@ -162,20 +162,20 @@ void loadLicense(){
 }
 
 void loadFunctionsJS() {
-  sendFile(200, "text/javascript", data_functionsJS, sizeof(data_functionsJS));
+  sendFile(200, "text/javascript", data_js_functionsJS, sizeof(data_js_functionsJS));
 }
 void loadAPScanJS() {
-  sendFile(200, "text/javascript", data_apscanJS, sizeof(data_apscanJS));
+  sendFile(200, "text/javascript", data_js_apscanJS, sizeof(data_js_apscanJS));
 }
 void loadStationsJS() {
-  sendFile(200, "text/javascript", data_stationsJS, sizeof(data_stationsJS));
+  sendFile(200, "text/javascript", data_js_stationsJS, sizeof(data_js_stationsJS));
 }
 void loadAttackJS() {
   attack.ssidChange = true;
-  sendFile(200, "text/javascript", data_attackJS, sizeof(data_attackJS));
+  sendFile(200, "text/javascript", data_js_attackJS, sizeof(data_js_attackJS));
 }
 void loadSettingsJS() {
-  sendFile(200, "text/javascript", data_settingsJS, sizeof(data_settingsJS));
+  sendFile(200, "text/javascript", data_js_settingsJS, sizeof(data_js_settingsJS));
 }
 
 void loadStyle() {
