@@ -58,7 +58,7 @@ void sendToBuffer(String str) {
 }
 
 void sendHeader(int code, String type, size_t _size) {
-  server.sendHeader("Content-Length", (String)_size);
+  server.setContentLength(_size);
   server.send(code, type, "");
 }
 
