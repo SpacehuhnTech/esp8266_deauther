@@ -5,22 +5,28 @@
   ===========================================
 */
 
+// Including some libraries we need //
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <FS.h>
 
-#define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
+
+// Settings //
+
 #define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 //#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
+
+// Including everything for the OLED //
 #ifdef USE_DISPLAY
   #include <Wire.h>
   
   //include the library you need
   #include "SSD1306.h"
-  //#include "SH1106.h"
+  #include "SH1106.h"
 
   //create display(Adr, SDA-pin, SCL-pin)
   SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
@@ -42,17 +48,14 @@
   int curSite = 1;
   int lrow = 0;
 
+  int menu = 0; //0 = Main Menu, 1 = APs, 2 = Stations, 3 = Attacks, 4 = Monitor
+
   bool canBtnPress = true;
   int buttonPressed = 0; //0 = UP, 1 = DOWN, 2 = SELECT, 3 = DISPLAY
   bool displayOn = true;
 #endif
 
-String wifiMode = "";
-String attackMode = "";
-String scanMode = "SCAN";
-
-bool warning = true;
-
+// More Includes! //
 extern "C" {
   #include "user_interface.h"
 }
@@ -72,6 +75,13 @@ ESP8266WebServer server(80);
 const bool debug = true;
 /* ========== DEBUG ========== */
 
+// Run-Time Variables //
+String wifiMode = "";
+String attackMode = "";
+String scanMode = "SCAN";
+
+bool warning = true;
+
 NameList nameList;
 
 APScan apScan;
@@ -87,13 +97,14 @@ void sniffer(uint8_t *buf, uint16_t len) {
 #ifdef USE_DISPLAY
 void drawInterface() {
   if(displayOn){
+    
     display.clear();
 
     int _lrow = 0;
     for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
-      if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
-      else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
-      else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
+      if (i == 0) display.drawString(3, i * fontSize, "-> WiFi " + wifiMode);
+      else if (i == 1) display.drawString(3, i * fontSize, "-> " + scanMode);
+      else if (i == 2) display.drawString(3, i * fontSize, "-> " + attackMode + " attack");
       else if (i - 3 < apScan.results) {
         display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
         if (apScan.getAPSelected(i - 3)) {
@@ -625,7 +636,7 @@ void loop() {
     // ===== SELECT ===== 
     } else if (buttonPressed == 2) {
       
-      // ===== WiFi on/off =====
+      // ===== WIFI on/off ===== 
       if (curRow == 0) {
         if (wifiMode == "ON") stopWifi();
         else startWifi();
