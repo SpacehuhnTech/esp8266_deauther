@@ -80,7 +80,6 @@ void Settings::load() {
   attackTimeout = eepromReadInt(attackTimeoutAdr);
   attackPacketRate = EEPROM.read(attackPacketRateAdr);
   clientScanTime = EEPROM.read(clientScanTimeAdr);
-  attackEncrypted = (bool)EEPROM.read(attackEncryptedAdr);
   useLed = (bool)EEPROM.read(useLedAdr);
   channelHop = (bool)EEPROM.read(channelHopAdr);
   multiAPs = (bool)EEPROM.read(multiAPsAdr);
@@ -110,7 +109,6 @@ void Settings::reset() {
   attackTimeout = 5 * 60;
   attackPacketRate = 10;
   clientScanTime = 15;
-  attackEncrypted = false;
   useLed = true;
   channelHop = false;
   multiAPs = false;
@@ -150,7 +148,6 @@ void Settings::save() {
 
   EEPROM.write(attackPacketRateAdr, attackPacketRate);
   EEPROM.write(clientScanTimeAdr, clientScanTime);
-  EEPROM.write(attackEncryptedAdr, attackEncrypted);
   EEPROM.write(useLedAdr, useLed);
   EEPROM.write(channelHopAdr, channelHop);
   EEPROM.write(multiAPsAdr, multiAPs);
@@ -183,7 +180,6 @@ void Settings::info() {
   Serial.println("attack timeout: " + (String)attackTimeout);
   Serial.println("attack packet rate: " + (String)attackPacketRate);
   Serial.println("client scan time: " + (String)clientScanTime);
-  Serial.println("attack SSID encrypted: " + (String)attackEncrypted);
   Serial.println("use built-in LED: " + (String)useLed);
   Serial.println("channel hopping: " + (String)channelHop);
   Serial.println("multiple APs: " + (String)multiAPs);
@@ -208,7 +204,6 @@ size_t Settings::getSize() {
   json += "\"attackTimeout\":" + (String)attackTimeout + ",";
   json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
   json += "\"clientScanTime\":" + (String)clientScanTime + ",";
-  json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
   json += "\"useLed\":" + (String)useLed + ",";
   json += "\"channelHop\":" + (String)channelHop + ",";
   json += "\"multiAPs\":" + (String)multiAPs + ",";
@@ -237,7 +232,6 @@ void Settings::send() {
   json += "\"attackTimeout\":" + (String)attackTimeout + ",";
   json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
   json += "\"clientScanTime\":" + (String)clientScanTime + ",";
-  json += "\"attackEncrypted\":" + (String)attackEncrypted + ",";
   json += "\"useLed\":" + (String)useLed + ",";
   json += "\"channelHop\":" + (String)channelHop + ",";
   json += "\"multiAPs\":" + (String)multiAPs + ",";

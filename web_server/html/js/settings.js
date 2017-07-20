@@ -11,7 +11,6 @@ var deauthReason = getE('deauthReason');
 var packetRate = getE('packetRate');
 var saved = getE('saved');
 var clientNames = getE('clientNames');
-var ssidEnc = getE('ssidEnc');
 var useLed = getE('useLed');
 /*var channelHop = getE('channelHop');*/
 var multiAPs = getE('multiAPs');
@@ -42,7 +41,6 @@ function getData() {
 	timeout.value = res.attackTimeout;
 	deauthReason.value = res.deauthReason;
 	packetRate.value = res.attackPacketRate;
-	ssidEnc.checked = res.attackEncrypted;
 	useLed.checked = res.useLed;
 	/*channelHop.checked = res.channelHop;*/
 	multiAPs.checked = res.multiAPs;
@@ -67,7 +65,6 @@ function saveSettings() {
   url += "&timeout=" + timeout.value;
   url += "&deauthReason=" + deauthReason.value;
   url += "&packetRate=" + packetRate.value;
-  url += "&ssidEnc=" + ssidEnc.checked;
   url += "&useLed=" + useLed.checked;
   /*url += "&channelHop=" + channelHop.checked;*/
   url += "&multiAPs="+multiAPs.checked;

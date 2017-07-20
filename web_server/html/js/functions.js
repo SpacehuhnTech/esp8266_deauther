@@ -1,14 +1,21 @@
-function showMessage(msg, closeAfter){
-	document.getElementById("error").innerHTML = msg;
-	if(closeAfter !== undefined){
-		setTimeout(function(){
-			document.getElementById("error").innerHTML = "";
-		},closeAfter);
-	}
-}
-
 function getE(name){
 	return document.getElementById(name);
+}
+
+function showMessage(msg, closeAfter){
+	var errorE = getE("error");
+	errorE.innerHTML = msg;
+	
+	errorE.classList.remove('hide');
+	errorE.classList.add('show');
+
+	if(closeAfter !== undefined){
+		setTimeout(function(){
+			errorE.innerHTML = "";
+			errorE.classList.remove('show');
+			errorE.classList.add('hide');
+		},closeAfter);
+	}
 }
 
 function getResponse(adr, callback, timeoutCallback, timeout, method){
@@ -23,7 +30,6 @@ function getResponse(adr, callback, timeoutCallback, timeout, method){
 	xmlhttp.onreadystatechange = function() {
 		if(xmlhttp.readyState == 4){
 			if(xmlhttp.status == 200){
-				showMessage("");
 				callback(xmlhttp.responseText);
 			}
 			else timeoutCallback();

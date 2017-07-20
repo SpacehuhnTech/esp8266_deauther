@@ -32,7 +32,6 @@ class APScan {
     String getAPEncryption(int num);
     //String getAPVendor(int num);
     String getAPMac(int num);
-    bool getAPSelected(int num);
     bool isHidden(int num);
     int getAPRSSI(int num);
     int getAPChannel(int num);

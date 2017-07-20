@@ -119,9 +119,6 @@ String APScan::getAPEncryption(int num) {
 String APScan::getAPMac(int num) {
   return aps._get(num).toString();
 }
-bool APScan::getAPSelected(int num) {
-  return selected[num];
-}
 bool APScan::isHidden(int num) {
   return hidden[num];
 }
@@ -185,7 +182,7 @@ void APScan::sendResults() {
     json += "\"r\":" + (String)getAPRSSI(i) + ",";
     json += "\"e\":" + (String)encryption[i] + ",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
-    json += "\"se\":" + (String)getAPSelected(i);
+    json += "\"se\":" + (String)isSelected(i);
     json += "}";
     if ((i != results - 1) && (i != maxAPScanResults - 1)) json += ",";
 
@@ -218,7 +215,7 @@ String APScan::getResultsJSON() {
     json += "\"r\":" + (String)getAPRSSI(i) + ",";
     json += "\"e\":" + (String)encryption[i] + ",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
-    json += "\"se\":" + (String)getAPSelected(i);
+    json += "\"se\":" + (String)isSelected(i);
     json += "}";
     if ((i != results - 1) && (i != maxAPScanResults - 1)) json += ",";
   }

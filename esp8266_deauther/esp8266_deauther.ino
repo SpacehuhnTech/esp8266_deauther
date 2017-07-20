@@ -107,7 +107,7 @@ void drawInterface() {
       else if (i == 2) display.drawString(3, i * fontSize, "-> " + attackMode + " attack");
       else if (i - 3 < apScan.results) {
         display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
-        if (apScan.getAPSelected(i - 3)) {
+        if (apScan.isSelected(i - 3)) {
           display.drawVerticalLine(1, _lrow * fontSize, fontSize);
           display.drawVerticalLine(2, _lrow * fontSize, fontSize);
         }
@@ -335,16 +335,30 @@ void startAttack() {
 }
 
 void addSSID() {
-  if(server.hasArg("ssid") && server.hasArg("num")){
+  if(server.hasArg("ssid") && server.hasArg("num") && server.hasArg("enc")){
     int num = server.arg("num").toInt();
     if(num > 0){
-      ssidList.addClone(server.arg("ssid"),num);
+      ssidList.addClone(server.arg("ssid"),num, server.arg("enc") == "true");
     }else{
-      ssidList.add(server.arg("ssid"));
+      ssidList.add(server.arg("ssid"), server.arg("enc") == "true" || server.arg("enc") == "1");
     }
     attack.ssidChange = true;
     server.send( 200, "text/json", "true");
   }else server.send( 200, "text/json", "false");
+}
+
+void cloneSelected(){
+  if(apScan.selectedSum > 0){
+    int clonesPerSSID = 48/apScan.selectedSum;
+    ssidList.clear();
+    for(int i=0;i<apScan.results;i++){
+      if(apScan.isSelected(i)){
+        ssidList.addClone(apScan.getAPName(i),clonesPerSSID, apScan.getAPEncryption(i) != "none");
+      }
+    }
+  }
+  attack.ssidChange = true;
+  server.send( 200, "text/json", "true");
 }
 
 void deleteSSID() {
@@ -421,10 +435,6 @@ void saveSettings() {
   if (server.hasArg("randMacAp")) {
     if (server.arg("randMacAp") == "false") settings.isMacAPRand = false;
     else settings.isMacAPRand = true;
-  }
-  if (server.hasArg("ssidEnc")) {
-    if (server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
-    else settings.attackEncrypted = true;
   }
   if (server.hasArg("scanTime")) settings.clientScanTime = server.arg("scanTime").toInt();
   if (server.hasArg("timeout")) settings.attackTimeout = server.arg("timeout").toInt();
@@ -541,6 +551,7 @@ void setup() {
   server.on("/clearNameList.json", clearNameList);
   server.on("/editNameList.json", editClientName);
   server.on("/addSSID.json", addSSID);
+  server.on("/cloneSelected.json", cloneSelected);
   server.on("/deleteSSID.json", deleteSSID);
   server.on("/randomSSID.json", randomSSID);
   server.on("/clearSSID.json", clearSSID);

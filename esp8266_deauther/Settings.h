@@ -30,7 +30,7 @@ extern NameList nameList;
 #define attackTimeoutAdr 1091
 #define attackPacketRateAdr 1093
 #define clientScanTimeAdr 1094
-#define attackEncryptedAdr 1095
+//#define attackEncryptedAdr 1095 <-- address is now free for another setting
 #define ssidHiddenAdr 1096
 #define apScanHiddenAdr 1097
 #define apChannelAdr 1098
@@ -68,7 +68,6 @@ class Settings
     unsigned int attackTimeout;
     int attackPacketRate;
     int clientScanTime;
-    bool attackEncrypted;
     bool useLed;
     bool channelHop;
     bool multiAPs;

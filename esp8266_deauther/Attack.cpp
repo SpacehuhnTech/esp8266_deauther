@@ -211,11 +211,7 @@ void Attack::run() {
     prevTime[1] = millis();
 
     for (int a = 0; a < ssidList.len; a++) {
-      String _ssid = ssidList.get(a);
-      int _ch = channels[a];
-
-      buildBeacon(beaconAdrs._get(a), _ssid, _ch, settings.attackEncrypted);
-
+      buildBeacon(beaconAdrs._get(a), ssidList.get(a), channels[a], ssidList.isEncrypted(a));
       if (send()) packetsCounter[1]++;
     }
 
@@ -376,7 +372,11 @@ size_t Attack::getSize(){
     json = "\"ssid\":[";
     jsonSize += json.length();
     for (int i = 0; i < ssidList.len; i++) {
-      json = "\"" + ssidList.get(i) + "\"";
+      json = "[";
+      json += "\"" + ssidList.get(i) + "\",";
+      json += String( ssidList.isEncrypted(i) ) + "";
+      Serial.print(ssidList.isEncrypted(i));
+      json += "]";
       if (i != ssidList.len - 1) json += ",";
       jsonSize += json.length();
     }
@@ -437,7 +437,10 @@ void Attack::sendResults(){
     json = "\"ssid\":[";
     sendToBuffer(json);
     for (int i = 0; i < ssidList.len; i++) {
-      json = "\"" + ssidList.get(i) + "\"";
+      json = "[";
+      json += "\"" + ssidList.get(i) + "\",";
+      json += (String)ssidList.isEncrypted(i) + "";
+      json += "]";
       if (i != ssidList.len - 1) json += ",";
       sendToBuffer(json);
     }
