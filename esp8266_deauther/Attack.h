@@ -26,7 +26,8 @@ extern const bool debug;
 extern void addLog(String str);
 extern void openLog();
 extern void closeLog();
-extern String attackMode;
+extern String attackMode_deauth;
+extern String attackMode_beacon;
 
 extern APScan apScan;
 extern ClientScan clientScan;

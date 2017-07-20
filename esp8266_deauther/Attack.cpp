@@ -281,7 +281,8 @@ void Attack::start(int num) {
     attackTimeoutCounter[num] = 0;
     refreshLed();
     if (debug) Serial.println("starting " + (String)attackNames[num] + " attack...");
-    if (num == 0) attackMode = "STOP";
+    if (num == 0) attackMode_deauth = "STOP";
+    else if(num == 1) attackMode_beacon = "STOP";
     if(!settings.multiAttacks){
       for (int i = 0; i < attacksNum; i++){
         if(i != num) stop(i);
@@ -293,7 +294,8 @@ void Attack::start(int num) {
 void Attack::stop(int num) {
   if(isRunning[num]) {
     if (debug) Serial.println("stopping " + (String)attackNames[num] + " attack...");
-    if (num == 0) attackMode = "START";
+    if (num == 0) attackMode_deauth = "START";
+    else if(num == 1) attackMode_beacon = "START";
     isRunning[num] = false;
     prevTime[num] = millis();
     refreshLed();

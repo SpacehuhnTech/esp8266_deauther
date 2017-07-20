@@ -42,7 +42,7 @@
   #define fontSize 8
   #define rowsPerSite 8
   
-  int rows = 3;
+  int rows = 4;
   int curRow = 0;
   int sites = 1;
   int curSite = 1;
@@ -77,7 +77,8 @@ const bool debug = true;
 
 // Run-Time Variables //
 String wifiMode = "";
-String attackMode = "";
+String attackMode_deauth = "";
+String attackMode_beacon = "";
 String scanMode = "SCAN";
 
 bool warning = true;
@@ -104,10 +105,11 @@ void drawInterface() {
     for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
       if (i == 0) display.drawString(3, i * fontSize, "-> WiFi " + wifiMode);
       else if (i == 1) display.drawString(3, i * fontSize, "-> " + scanMode);
-      else if (i == 2) display.drawString(3, i * fontSize, "-> " + attackMode + " attack");
-      else if (i - 3 < apScan.results) {
-        display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
-        if (apScan.isSelected(i - 3)) {
+      else if (i == 2) display.drawString(3, i * fontSize, "-> " + attackMode_deauth + " deauth");
+      else if (i == 3) display.drawString(3, i * fontSize, "-> " + attackMode_beacon + " beacon flood");
+      else if (i - 4 < apScan.results) {
+        display.drawString(4, _lrow * fontSize, apScan.getAPName(i - 4));
+        if (apScan.isSelected(i - 4)) {
           display.drawVerticalLine(1, _lrow * fontSize, fontSize);
           display.drawVerticalLine(2, _lrow * fontSize, fontSize);
         }
@@ -210,7 +212,7 @@ void startAPScan() {
 
 #ifdef USE_DISPLAY
     apScan.sort();
-    rows = 3;
+    rows = 4;
     rows += apScan.results;
     sites = rows / rowsPerSite;
     if (rows % rowsPerSite > 0) sites++;
@@ -489,7 +491,8 @@ void setup() {
   
   Serial.begin(115200);
   
-  attackMode = "START";
+  attackMode_deauth = "START";
+  attackMode_beacon = "START";
 
   EEPROM.begin(4096);
   SPIFFS.begin();
@@ -578,13 +581,17 @@ void setup() {
   display.setFont(ArialMT_Plain_24);
   display.drawString(0, 16, "Deauther");
   display.setFont(ArialMT_Plain_10);
+  display.drawString(100, 28, "v");
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(104, 24, "1.6");
+  display.setFont(ArialMT_Plain_10);
   display.drawString(0, 40, "Copyright (c) 2017");
   display.drawString(0, 50, "Stefan Kremser");
   display.display();
 
   display.setFont(Roboto_Mono_8);
   
-  delay(2000);
+  delay(1600);
 #endif
 
 #ifdef resetPin
@@ -595,7 +602,7 @@ void setup() {
   if(debug){
     Serial.println("\nStarting...\n");
 #ifndef USE_DISPLAY
-    delay(2000);
+    delay(1600);
 #endif
   }
 }
@@ -657,16 +664,37 @@ void loop() {
         startAPScan();
         drawInterface();
   
-      // ===== start,stop attack ===== 
+      // ===== start,stop deauth attack ===== 
       } else if (curRow == 2) {
-        if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
-        else if (attackMode == "STOP") attack.stop(0);
+        if (attackMode_deauth == "START" && apScan.getFirstTarget() > -1) attack.start(0);
+        else if (attackMode_deauth == "STOP") attack.stop(0);
+
+      // ===== start,stop beacon attack ===== 
+      } else if (curRow == 3) {
+        if (attackMode_beacon == "START"){
+
+          //clone all selected SSIDs
+          if(apScan.selectedSum > 0){
+            int clonesPerSSID = 48/apScan.selectedSum;
+            ssidList.clear();
+            for(int i=0;i<apScan.results;i++){
+              if(apScan.isSelected(i)){
+                ssidList.addClone(apScan.getAPName(i),clonesPerSSID, apScan.getAPEncryption(i) != "none");
+              }
+            }
+          }
+          attack.ssidChange = true;
+
+          //start attack
+          attack.start(1);
+        }
+        else if (attackMode_beacon == "STOP") attack.stop(1);
       } 
       
       // ===== select APs ===== 
-      else if (curRow >= 3) {
+      else if (curRow >= 4) {
         attack.stop(0);
-        apScan.select(curRow - 3);
+        apScan.select(curRow - 4);
       }
     }
     // ===== DISPLAY ===== 
