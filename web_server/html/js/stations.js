@@ -42,11 +42,11 @@ function getResults() {
       if (res.clients[i].s == 1) tr += '<tr class="selected">';
       else tr += '<tr>';
       tr += '<td>' + res.clients[i].p + '</td>';
-      if(res.clients[i].l >= 0) tr += '<td>' + res.clients[i].n + ' <a onclick="editNameList(' + res.clients[i].l + ')"></a></td>';
+      if(res.clients[i].l >= 0) tr += '<td>' + escapeHTML(res.clients[i].n) + ' <a onclick="editNameList(' + res.clients[i].l + ')"></a></td>';
 	  else tr += '<td><a onclick="setName(' + res.clients[i].i + ')">set</a></td>';
       if(res.clients[i].v.length > 1) tr += '<td>' + res.clients[i].v + res.clients[i].m.substring(8, 20) + '</td>';
 	  else tr += '<td>' + res.clients[i].m + '</td>';
-      tr += '<td>' + res.clients[i].a + '</td>';
+      tr += '<td>' + escapeHTML(res.clients[i].a) + '</td>';
 
       if (res.clients[i].s == 1) tr += '<td><button class="marginNull select" onclick="select(' + res.clients[i].i + ')">deselect</button></td>';
       else tr += '<td><button class="marginNull select" onclick="select(' + res.clients[i].i + ')">select</button></td>';
@@ -63,7 +63,7 @@ function getResults() {
 
       tr += '<tr>';
       tr += '<td>' + res.nameList[i].m + '</td>';
-      tr += '<td>' + res.nameList[i].n + ' <a onclick="editNameList(' + i + ')">edit</a></td>';
+      tr += '<td>' + escapeHTML(res.nameList[i].n) + ' <a onclick="editNameList(' + i + ')">edit</a></td>';
       tr += '<td><button class="marginNull button-warn" onclick="deleteName(' + i + ')">x</button></td>';
 	  tr += '<td><button class="marginNull button-primary" onclick="add(' + i + ')">add</button></td>';
       tr += '</tr>';

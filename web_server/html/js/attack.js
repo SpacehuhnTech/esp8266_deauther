@@ -18,8 +18,8 @@ function getResults() {
     var aps = "";
     var clients = "";
     var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
-    for (var i = 0; i < res.aps.length; i++) aps += "<li>" + res.aps[i] + "</li>";
-    for (var i = 0; i < res.clients.length; i++) clients += "<li>" + res.clients[i] + "</li>";
+    for (var i = 0; i < res.aps.length; i++) aps += "<li>" + escapeHTML(res.aps[i]) + "</li>";
+    for (var i = 0; i < res.clients.length; i++) clients += "<li>" + escapeHTML(res.clients[i]) + "</li>";
 
     selectedAPs.innerHTML = aps;
     selectedClients.innerHTML = clients;
@@ -48,7 +48,7 @@ function getResults() {
 		var tr = "<tr><th>Name</th><th></th><th>Del.</th></tr>";
 		for (var i = 0; i < data.length; i++) {
 		  tr += "<tr>";
-		  tr += "<td>" + data[i][0] + "</td>";
+		  tr += "<td>" + escapeHTML(data[i][0]) + "</td>";
 		  if(data[i][1] == 1) tr += "<td>&#128274;</td>";
 		  else tr += "<td></td>";
 		  tr += '<td><button class="button-warn" onclick="deleteSSID(' + i + ')">x</button></td>';
