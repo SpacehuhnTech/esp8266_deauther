@@ -30,6 +30,7 @@ I disabled the issue section because of the flood of invalid questions. All the 
 - [FAQ](#faq)
 - [License](#license)
 - [Sources and additional links](#sources-and-additional-links)
+- [Contribute Code](#contribute-code)
 
 ## Introduction ##
 
@@ -292,3 +293,7 @@ packet injection with ESP8266:
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009
 
 Wi-Fi_send_pkt_freedom function limitations: https://esp32.com/viewtopic.php?t=586
+
+## Contribute Code
+
+To contribute code, make pull requests in `testing` branch to avoid future code conflicts. The `testing` branch is merged with `master` on every release. 
