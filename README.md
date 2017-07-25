@@ -42,12 +42,12 @@ The deauth attack will, if the connection is vulnerable, disconnect the devices 
 Other attacks also have been implemented, such as beacon and probe request flooding.  
 
 The deauth attack works by exploiting an old and known vulnerability in the 802.11 Wi-Fi protocol.  
-Because these [deauthentication frames](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/), usally used to close a Wi-Fi connection safely, are are unencrypted, it's very easy to spoof them. You only need the mac address of the access point, which you can sniff easily.  
+Because these [deauthentication frames](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/), usually used to close a Wi-Fi connection safely, are are unencrypted, it's very easy to spoof them. You only need the mac address of the access point, which you can sniff easily.  
 If you don't want to attack all connected devices, you can also scan for connections and attack them specifictly.  
 
 ### How to protect yourself against it
 
-With [802.11w-2009](https://en.wikipedia.org/wiki/IEEE_802.11w-2009) the Wi-Fi protocol got encrypt management (and deauthentication) frames. This makes spoofing these packets way harder and the attack, in this form, ineffective.
+With [802.11w-2009](https://en.wikipedia.org/wiki/IEEE_802.11w-2009) the Wi-Fi protocol became encrypted management (and deauthentication) frames. This makes spoofing these packets way harder and the attack, in this form, ineffective.
 So make sure your router is up to date and has management frame protection enabled. Your client device (e.g your phone, notebook etc.) needs to support that too. Both ends of the connection need to use it!
 
 The problem with that is, most routers use unencrypted managment frames by default, don't provide any option to change that and don't provide any information about this issue.  
