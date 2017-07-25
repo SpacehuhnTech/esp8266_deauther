@@ -79,10 +79,10 @@ Please don't refer to this project as "jammer", that totaly underminds the real 
 
 - WiFi Deauther (Pocket WiFi)  
 	- [AliExpress](https://goo.gl/JAXhTg)  
-	- [tindie](https://goo.gl/hv2MTj)  
+	- [tindie](https://goo.gl/yMiuGH)  
 - WiFi Deauther OLED (Pocket WiFi)  
 	- [AliExpress](https://goo.gl/P30vNz)  
-	- [tindie](https://goo.gl/XsCoJ6)  
+	- [tindie](https://goo.gl/GGH7x8)  
   
 ## Installation
 
