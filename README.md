@@ -1,7 +1,7 @@
 # ESP8266 Deauther
 Deauthentication attack and other exploits using an ESP8266!
 
-<img width="100%" alt="esp8266 deauther with smartphone" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/smartphone_and_deauther.jpg">
+<img width="100%" alt="esp8266 deauther with smartphone" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_and_deauther.jpg">
 
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
