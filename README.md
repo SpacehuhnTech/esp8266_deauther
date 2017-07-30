@@ -264,7 +264,7 @@ ESP8266:
 
 packet injection with ESP8266: 
 * http://hackaday.com/2016/01/14/inject-packets-with-an-esp8266/
-* http://bbs.espressif.com/viewtopic.php?f=7&t=1357&p=10205&hilit=Wi-Fi_pkt_freedom#p10205
+* http://bbs.espressif.com/viewtopic.php?f=7&t=1357
 * https://github.com/pulkin/esp8266-injection-example
 
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009
