@@ -1,7 +1,6 @@
 #include "Attack.h"
 
 Attack::Attack() {
-  randomSeed(os_random());
 }
 
 void Attack::generate() {
@@ -13,8 +12,7 @@ void Attack::generate() {
 
   for (int i = 0; i < macListLen; i++) channels[i] = random(1, maxChannel);
   do {
-    getRandomVendorMac(_randomMacBuffer);
-    for (int i = 0; i < 6; i++) _randomBeaconMac.setAt(_randomMacBuffer[i], i);
+    _randomBeaconMac.randomize();
   } while (beaconAdrs.add(_randomBeaconMac) >= 0);
   if (debug) Serial.println("done");
 
@@ -162,7 +160,7 @@ void Attack::run() {
       if (apScan.isSelected(a)) {
         Mac _ap;
         int _ch = apScan.getAPChannel(a);
-        _ap.setMac(apScan.aps._get(a));
+        _ap.set(apScan.aps._get(a));
 
         wifi_set_channel(_ch);
 
@@ -213,11 +211,7 @@ void Attack::run() {
     prevTime[1] = millis();
 
     for (int a = 0; a < ssidList.len; a++) {
-      String _ssid = ssidList.get(a);
-      int _ch = channels[a];
-
-      buildBeacon(beaconAdrs._get(a), _ssid, _ch, settings.attackEncrypted);
-
+      buildBeacon(beaconAdrs._get(a), ssidList.get(a), channels[a], ssidList.isEncrypted(a));
       if (send()) packetsCounter[1]++;
     }
 
@@ -287,7 +281,8 @@ void Attack::start(int num) {
     attackTimeoutCounter[num] = 0;
     refreshLed();
     if (debug) Serial.println("starting " + (String)attackNames[num] + " attack...");
-    if (num == 0) attackMode = "STOP";
+    if (num == 0) attackMode_deauth = "STOP";
+    else if(num == 1) attackMode_beacon = "STOP";
     if(!settings.multiAttacks){
       for (int i = 0; i < attacksNum; i++){
         if(i != num) stop(i);
@@ -299,7 +294,8 @@ void Attack::start(int num) {
 void Attack::stop(int num) {
   if(isRunning[num]) {
     if (debug) Serial.println("stopping " + (String)attackNames[num] + " attack...");
-    if (num == 0) attackMode = "START";
+    if (num == 0) attackMode_deauth = "START";
+    else if(num == 1) attackMode_beacon = "START";
     isRunning[num] = false;
     prevTime[num] = millis();
     refreshLed();
@@ -317,7 +313,7 @@ void Attack::_log(int num){
   for(int a=0;a<apScan.results;a++){
     if(apScan.isSelected(a)){
       Mac _ap;
-      _ap.setMac(apScan.aps._get(a));
+      _ap.set(apScan.aps._get(a));
       addLog(_ap.toString());
     }
   }
@@ -378,7 +374,11 @@ size_t Attack::getSize(){
     json = "\"ssid\":[";
     jsonSize += json.length();
     for (int i = 0; i < ssidList.len; i++) {
-      json = "\"" + ssidList.get(i) + "\"";
+      json = "[";
+      json += "\"" + ssidList.get(i) + "\",";
+      json += String( ssidList.isEncrypted(i) ) + "";
+      Serial.print(ssidList.isEncrypted(i));
+      json += "]";
       if (i != ssidList.len - 1) json += ",";
       jsonSize += json.length();
     }
@@ -439,7 +439,10 @@ void Attack::sendResults(){
     json = "\"ssid\":[";
     sendToBuffer(json);
     for (int i = 0; i < ssidList.len; i++) {
-      json = "\"" + ssidList.get(i) + "\"";
+      json = "[";
+      json += "\"" + ssidList.get(i) + "\",";
+      json += (String)ssidList.isEncrypted(i) + "";
+      json += "]";
       if (i != ssidList.len - 1) json += ",";
       sendToBuffer(json);
     }
@@ -463,11 +466,11 @@ void Attack::refreshLed() {
   }
   if (numberRunning >= 1 && settings.useLed) {
     if (debug) Serial.println("Attack LED : ON");
-    digitalWrite(settings.ledPin, LOW);
+    digitalWrite(settings.ledPin, !settings.pinStateOff);
   }
   else if (numberRunning == 0 || !settings.useLed) {
     if (debug) Serial.println("Attack LED : OFF");
-    digitalWrite(settings.ledPin, HIGH);
+    digitalWrite(settings.ledPin, settings.pinStateOff);
   }
 }
 

@@ -35,21 +35,21 @@ function getResults() {
     clientsFound.innerHTML = res.clients.length;
 
     var tr = '';
-    if (res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Vendor</th><th>Name</th><th>MAC</th><th>AP</th><th>Select</th></tr>';
+    if (res.clients.length > 0) tr += '<tr><th>Pkts</th><th>Name</th><th>MAC</th><th>AP</th><th>Select</th></tr>';
 	
     for (var i = 0; i < res.clients.length; i++) {
 
       if (res.clients[i].s == 1) tr += '<tr class="selected">';
       else tr += '<tr>';
       tr += '<td>' + res.clients[i].p + '</td>';
-      tr += '<td>' + res.clients[i].v + '</td>';
-      if(res.clients[i].l >= 0) tr += '<td>' + res.clients[i].n + ' <a onclick="editNameList(' + res.clients[i].l + ')">edit</a></td>';
+      if(res.clients[i].l >= 0) tr += '<td>' + escapeHTML(res.clients[i].n) + ' <a onclick="editNameList(' + res.clients[i].l + ')"></a></td>';
 	  else tr += '<td><a onclick="setName(' + res.clients[i].i + ')">set</a></td>';
-      tr += '<td>' + res.clients[i].m + '</td>';
-      tr += '<td>' + res.clients[i].a + '</td>';
+      if(res.clients[i].v.length > 1) tr += '<td>' + res.clients[i].v + res.clients[i].m.substring(8, 20) + '</td>';
+	  else tr += '<td>' + res.clients[i].m + '</td>';
+      tr += '<td>' + escapeHTML(res.clients[i].a) + '</td>';
 
-      if (res.clients[i].s == 1) tr += '<td><button class="marginNull selectedBtn" onclick="select(' + res.clients[i].i + ')">deselect</button></td>';
-      else tr += '<td><button class="marginNull" onclick="select(' + res.clients[i].i + ')">select</button></td>';
+      if (res.clients[i].s == 1) tr += '<td><button class="marginNull select" onclick="select(' + res.clients[i].i + ')">deselect</button></td>';
+      else tr += '<td><button class="marginNull select" onclick="select(' + res.clients[i].i + ')">select</button></td>';
 
       tr += '</tr>';
     }
@@ -57,13 +57,13 @@ function getResults() {
 	
 	clientNames.innerHTML = res.nameList.length + "/50";
 
-    var tr = '<tr><th>MAC</th><th>Name</th><th>X</th><th>Add</th></tr>';
+    var tr = '<tr><th>MAC</th><th>Name</th><th>Del.</th><th>Add</th></tr>';
 
     for (var i = 0; i < res.nameList.length; i++) {
 
       tr += '<tr>';
       tr += '<td>' + res.nameList[i].m + '</td>';
-      tr += '<td>' + res.nameList[i].n + ' <a onclick="editNameList(' + i + ')">edit</a></td>';
+      tr += '<td>' + escapeHTML(res.nameList[i].n) + ' <a onclick="editNameList(' + i + ')">edit</a></td>';
       tr += '<td><button class="marginNull button-warn" onclick="deleteName(' + i + ')">x</button></td>';
 	  tr += '<td><button class="marginNull button-primary" onclick="add(' + i + ')">add</button></td>';
       tr += '</tr>';

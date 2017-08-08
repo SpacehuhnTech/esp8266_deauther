@@ -77,12 +77,15 @@ Please don't refer to this project as "jammer", that totaly underminds the real 
 
 **You can flash this software yourself onto any ESP8266**, but if you would like to support me, you can get one of these cool boards that are made especially for this project and come with everything preinstalled!  
 
-- WiFi Deauther (Pocket WiFi)  
+- WiFi Deauther v1.5
 	- [AliExpress](https://goo.gl/JAXhTg)  
 	- [tindie](https://goo.gl/yMiuGH)  
-- WiFi Deauther OLED (Pocket WiFi)  
+- WiFi Deauther OLED v1.5
 	- [AliExpress](https://goo.gl/P30vNz)  
 	- [tindie](https://goo.gl/GGH7x8)  
+- WiFi Deauther OLED v2
+	- [AliExpress](https://goo.gl/UK87iU)  
+	- [tindie](https://goo.gl/PMDYn4)  
   
 ## Installation
 
@@ -264,7 +267,7 @@ ESP8266:
 
 packet injection with ESP8266: 
 * http://hackaday.com/2016/01/14/inject-packets-with-an-esp8266/
-* http://bbs.espressif.com/viewtopic.php?f=7&t=1357&p=10205&hilit=Wi-Fi_pkt_freedom#p10205
+* http://bbs.espressif.com/viewtopic.php?f=7&t=1357
 * https://github.com/pulkin/esp8266-injection-example
 
 802.11w-2009: https://en.wikipedia.org/wiki/IEEE_802.11w-2009

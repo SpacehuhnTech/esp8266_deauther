@@ -14,7 +14,7 @@ bool MacList::contains(Mac adr) {
 int MacList::add(Mac adr) {
   if(num < len && adr.valid()) {
     if (!contains(adr)) {
-      macAdrs[num].setMac(adr);
+      macAdrs[num].set(adr);
       num++;
       return num - 1;
     }
@@ -58,6 +58,6 @@ void MacList::remove(Mac adr) {
 }
 
 void MacList::set(int num, Mac adr) {
-  macAdrs[num].setMac(adr);
+  macAdrs[num].set(adr);
 }
 
