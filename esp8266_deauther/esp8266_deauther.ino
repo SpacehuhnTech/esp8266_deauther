@@ -171,34 +171,27 @@ void loadInfoHTML(){
   sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
 }
 void loadLicense(){
-  server.sendHeader("Cache-Control", "max-age=1000");
   sendFile(200, "text/plain", data_license, sizeof(data_license));
 }
 
 void loadFunctionsJS() {
-  server.sendHeader("Cache-Control", "max-age=300");
   sendFile(200, "text/javascript", data_js_functionsJS, sizeof(data_js_functionsJS));
 }
 void loadAPScanJS() {
-  server.sendHeader("Cache-Control", "max-age=300");
   sendFile(200, "text/javascript", data_js_apscanJS, sizeof(data_js_apscanJS));
 }
 void loadStationsJS() {
-  server.sendHeader("Cache-Control", "max-age=300");
   sendFile(200, "text/javascript", data_js_stationsJS, sizeof(data_js_stationsJS));
 }
 void loadAttackJS() {
   attack.ssidChange = true;
-  server.sendHeader("Cache-Control", "max-age=300");
   sendFile(200, "text/javascript", data_js_attackJS, sizeof(data_js_attackJS));
 }
 void loadSettingsJS() {
-  server.sendHeader("Cache-Control", "max-age=300");
   sendFile(200, "text/javascript", data_js_settingsJS, sizeof(data_js_settingsJS));
 }
 
 void loadStyle() {
-  server.sendHeader("Cache-Control", "max-age=300");
   sendFile(200, "text/css;charset=UTF-8", data_styleCSS, sizeof(data_styleCSS));
 }
 
