@@ -63,6 +63,7 @@ void sendHeader(int code, String type, size_t _size) {
 }
 
 void sendFile(int code, String type, const char* adr, size_t len) {
+  server.sendHeader("Cache-Control", "max-age=400");
   sendHeader(code,type,len);
   server.sendContent_P(adr,len);
 }
