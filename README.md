@@ -42,7 +42,7 @@ The deauth attack will, if the connection is vulnerable, disconnect the devices 
 Other attacks also have been implemented, such as beacon and probe request flooding.  
 
 The deauth attack works by exploiting an old and known vulnerability in the 802.11 Wi-Fi protocol.  
-Because these [deauthentication frames](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/), usually used to close a Wi-Fi connection safely, are are unencrypted, it's very easy to spoof them. You only need the mac address of the access point, which you can sniff easily.  
+Because these [deauthentication frames](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/), usually used to close a Wi-Fi connection safely, are unencrypted, it's very easy to spoof them. You only need the mac address of the access point, which you can sniff easily.  
 If you don't want to attack all connected devices, you can also scan for connections and attack them specifictly.  
 
 ### How to protect yourself against it
