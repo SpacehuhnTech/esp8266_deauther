@@ -43,7 +43,7 @@ Other attacks also have been implemented, such as beacon and probe request flood
 
 The deauth attack works by exploiting an old and known vulnerability in the 802.11 Wi-Fi protocol.  
 Because these [deauthentication frames](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/), usually used to close a Wi-Fi connection safely, are unencrypted, it's very easy to spoof them. You only need the mac address of the access point, which you can sniff easily.  
-If you don't want to attack all connected devices, you can also scan for connections and attack them specifictly.  
+If you don't want to attack all connected devices, you can also scan for connections and attack them specifically.  
 
 ### How to protect yourself against it
 
@@ -71,7 +71,7 @@ My intention with this project is to draw more attention on this issue.
 This attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
 **A solution is already there, why don't we use it?**  
 
-Please don't refer to this project as "jammer", that totaly underminds the real purpose of this project!  
+Please don't refer to this project as "jammer", that totally undermines the real purpose of this project!  
 
 ## Supported Devices
 
