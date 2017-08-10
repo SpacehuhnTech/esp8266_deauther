@@ -20,7 +20,7 @@ bool APScan::start() {
 
   if (debug) Serial.println("Scan results: "+(String)results);
   
-  for (int i = 0; i < results; i++) {
+  for (int i = 0; i < results && i < maxAPScanResults; i++) {
     Mac _ap;
     _ap.set(WiFi.BSSID(i)[0], WiFi.BSSID(i)[1], WiFi.BSSID(i)[2], WiFi.BSSID(i)[3], WiFi.BSSID(i)[4], WiFi.BSSID(i)[5]);
     aps.add(_ap);

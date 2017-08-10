@@ -139,12 +139,8 @@ void Attack::sendDeauths(Mac from, Mac to){
     buildDeauth(from, to, 0xc0, settings.deauthReason );
     if(send()) packetsCounter[0]++;
     buildDeauth(from, to, 0xa0, settings.deauthReason );
-    send();
-    buildDeauth(to, from, 0xc0, settings.deauthReason );
-    send();
-    buildDeauth(to, from, 0xa0, settings.deauthReason );
-    send();
-    delay(5);
+    if(send()) packetsCounter[0]++;
+    delay(3);
   }
 }
 

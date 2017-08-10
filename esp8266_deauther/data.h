@@ -63,22 +63,9 @@ void sendHeader(int code, String type, size_t _size) {
 }
 
 void sendFile(int code, String type, const char* adr, size_t len) {
+  server.sendHeader("Cache-Control", "max-age=400");
   sendHeader(code,type,len);
-  /*
-  int runs = len/bufSize;
-  if(len%bufSize > 0) runs++;
-  for (int i = 0; i < runs; i++){
-    int _len = bufSize;
-    for(int h=0;h<bufSize;h++){
-      if(h+i*bufSize >= len){
-        _len = h;
-        break;
-      }
-      else data_websiteBuffer[h] = (char)pgm_read_byte_near(adr + h+i*bufSize);
-    }
-  }*/
   server.sendContent_P(adr,len);
-  sendBuffer();
 }
 
 /*
