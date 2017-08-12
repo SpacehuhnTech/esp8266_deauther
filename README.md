@@ -39,6 +39,8 @@ With this software flashed onto it, you can select a target network and start di
 
 The deauth attack will, if the connection is vulnerable, disconnect the devices from the network. Because the attack is running constantly, the devices will be disconnected again and again. Depending on the network, that can either block a connection or slow it down.  
 
+**The difference between deauthing and jamming:** [WiFi Jammers vs Deauthers | What's The Difference?](https://www.youtube.com/watch?v=6m2vY2HXU60)  
+
 Other attacks also have been implemented, such as beacon and probe request flooding.  
 
 The deauth attack works by exploiting an old and known vulnerability in the 802.11 Wi-Fi protocol.  
