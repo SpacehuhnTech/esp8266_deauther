@@ -247,6 +247,10 @@ This software is licensed under the MIT License. See the [license file](LICENSE)
 ![Screenshot of 'Modern and Consistent'](https://raw.githubusercontent.com/Wandmalfarbe/esp8266_deauther/master/screenshots/web_screenshot_1.png)
 [Modern and Consistent](https://github.com/Wandmalfarbe/esp8266_deauther) - By [@Wandmalfarbe](https://github.com/Wandmalfarbe)  
 
+<img height="400" alt="Screenshot of DeAutherDroid App" src="https://raw.githubusercontent.com/ExploiTR/DeAutherDroid/master/screenshots/device-2017-08-13-143401.png">  
+
+[DeAutherDroid Android APP](https://github.com/ExploiTR/DeAutherDroid) - By [@ExploiTR](https://github.com/ExploiTR)  
+
 ### Videos
 
 [![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
