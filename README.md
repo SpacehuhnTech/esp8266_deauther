@@ -47,6 +47,8 @@ The deauth attack works by exploiting an old and known vulnerability in the 802.
 Because these [deauthentication frames](https://mrncciew.com/2014/10/11/802-11-mgmt-deauth-disassociation-frames/), usually used to close a Wi-Fi connection safely, are unencrypted, it's very easy to spoof them. You only need the mac address of the access point, which you can sniff easily.  
 If you don't want to attack all connected devices, you can also scan for connections and attack them specifically.  
 
+**Is deauthing legal?** [WiFi Jammers/Deauthers | Legal?](https://www.youtube.com/watch?v=IromynQ1srI)  
+
 ### How to protect yourself against it
 
 With [802.11w-2009](https://en.wikipedia.org/wiki/IEEE_802.11w-2009) the Wi-Fi protocol became encrypted management (and deauthentication) frames. This makes spoofing these packets way harder and the attack, in this form, ineffective.
@@ -260,6 +262,10 @@ This software is licensed under the MIT License. See the [license file](LICENSE)
 [![WiFi Tutorial "Deauthing Made Simple"](https://img.youtube.com/vi/SswI-J-M2SE/0.jpg)](https://www.youtube.com/watch?v=SswI-J-M2SE)
 
 [![Seguridad Inalámbrica | Explicación de Wifi Deauther en Español](https://img.youtube.com/vi/YYsSDXRgD10/0.jpg)](https://www.youtube.com/watch?v=YYsSDXRgD10)
+
+[![WiFi Jammers/Deauthers | Legal?](https://img.youtube.com/vi/IromynQ1srI/0.jpg)](https://www.youtube.com/watch?v=IromynQ1srI)  
+
+[![WiFi Jammers vs Deauthers | What's The Difference?](https://img.youtube.com/vi/6m2vY2HXU60/0.jpg)](https://www.youtube.com/watch?v=6m2vY2HXU60)  
 
 ### Sources
 
