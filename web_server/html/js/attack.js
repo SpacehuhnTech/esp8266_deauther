@@ -14,7 +14,15 @@ var data = {};
 
 function getResults() {
   getResponse("attackInfo.json", function(responseText) {
-    var res = JSON.parse(responseText);
+    var res;
+    try {
+      res = JSON.parse(responseText);
+    } catch(e) {
+      // wut
+      showMessage("JSON Parsing failed :-(", 2500);
+      return;
+    }
+    // TODO: more sanity checks on res && res.aps
     var aps = "";
     var clients = "";
     var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";

@@ -32,7 +32,15 @@ function getEncryption(num) {
 function getResults() {
   toggleScan(true);
   getResponse("APScanResults.json", function(responseText) {
-    var res = JSON.parse(responseText);
+    var res;
+    try {
+      res = JSON.parse(responseText);
+    } catch(e) {
+      // wut
+      showMessage("JSON Parsing failed :-(", 2500);
+      return;
+    }
+    // TODO: more sanity checks on res && res.aps
     res.aps = res.aps.sort(compare);
     networkInfo.innerHTML = res.aps.length;
     apMAC.innerHTML = "";
