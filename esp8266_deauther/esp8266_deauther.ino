@@ -195,6 +195,11 @@ void loadStyle() {
   sendFile(200, "text/css;charset=UTF-8", data_styleCSS, sizeof(data_styleCSS));
 }
 
+void loadLog() {
+  File logFile = SPIFFS.open("/log.txt", "r");
+  server.streamFile(logFile, "text/plain");
+  logFile.close();
+}
 
 void startWiFi(bool start) {
   if (start) startWifi();
@@ -563,6 +568,7 @@ void setup() {
   server.on("/restartESP.json", restartESP);
   server.on("/addClient.json",addClient);
   server.on("/enableRandom.json",enableRandom);
+  server.on("/log.txt",loadLog);
 
   server.begin();
 
