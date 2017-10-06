@@ -255,6 +255,8 @@ This software is licensed under the MIT License. See the [license file](LICENSE)
 
 ### Videos
 
+[![Explaining WFi Deauthing and Jammers (And the problem with 802.11)](https://img.youtube.com/vi/GUZyCV5c1SY/0.jpg)](https://www.youtube.com/watch?v=GUZyCV5c1SY)  
+
 [![Cheap Wi-Fi 'Jammer' Device | NodeMCU](https://img.youtube.com/vi/oQQhBdCQOTM/0.jpg)](https://www.youtube.com/watch?v=oQQhBdCQOTM)
   
 [![Wifi 'Jammer' Device V1.1 | Setup Tutorial](https://img.youtube.com/vi/r5aoV5AolNo/0.jpg)](https://www.youtube.com/watch?v=r5aoV5AolNo)
