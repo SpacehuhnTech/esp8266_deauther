@@ -15,7 +15,7 @@
 
 // Settings //
 
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 #define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
@@ -29,8 +29,8 @@
   #include "SH1106.h"
 
   //create display(Adr, SDA-pin, SCL-pin)
-  SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
-  //SH1106 display(0x3c, 5, 4);
+  //SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
+  SH1106 display(0x3c, 5, 4);
   
   //button pins
   #define upBtn 12 //GPIO 12 = D6
@@ -146,59 +146,57 @@ void stopWifi() {
 
 void loadIndexHTML() {
   if(warning){
-    sendFile(200, "text/html", data_indexHTML, sizeof(data_indexHTML));
+    sendSPIFFSFile("/index.html", "text/html");
   }else{
-    sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
+    sendSPIFFSFile("/apscan.html", "text/html");
   }
 }
 void loadAPScanHTML() {
   warning = false;
-  sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
+  sendSPIFFSFile("/apscan.html", "text/html");
 }
 void loadStationsHTML() {
-  sendFile(200, "text/html", data_stationsHTML, sizeof(data_stationsHTML));
+  sendSPIFFSFile("/stations.html", "text/html");
 }
 void loadAttackHTML() {
-  sendFile(200, "text/html", data_attackHTML, sizeof(data_attackHTML));
+  sendSPIFFSFile("/attack.html", "text/html");
 }
 void loadSettingsHTML() {
-  sendFile(200, "text/html", data_settingsHTML, sizeof(data_settingsHTML));
+  sendSPIFFSFile("/settings.html", "text/html");
 }
 void load404() {
-  sendFile(200, "text/html", data_errorHTML, sizeof(data_errorHTML));
+  sendSPIFFSFile("/error.html", "text/html");
 }
 void loadInfoHTML(){
-  sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
+  sendSPIFFSFile("/info.html", "text/html");
 }
 void loadLicense(){
-  sendFile(200, "text/plain", data_license, sizeof(data_license));
+  sendSPIFFSFile("/license", "text/plain");
 }
 
 void loadFunctionsJS() {
-  sendFile(200, "text/javascript", data_js_functionsJS, sizeof(data_js_functionsJS));
+  sendSPIFFSFile("/js/functions.js", "text/javascript");
 }
 void loadAPScanJS() {
-  sendFile(200, "text/javascript", data_js_apscanJS, sizeof(data_js_apscanJS));
+  sendSPIFFSFile("/js/apscan.js", "text/javascript");
 }
 void loadStationsJS() {
-  sendFile(200, "text/javascript", data_js_stationsJS, sizeof(data_js_stationsJS));
+  sendSPIFFSFile("/js/stations.js", "text/javascript");
 }
 void loadAttackJS() {
   attack.ssidChange = true;
-  sendFile(200, "text/javascript", data_js_attackJS, sizeof(data_js_attackJS));
+  sendSPIFFSFile("/js/attack.js", "text/javascript");
 }
 void loadSettingsJS() {
-  sendFile(200, "text/javascript", data_js_settingsJS, sizeof(data_js_settingsJS));
+  sendSPIFFSFile("/js/settings.js", "text/javascript");
 }
 
 void loadStyle() {
-  sendFile(200, "text/css;charset=UTF-8", data_styleCSS, sizeof(data_styleCSS));
+  sendSPIFFSFile("/style.css", "text/css;charset=UTF-8");
 }
 
 void loadLog() {
-  File logFile = SPIFFS.open("/log.txt", "r");
-  server.streamFile(logFile, "text/plain");
-  logFile.close();
+  sendSPIFFSFile("/log.txt", "text/plain");
 }
 
 void startWiFi(bool start) {
