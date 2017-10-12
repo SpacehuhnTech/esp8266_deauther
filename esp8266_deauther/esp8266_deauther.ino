@@ -15,7 +15,7 @@
 
 // Settings //
 
-#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 #define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
@@ -29,8 +29,8 @@
   #include "SH1106.h"
 
   //create display(Adr, SDA-pin, SCL-pin)
-  //SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
-  SH1106 display(0x3c, 5, 4);
+  SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
+  //SH1106 display(0x3c, 5, 4);
   
   //button pins
   #define upBtn 12 //GPIO 12 = D6
@@ -144,59 +144,9 @@ void stopWifi() {
   wifiMode = "OFF";
 }
 
-void loadIndexHTML() {
-  if(warning){
-    sendSPIFFSFile("/index.html", "text/html");
-  }else{
-    sendSPIFFSFile("/apscan.html", "text/html");
-  }
-}
-void loadAPScanHTML() {
-  warning = false;
-  sendSPIFFSFile("/apscan.html", "text/html");
-}
-void loadStationsHTML() {
-  sendSPIFFSFile("/stations.html", "text/html");
-}
-void loadAttackHTML() {
-  sendSPIFFSFile("/attack.html", "text/html");
-}
-void loadSettingsHTML() {
-  sendSPIFFSFile("/settings.html", "text/html");
-}
 void load404() {
+  if(loadFromFlash(server.uri())) return;
   sendSPIFFSFile("/error.html", "text/html");
-}
-void loadInfoHTML(){
-  sendSPIFFSFile("/info.html", "text/html");
-}
-void loadLicense(){
-  sendSPIFFSFile("/license", "text/plain");
-}
-
-void loadFunctionsJS() {
-  sendSPIFFSFile("/js/functions.js", "text/javascript");
-}
-void loadAPScanJS() {
-  sendSPIFFSFile("/js/apscan.js", "text/javascript");
-}
-void loadStationsJS() {
-  sendSPIFFSFile("/js/stations.js", "text/javascript");
-}
-void loadAttackJS() {
-  attack.ssidChange = true;
-  sendSPIFFSFile("/js/attack.js", "text/javascript");
-}
-void loadSettingsJS() {
-  sendSPIFFSFile("/js/settings.js", "text/javascript");
-}
-
-void loadStyle() {
-  sendSPIFFSFile("/style.css", "text/css;charset=UTF-8");
-}
-
-void loadLog() {
-  sendSPIFFSFile("/log.txt", "text/plain");
 }
 
 void startWiFi(bool start) {
@@ -516,27 +466,8 @@ void setup() {
 
   /* ========== Web Server ========== */
 
-  /* HTML */
+  /* HTML, css, js, json, juste serve everything on the flash */
   server.onNotFound(load404);
-
-  server.on("/", loadIndexHTML);
-  server.on("/index.html", loadIndexHTML);
-  server.on("/apscan.html", loadAPScanHTML);
-  server.on("/stations.html", loadStationsHTML);
-  server.on("/attack.html", loadAttackHTML);
-  server.on("/settings.html", loadSettingsHTML);
-  server.on("/info.html", loadInfoHTML);
-  server.on("/license", loadLicense);
-
-  /* JS */
-  server.on("/js/apscan.js", loadAPScanJS);
-  server.on("/js/stations.js", loadStationsJS);
-  server.on("/js/attack.js", loadAttackJS);
-  server.on("/js/settings.js", loadSettingsJS);
-  server.on("/js/functions.js", loadFunctionsJS);
-
-  /* CSS */
-  server.on ("/style.css", loadStyle);
 
   /* JSON */
   server.on("/APScanResults.json", sendAPResults);
@@ -566,7 +497,6 @@ void setup() {
   server.on("/restartESP.json", restartESP);
   server.on("/addClient.json",addClient);
   server.on("/enableRandom.json",enableRandom);
-  server.on("/log.txt",loadLog);
 
   server.begin();
 
