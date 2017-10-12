@@ -27,7 +27,7 @@ function getData() {
 	try {
         res = JSON.parse(responseText);
     } catch(e) {
-        showMessage("Error: reset the settings.");
+        showMessage(_("Error: reset the settings."));
 		return;
     }
 	ssid.value = res.ssid;
@@ -52,7 +52,7 @@ function getData() {
 }
 
 function saveSettings() {
-  saved.innerHTML = "saving...";
+  saved.innerHTML = _("saving...");
   var url = "settingsSave.json";
   url += "?ssid=" + ssid.value;
   url += "&ssidHidden=" + ssidHidden.checked;
@@ -76,9 +76,9 @@ function saveSettings() {
   getResponse(url, function(responseText) {
     if (responseText == "true") {
       getData();
-      saved.innerHTML = "saved";
+      saved.innerHTML = _("saved");
     }
-    else showMessage("response error settingsSave.json");
+    else showMessage(_("response error settingsSave.json"));
   });
 }
 
@@ -86,9 +86,9 @@ function resetSettings() {
   getResponse("settingsReset.json", function(responseText) {
     if (responseText == "true") {
       getData();
-      saved.innerHTML = "saved";
+      saved.innerHTML = _("saved");
     }
-    else showMessage("response error settingsReset.json");
+    else showMessage(_("response error settingsReset.json"));
   });
 }
 

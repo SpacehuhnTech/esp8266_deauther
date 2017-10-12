@@ -37,7 +37,7 @@ function getResults() {
       res = JSON.parse(responseText);
     } catch(e) {
       // wut
-      showMessage("JSON Parsing failed :-(", 2500);
+      showMessage(_("JSON Parsing failed :-("), 2500);
       return;
     }
     // TODO: more sanity checks on res && res.aps
@@ -50,7 +50,7 @@ function getResults() {
 		
     var tr = '';
     if (res.aps.length > 0) {
-		tr += '<tr><th>Ch</th><th>SSID</th><th> </th><th>RSSI</th><th>Select</th></tr>';
+		tr += '<tr><th>Ch</th><th>' + _('SSID') + '</th><th> </th><th>' + _('RSSI') + '</th><th>' + _('Select') + '</th></tr>';
 	}	
 	
     for (var i = 0; i < res.aps.length; i++) {
@@ -69,10 +69,10 @@ function getResults() {
 	  tr += '<td><div class="meter_background"> <div class="meter_forground '+_color+'" style="width: '+_width+'%;"><div class="meter_value">' + res.aps[i].r + '</div></div> </div></td>';
 
       if (res.aps[i].se) {
-        tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">deselect</button></td>';
+        tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">' + _('deselect') + '</button></td>';
         apMAC.innerHTML = res.aps[i].m;
       }
-      else tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">select</button></td>';
+      else tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">' + _('select') + '</button></td>';
       tr += '</tr>';
     }
     table.innerHTML = tr;
@@ -83,7 +83,7 @@ function scan() {
   toggleScan(false);
   getResponse("APScan.json", function(responseText) {
     if (responseText == "true") getResults();
-    else showMessage("response error APScan.json");
+    else showMessage(_("response error APScan.json"));
 	toggleScan(true);
   });
 }
@@ -91,7 +91,7 @@ function scan() {
 function select(num) {
   getResponse("APSelect.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else showMessage("response error APSelect.json");
+    else showMessage(_("response error APSelect.json"));
   });
 }
 

@@ -12,11 +12,11 @@
 	</head>
 	<body>
 		<nav>
-			<a href="apscan.html">APs</a>
-			<a href="stations.html">Stations</a>
-			<a href="attack.html">Attacks</a>
-			<a href="settings.html">Settings</a>
-			<a class="right" href="info.html">Info</a>
+			<a href="apscan.html">{APs}</a>
+			<a href="stations.html">{Stations}</a>
+			<a href="attack.html">{Attacks}</a>
+			<a href="settings.html">{Settings}</a>
+			<a class="right" href="info.html">{Info}</a>
 		</nav>
 		
 		<div class="container">
@@ -25,12 +25,12 @@
 					
 					<div id="error" class="hide"></div>
 					
-					<h1 class="header">Attacks</h1>
+					<h1 class="header">{h1}</h1>
 					
-					<p class="bold">Selected AP(s): <button onclick='cloneSelected()'>clone</button></p>
+					<p class="bold">{p1} <button onclick='cloneSelected()'>{button1}</button></p>
 					<ul id="selectedAPs"></ul>
 					
-					<p class="bold">Selected Station(s):</p>
+					<p class="bold">{p2}</p>
 					<ul id="selectedClients"></ul>
 					
 					<table></table>
@@ -39,12 +39,12 @@
 						<input type="number" id="randomIntrvl" value="5" min="1" max="65000"/>s
 					</label>
 					
-					<button class="right" id="randomBtn" onclick="random()">Enable Random</button>
+					<button class="right" id="randomBtn" onclick="random()">{button2}</button>
 					
 					<p class="clear">
 						<br />
-						<span class="red">INFO: </span><span class="bold">You may lose connection when starting the attack.</span><br />
-						Change the channel in the settings to the same of the selected AP to prevent this.
+						<span class="red">{p3} </span><span class="bold">{p4}</span><br />
+						{p5}
 					</p>
 					
 					<hr />
@@ -53,16 +53,16 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="ssid">SSID</label>
+					<label for="ssid">{label1}</label>
 				</div>
 				<div class="col-6">
-					<input type="text" id="ssid" minlength="1" maxlength="32" placeholder="SSID" />
+					<input type="text" id="ssid" minlength="1" maxlength="32" placeholder="{placeholder1}" />
 				</div>
 			</div>
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="num">Number of Clones</label>
+					<label for="num">{label2}</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="num" min="0" max="48" value="0" />
@@ -71,7 +71,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="enc">Encrypted</label>
+					<label for="enc">{label3}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" id="enc" name="enc" />
@@ -81,34 +81,34 @@
 			<div class="row">
 				<div class="col-12">
 					
-					<button class="button-primary col-4" onclick="addSSID()">add</button>
+					<button class="button-primary col-4" onclick="addSSID()">{button3}</button>
 					
 					<hr />
 					
-					<p class="left">SSIDs: <span id="ssidCounter">0/48</span></p>
+					<p class="left">{p6} <span id="ssidCounter">0/48</span></p>
 					
 					<div class="right">
-						<button class="red" onclick="clearSSID()">clear</button> 
-						<button onclick="randomSSID()">random</button> 
+						<button class="red" onclick="clearSSID()">{button4}</button> 
+						<button onclick="randomSSID()">{button5}</button> 
 					</div>
 
 					<table></table>
 					
-					<button class="marginNull red" onclick="resetSSID()">reset</button> 
-					<button class="marginNull button-primary right" onclick="saveSSID()">save</button> 
+					<button class="marginNull red" onclick="resetSSID()">{button6}</button> 
+					<button class="marginNull button-primary right" onclick="saveSSID()">{button7}</button> 
 					
-					<p class="small" id="saved">saved</p>
+					<p class="small" id="saved">{p7}</p>
 					
 					<p>
 						<br />
-						<span class="bold">Deauth [deauthentication attack]:</span><br />
-						Constantly sends deauthentication and disassociation frames to the selected station(s) and access point(s).<br />
+						<span class="bold">{p8}</span><br />
+						{p9}<br />
 						<br />
-						<span class="bold">Beacon [beacon flooding]:</span><br />
-						Constantly broadcasts beacon frames to advertise all SSIDs in the list below.<br />
+						<span class="bold">{pa}</span><br />
+						{pb}<br />
 						<br />
-						<span class="bold">Probe-Request [probe request flooding]:</span><br />
-						Constantly broadcasts probe request frames with all SSIDs in the list below.
+						<span class="bold">{pc}</span><br />
+						{pd}
 					</p>
 					
 					<div id="copyright">
@@ -116,11 +116,10 @@
 						Copyright (c) 2017 Stefan Kremser<br />
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
 					</div>
-					
-					<script src="js/attack.js"></script>
-					
 				</div>
 			</div>
 		</div>
+        <script src="js/l10n.js" async defer></script>
+		<script src="js/attack.js"></script>
 	</body>
 </html>

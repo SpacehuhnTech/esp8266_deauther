@@ -172,6 +172,11 @@ If no port shows up you may have to reinstall the drivers.
 
 **18** Upload!
 
+**19** Install the [ESP8266 Sketh Data uploader](https://github.com/esp8266/arduino-esp8266fs-plugin) plugin, your mileage may vary depending on your version of Arduino IDE.
+
+**20** Restart Arduino IDE, reopen the project, and from the "tools" menu, choose "ESP8266 Sketch Data Upload".
+
+
 **Note:** If you use a 512kb version of the ESP8266, you will need to comment out a part of the mac vendor list in data.h. Otherwise it will use too much memory to fit on 512kb.  
 
 **Your ESP8266 Deauther is now ready!**
