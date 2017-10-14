@@ -149,7 +149,6 @@ function add(id){
 
 getResponse("ClientScanTime.json", function(responseText) {
   scanTime.value = responseText;
+  getResults();
+  toggleBtn(false);
 });
-
-getResults();
-toggleBtn(false);

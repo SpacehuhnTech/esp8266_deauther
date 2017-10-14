@@ -181,6 +181,16 @@ If no port shows up you may have to reinstall the drivers.
 
 **Your ESP8266 Deauther is now ready!**
 
+
+### Updating the MAC vendor list
+The utils folder includes a python script for downloading the latest ["manuf"](https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf) file from Whireshark and convert it to the format understood by esp8266_deauther.
+
+The usage of the script is quite simple:  `update_manuf.py [-h] [-o OUTPUT] [-u URL]` , e.g:
+```
+cd utils
+python update_manuf.py -o ../esp8266_deauther/oui.h
+```
+
 ### Adding an OLED display
 
 ![image of the esp8266 deauther with an OLED and three buttons](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/esp8266_with_oled.jpg)
