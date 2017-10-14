@@ -33,7 +33,7 @@ function getResponse(adr, callback, timeoutCallback, timeout, method){
   
 	if(timeoutCallback === undefined) {
 		timeoutCallback = function(){
-			showMessage("Timeout loading "+adr);
+			showMessage(_("Timeout loading") +" "+adr);
 		};
 	}
 	if(timeout === undefined) timeout = 8000; 
@@ -53,10 +53,14 @@ function getResponse(adr, callback, timeoutCallback, timeout, method){
 	xmlhttp.ontimeout = timeoutCallback;
     
     xmlhttp.onabort = function(e) {
-      showMessage("ABORT "+adr);
+      showMessage(_("ABORT")+" "+adr);
     };
     xmlhttp.onerror = function(e) {
-      showMessage("ERROR loading "+adr +" :: "+ this.statusText);
+      showMessage(_("ERROR loading")+" "+adr +" :: "+ this.statusText);
     };
     
+}
+
+function _(l10nid) {
+   return l10n.jsStrings[l10nid];
 }

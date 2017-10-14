@@ -12,11 +12,11 @@
 	</head>
 	<body>
 		<nav>
-			<a href="apscan.html">APs</a>
-			<a href="stations.html">Stations</a>
-			<a href="attack.html">Attacks</a>
-			<a href="settings.html">Settings</a>
-			<a class="right" href="info.html">Info</a>
+			<a href="apscan.html">{APs}</a>
+			<a href="stations.html">{Stations}</a>
+			<a href="attack.html">{Attacks}</a>
+			<a href="settings.html">{Settings}</a>
+			<a class="right" href="info.html">{Info}</a>
 		</nav>
 		
 		<div class="container">
@@ -25,39 +25,39 @@
 					
 					<div id="error" class="hide"></div>
 				
-					<h1 class="header">Scan for Wi-Fi Stations</h1>
+					<h1 class="header">{h1}</h1>
 			
-					<label>Scan time:
+					<label>{label1}
 						<input type="number" id="scanTime" value="10">s
 					</label>
 					
-					<button onclick="scan()" id="startScan" class="right button-primary">start</button>
+					<button onclick="scan()" id="startScan" class="right button-primary">{button1}</button>
 					
-					<a id="clientScanStatus"><br />scanning...</a>
+					<a id="clientScanStatus"><br />{a1}</a>
 					
-					<p class="red">The access point will be unavailable while scanning and you may have to reconnect!</p>
+					<p class="red">{p1}</p>
 					
 					<p>
-						Stations found: <span id="clientsFound">0</span><br />
+						{p2} <span id="clientsFound">0</span><br />
 						<br />
-						<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
-						<button class="marginNull button-primary right" onclick="select(-1)">select all</button><br />
+						<button class="marginNull button-primary left" onclick="select(-2)">{button2}</button>
+						<button class="marginNull button-primary right" onclick="select(-1)">{button3}</button><br />
 					</p>
 					
 					<table></table>
 					
 					<p class="block bold" >
-						Saved stations: <span id="clientNames"></span>
+						{p3} <span id="clientNames"></span>
 					</p>
 					
 					<table id="nameList"></table>
 					
-					<button class="red left" onclick="clearNameList()">clear</button>
+					<button class="red left" onclick="clearNameList()">{button4}</button>
 					
 					<p>
 						<br class="clear" />
 						<br />
-						Add station:
+						{p4}
 					</p>
 					
 				</div>
@@ -65,13 +65,13 @@
 			
 			<div class="row">
 				<div class="col-4">
-					<label>MAC <input type="text" placeholder="AA:BB:CC:DD:EE:FF" id="cMac" /></label>
+					<label>{label2} <input type="text" placeholder="{placeholder1}" id="cMac" /></label>
 				</div>
 				<div class="col-4">
-					<label>Name <input type="text" placeholder="EXAMPLE" id="cName" /></label>
+					<label>{label3} <input type="text" placeholder="{placeholder2}" id="cName" /></label>
 				</div>
 				<div class="col-4">
-					<button class="button-primary" style="width: 100%" onclick="addClient()">add</button>
+					<button class="button-primary" style="width: 100%" onclick="addClient()">{button5}</button>
 				</div>
 			</div>
 			
@@ -84,9 +84,8 @@
 					</div>
 				</div>
 			</div>
-			
-			<script src="js/stations.js"></script>
-			
 		</div>
+        <script src="js/l10n.js" async defer></script>
+        <script src="js/stations.js"></script>
 	</body>
 </html>

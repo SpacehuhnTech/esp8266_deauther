@@ -119,6 +119,19 @@ li{
 	margin: 4px 0;
 }
 
+/* language selector */
+.flag.selected {
+    color: black;
+}
+.flag {
+    line-height: 1.5em;
+    padding: 0.2em 0.5em;
+    margin: 0;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
 /* Meter */
 .meter_background{
 	background: #42464D;

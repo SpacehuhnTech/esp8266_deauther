@@ -12,11 +12,11 @@
 	</head>
 	<body>
 		<nav>
-			<a href="apscan.html">APs</a>
-			<a href="stations.html">Stations</a>
-			<a href="attack.html">Attacks</a>
-			<a href="settings.html">Settings</a>
-			<a class="right" href="info.html">Info</a>
+			<a href="apscan.html">{APs}</a>
+			<a href="stations.html">{Stations}</a>
+			<a href="attack.html">{Attacks}</a>
+			<a href="settings.html">{Settings}</a>
+			<a class="right" href="info.html">{Info}</a>
 		</nav>
 		
 		<div class="container">
@@ -25,14 +25,37 @@
 					
 					<div id="error" class="hide"></div>
 					
-					<h1 class="header">Settings</h1>
-					<h2>Wi-Fi</h2>
+					<h1 class="header">{h1}</h1>
+					<h2>{locale}</h2>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-12">
+					<span class="flag" data-lang="en">{english}</span>
+                    
+					<span class="flag" data-lang="fr">{french}</span>
+					
+					<span class="flag" data-lang="zh-CN">{chinese}</span>
+					<!--
+					<span class="flag" data-lang="de">{german}</span>
+					<span class="flag" data-lang="es">{spanish}</span>
+					<span class="flag" data-lang="it">{italian}</span>
+					<span class="flag" data-lang="kl">{klingon}</span>
+					-->
+					
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					<h2>{h2}</h2>
 				</div>
 			</div>
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="ssid" class="labelFix">SSID</label>
+					<label for="ssid" class="labelFix">{label01}</label>
 				</div>
 				<div class="col-6">
 					<input type="text" id="ssid" minlength="1" maxlength="32">
@@ -41,7 +64,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="password" class="labelFix">Password (<span class="red">min.8 chars</span>)</label>
+					<label for="password" class="labelFix">{label02} (<span class="red">{label03}</span>)</label>
 				</div>
 				<div class="col-6">
 					<input type="text" id="password" minlength="8" maxlength="32">
@@ -50,7 +73,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="ssidHidden">Hide SSID (<span class="red">be careful with this setting!</span>)</label>
+					<label for="ssidHidden">{label04} (<span class="red">{label05}</span>)</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" name="ssidHidden" id="ssidHidden" value="false">
@@ -59,7 +82,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="apChannel" class="labelFix">Channel</label>
+					<label for="apChannel" class="labelFix">{label06}</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="apChannel" min="1" max="14">
@@ -68,7 +91,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="apChannel" class="labelFix">MAC</label>
+					<label for="apChannel" class="labelFix">{label07}</label>
 				</div>
 				<div class="col-6">
 					<input type="text" id="macAp" min="1" max="14">
@@ -77,7 +100,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="randMacAp" class="labelFix">Random MAC</label>
+					<label for="randMacAp" class="labelFix">{label08}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" name="randMacAp" id="randMacAp" value="false">
@@ -87,13 +110,13 @@
 			
 			<div class="row">
 				<div class="col-12">
-					<h2>AP Scan</h2>
+					<h2>{h3}</h2>
 				</div>
 			</div>
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="apScanHidden">Scan Hidden APs</label>
+					<label for="apScanHidden">{label09}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" name="apScanHidden" id="apScanHidden" value="false">
@@ -102,7 +125,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="multiAPs">Select multiple SSIDs</label>
+					<label for="multiAPs">{label10}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" name="multiAPs" id="multiAPs" value="false">
@@ -112,13 +135,13 @@
 			
 			<div class="row">
 				<div class="col-12">
-					<h2>Station Scan</h2>
+					<h2>{h4}</h2>
 				</div>
 			</div>
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="scanTime" class="labelFix">Default Scan Time</label>
+					<label for="scanTime" class="labelFix">{label11}</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="scanTime" min="1" max="255"> s
@@ -128,13 +151,13 @@
 			
 			<div class="row">
 				<div class="col-12">
-					<h2>Attack</h2>
+					<h2>{h5}</h2>
 				</div>
 			</div>
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="timeout" class="labelFix">Timeout (0 = no timeout)</label>
+					<label for="timeout" class="labelFix">{label12}</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="timeout" min="-1" max="65536"> s
@@ -143,7 +166,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="useLed">Use LED</label>
+					<label for="useLed">{label13}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" id="useLed" value="false">
@@ -152,7 +175,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="ledPin" class="labelFix">LED Pin</label>
+					<label for="ledPin" class="labelFix">{label14}</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="ledPin" min="0" max="18">
@@ -161,7 +184,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="beaconInterval">1s Beacon Interval (default: 100ms)</label>
+					<label for="beaconInterval">{label15}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" id="beaconInterval" value="false">
@@ -170,7 +193,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="deauthReason" class="labelFix">Deauth Reason-Code</label>
+					<label for="deauthReason" class="labelFix">{label16}e</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="deauthReason" min="1" max="45">
@@ -179,7 +202,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="packetRate" class="labelFix">Packetrate (<span class="red">may cause instability!</span>)</label>
+					<label for="packetRate" class="labelFix">{label17} (<span class="red">{label18}</span>)</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="packetRate" min="1" max="50"> pkts/s
@@ -188,7 +211,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="multiAttacks">Enable Simultaneous Attacks</label>
+					<label for="multiAttacks">{label19}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" id="multiAttacks" value="false">
@@ -197,7 +220,7 @@
 			
 			<div class="row">
 				<div class="col-6">
-					<label for="macInterval" class="labelFix">MAC Change Interval (used for beacons & probes)</label>
+					<label for="macInterval" class="labelFix">{label20}</label>
 				</div>
 				<div class="col-6">
 					<input type="number" id="macInterval" min="0" max="65000">s
@@ -208,7 +231,7 @@
 			<!--
 			<div class="row">
 				<div class="col-6">
-					<label for="channelHop">Channel Hopping</label>
+					<label for="channelHop">{label21}</label>
 				</div>
 				<div class="col-6">
 					<input type="checkbox" name="channelHop" id="channelHop" value="false">
@@ -231,9 +254,10 @@
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
 					</div>
 						
-					<script src="js/settings.js"></script>
 				</div>
 			</div>
 		</div>
+        <script src="js/l10n.js" async defer></script>
+		<script src="js/settings.js"></script>
 	</body>
 </html>

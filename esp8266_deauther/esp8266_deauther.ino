@@ -144,61 +144,9 @@ void stopWifi() {
   wifiMode = "OFF";
 }
 
-void loadIndexHTML() {
-  if(warning){
-    sendFile(200, "text/html", data_indexHTML, sizeof(data_indexHTML));
-  }else{
-    sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
-  }
-}
-void loadAPScanHTML() {
-  warning = false;
-  sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
-}
-void loadStationsHTML() {
-  sendFile(200, "text/html", data_stationsHTML, sizeof(data_stationsHTML));
-}
-void loadAttackHTML() {
-  sendFile(200, "text/html", data_attackHTML, sizeof(data_attackHTML));
-}
-void loadSettingsHTML() {
-  sendFile(200, "text/html", data_settingsHTML, sizeof(data_settingsHTML));
-}
 void load404() {
-  sendFile(200, "text/html", data_errorHTML, sizeof(data_errorHTML));
-}
-void loadInfoHTML(){
-  sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
-}
-void loadLicense(){
-  sendFile(200, "text/plain", data_license, sizeof(data_license));
-}
-
-void loadFunctionsJS() {
-  sendFile(200, "text/javascript", data_js_functionsJS, sizeof(data_js_functionsJS));
-}
-void loadAPScanJS() {
-  sendFile(200, "text/javascript", data_js_apscanJS, sizeof(data_js_apscanJS));
-}
-void loadStationsJS() {
-  sendFile(200, "text/javascript", data_js_stationsJS, sizeof(data_js_stationsJS));
-}
-void loadAttackJS() {
-  attack.ssidChange = true;
-  sendFile(200, "text/javascript", data_js_attackJS, sizeof(data_js_attackJS));
-}
-void loadSettingsJS() {
-  sendFile(200, "text/javascript", data_js_settingsJS, sizeof(data_js_settingsJS));
-}
-
-void loadStyle() {
-  sendFile(200, "text/css;charset=UTF-8", data_styleCSS, sizeof(data_styleCSS));
-}
-
-void loadLog() {
-  File logFile = SPIFFS.open("/log.txt", "r");
-  server.streamFile(logFile, "text/plain");
-  logFile.close();
+  if(loadFromFlash(server.uri())) return;
+  sendSPIFFSFile("/error.html", "text/html");
 }
 
 void startWiFi(bool start) {
@@ -518,27 +466,8 @@ void setup() {
 
   /* ========== Web Server ========== */
 
-  /* HTML */
+  /* HTML, css, js, json, juste serve everything on the flash */
   server.onNotFound(load404);
-
-  server.on("/", loadIndexHTML);
-  server.on("/index.html", loadIndexHTML);
-  server.on("/apscan.html", loadAPScanHTML);
-  server.on("/stations.html", loadStationsHTML);
-  server.on("/attack.html", loadAttackHTML);
-  server.on("/settings.html", loadSettingsHTML);
-  server.on("/info.html", loadInfoHTML);
-  server.on("/license", loadLicense);
-
-  /* JS */
-  server.on("/js/apscan.js", loadAPScanJS);
-  server.on("/js/stations.js", loadStationsJS);
-  server.on("/js/attack.js", loadAttackJS);
-  server.on("/js/settings.js", loadSettingsJS);
-  server.on("/js/functions.js", loadFunctionsJS);
-
-  /* CSS */
-  server.on ("/style.css", loadStyle);
 
   /* JSON */
   server.on("/APScanResults.json", sendAPResults);
@@ -568,7 +497,6 @@ void setup() {
   server.on("/restartESP.json", restartESP);
   server.on("/addClient.json",addClient);
   server.on("/enableRandom.json",enableRandom);
-  server.on("/log.txt",loadLog);
 
   server.begin();
 

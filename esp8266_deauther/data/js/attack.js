@@ -19,21 +19,21 @@ function getResults() {
       res = JSON.parse(responseText);
     } catch(e) {
       // wut
-      showMessage("JSON Parsing failed :-(", 2500);
+      showMessage(_("JSON Parsing failed :-("), 2500);
       return;
     }
     // TODO: more sanity checks on res && res.aps
     var aps = "";
     var clients = "";
-    var tr = "<tr><th>Attack</th><th>Status</th><th>Start/Stop</th></tr>";
+    var tr = "<tr><th>" + _('Attack') + "</th><th>" + _('Status') + "</th><th>" + _('Start/Stop') + "</th></tr>";
     for (var i = 0; i < res.aps.length; i++) aps += "<li>" + escapeHTML(res.aps[i]) + "</li>";
     for (var i = 0; i < res.clients.length; i++) clients += "<li>" + escapeHTML(res.clients[i]) + "</li>";
 
     selectedAPs.innerHTML = aps;
     selectedClients.innerHTML = clients;
 	
-	if(res.randomMode == 1) randomBtn.innerHTML = "Disable Random";
-	else randomBtn.innerHTML = "Enable Random";
+	if(res.randomMode == 1) randomBtn.innerHTML = _("Disable Random");
+	else randomBtn.innerHTML = _("Enable Random");
 
     for (var i = 0; i < res.attacks.length; i++) {
       if (res.attacks[i].running) tr += "<tr class='selected'>";
@@ -43,7 +43,7 @@ function getResults() {
       if (res.attacks[i].status == "ready") tr += "<td class='green status' id='status"+i+"'>" + res.attacks[i].status + "</td>";
       else tr += "<td class='red status' id='status"+i+"'>" + res.attacks[i].status + "</td>";
       if (res.attacks[i].running) tr += "<td><button class='select' onclick='startStop(" + i + ")'>stop</button></td>";
-      else tr += "<td><button class='select' onclick='startStop(" + i + ")'>start</button></td>";
+      else tr += "<td><button class='select' onclick='startStop(" + i + ")'>" + _('start') + "</button></td>";
 
       tr += "</tr>";
     }
@@ -53,7 +53,7 @@ function getResults() {
 		data = res.ssid;
 		ssidCounter.innerHTML = data.length + "/48";
 		
-		var tr = "<tr><th>Name</th><th></th><th>Del.</th></tr>";
+		var tr = "<tr><th>"+ _('Name') + "</th><th></th><th>" + _('Del.') + "</th></tr>";
 		for (var i = 0; i < data.length; i++) {
 		  tr += "<tr>";
 		  tr += "<td>" + escapeHTML(data[i][0]) + "</td>";
@@ -67,7 +67,7 @@ function getResults() {
 
   }, function() {
     clearInterval(resultInterval);
-    showMessage("error loading attackInfo.json");
+    showMessage(_("error loading attackInfo.json"));
   });
 }
 
@@ -75,7 +75,7 @@ function startStop(num) {
   getResponse("attackStart.json?num=" + num, function(responseText) {
 	getE("status"+num).innerHTML = "loading";
     if (responseText == "true") getResults();
-    else showMessage("response error attackStart.json");
+    else showMessage(_("response error attackStart.json"));
   });
 }
 
@@ -83,7 +83,7 @@ function addSSID() {
 	
 	var _ssidName = ssid.value;
 	if(_ssidName.length > 0){
-		if(data.length >= 64) showMessage("SSID list full :(", 2500);
+		if(data.length >= 64) showMessage(_("SSID list full :("), 2500);
 		else{
 			saved.innerHTML = "";
 			getResponse("addSSID.json?ssid=" + _ssidName + "&num="+num.value + "&enc=" + enc.checked, getResults);
