@@ -15,7 +15,7 @@
 
 // Settings //
 
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 #define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
@@ -27,11 +27,11 @@
   //include the library you need
   #include "SSD1306.h"
   #include "SH1106.h"
-
-  //create display(Adr, SDA-pin, SCL-pin)
-  SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
-  //SH1106 display(0x3c, 5, 4);
   
+  //create display(Adr, SDA-pin, SCL-pin)
+  //SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
+  SH1106 display(0x3c, 5, 4);
+  #include "screensaver.h"
   //button pins
   #define upBtn 12 //GPIO 12 = D6
   #define downBtn 13 //GPIO 13 = D7
@@ -637,8 +637,16 @@ void loop() {
       display.clear();
       display.display();
     }
+    screensavertimer = 0;
+    lastactivity = millis();
+  } else {
+    screensavertimer = millis() - lastactivity;
   }
-  drawInterface();
+  if(screensavertimer>saveeafter) {
+    drawScreenSaver();
+  } else {
+    drawInterface();
+  }
 #endif
 
 }
