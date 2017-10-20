@@ -185,8 +185,8 @@ One for the 0.96" SSD1306 OLED and one for the 1.3" SH1106 OLED.
 
 | Display | ESP8266 |
 | ------- | ------- |
-| SDA     | 5       |
-| SCL     | 4       |
+| SDA     | 5 (D1)  |
+| SCL     | 4 (D2)  |
 | GND     | GND     |
 | VCC     | VCC (3.3V) |
 
