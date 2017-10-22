@@ -1,4 +1,6 @@
 # ESP8266 Deauther
+
+[![Join the chat at https://gitter.im/esp8266_deauther/Lobby](https://badges.gitter.im/esp8266_deauther/Lobby.svg)](https://gitter.im/esp8266_deauther/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 Deauthentication attack and other exploits using an ESP8266!
 
 <img width="100%" alt="esp8266 deauther with smartphone" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_and_deauther.jpg">
