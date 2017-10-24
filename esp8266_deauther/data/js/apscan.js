@@ -17,16 +17,18 @@ function compare(a, b) {
   return 0;
 }
 
-function getEncryption(num) {
+function getStatus(enc, hid) {
   /*
-  if (num == 8) return "WPA*";
-  else if (num == 4) return "WPA2";
-  else if (num == 2) return "WPA";
-  else if (num == 7) return "none";
-  else if (num == 5) return "WEP";
+  if (enc == 8) return "WPA*";
+  else if (enc == 4) return "WPA2";
+  else if (enc == 2) return "WPA";
+  else if (enc == 7) return "none";
+  else if (enc == 5) return "WEP";
   */
-	if (num == 7) return " ";
-	else return "&#128274;";
+	var buff = "";
+	if (enc != 7) buff += "&#128274;  ";
+	if (hid == 1) buff += "&#128123;  ";
+	return buff;
 }
 
 function getResults() {
@@ -59,7 +61,7 @@ function getResults() {
       else tr += '<tr>';
       tr += '<td>' + res.aps[i].c + '</td>';
       tr += '<td>' + escapeHTML(res.aps[i].ss) + '</td>';
-      tr += '<td>' + getEncryption(res.aps[i].e) + '</td>';
+      tr += '<td>' + getStatus(res.aps[i].e, res.aps[i].h) + '</td>';
 	  //tr += '<td>' + res.aps[i].r + ' <meter value="' + res.aps[i].r + '" max="-30" min="-100" low="-80" high="-60" optimum="-50"></meter></td>';
 	  var _width = res.aps[i].r + 130;
 	  var _color;
