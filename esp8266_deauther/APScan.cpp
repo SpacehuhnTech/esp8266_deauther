@@ -10,10 +10,17 @@ bool APScan::start() {
     Serial.println("MAC - Ch - RSSI - Encrypt. - SSID - Hidden");// - Vendor");
   }
   aps._clear();
-  for (int i = 0; i < maxAPScanResults; i++) selected[i] = false;
+  results = 0;
+  for (int i = 0; i < maxAPScanResults; i++){
+    selected[i] = false;
+    String("").toCharArray(names[i], 33);
+  }
   results = WiFi.scanNetworks(false, settings.apScanHidden); // lets scanNetworks return hidden APs. (async = false & show_hidden = true)
+  if(results > maxAPScanResults) results = maxAPScanResults;
 
-  for (int i = 0; i < results && i < maxAPScanResults; i++) {
+  if (debug) Serial.println("Scan results: "+(String)results);
+  
+  for (int i = 0; i < results; i++) {
     Mac _ap;
     _ap.set(WiFi.BSSID(i)[0], WiFi.BSSID(i)[1], WiFi.BSSID(i)[2], WiFi.BSSID(i)[3], WiFi.BSSID(i)[4], WiFi.BSSID(i)[5]);
     aps.add(_ap);
@@ -112,9 +119,6 @@ String APScan::getAPEncryption(int num) {
 String APScan::getAPMac(int num) {
   return aps._get(num).toString();
 }
-bool APScan::getAPSelected(int num) {
-  return selected[num];
-}
 bool APScan::isHidden(int num) {
   return hidden[num];
 }
@@ -178,7 +182,7 @@ void APScan::sendResults() {
     json += "\"r\":" + (String)getAPRSSI(i) + ",";
     json += "\"e\":" + (String)encryption[i] + ",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
-    json += "\"se\":" + (String)getAPSelected(i);
+    json += "\"se\":" + (String)isSelected(i);
     json += "}";
     if ((i != results - 1) && (i != maxAPScanResults - 1)) json += ",";
 
@@ -211,7 +215,7 @@ String APScan::getResultsJSON() {
     json += "\"r\":" + (String)getAPRSSI(i) + ",";
     json += "\"e\":" + (String)encryption[i] + ",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
-    json += "\"se\":" + (String)getAPSelected(i);
+    json += "\"se\":" + (String)isSelected(i);
     json += "}";
     if ((i != results - 1) && (i != maxAPScanResults - 1)) json += ",";
   }

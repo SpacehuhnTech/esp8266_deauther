@@ -5,22 +5,28 @@
   ===========================================
 */
 
+// Including some libraries we need //
 #include <Arduino.h>
 
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <FS.h>
 
-#define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
-//#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
+// Settings //
+
+//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
+#define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
+
+
+// Including everything for the OLED //
 #ifdef USE_DISPLAY
   #include <Wire.h>
   
   //include the library you need
   #include "SSD1306.h"
-  //#include "SH1106.h"
+  #include "SH1106.h"
 
   //create display(Adr, SDA-pin, SCL-pin)
   SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
@@ -36,23 +42,20 @@
   #define fontSize 8
   #define rowsPerSite 8
   
-  int rows = 3;
+  int rows = 4;
   int curRow = 0;
   int sites = 1;
   int curSite = 1;
   int lrow = 0;
+
+  int menu = 0; //0 = Main Menu, 1 = APs, 2 = Stations, 3 = Attacks, 4 = Monitor
 
   bool canBtnPress = true;
   int buttonPressed = 0; //0 = UP, 1 = DOWN, 2 = SELECT, 3 = DISPLAY
   bool displayOn = true;
 #endif
 
-String wifiMode = "";
-String attackMode = "";
-String scanMode = "SCAN";
-
-bool warning = true;
-
+// More Includes! //
 extern "C" {
   #include "user_interface.h"
 }
@@ -72,6 +75,14 @@ ESP8266WebServer server(80);
 const bool debug = true;
 /* ========== DEBUG ========== */
 
+// Run-Time Variables //
+String wifiMode = "";
+String attackMode_deauth = "";
+String attackMode_beacon = "";
+String scanMode = "SCAN";
+
+bool warning = true;
+
 NameList nameList;
 
 APScan apScan;
@@ -87,16 +98,18 @@ void sniffer(uint8_t *buf, uint16_t len) {
 #ifdef USE_DISPLAY
 void drawInterface() {
   if(displayOn){
+    
     display.clear();
 
     int _lrow = 0;
     for (int i = curSite * rowsPerSite - rowsPerSite; i < curSite * rowsPerSite; i++) {
-      if (i == 0) display.drawString(3, i * fontSize, " -->  WiFi " + wifiMode);
-      else if (i == 1) display.drawString(3, i * fontSize, " -->  " + scanMode);
-      else if (i == 2) display.drawString(3, i * fontSize, " -->  " + attackMode + " attack");
-      else if (i - 3 <= apScan.results) {
-        display.drawString(3, _lrow * fontSize, apScan.getAPName(i - 3));
-        if (apScan.getAPSelected(i - 3)) {
+      if (i == 0) display.drawString(3, i * fontSize, "-> WiFi " + wifiMode);
+      else if (i == 1) display.drawString(3, i * fontSize, "-> " + scanMode);
+      else if (i == 2) display.drawString(3, i * fontSize, "-> " + attackMode_deauth + " deauth");
+      else if (i == 3) display.drawString(3, i * fontSize, "-> " + attackMode_beacon + " beacon flood");
+      else if (i - 4 < apScan.results) {
+        display.drawString(4, _lrow * fontSize, apScan.getAPName(i - 4));
+        if (apScan.isSelected(i - 4)) {
           display.drawVerticalLine(1, _lrow * fontSize, fontSize);
           display.drawVerticalLine(2, _lrow * fontSize, fontSize);
         }
@@ -143,7 +156,7 @@ void loadAPScanHTML() {
   sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
 }
 void loadStationsHTML() {
-  sendFile(200, "text/html", data_stationHTML, sizeof(data_stationHTML));
+  sendFile(200, "text/html", data_stationsHTML, sizeof(data_stationsHTML));
 }
 void loadAttackHTML() {
   sendFile(200, "text/html", data_attackHTML, sizeof(data_attackHTML));
@@ -152,7 +165,7 @@ void loadSettingsHTML() {
   sendFile(200, "text/html", data_settingsHTML, sizeof(data_settingsHTML));
 }
 void load404() {
-  sendFile(200, "text/html", data_error404, sizeof(data_error404));
+  sendFile(200, "text/html", data_errorHTML, sizeof(data_errorHTML));
 }
 void loadInfoHTML(){
   sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
@@ -162,20 +175,20 @@ void loadLicense(){
 }
 
 void loadFunctionsJS() {
-  sendFile(200, "text/javascript", data_functionsJS, sizeof(data_functionsJS));
+  sendFile(200, "text/javascript", data_js_functionsJS, sizeof(data_js_functionsJS));
 }
 void loadAPScanJS() {
-  sendFile(200, "text/javascript", data_apscanJS, sizeof(data_apscanJS));
+  sendFile(200, "text/javascript", data_js_apscanJS, sizeof(data_js_apscanJS));
 }
 void loadStationsJS() {
-  sendFile(200, "text/javascript", data_stationsJS, sizeof(data_stationsJS));
+  sendFile(200, "text/javascript", data_js_stationsJS, sizeof(data_js_stationsJS));
 }
 void loadAttackJS() {
   attack.ssidChange = true;
-  sendFile(200, "text/javascript", data_attackJS, sizeof(data_attackJS));
+  sendFile(200, "text/javascript", data_js_attackJS, sizeof(data_js_attackJS));
 }
 void loadSettingsJS() {
-  sendFile(200, "text/javascript", data_settingsJS, sizeof(data_settingsJS));
+  sendFile(200, "text/javascript", data_js_settingsJS, sizeof(data_js_settingsJS));
 }
 
 void loadStyle() {
@@ -199,7 +212,7 @@ void startAPScan() {
 
 #ifdef USE_DISPLAY
     apScan.sort();
-    rows = 3;
+    rows = 4;
     rows += apScan.results;
     sites = rows / rowsPerSite;
     if (rows % rowsPerSite > 0) sites++;
@@ -324,16 +337,30 @@ void startAttack() {
 }
 
 void addSSID() {
-  if(server.hasArg("ssid") && server.hasArg("num")){
+  if(server.hasArg("ssid") && server.hasArg("num") && server.hasArg("enc")){
     int num = server.arg("num").toInt();
     if(num > 0){
-      ssidList.addClone(server.arg("ssid"),num);
+      ssidList.addClone(server.arg("ssid"),num, server.arg("enc") == "true");
     }else{
-      ssidList.add(server.arg("ssid"));
+      ssidList.add(server.arg("ssid"), server.arg("enc") == "true" || server.arg("enc") == "1");
     }
     attack.ssidChange = true;
     server.send( 200, "text/json", "true");
   }else server.send( 200, "text/json", "false");
+}
+
+void cloneSelected(){
+  if(apScan.selectedSum > 0){
+    int clonesPerSSID = 48/apScan.selectedSum;
+    ssidList.clear();
+    for(int i=0;i<apScan.results;i++){
+      if(apScan.isSelected(i)){
+        ssidList.addClone(apScan.getAPName(i),clonesPerSSID, apScan.getAPEncryption(i) != "none");
+      }
+    }
+  }
+  attack.ssidChange = true;
+  server.send( 200, "text/json", "true");
 }
 
 void deleteSSID() {
@@ -392,9 +419,24 @@ void saveSettings() {
       settings.apChannel = server.arg("apChannel").toInt();
     }
   }
-  if (server.hasArg("ssidEnc")) {
-    if (server.arg("ssidEnc") == "false") settings.attackEncrypted = false;
-    else settings.attackEncrypted = true;
+  if (server.hasArg("macAp")) {
+    String macStr = server.arg("macAp");
+    macStr.replace(":","");
+    Mac tempMac;
+     if(macStr.length() == 12){
+       for(int i=0;i<6;i++){
+         const char* val = macStr.substring(i*2,i*2+2).c_str();
+         uint8_t valByte = strtoul(val, NULL, 16);
+         tempMac.setAt(valByte,i);
+       }
+       if(tempMac.valid()) settings.macAP.set(tempMac);
+     } else if(macStr.length() == 0){
+       settings.macAP.set(settings.defaultMacAP);
+     }
+  }
+  if (server.hasArg("randMacAp")) {
+    if (server.arg("randMacAp") == "false") settings.isMacAPRand = false;
+    else settings.isMacAPRand = true;
   }
   if (server.hasArg("scanTime")) settings.clientScanTime = server.arg("scanTime").toInt();
   if (server.hasArg("timeout")) settings.attackTimeout = server.arg("timeout").toInt();
@@ -426,7 +468,7 @@ void saveSettings() {
     else settings.multiAttacks = true;
   }
   
-  if (server.hasArg("ledPin")) settings.ledPin = server.arg("ledPin").toInt();
+  if (server.hasArg("ledPin")) settings.setLedPin(server.arg("ledPin").toInt());
   if(server.hasArg("macInterval")) settings.macInterval = server.arg("macInterval").toInt();
 
   settings.save();
@@ -439,6 +481,8 @@ void resetSettings() {
 }
 
 void setup() {
+
+  randomSeed(os_random());
   
 #ifdef USE_LED16
   pinMode(16, OUTPUT);
@@ -446,16 +490,22 @@ void setup() {
 #endif
   
   Serial.begin(115200);
-
-  attackMode = "START";
+  
+  attackMode_deauth = "START";
+  attackMode_beacon = "START";
 
   EEPROM.begin(4096);
   SPIFFS.begin();
-  
+
   settings.load();
   if (debug) settings.info();
+  settings.syncMacInterface();
   nameList.load();
   ssidList.load();
+
+  attack.refreshLed();
+
+  delay(500); // Prevent bssid leak
 
   startWifi();
   attack.stopAll();
@@ -504,6 +554,7 @@ void setup() {
   server.on("/clearNameList.json", clearNameList);
   server.on("/editNameList.json", editClientName);
   server.on("/addSSID.json", addSSID);
+  server.on("/cloneSelected.json", cloneSelected);
   server.on("/deleteSSID.json", deleteSSID);
   server.on("/randomSSID.json", randomSSID);
   server.on("/clearSSID.json", clearSSID);
@@ -530,13 +581,17 @@ void setup() {
   display.setFont(ArialMT_Plain_24);
   display.drawString(0, 16, "Deauther");
   display.setFont(ArialMT_Plain_10);
+  display.drawString(100, 28, "v");
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(104, 24, "1.6");
+  display.setFont(ArialMT_Plain_10);
   display.drawString(0, 40, "Copyright (c) 2017");
   display.drawString(0, 50, "Stefan Kremser");
   display.display();
 
   display.setFont(Roboto_Mono_8);
   
-  delay(2000);
+  delay(1600);
 #endif
 
 #ifdef resetPin
@@ -544,20 +599,15 @@ void setup() {
   if(digitalRead(resetPin) == LOW) settings.reset();
 #endif
 
-  pinMode(settings.ledPin, OUTPUT);
-  digitalWrite(settings.ledPin, HIGH);
-
   if(debug){
     Serial.println("\nStarting...\n");
 #ifndef USE_DISPLAY
-    delay(2000);
+    delay(1600);
 #endif
   }
-  
 }
 
 void loop() {
-  
   if (clientScan.sniffing) {
     if (clientScan.stop()) startWifi();
   } else {
@@ -603,7 +653,8 @@ void loop() {
       
     // ===== SELECT ===== 
     } else if (buttonPressed == 2) {
-      //WiFi on/off
+      
+      // ===== WIFI on/off ===== 
       if (curRow == 0) {
         if (wifiMode == "ON") stopWifi();
         else startWifi();
@@ -613,16 +664,37 @@ void loop() {
         startAPScan();
         drawInterface();
   
-      // ===== start,stop attack ===== 
+      // ===== start,stop deauth attack ===== 
       } else if (curRow == 2) {
-        if (attackMode == "START" && apScan.getFirstTarget() > -1) attack.start(0);
-        else if (attackMode == "STOP") attack.stop(0);
+        if (attackMode_deauth == "START" && apScan.getFirstTarget() > -1) attack.start(0);
+        else if (attackMode_deauth == "STOP") attack.stop(0);
+
+      // ===== start,stop beacon attack ===== 
+      } else if (curRow == 3) {
+        if (attackMode_beacon == "START"){
+
+          //clone all selected SSIDs
+          if(apScan.selectedSum > 0){
+            int clonesPerSSID = 48/apScan.selectedSum;
+            ssidList.clear();
+            for(int i=0;i<apScan.results;i++){
+              if(apScan.isSelected(i)){
+                ssidList.addClone(apScan.getAPName(i),clonesPerSSID, apScan.getAPEncryption(i) != "none");
+              }
+            }
+          }
+          attack.ssidChange = true;
+
+          //start attack
+          attack.start(1);
+        }
+        else if (attackMode_beacon == "STOP") attack.stop(1);
       } 
       
       // ===== select APs ===== 
-      else if (curRow >= 3) {
+      else if (curRow >= 4) {
         attack.stop(0);
-        apScan.select(curRow - 3);
+        apScan.select(curRow - 4);
       }
     }
     // ===== DISPLAY ===== 
