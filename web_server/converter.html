@@ -57,7 +57,11 @@
 		<script>
 			String.prototype.convertToHex = function (delim) {
 				  return this.split("").map(function(c) {
-					  return ("0" + c.charCodeAt(0).toString(16)).slice(-2);
+					  if (c.charCodeAt(0) < 128) return ("0" + c.charCodeAt(0).toString(16)).slice(-2);
+					  else{
+						var tmp = encodeURI(c);
+						return tmp.replace(/%/g, ",0x").slice(3) ;  
+					  }
 				  }).join(delim || "");
 			  };
 			  
