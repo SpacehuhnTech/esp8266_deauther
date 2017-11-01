@@ -81,15 +81,15 @@ Please don't refer to this project as "jammer", that totally undermines the real
 
 **You can flash this software yourself onto any ESP8266**, but if you would like to support me, you can get one of these cool boards that are made especially for this project and come with everything preinstalled!  
 
-- WiFi Deauther v1.5
-	- [AliExpress](https://goo.gl/JAXhTg)  
-	- [tindie](https://goo.gl/yMiuGH)  
+- WiFi Deauther v2
+	- [AliExpress](https://goo.gl/GyiYEi)  
+	- [tindie](https://goo.gl/TjCsMu)  
+- WiFi Deauther OLED v2
+	- [AliExpress](https://goo.gl/UK87iU)  
+	- [tindie](https://goo.gl/PMDYn4) 
 - WiFi Deauther OLED v1.5
 	- [AliExpress](https://goo.gl/P30vNz)  
 	- [tindie](https://goo.gl/GGH7x8)  
-- WiFi Deauther OLED v2
-	- [AliExpress](https://goo.gl/UK87iU)  
-	- [tindie](https://goo.gl/PMDYn4)  
   
 ## Installation
 
