@@ -81,6 +81,9 @@ Please don't refer to this project as "jammer", that totally undermines the real
 
 **You can flash this software yourself onto any ESP8266**, but if you would like to support me, you can get one of these cool boards that are made especially for this project and come with everything preinstalled!  
 
+- NodeMCU-07  
+	- [AliExpress](https://goo.gl/iEhEjA)  
+	- [tindie](https://goo.gl/WH4AaQ)  
 - WiFi Deauther v2
 	- [AliExpress](https://goo.gl/GyiYEi)  
 	- [tindie](https://goo.gl/TjCsMu)  
