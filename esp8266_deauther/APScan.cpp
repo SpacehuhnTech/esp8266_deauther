@@ -20,7 +20,7 @@ bool APScan::start() {
 
   if (debug) Serial.println("Scan results: "+(String)results);
   
-  for (int i = 0; i < results; i++) {
+  for (int i = 0; i < results && i < maxAPScanResults; i++) {
     Mac _ap;
     _ap.set(WiFi.BSSID(i)[0], WiFi.BSSID(i)[1], WiFi.BSSID(i)[2], WiFi.BSSID(i)[3], WiFi.BSSID(i)[4], WiFi.BSSID(i)[5]);
     aps.add(_ap);
@@ -29,7 +29,6 @@ bool APScan::start() {
     encryption[i] = WiFi.encryptionType(i);
     hidden[i] = WiFi.isHidden(i);
     String _ssid = WiFi.SSID(i);
-    _ssid.replace("\"", "\\\"");
     _ssid.toCharArray(names[i], 33);
     //data_getVendor(WiFi.BSSID(i)[0],WiFi.BSSID(i)[1],WiFi.BSSID(i)[2]).toCharArray(vendors[i],9);
     if (debug) {
@@ -109,7 +108,7 @@ String APScan::getEncryption(int code) {
 }
 
 String APScan::getAPName(int num) {
-  if (isHidden(num)) return "* Hidden SSID *";
+  //if (isHidden(num)) return "* Hidden SSID *";
   return names[num];
 }
 String APScan::getAPEncryption(int num) {
@@ -136,6 +135,18 @@ int APScan::getFirstTarget() {
   return -1;
 }
 
+String APScan::sanitizeJson(String input){
+ input.replace("\\","\\\\");
+ input.replace("\"","\\\"");
+ input.replace("/","\\/");
+ input.replace("\b","\\b");
+ input.replace("\f","\\f");
+ input.replace("\n","\\n");
+ input.replace("\r","\\r");
+ input.replace("\t","\\t");
+ return input;
+}
+
 void APScan::sendResults() {
   if (debug) Serial.print("sending AP scan result JSON ");
 
@@ -155,10 +166,10 @@ void APScan::sendResults() {
       _size += 6; // "e": ,
       _size += 6; // "se":0
       _size++; // }*/
-    _size += 61;
+    _size += 67;
     _size += String(i).length();
     _size += String(getAPChannel(i)).length();
-    _size += getAPName(i).length();
+    _size += sanitizeJson(getAPName(i)).length();
     _size += String(getAPRSSI(i)).length();
 
     if ((i != results - 1) && (i != maxAPScanResults - 1)) _size++; // ,
@@ -178,11 +189,12 @@ void APScan::sendResults() {
     json += "\"i\":" + (String)i + ",";
     json += "\"c\":" + (String)getAPChannel(i) + ",";
     json += "\"m\":\"" + getAPMac(i) + "\",";
-    json += "\"ss\":\"" + getAPName(i) + "\",";
+    json += "\"ss\":\"" + sanitizeJson(getAPName(i)) + "\",";
     json += "\"r\":" + (String)getAPRSSI(i) + ",";
     json += "\"e\":" + (String)encryption[i] + ",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
-    json += "\"se\":" + (String)isSelected(i);
+    json += "\"h\":" + (String)hidden[i] + ",";
+    json += "\"se\":" + (String)isSelected(i);   
     json += "}";
     if ((i != results - 1) && (i != maxAPScanResults - 1)) json += ",";
 
@@ -211,10 +223,11 @@ String APScan::getResultsJSON() {
     json += "\"i\":" + (String)i + ",";
     json += "\"c\":" + (String)getAPChannel(i) + ",";
     json += "\"m\":\"" + getAPMac(i) + "\",";
-    json += "\"ss\":\"" + getAPName(i) + "\",";
+    json += "\"ss\":\"" + sanitizeJson(getAPName(i)) + "\",";
     json += "\"r\":" + (String)getAPRSSI(i) + ",";
     json += "\"e\":" + (String)encryption[i] + ",";
     //json += "\"v\":\""+getAPVendor(i)+"\",";
+    json += "\"h\":" + (String)hidden[i] + ",";
     json += "\"se\":" + (String)isSelected(i);
     json += "}";
     if ((i != results - 1) && (i != maxAPScanResults - 1)) json += ",";

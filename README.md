@@ -175,9 +175,24 @@ If no port shows up you may have to reinstall the drivers.
 
 **18** Upload!
 
+**19** Install the [ESP8266 Sketh Data uploader](https://github.com/esp8266/arduino-esp8266fs-plugin) plugin, your mileage may vary depending on your version of Arduino IDE.
+
+**20** Restart Arduino IDE, reopen the project, and from the "tools" menu, choose "ESP8266 Sketch Data Upload".
+
+
 **Note:** If you use a 512kb version of the ESP8266, you will need to comment out a part of the mac vendor list in data.h. Otherwise it will use too much memory to fit on 512kb.  
 
 **Your ESP8266 Deauther is now ready!**
+
+
+### Updating the MAC vendor list
+The utils folder includes a python script for downloading the latest ["manuf"](https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf) file from Whireshark and convert it to the format understood by esp8266_deauther.
+
+The usage of the script is quite simple:  `update_manuf.py [-h] [-o OUTPUT] [-u URL]` , e.g:
+```
+cd utils
+python update_manuf.py -o ../esp8266_deauther/oui.h
+```
 
 ### Adding an OLED display
 
