@@ -636,20 +636,32 @@ void loop() {
     canBtnPress = true;
     
     // ===== UP =====
-    if (buttonPressed == 0 && curRow > 0) {
+    if (buttonPressed == 0) {
+     if(curRow > 0) {
       curRow--;
       if (lrow - 1 < 0) {
         lrow = rowsPerSite - 1;
         curSite--;
       } else lrow--;
+     } else {
+      curSite = sites;
+      curRow = rows-1;
+      lrow = curRow % rowsPerSite;
+     }
   
     // ===== DOWN ===== 
-    } else if (buttonPressed == 1 && curRow < rows - 1) {
+    } else if (buttonPressed == 1) {
+     if (curRow < rows - 1) {
       curRow++;
       if (lrow + 1 >= rowsPerSite) {
         lrow = 0;
         curSite++;
       } else lrow++;
+     } else {
+      curSite = 1;
+      curRow = 0;
+      lrow = 0;
+     }
       
     // ===== SELECT ===== 
     } else if (buttonPressed == 2) {
