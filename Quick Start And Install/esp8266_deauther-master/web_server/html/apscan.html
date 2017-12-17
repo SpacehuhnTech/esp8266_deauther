@@ -1,0 +1,66 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="description" content="Wi-Fi Deauthenticator">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="theme-color" content="#36393E" />
+		<title>ESP8266 Deauther</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="js/functions.js"></script>
+	</head>
+	<body>
+		<nav>
+			<a href="apscan.html">APs</a>
+			<a href="stations.html">Stations</a>
+			<a href="attack.html">Attacks</a>
+			<a href="settings.html">Settings</a>
+			<a class="right" href="info.html">Info</a>
+		</nav>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					
+					<div id="error" class="hide"></div>
+					
+					<h1 class="header">Scan for Wi-Fi access points</h1>
+					
+					<a id="scanInfo" class="left labelFix">scanning...</a>
+					
+					<button onclick="scan()" id="apScanStart" class="right button-primary">scan</button>
+					
+					<p class="clear">
+						Networks found: <span id="networksFound">0</span><br />
+						MAC: <span id="apMAC"></span><br />
+						<br />
+						<span id="selectAllBtns" style="visibility:'hidden'">
+							<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
+							<button class="marginNull button-primary right" onclick="select(-1)">select all</button>
+							<br />
+						</span>
+						
+					</p>
+				
+					<table></table>
+					
+					<p class="small">
+						<span class="red">INFO: </span><span class="bold">You may have to reload the site to see the results.</span>
+						<br />
+						<br />
+					</p>
+					
+					<div id="copyright">
+						Version 1.6<br />
+						Copyright (c) 2017 Stefan Kremser<br />
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
+					</div>
+					
+					<script src="js/apscan.js"></script>
+					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,126 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="description" content="Wi-Fi Deauthenticator">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="theme-color" content="#36393E" />
+		<title>ESP8266 Deauther</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="js/functions.js"></script>
+	</head>
+	<body>
+		<nav>
+			<a href="apscan.html">APs</a>
+			<a href="stations.html">Stations</a>
+			<a href="attack.html">Attacks</a>
+			<a href="settings.html">Settings</a>
+			<a class="right" href="info.html">Info</a>
+		</nav>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					
+					<div id="error" class="hide"></div>
+					
+					<h1 class="header">Attacks</h1>
+					
+					<p class="bold">Selected AP(s): <button onclick='cloneSelected()'>clone</button></p>
+					<ul id="selectedAPs"></ul>
+					
+					<p class="bold">Selected Station(s):</p>
+					<ul id="selectedClients"></ul>
+					
+					<table></table>
+					
+					<label class="left">
+						<input type="number" id="randomIntrvl" value="5" min="1" max="65000"/>s
+					</label>
+					
+					<button class="right" id="randomBtn" onclick="random()">Enable Random</button>
+					
+					<p class="clear">
+						<br />
+						<span class="red">INFO: </span><span class="bold">You may loose connection when starting the attack.</span><br />
+						Change the channel in the settings to the same of the selected AP to prevent this.
+					</p>
+					
+					<hr />
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="ssid">SSID</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="ssid" minlength="1" maxlength="32" placeholder="SSID" />
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="num">Number of Clones</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="num" min="0" max="48" value="0" />
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="enc">Encrypted</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="enc" name="enc" />
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					
+					<button class="button-primary col-4" onclick="addSSID()">add</button>
+					
+					<hr />
+					
+					<p class="left">SSIDs: <span id="ssidCounter">0/48</span></p>
+					
+					<div class="right">
+						<button class="red" onclick="clearSSID()">clear</button> 
+						<button onclick="randomSSID()">random</button> 
+					</div>
+
+					<table></table>
+					
+					<button class="marginNull red" onclick="resetSSID()">reset</button> 
+					<button class="marginNull button-primary right" onclick="saveSSID()">save</button> 
+					
+					<p class="small" id="saved">saved</p>
+					
+					<p>
+						<br />
+						<span class="bold">Deauth [deauthentication attack]:</span><br />
+						Sends constantly deauthentication and disassociation frames to the selected station(s) and access point(s).<br />
+						<br />
+						<span class="bold">Beacon [beacon flooding]:</span><br />
+						Broadcasts constantly beacon frames to advertise all SSIDs in the list below.<br />
+						<br />
+						<span class="bold">Probe-Request [probe request flooding]:</span><br />
+						Broadcasts constantly probe request frames with all SSIDs in the list below.
+					</p>
+					
+					<div id="copyright">
+						Version 1.6<br />
+						Copyright (c) 2017 Stefan Kremser<br />
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
+					</div>
+					
+					<script src="js/attack.js"></script>
+					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

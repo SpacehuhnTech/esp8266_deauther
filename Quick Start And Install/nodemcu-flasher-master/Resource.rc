@@ -1,0 +1,8 @@
+BLANK       BIN        Resources\Binaries\blank.bin
+FLASH       BIN        Resources\Binaries\0x00000.bin
+IROM        BIN        Resources\Binaries\0x10000.bin
+DEFAULT     BIN        Resources\Binaries\esp_init_data_default.bin
+NODEMCU     BIN        Resources\Binaries\nodemcu_integer_0.9.5_20150318.bin
+YES         RCDATA     Resources\Images\Yes.png
+NO          RCDATA     Resources\Images\No.png
+WAIT        BIN        Resources\Images\Wait.gif
