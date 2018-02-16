@@ -79,20 +79,10 @@ Please don't refer to this project as "jammer", that totally undermines the real
 
 ## Supported Devices
 
-**You can flash this software yourself onto any ESP8266**, but if you would like to support me, you can get one of these cool boards that are made especially for this project and come with everything preinstalled!  
-
-- NodeMCU-07  
-	- [AliExpress](https://goo.gl/iEhEjA)  
-	- [tindie](https://goo.gl/WH4AaQ)  
-- WiFi Deauther v2
-	- [AliExpress](https://goo.gl/GyiYEi)  
-	- [tindie](https://goo.gl/TjCsMu)  
-- WiFi Deauther OLED v2
-	- [AliExpress](https://goo.gl/UK87iU)  
-	- [tindie](https://goo.gl/PMDYn4) 
-- WiFi Deauther OLED v1.5
-	- [AliExpress](https://goo.gl/P30vNz)  
-	- [tindie](https://goo.gl/GGH7x8)  
+**You can flash this software yourself onto any ESP8266**, but if you would like to support me, you can get one of the DSTIKE development boards that are made for this project and come with everything preinstalled!  
+Here is the link to Travis Lin's shop who makes them:  
+- [AliExpress](https://goo.gl/Veig7Q)  
+- [Tindie](https://goo.gl/fLNjvp)  
   
 ## Installation
 
