@@ -81,8 +81,9 @@ Please don't refer to this project as "jammer", that totally undermines the real
 
 **You can flash this software yourself onto any ESP8266**, but if you would like to support me, you can get one of the DSTIKE development boards that are made for this project and come with everything preinstalled!  
 Here is the link to Travis Lin's shop who makes them:  
-- [AliExpress](https://goo.gl/Veig7Q)  
-- [Tindie](https://goo.gl/fLNjvp)  
+- [AliExpress](https://dstike.aliexpress.com/store/2996024)  
+- [Tindie](https://tindie.com/stores/lspoplove)  
+- [Taobao](https://shop135375846.taobao.com)  
   
 ## Installation
 
