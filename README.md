@@ -1,13 +1,13 @@
 # ESP8266 Deauther 2.0
 
-<p align="center"><img alt="logo" src="https://github.com/spacehuhn/deauther2.0/blob/master/img/deauther_logo.png" width="200"></p>
+<p align="center"><img alt="logo" src="https://github.com/spacehuhn/esp8266_deauther/master/img/deauther_logo.png" width="200"></p>
 
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
 | 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
 | 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br/>
 <br />
-<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
+<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
 </p>
 
 ## What is New
@@ -23,7 +23,7 @@ Version 2.0:
 - Added [PacketMonitor](https://github.com/spacehuhn/PacketMonitor) to display UI
 - Deauth detection when scanning
 - RGB LED support for a quick indication what the device is doing (attacking, scanning, ...)
-- Better documentation on the new [wiki](https://github.com/spacehuhn/deauther2.0/wiki)
+- Better documentation on the new [wiki](https://github.com/spacehuhn/esp8266_deauther/wiki)
 
 ## About this project
 **Scan for access points, client devices, disconnect them, create dozens of fake WiFi networks and confuse other wireless scanners!**  
@@ -40,7 +40,7 @@ Feel free to test your hardware, annoy these companies with the problem, share t
 This project is also a great way to learn more about WiFi, micro controllers, Arduino, hacking and electronics/programming in general.  
 **But please use this tool responsably and do not use it against others without their permission!**
 
-The difference between deauthing and jamming: [click me](https://github.com/spacehuhn/deauther2.0/wiki/FAQ#difference-between-jammer-and-deauther)
+The difference between deauthing and jamming: [click me](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ#difference-between-jammer-and-deauther)
 
 ## Disclaimer
 This project is a proof of concept for testing and educational purposes.  
@@ -61,12 +61,12 @@ If you do, it only prooves that you didn't understand anything of what this proj
 
 ## Getting Started
 
-Visit our new [Wiki](https://github.com/spacehuhn/deauther2.0/wiki) on how to recreate this project and use it.  
+Visit our new [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki) on how to recreate this project and use it.  
 Happy Hacking!
 
 ## Official Deauther Boards
 
-![PICTURE DSTIKE Deauther OLED Board](https://github.com/spacehuhn/deauther2.0/blob/master/img/DSTIKE_Deauther_Board.jpg)
+![PICTURE DSTIKE Deauther OLED Board](https://github.com/spacehuhn/esp8266_deauther/master/img/DSTIKE_Deauther_Board.jpg)
 
 If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
 - [Tindie](https://tindie.com/stores/lspoplove)  
@@ -74,7 +74,7 @@ If you want to support the development of this project, you can buy one of the o
 - [Taobao](https://shop135375846.taobao.com)  
 
 Those boards are optimized for this project, ready to use and come preflashed with the Deauther software!  
-For more details visit the [Wiki](https://github.com/spacehuhn/deauther2.0/wiki) under [Supported Devices](https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices).  
+For more details visit the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki) under [Supported Devices](https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices).  
 
 ## Credits
 A huge thanks to:
