@@ -30,9 +30,9 @@
 
 // === Settings for Digital LED and RGB LED === //
 #define LED_CATHODE false // common ground (GND)
-#define LED_PIN_R 2       // ESP-12 LED
+#define LED_PIN_R 16      // NodeMCU on-board LED
 #define LED_PIN_G 0
-#define LED_PIN_B 16      // NodeMCU on-board LED
+#define LED_PIN_B 2       // ESP-12 LED
 
 // === Settings for RGB LED and Neopixel LED === //
 #define LED_MODE_BRIGHTNESS 10 // brightness of LED modes 
