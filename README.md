@@ -66,7 +66,7 @@ Happy Hacking!
 
 ## Official Deauther Boards
 
-![PICTURE DSTIKE Deauther OLED Board](https://github.com/spacehuhn/esp8266_deauther/blob/master/img/DSTIKE_Deauther_Board.jpg)
+![PICTURE DSTIKE Deauther OLED Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/img/DSTIKE_Deauther_Board.jpg)
 
 If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
 - [Tindie](https://tindie.com/stores/lspoplove)  
