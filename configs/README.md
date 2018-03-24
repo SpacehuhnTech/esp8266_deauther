@@ -5,5 +5,5 @@ The default config should be fine for all boards that don't have a display or a 
 
 - [Default config](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/default.txt) 
 - [DSTIKE Deauther OLED v1 - v3](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/deauther_board_oled.txt)
-- [DSTIKE Deauther OLED >= v3.5 & WiFi Deauther Monster](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/deauther_board_oled_RGB.txt)
+- [DSTIKE Deauther OLED v3.5 (or newer) & WiFi Deauther Monster](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/deauther_board_oled_RGB.txt)
 - [DSTIKE Deauther Boy](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/deauther_boy.txt)
