@@ -1,13 +1,13 @@
 # ESP8266 Deauther 2.0
 
-<p align="center"><img alt="logo" src="https://github.com/spacehuhn/esp8266_deauther/master/img/deauther_logo.png" width="200"></p>
+<p align="center"><img alt="logo" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/img/deauther_logo.png" width="200"></p>
 
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
 | 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
 | 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br/>
 <br />
-<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
+<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
 </p>
 
 ## What is New
@@ -66,7 +66,7 @@ Happy Hacking!
 
 ## Official Deauther Boards
 
-![PICTURE DSTIKE Deauther OLED Board](https://github.com/spacehuhn/esp8266_deauther/master/img/DSTIKE_Deauther_Board.jpg)
+![PICTURE DSTIKE Deauther OLED Board](https://github.com/spacehuhn/esp8266_deauther/blob/master/img/DSTIKE_Deauther_Board.jpg)
 
 If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
 - [Tindie](https://tindie.com/stores/lspoplove)  
