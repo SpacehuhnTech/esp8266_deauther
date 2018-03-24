@@ -15,7 +15,7 @@
 
 // Settings //
 
-//#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
+#define USE_DISPLAY /* <-- uncomment that if you want to use the display */
 #define resetPin 4 /* <-- comment out or change if you need GPIO 4 for other purposes */
 #define USE_LED16 /* <-- for the Pocket ESP8266 which has a LED on GPIO 16 to indicate if it's running */
 
@@ -27,11 +27,11 @@
   //include the library you need
   #include "SSD1306.h"
   #include "SH1106.h"
-
-  //create display(Adr, SDA-pin, SCL-pin)
-  SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
-  //SH1106 display(0x3c, 5, 4);
   
+  //create display(Adr, SDA-pin, SCL-pin)
+  //SSD1306 display(0x3c, 5, 4); //GPIO 5 = D1, GPIO 4 = D2
+  SH1106 display(0x3c, 5, 4);
+  #include "screensaver.h"
   //button pins
   #define upBtn 12 //GPIO 12 = D6
   #define downBtn 13 //GPIO 13 = D7
@@ -144,57 +144,10 @@ void stopWifi() {
   wifiMode = "OFF";
 }
 
-void loadIndexHTML() {
-  if(warning){
-    sendFile(200, "text/html", data_indexHTML, sizeof(data_indexHTML));
-  }else{
-    sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
-  }
-}
-void loadAPScanHTML() {
-  warning = false;
-  sendFile(200, "text/html", data_apscanHTML, sizeof(data_apscanHTML));
-}
-void loadStationsHTML() {
-  sendFile(200, "text/html", data_stationsHTML, sizeof(data_stationsHTML));
-}
-void loadAttackHTML() {
-  sendFile(200, "text/html", data_attackHTML, sizeof(data_attackHTML));
-}
-void loadSettingsHTML() {
-  sendFile(200, "text/html", data_settingsHTML, sizeof(data_settingsHTML));
-}
 void load404() {
-  sendFile(200, "text/html", data_errorHTML, sizeof(data_errorHTML));
+  if(loadFromFlash(server.uri())) return;
+  sendSPIFFSFile("/error.html", "text/html");
 }
-void loadInfoHTML(){
-  sendFile(200, "text/html", data_infoHTML, sizeof(data_infoHTML));
-}
-void loadLicense(){
-  sendFile(200, "text/plain", data_license, sizeof(data_license));
-}
-
-void loadFunctionsJS() {
-  sendFile(200, "text/javascript", data_js_functionsJS, sizeof(data_js_functionsJS));
-}
-void loadAPScanJS() {
-  sendFile(200, "text/javascript", data_js_apscanJS, sizeof(data_js_apscanJS));
-}
-void loadStationsJS() {
-  sendFile(200, "text/javascript", data_js_stationsJS, sizeof(data_js_stationsJS));
-}
-void loadAttackJS() {
-  attack.ssidChange = true;
-  sendFile(200, "text/javascript", data_js_attackJS, sizeof(data_js_attackJS));
-}
-void loadSettingsJS() {
-  sendFile(200, "text/javascript", data_js_settingsJS, sizeof(data_js_settingsJS));
-}
-
-void loadStyle() {
-  sendFile(200, "text/css;charset=UTF-8", data_styleCSS, sizeof(data_styleCSS));
-}
-
 
 void startWiFi(bool start) {
   if (start) startWifi();
@@ -513,27 +466,8 @@ void setup() {
 
   /* ========== Web Server ========== */
 
-  /* HTML */
+  /* HTML, css, js, json, juste serve everything on the flash */
   server.onNotFound(load404);
-
-  server.on("/", loadIndexHTML);
-  server.on("/index.html", loadIndexHTML);
-  server.on("/apscan.html", loadAPScanHTML);
-  server.on("/stations.html", loadStationsHTML);
-  server.on("/attack.html", loadAttackHTML);
-  server.on("/settings.html", loadSettingsHTML);
-  server.on("/info.html", loadInfoHTML);
-  server.on("/license", loadLicense);
-
-  /* JS */
-  server.on("/js/apscan.js", loadAPScanJS);
-  server.on("/js/stations.js", loadStationsJS);
-  server.on("/js/attack.js", loadAttackJS);
-  server.on("/js/settings.js", loadSettingsJS);
-  server.on("/js/functions.js", loadFunctionsJS);
-
-  /* CSS */
-  server.on ("/style.css", loadStyle);
 
   /* JSON */
   server.on("/APScanResults.json", sendAPResults);
@@ -703,8 +637,16 @@ void loop() {
       display.clear();
       display.display();
     }
+    screensavertimer = 0;
+    lastactivity = millis();
+  } else {
+    screensavertimer = millis() - lastactivity;
   }
-  drawInterface();
+  if(screensavertimer>saveeafter) {
+    drawScreenSaver();
+  } else {
+    drawInterface();
+  }
 #endif
 
 }

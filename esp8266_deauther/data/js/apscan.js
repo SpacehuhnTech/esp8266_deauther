@@ -17,22 +17,32 @@ function compare(a, b) {
   return 0;
 }
 
-function getEncryption(num) {
+function getStatus(enc, hid) {
   /*
-  if (num == 8) return "WPA*";
-  else if (num == 4) return "WPA2";
-  else if (num == 2) return "WPA";
-  else if (num == 7) return "none";
-  else if (num == 5) return "WEP";
+  if (enc == 8) return "WPA*";
+  else if (enc == 4) return "WPA2";
+  else if (enc == 2) return "WPA";
+  else if (enc == 7) return "none";
+  else if (enc == 5) return "WEP";
   */
-	if (num == 7) return " ";
-	else return "&#128274;";
+	var buff = "";
+	if (enc != 7) buff += "&#128274;  ";
+	if (hid == 1) buff += "&#128123;  ";
+	return buff;
 }
 
 function getResults() {
   toggleScan(true);
   getResponse("APScanResults.json", function(responseText) {
-    var res = JSON.parse(responseText);
+    var res;
+    try {
+      res = JSON.parse(responseText);
+    } catch(e) {
+      // wut
+      showMessage(_("JSON Parsing failed :-("), 2500);
+      return;
+    }
+    // TODO: more sanity checks on res && res.aps
     res.aps = res.aps.sort(compare);
     networkInfo.innerHTML = res.aps.length;
     apMAC.innerHTML = "";
@@ -42,7 +52,7 @@ function getResults() {
 		
     var tr = '';
     if (res.aps.length > 0) {
-		tr += '<tr><th>Ch</th><th>SSID</th><th> </th><th>RSSI</th><th>Select</th></tr>';
+		tr += '<tr><th>Ch</th><th>' + _('SSID') + '</th><th> </th><th>' + _('RSSI') + '</th><th>' + _('Select') + '</th></tr>';
 	}	
 	
     for (var i = 0; i < res.aps.length; i++) {
@@ -51,7 +61,7 @@ function getResults() {
       else tr += '<tr>';
       tr += '<td>' + res.aps[i].c + '</td>';
       tr += '<td>' + escapeHTML(res.aps[i].ss) + '</td>';
-      tr += '<td>' + getEncryption(res.aps[i].e) + '</td>';
+      tr += '<td>' + getStatus(res.aps[i].e, res.aps[i].h) + '</td>';
 	  //tr += '<td>' + res.aps[i].r + ' <meter value="' + res.aps[i].r + '" max="-30" min="-100" low="-80" high="-60" optimum="-50"></meter></td>';
 	  var _width = res.aps[i].r + 130;
 	  var _color;
@@ -61,10 +71,10 @@ function getResults() {
 	  tr += '<td><div class="meter_background"> <div class="meter_forground '+_color+'" style="width: '+_width+'%;"><div class="meter_value">' + res.aps[i].r + '</div></div> </div></td>';
 
       if (res.aps[i].se) {
-        tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">deselect</button></td>';
+        tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">' + _('deselect') + '</button></td>';
         apMAC.innerHTML = res.aps[i].m;
       }
-      else tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">select</button></td>';
+      else tr += '<td><button class="select" onclick="select(' + res.aps[i].i + ')">' + _('select') + '</button></td>';
       tr += '</tr>';
     }
     table.innerHTML = tr;
@@ -75,7 +85,7 @@ function scan() {
   toggleScan(false);
   getResponse("APScan.json", function(responseText) {
     if (responseText == "true") getResults();
-    else showMessage("response error APScan.json");
+    else showMessage(_("response error APScan.json"));
 	toggleScan(true);
   });
 }
@@ -83,7 +93,7 @@ function scan() {
 function select(num) {
   getResponse("APSelect.json?num=" + num, function(responseText) {
     if (responseText == "true") getResults();
-    else showMessage("response error APSelect.json");
+    else showMessage(_("response error APSelect.json"));
   });
 }
 

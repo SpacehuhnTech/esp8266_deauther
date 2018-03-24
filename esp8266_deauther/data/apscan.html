@@ -12,11 +12,11 @@
 	</head>
 	<body>
 		<nav>
-			<a href="apscan.html">APs</a>
-			<a href="stations.html">Stations</a>
-			<a href="attack.html">Attacks</a>
-			<a href="settings.html">Settings</a>
-			<a class="right" href="info.html">Info</a>
+			<a href="apscan.html">{APs}</a>
+			<a href="stations.html">{Stations}</a>
+			<a href="attack.html">{Attacks}</a>
+			<a href="settings.html">{Settings}</a>
+			<a class="right" href="info.html">{Info}</a>
 		</nav>
 		
 		<div class="container">
@@ -25,19 +25,19 @@
 					
 					<div id="error" class="hide"></div>
 					
-					<h1 class="header">Scan for Wi-Fi access points</h1>
+					<h1 class="header">{h1}</h1>
 					
-					<a id="scanInfo" class="left labelFix">scanning...</a>
+					<a id="scanInfo" class="left labelFix">{a1}</a>
 					
-					<button onclick="scan()" id="apScanStart" class="right button-primary">scan</button>
+					<button onclick="scan()" id="apScanStart" class="right button-primary">{button1}</button>
 					
 					<p class="clear">
-						Networks found: <span id="networksFound">0</span><br />
-						MAC: <span id="apMAC"></span><br />
+						{p1} <span id="networksFound">0</span><br />
+						{p2} <span id="apMAC"></span><br />
 						<br />
 						<span id="selectAllBtns" style="visibility:'hidden'">
-							<button class="marginNull button-primary left" onclick="select(-2)">deselect all</button>
-							<button class="marginNull button-primary right" onclick="select(-1)">select all</button>
+							<button class="marginNull button-primary left" onclick="select(-2)">{button2}</button>
+							<button class="marginNull button-primary right" onclick="select(-1)">{button3}</button>
 							<br />
 						</span>
 						
@@ -46,7 +46,7 @@
 					<table></table>
 					
 					<p class="small">
-						<span class="red">INFO: </span><span class="bold">You may have to reload the site to see the results.</span>
+						<span class="red">{p3} </span><span class="bold">{p4}</span>
 						<br />
 						<br />
 					</p>
@@ -57,10 +57,10 @@
 						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
 					</div>
 					
-					<script src="js/apscan.js"></script>
-					
 				</div>
 			</div>
 		</div>
+        <script src="js/l10n.js" async defer></script>
+    	<script data-src="js/apscan.js"></script>
 	</body>
 </html>

@@ -28,10 +28,12 @@ function showMessage(msg, closeAfter){
 	}
 }
 
+
 function getResponse(adr, callback, timeoutCallback, timeout, method){
+  
 	if(timeoutCallback === undefined) {
 		timeoutCallback = function(){
-			showMessage("error loading "+adr);
+			showMessage(_("Timeout loading") +" "+adr);
 		};
 	}
 	if(timeout === undefined) timeout = 8000; 
@@ -49,4 +51,16 @@ function getResponse(adr, callback, timeoutCallback, timeout, method){
 	xmlhttp.send();
 	xmlhttp.timeout = timeout;
 	xmlhttp.ontimeout = timeoutCallback;
+    
+    xmlhttp.onabort = function(e) {
+      showMessage(_("ABORT")+" "+adr);
+    };
+    xmlhttp.onerror = function(e) {
+      showMessage(_("ERROR loading")+" "+adr +" :: "+ this.statusText);
+    };
+    
+}
+
+function _(l10nid) {
+   return l10n.jsStrings[l10nid];
 }
