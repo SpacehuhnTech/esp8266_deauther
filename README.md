@@ -44,7 +44,7 @@ The difference between deauthing and jamming: [click me](https://github.com/spac
 
 ## Disclaimer
 This project is a proof of concept for testing and educational purposes.  
-Neither the ESP8266, nor its SDK was meant or build for such purposes. Bugs can occur!  
+Neither the ESP8266, nor its SDK was meant or built for such purposes. Bugs can occur!  
 
 Use it only against your own networks and devices!  
 Please check the legal regulations in your country before using it.  
@@ -57,7 +57,7 @@ The [deauthentication](https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_atta
 A solution is already there, why don't we use it?
 
 **Please don't refer to this project as "jammer", that totally undermines the real purpose of this project!**
-If you do, it only prooves that you didn't understand anything of what this project stands for. Publishing content about this without a proper explaination shows that you only do it for the clicks, fame and/or money and have no respect for intellectual property, the community behind it and the fight for a better WiFi standard!  
+If you do, it only proves that you didn't understand anything of what this project stands for. Publishing content about this without a proper explaination shows that you only do it for the clicks, fame and/or money and have no respect for intellectual property, the community behind it and the fight for a better WiFi standard!  
 
 ## Getting Started
 
@@ -95,7 +95,7 @@ Shoutout to everyone working on the libraries used for this project:
 - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 - [LinkedList](https://github.com/ivanseidel/LinkedList)
 
-Also thanks to everyone that supports this project by [donating](http://spacehuhn.de/donate), beeing my [patron](http://patreon.com/spacehuhn) or bying one of the [official Deauther boards](https://www.tindie.com/stores/lspoplove) from DSTIKE.  
+Also thanks to everyone that supports this project by [donating](http://spacehuhn.de/donate), beeing my [patron](http://patreon.com/spacehuhn) or buying one of the [official Deauther boards](https://www.tindie.com/stores/lspoplove) from DSTIKE.  
 
 ## License 
 
