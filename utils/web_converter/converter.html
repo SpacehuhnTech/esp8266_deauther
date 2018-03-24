@@ -1,0 +1,71 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Byte Converter</title>
+		<meta name="description" content="OConvert Text into Hex-Bytes">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="viewport" content="width=device-width, initial-scale=1"> 
+		<link rel="stylesheet" href="style.css">
+		<script src="jquery-3.2.1.min.js"></script>
+		<style>
+			textarea{
+				width: 96%;
+				height: 350px;
+			}
+		</style>
+	</head>
+	<body>
+
+		<nav>
+			<a href="index.html">Converter</a>
+			<a href="https://github.com/spacehuhn" class="right">GitHub</a>
+		</nav>
+		
+		<div class="container">
+		
+			<div class="row">
+				<div class="col-12">
+					<h1 class="header">Text to Byte Array Converter</h1>
+					<p>
+						Please use <a href="https://htmlcompressor.com/compressor/" target="_blank">HTMLCompressor</a> (or something similar) first to get your HTML, CSS and JS minified.<br />
+						Every saved byte can improve the stability of the ESP8266's webserver!
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<textarea id="input"></textarea>
+				</div>
+				<div class="col-6">
+					<textarea id="output" onclick="this.focus();this.select()" readonly="readonly"></textarea>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<button onclick="convert()" class="fullWidth button-primary">convert</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<p>Length: <span id="info_len">0</span> Bytes</p>
+				</div>
+			</div>
+					
+		</div>
+		
+		<script>
+			String.prototype.convertToHex = function (delim) {
+				  return this.split("").map(function(c) {
+					  return ("0" + c.charCodeAt(0).toString(16)).slice(-2);
+				  }).join(delim || "");
+			  };
+			  
+			function convert(){
+				var input = $('#input').val().convertToHex(",0x");
+				$('#output').val("0x"+input);
+				$('#info_len').html((input.match(new RegExp(",", "g")) || []).length + 1);
+			}
+		</script>
+	</body>
+</html>

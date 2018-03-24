@@ -1,91 +1,137 @@
 #ifndef Settings_h
 #define Settings_h
 
-#include <EEPROM.h>
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include "Mac.h"
-#include "MacList.h"
-#include "NameList.h"
+#include "Arduino.h"
+#include "FS.h"
+#include <ArduinoJson.h>
+#include "language.h"
+#include "A_config.h"
 
 extern "C" {
   #include "user_interface.h"
 }
 
-extern void sendBuffer();
-extern void sendToBuffer(String str);
-extern void sendHeader(int code, String type, size_t _size);
+#define VERSION "v2.0"
 
-extern const bool debug;
-extern String data_getVendor(uint8_t first, uint8_t second, uint8_t third);
-extern void eepromWriteInt(int adr, int val);
-extern int eepromReadInt(int adr);
-extern NameList nameList;
+extern void checkFile(String path, String data);
+extern JsonVariant parseJSONFile(String path, DynamicJsonBuffer &jsonBuffer);
+extern bool writeFile(String path, String &buf);
+extern void saveJSONFile(String path, JsonObject &root);
+extern String macToStr(uint8_t* mac);
+extern void getRandomMac(uint8_t* mac);
+extern bool strToMac(String macStr, uint8_t* mac);
+extern void setWifiChannel(uint8_t ch);
+extern String fixUtf8(String str);
 
-#define ssidLenAdr 1024
-#define ssidAdr 1025
-#define passwordLenAdr 1057
-#define passwordAdr 1058
-#define deauthReasonAdr 1090
-#define attackTimeoutAdr 1091
-#define attackPacketRateAdr 1093
-#define clientScanTimeAdr 1094
-//#define attackEncryptedAdr 1095 <-- address is now free for another setting
-#define ssidHiddenAdr 1096
-#define apScanHiddenAdr 1097
-#define apChannelAdr 1098
-#define useLedAdr 1099
-#define channelHopAdr 1100
-#define multiAPsAdr 1101
-#define multiAttacksAdr 1102
-#define macIntervalAdr 1103
-#define beaconIntervalAdr 1105
-#define ledPinAdr 1106
-#define macAPAdr 1107
-#define isMacAPRandAdr 1113
-
-#define checkNumAdr 2001
-#define checkNum 16
-
-class Settings
-{
+class Settings {
   public:
     Settings();
     void load();
+    void load(String filepath);
+    void save(bool force);
+    void save(bool force,String filepath);
     void reset();
-    void save();
-    void send();
-    void info();
+    void print();
 
-    int ssidLen;
-    String ssid = "";
-    bool ssidHidden;
-    int passwordLen;
-    String password = "";
-    int apChannel;
-    bool apScanHidden;
-    uint8_t deauthReason;
-    unsigned int attackTimeout;
-    int attackPacketRate;
-    int clientScanTime;
-    bool useLed;
-    bool channelHop;
-    bool multiAPs;
-    bool multiAttacks;
-    int macInterval;
-    bool beaconInterval;
-    int ledPin = 0;
-    int prevLedPin = 0;
-    Mac defaultMacAP;
-    Mac macAP;
-    bool isMacAPRand;
-    bool isSettingsLoaded = 0;
-    void syncMacInterface();
-    void setLedPin(int newLedPin);
-    bool pinStateOff = true;  // When attack is off, pin state is HIGH
+    void set(const char* str, String value);
+    String get(const char* str);
+
+    String getVersion();
+    uint16_t getDeauthsPerTarget();
+    uint8_t getDeauthReason();
+    bool getBeaconChannel();
+    uint8_t getForcePackets();
+    bool getAutosave();
+    uint32_t getAutosaveTime();
+    uint8_t getMaxCh();
+    bool getBeaconInterval();
+    uint8_t getChannel();
+    String getSSID();
+    String getPassword();
+    bool getSerialInterface();
+    bool getDisplayInterface();
+    bool getWebInterface();
+    uint16_t getChTime();
+    uint8_t* getMacSt();
+    uint8_t* getMacAP();
+    bool getRandomTX();
+    uint32_t getAttackTimeout();
+    bool getLedEnabled();
+    uint8_t getProbesPerSSID();
+    bool getHidden();
+    bool getCaptivePortal();
+    uint16_t getMinDeauths();
+    uint32_t getDisplayTimeout();
+    String getLang();
     
+    void setDeauthsPerTarget(uint16_t deauthsPerTarget);
+    void setDeauthReason(uint8_t deauthReason);
+    void setBeaconChannel(bool beaconChannel);
+    void setForcePackets(uint8_t forcePackets);
+    void setAutosave(bool autosave);
+    void setAutosaveTime(uint32_t autosaveTime);
+    void setMaxCh(uint8_t maxCh);
+    void setBeaconInterval(bool beaconInterval);
+    void setChannel(uint8_t channel);
+    void setSSID(String ssid);
+    void setPassword(String password);
+    void setSerialInterface(bool serialInterface);
+    void setDisplayInterface(bool displayInterface);
+    void setWebInterface(bool webInterface);
+    void setChTime(uint16_t chTime);
+    void setMacSt(String macStr);
+    bool setMacSt(uint8_t* macSt);
+    void setMacAP(String macStr);
+    bool setMacAP(uint8_t* macAP);
+    void setRandomTX(bool randomTX);
+    void setAttackTimeout(uint32_t attackTimeout);
+    void setLedEnabled(bool ledEnabled);
+    void setProbesPerSSID(uint8_t probesPerSSID);
+    void setHidden(bool hidden);
+    void setCaptivePortal(bool captivePortal);
+    void setMinDeauths(uint16_t minDeauths);
+    void setDisplayTimeout(uint32_t displayTimeout);
+    void setLang(String lang);
   private:
-    size_t getSize();
+    bool changed = false;
+
+    String version = VERSION;
+
+    bool beaconChannel = false;
+    bool autosave = true;
+    bool beaconInterval = false;
+    bool serialInterface = true;
+    bool displayInterface = USE_DISPLAY;
+    bool webInterface = true;
+    bool randomTX = false;
+    bool ledEnabled = true;
+
+    uint32_t attackTimeout = 600;
+    uint32_t autosaveTime = 10000;
+    uint32_t displayTimeout = 600;
+    uint16_t deauthsPerTarget = 20;
+    uint16_t chTime = 384;
+    uint16_t minDeauths = 3;
+    uint8_t forcePackets = 1;
+    uint8_t maxCh = 13;
+    uint8_t channel = 1;
+    uint8_t deauthReason = 1;
+    uint8_t* macSt;
+    uint8_t* macAP;
+    uint8_t probesPerSSID = 1;
+    
+    String ssid = "pwned";
+    String password = "deauther";
+    bool hidden = false;
+    bool captivePortal = true;
+    String lang = "en";
+        
+    String FILE_PATH = "/settings.json";
+    
+    String getJsonStr();
 };
 
 #endif
+
+
+

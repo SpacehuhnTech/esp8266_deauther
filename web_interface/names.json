@@ -1,0 +1,26 @@
+[
+	[
+		"b8:1d:aa:d5:6f:f0",
+		"don't!",
+		"[[[[not mine]]]]",
+		"",
+		1,
+		true
+	]
+	,[
+		"f4:6b:de:da:8d:95",
+		"Spacehuhn",
+		"--SpaceRouter!--",
+		"",
+		1,
+		false
+	]
+	,[
+		"00:11:22:33:44:55",
+		"TEST",
+		"JS sucks!",
+		"5c:37:3b:f7:67:be",
+		1,
+		true
+	]
+]

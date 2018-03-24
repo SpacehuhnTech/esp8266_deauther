@@ -1,0 +1,114 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="description" content="ESP8266 Deauther">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="theme-color" content="#36393E" />
+		<title>ESP8266 Deauther</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="js/site.js"></script>
+		<script src="js/ssids.js"></script>
+	</head>
+	<body onload="loadLang()">
+		<nav>
+			<a href="scan.html" data-translate="scan">Scan</a>
+			<a href="ssids.html" data-translate="ssids">SSIDs</a>
+			<a href="attack.html" data-translate="attacks">Attacks</a>
+			<a href="settings.html" data-translate="settings">Settings</a>
+			<a class="right" href="info.html" data-translate="info">Info</a>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<div id="error" class="hide"></div>
+					<h1 class="header" data-translate="ssids">SSIDs</h1>
+				</div>	
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="ssid">SSID</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="ssid" name="ssid" placeholder="SSID" maxlength="32">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="wpa2">WPA2</label>
+				</div>
+				<div class="col-6">
+					<label class='checkBoxContainer'><input name="wpa2" id="enc" type='checkbox'><span class='checkmark'></span></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="num" data-translate="number">Number</label>
+				</div>
+				<div class="col-6">
+					<input id="ssidNum" name="num" type="number" value="1" max="60" min="1">
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="overwrite" data-translate="overwrite">Overwrite</label>
+				</div>
+				<div class="col-6">
+					<label class='checkBoxContainer'><input name="overwrite" id="overwrite" type='checkbox' checked><span class='checkmark'></span></label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<button onclick="add()" data-translate="add">add</button>
+					<button onclick="addSelected()" data-translate="add_selected">clone selected APs</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<button onclick="load()" class="right" data-translate="reload">Reload</button>
+					<p>
+						<span class="red" data-translate="info_span">INFO:</span><br>
+						<span data-translate="ssids_info">
+						- This SSID list is used for the beacon and probe attack.<br>
+						- Each SSID can be up to 32 characters.<br>
+						- Don't forget to click save when you edited a SSID.<br>
+						- You have to click Reload after cloning SSIDs.<br>
+						</span>
+						<span data-translate="info_disclaimer">In case of an unexpected error, please reload the site and look at the serial monitor for further debugging.</span><br>
+						<hr>
+					</p>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-6">
+					<label for="interval" data-translate="time_interval">Time Interval</label>
+				</div>
+				<div class="col-6">
+					<input id="interval" name="interval" type="number" value="10" max="600" min="1">s
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<button onclick="enableRandom()" id="randomBtn">Enable Random Mode</button>
+					<p data-translate="random_desc">Enable the random mode to generate a random SSID list in a given interval.</p>
+					<hr>
+					<table id="ssidTable"></table>
+					<button onclick="removeAll()" class="red" data-translate="remove_all">Remove All</button>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					<div id="copyright">
+						<a href="https://github.com/spacehuhn/esp8266_deauther/wiki" target="_blank">Wiki</a> | <a href="https://github.com/spacehuhn/esp8266_deauther" target="_blank">GitHub</a><br>
+						<br>
+						Version 2.0<br>
+						Copyright (c) 2018 Stefan Kremser<br>
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

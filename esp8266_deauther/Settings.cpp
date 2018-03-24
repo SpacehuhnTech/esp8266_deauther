@@ -1,247 +1,574 @@
 #include "Settings.h"
 
 Settings::Settings() {
-  uint8_t tempMAC[6];
-  defaultMacAP.set(WiFi.softAPmacAddress(tempMAC));
-  if(!defaultMacAP.valid()) defaultMacAP.randomize();
-}
-
-void Settings::syncMacInterface(){
-  if(debug) Serial.println("Trying to sync the MAC addr with settings");
-  if(isSettingsLoaded){
-    Mac macToSync;
-    if(isMacAPRand){
-      macToSync.randomize();
-      wifi_set_macaddr(SOFTAP_IF, macToSync._get());
-      if(debug) Serial.println("Synced with a random mac addr : " + macToSync.toString());
-    }else if(macAP.valid()){
-      macToSync = macAP;
-      wifi_set_macaddr(SOFTAP_IF, macToSync._get());
-      if(debug) Serial.println("Synced with saved mac addr : " + macToSync.toString());
-    }else{
-      if(debug) Serial.println("Could not sync because of invalid settings !");
-    }
-  }else{
-    if(debug) Serial.println("Could not sync because settings are not loaded !");
-  }
-}
-
-void Settings::setLedPin(int newLedPin){
-  prevLedPin = ledPin;
-  if(newLedPin > 0 && newLedPin != prevLedPin){
-    ledPin = newLedPin;
-    pinMode(ledPin, OUTPUT);
-    if(!prevLedPin == 0){
-      digitalWrite(ledPin, digitalRead(prevLedPin));
-      digitalWrite(prevLedPin, pinStateOff);
-      pinMode(prevLedPin, INPUT);
-    }else{
-      digitalWrite(ledPin, pinStateOff);
-    }
-  }
+  macSt = (uint8_t*)malloc(6);
+  macAP = (uint8_t*)malloc(6);
 }
 
 void Settings::load() {
+  DynamicJsonBuffer jsonBuffer(4000);
 
-  if (EEPROM.read(checkNumAdr) != checkNum) {
-    reset();
-    return;
+  // check & read file
+  String json = getJsonStr();
+  checkFile(FILE_PATH, json);
+  JsonObject &data = parseJSONFile(FILE_PATH, jsonBuffer);
+
+  // VERSION
+  version = data.get<String>("version");
+
+  // AP
+  if(data.containsKey(keyword(S_SSID))) setSSID(data.get<String>(keyword(S_SSID)));
+  if(data.containsKey(keyword(S_PASSWORD))) setPassword(data.get<String>(keyword(S_PASSWORD)));
+  if(data.containsKey(keyword(S_CHANNEL))) setChannel(data.get<uint8_t>(keyword(S_CHANNEL)));
+  if(data.containsKey(keyword(S_HIDDEN))) setHidden(data.get<bool>(keyword(S_HIDDEN)));
+  if(data.containsKey(keyword(S_CAPTIVEPORTAL))) setCaptivePortal(data.get<bool>(keyword(S_CAPTIVEPORTAL)));
+
+  // GENERAL
+  if(data.containsKey(keyword(S_LANG))) setLang(data.get<String>(keyword(S_LANG)));
+  if(data.containsKey(keyword(S_DISPLAYINTERFACE))) setDisplayInterface(data.get<bool>(keyword(S_DISPLAYINTERFACE)));
+  if(data.containsKey(keyword(S_DISPLAY_TIMEOUT))) setDisplayTimeout(data.get<uint32_t>(keyword(S_DISPLAY_TIMEOUT)));
+  if(data.containsKey(keyword(S_SERIALINTERFACE))) setSerialInterface(data.get<bool>(keyword(S_SERIALINTERFACE)));
+  if(data.containsKey(keyword(S_WEBINTERFACE))) setWebInterface(data.get<bool>(keyword(S_WEBINTERFACE)));
+  if(data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
+  if(data.containsKey(keyword(S_MAXCH))) setMaxCh(data.get<uint8_t>(keyword(S_MAXCH)));
+  if(data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
+  if(data.containsKey(keyword(S_MACST))) setMacSt(data.get<String>(keyword(S_MACST)));
+
+  // SCAN
+  if(data.containsKey(keyword(S_CHTIME))) setChTime(data.get<uint16_t>(keyword(S_CHTIME)));
+  if(data.containsKey(keyword(S_MIN_DEAUTHS))) setMinDeauths(data.get<uint16_t>(keyword(S_MIN_DEAUTHS)));
+  
+  // ATTACK
+  if(data.containsKey(keyword(S_ATTACKTIMEOUT))) setAttackTimeout(data.get<uint32_t>(keyword(S_ATTACKTIMEOUT)));
+  if(data.containsKey(keyword(S_FORCEPACKETS))) setForcePackets(data.get<uint8_t>(keyword(S_FORCEPACKETS)));
+  if(data.containsKey(keyword(S_DEAUTHSPERTARGET))) setDeauthsPerTarget(data.get<uint16_t>(keyword(S_DEAUTHSPERTARGET)));
+  if(data.containsKey(keyword(S_DEAUTHREASON))) setDeauthReason(data.get<uint8_t>(keyword(S_DEAUTHREASON)));
+  if(data.containsKey(keyword(S_BEACONCHANNEL))) setBeaconChannel(data.get<bool>(keyword(S_BEACONCHANNEL)));
+  if(data.containsKey(keyword(S_BEACONINTERVAL))) setBeaconInterval(data.get<bool>(keyword(S_BEACONINTERVAL)));
+  if(data.containsKey(keyword(S_RANDOMTX))) setRandomTX(data.get<bool>(keyword(S_RANDOMTX)));
+  if(data.containsKey(keyword(S_PROBESPERSSID))) setProbesPerSSID(data.get<uint8_t>(keyword(S_PROBESPERSSID)));
+  
+  if (version != VERSION){
+    //reset();
+    version = VERSION;
+    changed = true;
   }
 
-  ssidLen = EEPROM.read(ssidLenAdr);
-  passwordLen = EEPROM.read(passwordLenAdr);
+  prnt(S_SETTINGS_LOADED);
+  prntln(FILE_PATH);
 
-  if (ssidLen < 1 || ssidLen > 32 || passwordLen < 8 && passwordLen != 0  || passwordLen > 32) {
-    reset();
-    return;
-  }
+  save(true); // force saving
+}
 
-  ssid = "";
-  password = "";
-  for (int i = 0; i < ssidLen; i++) ssid += (char)EEPROM.read(ssidAdr + i);
-  for (int i = 0; i < passwordLen; i++) password += (char)EEPROM.read(passwordAdr + i);
-
-  ssidHidden = (bool)EEPROM.read(ssidHiddenAdr);
-
-  if ((int)EEPROM.read(apChannelAdr) >= 1 && (int)EEPROM.read(apChannelAdr) <= 14) {
-    apChannel = (int)EEPROM.read(apChannelAdr);
-  } else {
-    apChannel = 1;
-  }
-  for(int i=0; i<6; i++){
-    macAP.setAt((uint8_t)EEPROM.read(macAPAdr+i),i);
-  }
-  if(!macAP.valid()) macAP.set(defaultMacAP);
-  isMacAPRand = (bool)EEPROM.read(isMacAPRandAdr);
-
-  apScanHidden = (bool)EEPROM.read(apScanHiddenAdr);
-
-  deauthReason = EEPROM.read(deauthReasonAdr);
-  attackTimeout = eepromReadInt(attackTimeoutAdr);
-  attackPacketRate = EEPROM.read(attackPacketRateAdr);
-  clientScanTime = EEPROM.read(clientScanTimeAdr);
-  useLed = (bool)EEPROM.read(useLedAdr);
-  channelHop = (bool)EEPROM.read(channelHopAdr);
-  multiAPs = (bool)EEPROM.read(multiAPsAdr);
-  multiAttacks = (bool)EEPROM.read(multiAttacksAdr);
-  macInterval = eepromReadInt(macIntervalAdr);
-  beaconInterval = (bool)EEPROM.read(beaconIntervalAdr);
-  setLedPin((int)EEPROM.read(ledPinAdr));
-  isSettingsLoaded = 1;
+void Settings::load(String filepath){
+  String tmp = FILE_PATH;
+  FILE_PATH = filepath;
+  load();
+  FILE_PATH = tmp;
 }
 
 void Settings::reset() {
-  if (debug) Serial.print("reset settings...");
+  // VERSION
+  version = VERSION;
+  
+  // AP
+  setSSID("pwned");
+  setPassword("deauther");
+  setChannel(1);
+  setHidden(false);
+  setCaptivePortal(true);
 
-  ssid = "pwned";
-  password = "deauther"; //must have at least 8 characters
-  ssidHidden = false;
-  apChannel = 1;
+  // GENERAL
+  setLang("en");
+  setAutosave(true);
+  setAutosaveTime(10000);
+  setDisplayInterface(USE_DISPLAY);
+  setDisplayTimeout(600);
+  setSerialInterface(true);
+  setWebInterface(true);
+  setLedEnabled(true);
+  setMaxCh(14);
+  wifi_get_macaddr(0x00, macSt);
+  wifi_get_macaddr(0x01, macAP);
 
-  ssidLen = ssid.length();
-  passwordLen = password.length();
-  macAP = defaultMacAP;
-  isMacAPRand = 0;
+  // SCAN
+  setChTime(384);
+  setMinDeauths(3);
+  
+  // ATTACK
+  setAttackTimeout(600);
+  setForcePackets(3);
+  setDeauthsPerTarget(20);
+  setDeauthReason(1);
+  setBeaconChannel(false);
+  setBeaconInterval(false);
+  setRandomTX(false);
+  setProbesPerSSID(1);
 
-  apScanHidden = true;
-
-  deauthReason = 0x01;
-  attackTimeout = 5 * 60;
-  attackPacketRate = 10;
-  clientScanTime = 15;
-  useLed = true;
-  channelHop = false;
-  multiAPs = false;
-  multiAttacks = false;
-  macInterval = 4;
-  beaconInterval = false;
-  ledPin = 2;
-
-  if (debug) Serial.println("done");
-
-  save();
+  prntln(S_SETTINGS_RESETED);
 }
 
-void Settings::save() {
-  ssidLen = ssid.length();
-  passwordLen = password.length();
+String Settings::getJsonStr() {
+  DynamicJsonBuffer jsonBuffer(4000);
+  JsonObject &data = jsonBuffer.createObject();
 
-  EEPROM.write(ssidLenAdr, ssidLen);
-  EEPROM.write(passwordLenAdr, passwordLen);
-  for (int i = 0; i < ssidLen; i++) EEPROM.write(ssidAdr + i, ssid[i]);
-  for (int i = 0; i < passwordLen; i++) EEPROM.write(passwordAdr + i, password[i]);
+  // Version
+  data.set("version", VERSION);
+  
+  // AP
+  data.set(keyword(S_SSID), ssid);
+  data.set(keyword(S_PASSWORD), password);
+  data.set(keyword(S_CHANNEL), channel);
+  data.set(keyword(S_HIDDEN), hidden);
+  data.set(keyword(S_CAPTIVEPORTAL), captivePortal);
 
-  EEPROM.write(ssidHiddenAdr, ssidHidden);
-  EEPROM.write(apChannelAdr, apChannel);
+  // GENERAL
+  data.set(keyword(S_LANG), lang);
+  data.set(keyword(S_AUTOSAVE), autosave);
+  data.set(keyword(S_AUTOSAVETIME), autosaveTime);
+  data.set(keyword(S_DISPLAYINTERFACE), displayInterface);
+  data.set(keyword(S_DISPLAY_TIMEOUT), displayTimeout);
+  data.set(keyword(S_SERIALINTERFACE), serialInterface);
+  data.set(keyword(S_WEBINTERFACE), webInterface);
+  data.set(keyword(S_LEDENABLED), ledEnabled);
+  data.set(keyword(S_MAXCH), maxCh);
+  data.set(keyword(S_MACAP), macToStr(getMacAP()));
+  data.set(keyword(S_MACST), macToStr(getMacSt()));
 
-  EEPROM.write(isMacAPRandAdr, isMacAPRand);
+  // SCAN
+  data.set(keyword(S_CHTIME), chTime);
+  data.set(keyword(S_MIN_DEAUTHS), minDeauths);
+  
+  // ATTACK
+  data.set(keyword(S_ATTACKTIMEOUT), attackTimeout);
+  data.set(keyword(S_FORCEPACKETS), forcePackets);
+  data.set(keyword(S_DEAUTHSPERTARGET), deauthsPerTarget);
+  data.set(keyword(S_DEAUTHREASON), deauthReason);
+  data.set(keyword(S_BEACONCHANNEL), beaconChannel);
+  data.set(keyword(S_BEACONINTERVAL), beaconInterval);
+  data.set(keyword(S_RANDOMTX), randomTX);
+  data.set(keyword(S_PROBESPERSSID), probesPerSSID);
+  
+  String buf;
+  data.printTo(buf);
 
-  for(int i=0; i<6; i++){
-    EEPROM.write(macAPAdr+i, macAP._get(i));
+  return buf;
+}
+
+void Settings::save(bool force) {
+  if (force || changed) {
+    String buf = getJsonStr();
+    if(writeFile(FILE_PATH, buf)){
+      prnt(S_SETTINGS_SAVED);
+      prntln(FILE_PATH);
+      changed = false;
+    }else{
+      prnt(F("ERROR: saving "));
+      prntln(FILE_PATH);
+    }
+  }
+}
+
+void Settings::save(bool force, String filepath) {
+  String tmp = FILE_PATH;
+  FILE_PATH = filepath;
+  save(force);
+  FILE_PATH = tmp;
+}
+
+void Settings::print() {
+  String settingsJson = getJsonStr();
+  settingsJson.replace("{", "{\r\n");
+  settingsJson.replace("}", "\r\n}");
+  settingsJson.replace(",", "\r\n");
+  prntln(S_SETTINGS_HEADER);
+  prntln(settingsJson);
+}
+
+void Settings::set(const char* str, String value) {
+  // booleans
+  if (eqls(str,S_BEACONCHANNEL)) setBeaconChannel(eqls(value,STR_TRUE));
+  else if (eqls(str,S_AUTOSAVE)) setAutosave(eqls(value,STR_TRUE));
+  else if (eqls(str,S_BEACONINTERVAL)) setBeaconInterval(eqls(value,STR_TRUE));
+  else if (eqls(str,S_SERIALINTERFACE)) setSerialInterface(eqls(value,STR_TRUE));
+  else if (eqls(str,S_DISPLAYINTERFACE)) setDisplayInterface(eqls(value,STR_TRUE));
+  else if (eqls(str,S_WEBINTERFACE)) setWebInterface(eqls(value,STR_TRUE));
+  else if (eqls(str,S_RANDOMTX)) setRandomTX(eqls(value,STR_TRUE));
+  else if (eqls(str,S_LEDENABLED)) setLedEnabled(eqls(value,STR_TRUE));
+  else if (eqls(str,S_HIDDEN)) setHidden(eqls(value,STR_TRUE));
+  else if (eqls(str,S_CAPTIVEPORTAL)) setCaptivePortal(eqls(value,STR_TRUE));
+
+  // integer
+  else if (eqls(str,S_FORCEPACKETS)) setForcePackets(value.toInt());
+  else if (eqls(str,S_AUTOSAVETIME)) setAutosaveTime(value.toInt());
+  else if (eqls(str,S_DEAUTHSPERTARGET)) setDeauthsPerTarget(value.toInt());
+  else if (eqls(str,S_CHTIME)) setChTime(value.toInt());
+  else if (eqls(str,S_MAXCH)) setMaxCh(value.toInt());
+  else if (eqls(str,S_CHANNEL)) setChannel(value.toInt());
+  else if (eqls(str,S_DEAUTHREASON)) setDeauthReason(value.toInt());
+  else if (eqls(str,S_ATTACKTIMEOUT)) setAttackTimeout(value.toInt());
+  else if (eqls(str,S_PROBESPERSSID)) setProbesPerSSID(value.toInt());
+  else if (eqls(str,S_MIN_DEAUTHS)) setMinDeauths(value.toInt());
+  else if (eqls(str,S_DISPLAY_TIMEOUT)) setDisplayTimeout(value.toInt());
+
+  // strings
+  else if (eqls(str,S_LANG)) setLang(value);
+  else if (eqls(str,S_SSID)) setSSID(value);
+  else if (eqls(str,S_PASSWORD)) setPassword(value);
+  else if (eqls(str,S_MACAP)) setMacAP(value);
+  else if (eqls(str,S_MACST)) setMacSt(value);
+  else if (eqls(str,S_MAC) && value.equalsIgnoreCase("random")){
+    setMacSt(value);
+    setMacAP(value);
   }
 
-  EEPROM.write(apScanHiddenAdr, apScanHidden);
+  else if (eqls(str,S_VERSION)) prntln(S_ERROR_VERSION);
 
-  EEPROM.write(deauthReasonAdr, deauthReason);
+  else {
+    prnt(S_ERROR_NOT_FOUND);
+    prntln(str);
+    return;
+  }
 
-  eepromWriteInt(attackTimeoutAdr, attackTimeout);
+  prnt(S_CHANGED_SETTING);
+  prntln(str);
+}
 
-  EEPROM.write(attackPacketRateAdr, attackPacketRate);
-  EEPROM.write(clientScanTimeAdr, clientScanTime);
-  EEPROM.write(useLedAdr, useLed);
-  EEPROM.write(channelHopAdr, channelHop);
-  EEPROM.write(multiAPsAdr, multiAPs);
-  EEPROM.write(multiAttacksAdr, multiAttacks);
-  EEPROM.write(checkNumAdr, checkNum);
-  eepromWriteInt(macIntervalAdr, macInterval);
-  EEPROM.write(beaconIntervalAdr, beaconInterval);
-  EEPROM.write(ledPinAdr, ledPin);
-  EEPROM.commit();
+String Settings::get(const char* str) {
+  if (eqls(str,S_SETTINGS)) print();
+  // booleans
+  else if (eqls(str,S_BEACONCHANNEL)) return b2s(getBeaconChannel());
+  else if (eqls(str,S_AUTOSAVE)) return b2s(getAutosave());
+  else if (eqls(str,S_BEACONINTERVAL)) return b2s(getBeaconInterval());
+  else if (eqls(str,S_SERIALINTERFACE)) return b2s(getSerialInterface());
+  else if (eqls(str,S_DISPLAYINTERFACE)) return b2s(getDisplayInterface());
+  else if (eqls(str,S_WEBINTERFACE)) return b2s(getWebInterface());
+  else if (eqls(str,S_RANDOMTX)) return b2s(getRandomTX());
+  else if (eqls(str,S_LEDENABLED)) return b2s(getLedEnabled());
+  else if (eqls(str,S_HIDDEN)) return b2s(getHidden());
+  else if (eqls(str,S_CAPTIVEPORTAL)) return b2s(getCaptivePortal());
 
-  if (debug) {
-    info();
-    Serial.println("settings saved");
+  // integer
+  else if (eqls(str,S_FORCEPACKETS)) return (String)getForcePackets();
+  else if (eqls(str,S_AUTOSAVETIME)) return (String)getAutosaveTime();
+  else if (eqls(str,S_DEAUTHSPERTARGET)) return (String)getDeauthsPerTarget();
+  else if (eqls(str,S_CHTIME)) return (String)getChTime();
+  else if (eqls(str,S_ATTACKTIMEOUT)) return (String)getAttackTimeout();
+  else if (eqls(str,S_MAXCH)) return (String)getMaxCh();
+  else if (eqls(str,S_CHANNEL)) return (String)getChannel();
+  else if (eqls(str,S_DEAUTHREASON)) return (String)getDeauthReason();
+  else if (eqls(str,S_PROBESPERSSID)) return (String)getProbesPerSSID();
+  else if (eqls(str,S_MIN_DEAUTHS)) return (String)getMinDeauths();
+  else if (eqls(str,S_DISPLAY_TIMEOUT)) return (String)getDisplayTimeout();
+
+  // strings
+  else if (eqls(str,S_SSID)) return getSSID();
+  else if (eqls(str,S_LANG)) return getLang();
+  else if (eqls(str,S_PASSWORD)) return getPassword();
+  else if (eqls(str,S_MACAP)) return macToStr(getMacAP());
+  else if (eqls(str,S_MACST)) return macToStr(getMacSt());
+  else if (eqls(str,S_MAC)) return "AP: " + macToStr(getMacAP()) + ", Station: " + macToStr(getMacSt());
+  else if (eqls(str,S_VERSION)) return getVersion();
+
+  else {
+    prnt(S_ERROR_NOT_FOUND);
+    prntln(str);
+  }
+  
+  return "";
+}
+
+// ===== GETTERS ===== //
+String Settings::getVersion() {
+  return version;
+}
+
+uint16_t Settings::getDeauthsPerTarget() {
+  return deauthsPerTarget;
+}
+
+uint8_t Settings::getDeauthReason() {
+  return deauthReason;
+}
+
+bool Settings::getBeaconChannel() {
+  return beaconChannel;
+}
+
+uint8_t Settings::getForcePackets() {
+  return forcePackets;
+}
+
+bool Settings::getAutosave() {
+  return autosave;
+}
+
+uint32_t Settings::getAutosaveTime() {
+  return autosaveTime;
+}
+
+uint8_t Settings::getMaxCh() {
+  return maxCh;
+}
+
+bool Settings::getBeaconInterval() {
+  return beaconInterval;
+}
+
+uint8_t Settings::getChannel() {
+  return channel;
+}
+
+String Settings::getSSID() {
+  return ssid;
+}
+
+String Settings::getPassword() {
+  return password;
+}
+
+bool Settings::getSerialInterface() {
+  return serialInterface;
+}
+
+bool Settings::getDisplayInterface() {
+  return displayInterface;
+}
+
+bool Settings::getWebInterface() {
+  return webInterface;
+}
+
+uint16_t Settings::getChTime() {
+  return chTime;
+}
+
+uint8_t* Settings::getMacSt() {
+  return macSt;
+}
+
+uint8_t* Settings::getMacAP() {
+  return macAP;
+}
+
+bool Settings::getRandomTX() {
+  return randomTX;
+}
+
+uint32_t Settings::getAttackTimeout() {
+  return attackTimeout;
+}
+
+bool Settings::getLedEnabled() {
+  return ledEnabled;
+}
+
+uint8_t Settings::getProbesPerSSID() {
+  return probesPerSSID;
+}
+
+bool Settings::getHidden() {
+  return hidden;
+}
+
+bool Settings::getCaptivePortal() {
+  return captivePortal;
+}
+
+uint16_t Settings::getMinDeauths(){
+  return minDeauths;
+}
+
+uint32_t Settings::getDisplayTimeout(){
+  return displayTimeout;
+}
+
+String Settings::getLang(){
+  return lang;
+}
+
+// ===== SETTERS ===== //
+
+void Settings::setDeauthsPerTarget(uint16_t deauthsPerTarget) {
+  Settings::deauthsPerTarget = deauthsPerTarget;
+  changed = true;
+}
+
+void Settings::setDeauthReason(uint8_t deauthReason) {
+  Settings::deauthReason = deauthReason;
+  changed = true;
+}
+
+void Settings::setBeaconChannel(bool beaconChannel) {
+  Settings::beaconChannel = beaconChannel;
+  changed = true;
+}
+
+void Settings::setForcePackets(uint8_t forcePackets) {
+  if(forcePackets > 0){
+    Settings::forcePackets = forcePackets;
+    changed = true;
   }
 }
 
-void Settings::info() {
-  Serial.println("Settings:");
-  Serial.println("SSID: " + ssid);
-  Serial.println("SSID length: " + (String)ssidLen);
-  Serial.println("SSID hidden: " + (String)ssidHidden);
-  Serial.println("password: " + password);
-  Serial.println("password length: " + (String)passwordLen);
-  Serial.println("channel: " + (String)apChannel);
-  Serial.println("Default MAC AP: " + defaultMacAP.toString());
-  Serial.println("Saved MAC AP: " + macAP.toString());
-  Serial.println("MAC AP random: " + (String)isMacAPRand);
-  Serial.println("Scan hidden APs: " + (String)apScanHidden);
-  Serial.println("deauth reson: " + (String)(int)deauthReason);
-  Serial.println("attack timeout: " + (String)attackTimeout);
-  Serial.println("attack packet rate: " + (String)attackPacketRate);
-  Serial.println("client scan time: " + (String)clientScanTime);
-  Serial.println("use built-in LED: " + (String)useLed);
-  Serial.println("channel hopping: " + (String)channelHop);
-  Serial.println("multiple APs: " + (String)multiAPs);
-  Serial.println("multiple Attacks: " + (String)multiAttacks);
-  Serial.println("mac change interval: " + (String)macInterval);
-  Serial.println("1s beacon interval: " + (String)beaconInterval);
-  Serial.println("LED Pin: " + (String)ledPin);
+void Settings::setAutosave(bool autosave) {
+  Settings::autosave = autosave;
+  changed = true;
 }
 
-size_t Settings::getSize() {
-  String json = "{";
-  size_t jsonSize = 0;
-
-  json += "\"ssid\":\"" + ssid + "\",";
-  json += "\"ssidHidden\":" + (String)ssidHidden + ",";
-  json += "\"password\":\"" + password + "\",";
-  json += "\"apChannel\":" + (String)apChannel + ",";
-  json += "\"macAp\":\"" + macAP.toString() + "\",";
-  json += "\"randMacAp\":" + (String)isMacAPRand + ",";
-  json += "\"apScanHidden\":" + (String)apScanHidden + ",";
-  json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
-  json += "\"attackTimeout\":" + (String)attackTimeout + ",";
-  json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
-  json += "\"clientScanTime\":" + (String)clientScanTime + ",";
-  json += "\"useLed\":" + (String)useLed + ",";
-  json += "\"channelHop\":" + (String)channelHop + ",";
-  json += "\"multiAPs\":" + (String)multiAPs + ",";
-  json += "\"multiAttacks\":" + (String)multiAttacks + ",";
-  json += "\"macInterval\":" + (String)macInterval + ",";
-  json += "\"beaconInterval\":" + (String)beaconInterval + ",";
-  json += "\"ledPin\":" + (String)ledPin + "}";
-  jsonSize += json.length();
-
-  return jsonSize;
+void Settings::setAutosaveTime(uint32_t autosaveTime) {
+  Settings::autosaveTime = autosaveTime;
+  changed = true;
 }
 
-void Settings::send() {
-  if (debug) Serial.println("getting settings json");
-  sendHeader(200, "text/json", getSize());
-
-  String json = "{";
-  json += "\"ssid\":\"" + ssid + "\",";
-  json += "\"ssidHidden\":" + (String)ssidHidden + ",";
-  json += "\"password\":\"" + password + "\",";
-  json += "\"apChannel\":" + (String)apChannel + ",";
-  json += "\"macAp\":\"" + macAP.toString() + "\",";
-  json += "\"randMacAp\":" + (String)isMacAPRand + ",";
-  json += "\"apScanHidden\":" + (String)apScanHidden + ",";
-  json += "\"deauthReason\":" + (String)(int)deauthReason + ",";
-  json += "\"attackTimeout\":" + (String)attackTimeout + ",";
-  json += "\"attackPacketRate\":" + (String)attackPacketRate + ",";
-  json += "\"clientScanTime\":" + (String)clientScanTime + ",";
-  json += "\"useLed\":" + (String)useLed + ",";
-  json += "\"channelHop\":" + (String)channelHop + ",";
-  json += "\"multiAPs\":" + (String)multiAPs + ",";
-  json += "\"multiAttacks\":" + (String)multiAttacks + ",";
-  json += "\"macInterval\":" + (String)macInterval + ",";
-  json += "\"beaconInterval\":" + (String)beaconInterval + ",";
-  json += "\"ledPin\":" + (String)ledPin + "}";
-  sendToBuffer(json);
-  sendBuffer();
-
-  if (debug) Serial.println("\ndone");
-
+void Settings::setMaxCh(uint8_t maxCh) {
+  Settings::maxCh = maxCh;
+  changed = true;
 }
+
+void Settings::setBeaconInterval(bool beaconInterval) {
+  Settings::beaconInterval = beaconInterval;
+  changed = true;
+}
+
+void Settings::setChannel(uint8_t channel) {
+  if (channel >= 1 && channel <= maxCh) {
+    Settings::channel = channel;
+    setWifiChannel(channel);
+    changed = true;
+    prnt(S_CHANNEL_CHANGE);
+    prntln(channel);
+  } else {
+    prnt(S_CHANNEL_ERROR);
+    prntln(maxCh);
+  }
+}
+
+void Settings::setSSID(String ssid) {
+  if (ssid.length() > 0 && ssid.length() <= 32) {
+    ssid = fixUtf8(ssid);
+    Settings::ssid = ssid;
+    changed = true;
+  } else {
+    prntln(S_ERROR_SSID_LEN);
+  }
+}
+
+void Settings::setPassword(String password) {
+  if (password.length() >= 8 && password.length() <= 32) {
+    password = fixUtf8(password);
+    Settings::password = password;
+    changed = true;
+  } else {
+    prntln(S_ERROR_PASSWORD_LEN);
+  }
+}
+
+void Settings::setSerialInterface(bool serialInterface) {
+  Settings::serialInterface = serialInterface;
+  changed = true;
+}
+
+void Settings::setDisplayInterface(bool displayInterface) {
+  Settings::displayInterface = displayInterface;
+  changed = true;
+}
+
+void Settings::setWebInterface(bool webInterface) {
+  Settings::webInterface = webInterface;
+  changed = true;
+}
+
+void Settings::setChTime(uint16_t chTime) {
+  Settings::chTime = chTime;
+  changed = true;
+}
+
+void Settings::setMacSt(String macStr) {
+  uint8_t mac[6];
+
+  if(eqls(macStr, S_RANDOM))
+    getRandomMac(mac);
+  else
+    strToMac(macStr, mac);
+  
+  setMacSt(mac);
+}
+
+bool Settings::setMacSt(uint8_t* macSt){
+  if(macSt[0] % 2 == 0){
+    memcpy(Settings::macSt, macSt, 6);
+    changed = true;
+    return true;
+  }
+  return false;
+}
+
+void Settings::setMacAP(String macStr){
+  uint8_t mac[6];
+
+  if(eqls(macStr, S_RANDOM))
+    getRandomMac(mac);
+  else
+    strToMac(macStr, mac);
+  
+  setMacAP(mac);
+}
+
+bool Settings::setMacAP(uint8_t* macAP){
+  if(macAP[0] % 2 == 0){
+    memcpy(Settings::macAP, macAP, 6);
+    changed = true;
+    return true;
+  }
+  return false;
+}
+
+void Settings::setRandomTX(bool randomTX){
+  Settings::randomTX = randomTX;
+  changed = true;
+}
+
+void Settings::setAttackTimeout(uint32_t attackTimeout){
+  Settings::attackTimeout = attackTimeout;
+  changed = true;
+}
+
+void Settings::setLedEnabled(bool ledEnabled) {
+  Settings::ledEnabled = ledEnabled;
+  changed = true;
+}
+
+void Settings::setProbesPerSSID(uint8_t probesPerSSID) {
+  if(probesPerSSID > 0){
+    Settings::probesPerSSID = probesPerSSID;
+    changed = true;
+  }
+}
+
+void Settings::setHidden(bool hidden) {
+  Settings::hidden = hidden;
+  changed = true;
+}
+
+void Settings::setCaptivePortal(bool captivePortal){
+  Settings::captivePortal = captivePortal;
+  changed = true;
+}
+
+void Settings::setMinDeauths(uint16_t minDeauths){
+  Settings::minDeauths = minDeauths;
+  changed = true;
+}
+
+void Settings::setDisplayTimeout(uint32_t displayTimeout){
+  Settings::displayTimeout = displayTimeout;
+  changed = true;
+}
+
+void Settings::setLang(String lang){
+  Settings::lang = lang;
+  changed = true;
+}
+
+

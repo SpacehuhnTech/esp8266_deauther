@@ -1,158 +1,196 @@
 #ifndef Attack_h
 #define Attack_h
 
-#define maxChannel 11
-
+#include "Arduino.h"
 #include <ESP8266WiFi.h>
-
-extern "C" {
-#include "user_interface.h"
-}
-
-#include "Mac.h"
-#include "MacList.h"
-#include "APScan.h"
-#include "ClientScan.h"
+#include "Accesspoints.h"
+#include "Stations.h"
+#include "SSIDs.h"
 #include "Settings.h"
-#include "SSIDList.h"
+#include "Scan.h"
+#include "language.h"
 
-#define attacksNum 3
-#define macListLen 64
-
-extern void PrintHex8(uint8_t *data, uint8_t length);
-extern void getRandomVendorMac(uint8_t *buf);
-extern String data_getVendor(uint8_t first, uint8_t second, uint8_t third);
-extern const bool debug;
-extern void addLog(String str);
-extern void openLog();
-extern void closeLog();
-extern String attackMode_deauth;
-extern String attackMode_beacon;
-
-extern APScan apScan;
-extern ClientScan clientScan;
 extern Settings settings;
-extern SSIDList ssidList;
+extern SSIDs ssids;
+extern Accesspoints accesspoints;
+extern Stations stations;
+extern Scan scan;
 
-class Attack
-{
+extern uint8_t wifi_channel;
+extern uint8_t broadcast[6];
+extern uint32_t currentTime;
+
+extern bool macBroadcast(uint8_t* mac);
+extern void getRandomMac(uint8_t* mac);
+extern void setOutputPower(float dBm);
+extern String macToStr(uint8_t* mac);
+extern String bytesToStr(uint8_t* b, uint32_t size);
+extern void setWifiChannel(uint8_t ch);
+extern bool writeFile(String path, String &buf);
+
+class Attack {
   public:
     Attack();
-    void generate();
-    void run();
-    void start(int num);
-    void stop(int num);
-    void stopAll();
-    void sendResults();
-    size_t getSize();
-    void refreshLed();
-    void changeRandom(int num);
-
-    bool ssidChange = true;
-  private:
-
-    void buildDeauth(Mac _ap, Mac _client, uint8_t type, uint8_t reason);
-    void buildBeacon(Mac _ap, String _ssid, int _ch, bool encrypt);
-    void _log(int num);
-    void buildProbe(String _ssid, Mac _mac);
-    bool send();
-
-    void sendDeauths(Mac from, Mac to);
     
-    //attack declarations
-    const String attackNames[attacksNum] = {"Deauth", "Beacon", "Probe-Request"};
+    void start();
+    void start(bool beacon, bool deauth, bool deauthAll, bool probe, bool output, uint32_t timeout);
+    void stop();
+    void update();
 
-    //attack infos
-    String stati[attacksNum];
-    unsigned int packetsCounter[attacksNum];
-    bool isRunning[attacksNum];
+    void enableOutput();
+    void disableOutput();
+    void status();
+    String getStatusJSON();
+    
+    bool deauthAP(uint8_t num);
+    bool deauthStation(uint8_t num);
+    bool deauthName(uint8_t num);
+    bool deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch);
+    
+    bool sendBeacon(uint8_t tc);
+    bool sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2);
+    
+    bool sendProbe(uint8_t tc);
+    bool sendProbe(uint8_t* mac, const char* ssid, uint8_t ch);
 
-    MacList beaconAdrs;
+    bool sendPacket(uint8_t* packet, uint16_t packetSize, uint16_t* packetCounter, uint8_t ch, uint16_t tries);
+    
+    bool isRunning();
 
-    //packet buffer
-    uint8_t packet[128];
-    int packetSize;
+    uint32_t getDeauthPkts();
+    uint32_t getBeaconPkts();
+    uint32_t getProbePkts();
+    uint32_t getDeauthMaxPkts();
+    uint32_t getBeaconMaxPkts();
+    uint32_t getProbeMaxPkts();
+  private:
+    void deauthUpdate();
+    void deauthAllUpdate();
+    void beaconUpdate();
+    void probeUpdate();
 
-    //timestamp for running every attack
-    unsigned long prevTime[attacksNum];
+    void updateCounter();
+  
+    bool running = false;
+    bool output = true;
 
-    //packet declarations
+    struct AttackType{
+      bool active = false; // if attack is activated
+      uint16_t packetCounter = 0; // how many packets are sent per second
+      uint16_t maxPkts = 0; // how many packets should be sent per second
+      uint8_t tc = 0; // target counter, i.e. which AP or SSID
+      uint32_t time = 0; // time last packet was sent
+    };
+
+    AttackType deauth;
+    AttackType beacon;
+    AttackType probe;
+    bool deauthAll = false;
+
+    uint32_t deauthPkts = 0;
+    uint32_t beaconPkts = 0;
+    uint32_t probePkts = 0;
+    
+    int8_t tmpID;
+
+    uint16_t packetSize = 0;
+    uint32_t attackTime = 0; // for counting how many packets per second
+    uint32_t attackStartTime = 0;
+    uint32_t timeout;
+    
+    // random mac address for making the beacon packets
+    uint8_t mac[6] = {0xAA,0xBB,0xCC,0x00,0x11,0x22};
+    
     uint8_t deauthPacket[26] = {
       /*  0 - 1  */ 0xC0, 0x00, //type, subtype c0: deauth (a0: disassociate)
       /*  2 - 3  */ 0x00, 0x00, //duration (SDK takes care of that)
-      /*  4 - 9  */ 0xBB, 0xBB, 0xBB, 0xBB, 0xBB, 0xBB,//reciever (target)
+      /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,//reciever (target)
       /* 10 - 15 */ 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, //source (ap)
       /* 16 - 21 */ 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, 0xCC, //BSSID (ap)
       /* 22 - 23 */ 0x00, 0x00, //fragment & squence number
       /* 24 - 25 */ 0x01, 0x00 //reason code (1 = unspecified reason)
     };
 
-    uint8_t beaconPacket_header[36] = {
-      /*  0 - 1  */ 0x80, 0x00,
-      /*  2 - 3  */ 0x00, 0x00, //beacon
-      /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, //destination: broadcast
-      /* 10 - 15 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
-      /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, //source
-      /* 22 - 23 */ 0xc0, 0x6c,
-      /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00,
-      /* 32 - 33 */ 0x64, 0x00, //0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
-      /* 34 - 35 */ 0x01, 0x04
-      /*,0x00, 0x06, //SSID size
-         0x72, 0x72, 0x72, 0x72, 0x72, 0x72, //SSID
-         >>beaconPacket_end<<*/
+    uint8_t probePacket[68] = {
+      /*  0 - 1  */ 0x40, 0x00,                         // Type: Probe Request
+      /*  2 - 3  */ 0x00, 0x00,                         // Duration: 0 microseconds
+      /*  4 - 9  */ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // Destination: Broadcast
+      /* 10 - 15 */ 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, // Source: random MAC
+      /* 16 - 21 */ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, // BSS Id: Broadcast
+      /* 22 - 23 */ 0x00, 0x00,                         // Sequence number (will be replaced by the SDK)
+      /* 24 - 25 */ 0x00, 0x20,                         // Tag: Set SSID length, Tag length: 32
+      /* 26 - 57 */ 0x20, 0x20, 0x20, 0x20,             // SSID
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20,
+                    0x20, 0x20, 0x20, 0x20,
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20,             
+      /* 58 - 59 */ 0x01, 0x04, //Tag Number: Supported Rates (1), Tag length: 4
+      /* 60 */      0x82, // 1(B)
+      /* 61 */      0x84, // 2(B)
+      /* 62 */      0x8b, // 5.5(B)
+      /* 63 */      0x96, // 11(B) 
+      /* 64 */      0x24, // 18
+      /* 65 */      0x30, // 24
+      /* 66 */      0x48, // 36
+      /* 67 */      0x6c  // 54
     };
+    
+    uint8_t beaconPacket[109] = {
+      /*  0 - 3  */ 0x80, 0x00, 0x00, 0x00, // Type/Subtype: managment beacon frame
+      /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Destination: broadcast
+      /* 10 - 15 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // Source
+      /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, // Source
 
-    uint8_t beaconPacket_end[12] = {
-      0x01, 0x08, 0x82, 0x84,
-      0x8b, 0x96, 0x24, 0x30, 0x48, 0x6c, 0x03, 0x01
-      /*,channel*/
+      // Fixed parameters
+      /* 22 - 23 */ 0x00, 0x00, // Fragment & sequence number (will be done by the SDK)
+      /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, // Timestamp
+      /* 32 - 33 */ 0x64, 0x00, // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
+      /* 34 - 35 */ 0x31, 0x00, // capabilities Tnformation
+      
+      // Tagged parameters
+
+      // SSID parameters
+      /* 36 - 37 */ 0x00, 0x20, // Tag: Set SSID length, Tag length: 32
+      /* 38 - 69 */ 0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20,
+                    0x20, 0x20, 0x20, 0x20,
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20, 
+                    0x20, 0x20, 0x20, 0x20, // SSID
+
+      // Supported Rates
+      /* 70 - 71 */ 0x01, 0x08, // Tag: Supported Rates, Tag length: 8
+      /* 72 */ 0x82, // 1(B)
+      /* 73 */ 0x84, // 2(B)
+      /* 74 */ 0x8b, // 5.5(B)
+      /* 75 */ 0x96, // 11(B) 
+      /* 76 */ 0x24, // 18
+      /* 77 */ 0x30, // 24
+      /* 78 */ 0x48, // 36
+      /* 79 */ 0x6c, // 54
+       
+      // Current Channel
+      /* 80 - 81 */ 0x03, 0x01, // Channel set, length
+      /* 82 */      0x01,       // Current Channel
+      
+      // RSN information
+      /*  83 -  84 */ 0x30, 0x18, 
+      /*  85 -  86 */ 0x01, 0x00, 
+      /*  87 -  90 */ 0x00, 0x0f, 0xac, 0x02,
+      /*  91 -  92 */ 0x02, 0x00, 
+      /*  93 - 100 */ 0x00, 0x0f, 0xac, 0x04, 0x00, 0x0f, 0xac, 0x02,
+      /* 101 - 102 */ 0x01, 0x00, 
+      /* 103 - 106 */ 0x00, 0x0f, 0xac, 0x02,
+      /* 107 - 108 */ 0x00, 0x00
     };
-
-    uint8_t beaconWPA2tag[26] = {
-      0x30, //RSN tag
-      0x18, //tag length
-      0x01, 0x00, //RSN version
-      0x00, 0x0f, 0xac, 0x02, //cipher (TKIP)
-      0x02, 0x00, //pair cipher
-      0x00, 0x0f, 0xac, 0x04, //cipher (AES)
-      0x00, 0x0f, 0xac, 0x02, //cipher (TKIP)
-      0x01, 0x00, //AKM count
-      0x00, 0x0f, 0xac, 0x02, //PSK
-      0x00, 0x00 //RSN capabilities
-    };
-
-    uint8_t probePacket[25] = {
-      /*  0 - 1  */ 0x40, 0x00,                         //Type: Probe Request
-      /*  2 - 3  */ 0x00, 0x00,                         //Duration: 0 microseconds
-      /*  4 - 9  */ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, //Destination: Broadcast
-      /* 10 - 15 */ 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA, //Source: random MAC
-      /* 16 - 21 */ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, //BSS Id: Broadcast
-      /* 22 - 23 */ 0x00, 0x00,                         //Sequence number (will be replaced by the SDK)
-      /*    24   */ 0x00                                //Tag Number: SSID parameter set (0)
-      /*           ,0x06,                              //Tag length
-                    0xAA, 0xAA, 0xAA, 0xAA, 0xAA, 0xAA //SSID
-      */
-    };
-
-    uint8_t probePacket_RateTag[6] = {
-      0x01, //Tag Number: Supported Rates (1)
-      0x04, //Tag length: 4
-      //Supported Rates:
-      0x82, //1Mbit/s
-      0x84, //2Mbit/s
-      0x8b, //5.5Mbit/s
-      0x96  //11Mbit/s
-    };
-
-    int macListChangeCounter = 0;
-    int attackTimeoutCounter[attacksNum];
-    int channels[macListLen];
-    bool buildInLedStatus = false;
-
-    bool randomMode = false;
-    int randomInterval = 5;
-    int randomCounter = 0;
-    long randomTime = 0;
 };
 
 #endif
+
+
+

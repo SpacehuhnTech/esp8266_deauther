@@ -1,0 +1,64 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="description" content="ESP8266 Deauther">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="theme-color" content="#36393E" />
+		<title>ESP8266 Deauther</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="js/site.js"></script>
+		<script src="js/settings.js"></script>
+	</head>
+	<body onload="loadLang()">
+		<nav>
+			<a href="scan.html" data-translate="scan">Scan</a>
+			<a href="ssids.html" data-translate="ssids">SSIDs</a>
+			<a href="attack.html" data-translate="attacks">Attacks</a>
+			<a href="settings.html" data-translate="settings">Settings</a>
+			<a class="right" href="info.html" data-translate="info">Info</a>
+		</nav>
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					<div id="error" class="hide"></div>
+					<h1 class="header" data-translate="settings">Settings</h1>
+					
+					<button onclick="getFile('run?cmd=stopap')" class="red" data-translate="wifi_off">WiFi off</button>
+					<button onclick="getFile('run?cmd=reset;;save settings')" class="red" data-translate="reset">Reset</button>
+					<button onclick="getFile('run?cmd=reboot')" class="red right" data-translate="reboot">reboot</button>
+					
+					<p>
+						<span class="red" data-translate="info_span">INFO:</span><br>
+						<span data-translate="settings_info">
+						- Some settings require a reboot.<br>
+						- Click save to make sure that your changes are applied.<br>
+						</span>
+						<span data-translate="info_disclaimer">In case of an unexpected error, please reload the site and look at the serial monitor for further debugging.</span><br>
+					</p>
+					
+					<button onclick="save()" data-translate="save">save</button>
+					<button onclick="load()" class="right" data-translate="reload">reload</button>
+				</div>
+			</div>
+			
+			<div id="settingsList"></div>
+			
+			<div class="row">
+				<div class="col-12">
+					<button onclick="save()" class="green">save</button>
+					<button onclick="load()">reload</button>
+					
+					<div id="copyright">
+						<a href="https://github.com/spacehuhn/esp8266_deauther/wiki" target="_blank">Wiki</a> | <a href="https://github.com/spacehuhn/esp8266_deauther" target="_blank">GitHub</a><br>
+						<br>
+						Version 2.0<br>
+						Copyright (c) 2018 Stefan Kremser<br>
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
