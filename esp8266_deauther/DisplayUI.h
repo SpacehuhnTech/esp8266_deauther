@@ -43,7 +43,7 @@ extern String replaceUtf8(String str, String r);
 #define DRAW_INTERVAL 100 // 100ms = 10 FPS
 #define CHARS_PER_LINE 17
 #define SCROLL_SPEED 5
-#define SCREEN_INTRO_TIME 3000
+#define SCREEN_INTRO_TIME 2500
 // ====================== //
 
 struct Menu;

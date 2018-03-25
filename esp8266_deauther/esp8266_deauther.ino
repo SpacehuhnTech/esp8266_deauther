@@ -92,16 +92,16 @@ void setup() {
   
   // load settings
   settings.load();
-
-  // copy web files to SPIFFS
-  copyWebFiles(false);
-
+  
   // start display
   if (settings.getDisplayInterface()){
     displayUI.setup();
     displayUI.mode = SCREEN_MODE_INTRO;
   }
 
+  // copy web files to SPIFFS
+  copyWebFiles(false);
+  
   // load everything else
   names.load();
   ssids.load();
