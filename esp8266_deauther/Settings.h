@@ -11,7 +11,7 @@ extern "C" {
   #include "user_interface.h"
 }
 
-#define VERSION "v2.0"
+#define VERSION "v2.0.1"
 
 extern void checkFile(String path, String data);
 extern JsonVariant parseJSONFile(String path, DynamicJsonBuffer &jsonBuffer);
@@ -22,6 +22,7 @@ extern void getRandomMac(uint8_t* mac);
 extern bool strToMac(String macStr, uint8_t* mac);
 extern void setWifiChannel(uint8_t ch);
 extern String fixUtf8(String str);
+extern void copyWebFiles(bool force);
 
 class Settings {
   public:

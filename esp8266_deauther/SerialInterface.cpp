@@ -711,8 +711,9 @@ void SerialInterface::runCommand(String input) {
   // ===== FORMAT ==== //
   // format
   else if (eqlsCMD(0, CLI_FORMAT)) {
+    prnt(CLI_FORMATTING_SPIFFS);
     SPIFFS.format();
-    prntln(CLI_CLEARED_SPIFFS);
+    prntln(SETUP_OK);
   }
 
   // ===== DELETE ==== //

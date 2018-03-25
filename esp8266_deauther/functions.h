@@ -311,12 +311,19 @@ String buildString(String left, String right, int maxLen){
 
 /* ===== SPIFFS ===== */
 bool progmemToSpiffs(const char* adr, int len, String path) {
+  prnt(str(SETUP_COPYING) + path + str(SETUP_PROGMEM_TO_SPIFFS));
   File f = SPIFFS.open(path, "w+");
-  if (!f) return false;
+  if (!f){
+    prntln(SETUP_ERROR);
+    return false;
+  }
 
   for (int i = 0; i < len; i++) {
     f.write(pgm_read_byte_near(adr + i));
   }
+  f.close();
+  
+  prntln(SETUP_OK);
 }
 
 bool readFile(String path, String &buf) {

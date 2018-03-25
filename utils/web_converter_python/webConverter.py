@@ -87,7 +87,7 @@ for file in html_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists("/web/' + base_file + '.gz")) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), "/web/' + base_file + '.gz");\n'
+    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
 
 for file in css_files:
     base_file = os.path.basename(str(file))
@@ -114,7 +114,7 @@ for file in css_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists("/web/' + base_file + '.gz")) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), "/web/' + base_file + '.gz");\n'
+    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
 
 for file in js_files:
     q = PurePath('js')
@@ -145,7 +145,7 @@ for file in js_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists("/web/js/' + base_file + '.gz")) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), "/web/js/' + base_file + '.gz");\n'
+    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/js/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/js/' + base_file + '.gz")));\n'
 
 for file in lang_files:
     q = PurePath('lang')
@@ -173,7 +173,7 @@ for file in lang_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists("/web/lang/' + base_file + '.gz")) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), "/web/lang/' + base_file + '.gz");\n'
+    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/lang/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/lang/' + base_file + '.gz")));\n'
 
 base_file = os.path.basename(license_file_path)
 new_file = str(os.path.join(str(compressed), str("LICENSE")))
@@ -195,7 +195,7 @@ for char in hex_content:
     hex_formatted_content += "0x" + char + ", "
 hex_formatted_content = hex_formatted_content[:-2]
 progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-copy_files_function += '  if(!SPIFFS.exists("/web/' + base_file + '.gz")) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), "/web/' + base_file + '.gz");\n'
+copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
 
 print("[+] Saving everything into webfiles.h...")
 f = open(arduino_file_path, 'w')
@@ -209,7 +209,7 @@ f.write("#ifdef USE_PROGMEM_WEB_FILES\n")
 f.write(progmem_definitions)
 f.write("#endif\n")
 f.write("\n")
-f.write("void copyWebFiles(){\n")
+f.write("void copyWebFiles(bool force){\n")
 f.write("#ifdef USE_PROGMEM_WEB_FILES\n")
 f.write(copy_files_function)
 f.write("#endif\n")

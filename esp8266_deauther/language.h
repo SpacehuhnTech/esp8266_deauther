@@ -165,6 +165,8 @@ static const char SETUP_MOUNT_SPIFFS[] PROGMEM = "Mounting SPIFFS...";
 static const char SETUP_FORMAT_SPIFFS[] PROGMEM = "Formatting SPIFFS...";
 static const char SETUP_SERIAL_WARNING[] PROGMEM = "Warning: Serial deactivated";
 static const char SETUP_STARTED[] PROGMEM = "STARTED! \\o/";
+static const char SETUP_COPYING[] PROGMEM = "Copying ";
+static const char SETUP_PROGMEM_TO_SPIFFS[] PROGMEM = " from PROGMEM to SPIFFS...";
 
 // ===== SERIAL COMMAND LINE INTERFACE ===== //
 static const char CLI_SCAN[] PROGMEM = "scan";                          // scan
@@ -320,7 +322,7 @@ static const char CLI_SYSTEM_SPIFFS_OUT[] PROGMEM = "        block size %u bytes
 static const char CLI_FILES[] PROGMEM = "Files: ";
 static const char CLI_BYTES[] PROGMEM = " bytes";
 static const char CLI_SYSTEM_FOOTER[] PROGMEM = "===============================";
-static const char CLI_CLEARED_SPIFFS[] PROGMEM = "Cleared SPIFFS";
+static const char CLI_FORMATTING_SPIFFS[] PROGMEM = "Formatting SPIFFS...";
 static const char CLI_REMOVED[] PROGMEM = "Removed ";
 static const char CLI_ERROR_REMOVING[] PROGMEM = "ERROR: removing ";
 static const char CLI_REMOVING_LINES[] PROGMEM = "Removed lines ";
@@ -558,7 +560,7 @@ static const char SS_RANDOM_ENABLED[] PROGMEM = "SSID random mode enabled";
 static const char SS_RANDOM_DISABLED[] PROGMEM = "SSID random mode deactivated";
 static const char SS_JSON_SSIDS[] PROGMEM = "ssids";
 static const char SS_JSON_RANDOM[] PROGMEM = "random";
-static const char SS_JSON_DEFAULT[] PROGMEM = "{\"random\":false,\"ssids:\"[]}";
+static const char SS_JSON_DEFAULT[] PROGMEM = "{\"random\":false,\"ssids\":[]}";
 static const char SS_RANDOM_INFO[] PROGMEM = "Generating new SSIDs... Type \"disable random\" to stop the random mode";
 
 // ===== SCAN ==== //
