@@ -37,6 +37,8 @@ void setup() {
 
   Serial.println("DONE!");
 
+  delay(10000);
+  
   ESP.reset();
 }
 
