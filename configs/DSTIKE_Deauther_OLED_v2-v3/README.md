@@ -3,9 +3,9 @@
 |  |  |
 | - | - |
 | LED Type | Digital |
-| LED R | GPIO 2 |
+| LED R | GPIO 16 |
 | LED G | disabled |
-| LED B | GPIO 16 |
+| LED B | GPIO 2 |
 | Display and buttons enabled | YES |
 | Display Driver | SH1106  |
 | Display SDA | GPIO 5 (D1) |
