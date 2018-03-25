@@ -256,14 +256,14 @@ th, td {
 	#apTable .name,
 	
 	#stTable .id,
-	#stTable .ch,
+	#stTable .pkts,
 	#stTable .lastseen,
 	#stTable .mac,
 	
 	#nTable .id,
 	#nTable .vendor,
 	#nTable .ap,
-	#nTable .ch,
+	#nTable .mac,
 
 	#ssidTable .id	{
 	  display: none;
