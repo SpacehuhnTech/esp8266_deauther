@@ -89,12 +89,12 @@ void setup() {
   wifi_set_promiscuous_rx_cb([](uint8_t* buf, uint16_t len) {
     scan.sniffer(buf, len);
   });
-
-  // copy web files to SPIFFS
-  copyWebFiles();
   
   // load settings
   settings.load();
+
+  // copy web files to SPIFFS
+  copyWebFiles(false);
 
   // start display
   if (settings.getDisplayInterface()){
