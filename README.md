@@ -32,14 +32,14 @@ Version 2.0:
 This software allows you to easily perform a variety of actions to test 802.11 wireless networks by using an inexpensive ESP8266 WiFi SoC (System On A Chip).  
 
 The main feature, the deauthentication attack, is used to disconnect devices from their WiFi network.  
-No one seems to care about this huge vulnerability in the official 802.11 WiFi standard, so I took action and enabled everyone with less than 10 USD to recreate this project.  
+No one seems to care about this huge vulnerability in the official 802.11 WiFi standard, so I took action and enabled everyone who has less than 10 USD to spare to recreate this project.  
 I hope it raises more attention on the issue. In 2009 the WiFi Alliance actually fixed the problem (see [802.11w](https://en.wikipedia.org/wiki/IEEE_802.11w-2009)), but only a few companies implemented it into their devices and software.  
 To effectively prevent a deauthentication attack, both client and access point must support the 802.11w standard with protected managment frames (PMF).  
 While most client devices seem to support it when the access point forces it, basically no WiFi access point has it enabled.  
 
-Feel free to test your hardware, annoy these companies with the problem, share this project and push for a fix!
+Feel free to test your hardware out,annoy these companies with the problem, share this project and push for a fix!
 This project is also a great way to learn more about WiFi, micro controllers, Arduino, hacking and electronics/programming in general.  
-**But please use this tool responsably and do not use it against others without their permission!**
+**But please use this tool responsibly and do not use it against others without their permission!**
 
 The difference between deauthing and jamming: [click me](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ#difference-between-jammer-and-deauther)
 
@@ -63,7 +63,7 @@ Use it only against your own networks and devices!
 Please check the legal regulations in your country before using it.  
 I don't take any responsibility for what you do with this program.  
 
-It is not a frequency jammer as claimed falsely by many people. Its attack, its method and how to protect against it is described above.   It uses valid Wi-Fi frames described in the IEEE 802.11 standard and doesn't block or disrupt any frequencies.  
+It is **not a frequency jammer** as claimed falsely by many people. Its attack, its method and how to protect against it is described above. It uses valid Wi-Fi frames described in the IEEE 802.11 standard and doesn't block or disrupt any frequencies.  
 
 This project is meant to draw more attention on this issue.  
 The [deauthentication](https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_attack) attack shows how vulnerable the 802.11 Wi-Fi standard is and that it has to be fixed.  
