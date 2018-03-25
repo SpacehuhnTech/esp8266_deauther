@@ -35,6 +35,14 @@ void Stations::sort() {
   });
 }
 
+void Stations::sortAfterChannel() {
+  list->sort([](Station & a, Station & b) -> int{
+    if (a.ch == b.ch) return 0;
+    if (a.ch < b.ch) return -1;
+    if (a.ch > b.ch) return 1;
+  });
+}
+
 void Stations::removeAll() {
   internal_removeAll();
   prntln(ST_CLEARED_LIST);

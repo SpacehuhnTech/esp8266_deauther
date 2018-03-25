@@ -42,9 +42,9 @@ class Attack {
     void status();
     String getStatusJSON();
     
-    bool deauthAP(uint8_t num);
-    bool deauthStation(uint8_t num);
-    bool deauthName(uint8_t num);
+    bool deauthAP(int num);
+    bool deauthStation(int num);
+    bool deauthName(int num);
     bool deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_t ch);
     
     bool sendBeacon(uint8_t tc);
@@ -53,7 +53,7 @@ class Attack {
     bool sendProbe(uint8_t tc);
     bool sendProbe(uint8_t* mac, const char* ssid, uint8_t ch);
 
-    bool sendPacket(uint8_t* packet, uint16_t packetSize, uint16_t* packetCounter, uint8_t ch, uint16_t tries);
+    bool sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16_t tries);
     
     bool isRunning();
 
@@ -90,13 +90,17 @@ class Attack {
     uint32_t deauthPkts = 0;
     uint32_t beaconPkts = 0;
     uint32_t probePkts = 0;
-    
-    int8_t tmpID;
+
+    uint8_t apCount = 0;
+    uint8_t stCount = 0;
+    uint8_t nCount = 0;
+        
+    int8_t tmpID = -1;
 
     uint16_t packetSize = 0;
     uint32_t attackTime = 0; // for counting how many packets per second
     uint32_t attackStartTime = 0;
-    uint32_t timeout;
+    uint32_t timeout = 0;
     
     // random mac address for making the beacon packets
     uint8_t mac[6] = {0xAA,0xBB,0xCC,0x00,0x11,0x22};

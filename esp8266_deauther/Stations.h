@@ -27,6 +27,7 @@ class Stations {
     Stations();
     
     void sort();
+    void sortAfterChannel();
     
     void select(int num);
     void deselect(int num);

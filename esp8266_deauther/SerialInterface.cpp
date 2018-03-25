@@ -889,8 +889,12 @@ void SerialInterface::runCommand(String input) {
     for (int i = 0; i < packetSize; i++)
       packet[i] = strtoul((packetStr.substring(i * 2, i * 2 + 2)).c_str(), NULL, 16);
 
-    if (attack.sendPacket(packet, packetSize, &counter, wifi_channel, 10)) prntln(CLI_CUSTOM_SENT);
-    else prntln(CLI_CUSTOM_FAILED);
+    if (attack.sendPacket(packet, packetSize, wifi_channel, 10)){
+      prntln(CLI_CUSTOM_SENT);
+      counter++;
+    } else{
+      prntln(CLI_CUSTOM_FAILED);
+    }
   }
 
   // ===== LED ===== //
