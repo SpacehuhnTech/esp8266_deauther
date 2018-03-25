@@ -7,7 +7,8 @@
 | 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
 | 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br/>
 <br />
-<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.</b>
+<b>Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/deauther2.0/wiki/Supported-Devices">official deauther boards</a>.<br/>Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.<br>
+Also available: <a href="https://www.tindie.com/products/Spacehuhn/spacehuhn-stickers/">Stickers</a></b>!
 </p>
 
 ## What is New
@@ -42,6 +43,18 @@ This project is also a great way to learn more about WiFi, micro controllers, Ar
 
 The difference between deauthing and jamming: [click me](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ#difference-between-jammer-and-deauther)
 
+## Official Deauther Boards
+
+![PICTURE DSTIKE Deauther OLED Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/img/DSTIKE_Deauther_Board.jpg)
+
+If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
+- [Tindie](https://tindie.com/stores/lspoplove)  
+- [AliExpress](https://dstike.aliexpress.com/store/2996024)  
+- [Taobao](https://shop135375846.taobao.com)  
+
+Those boards are optimized for this project, ready to use and come preflashed with the Deauther software!  
+For more details visit the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki) under [Supported Devices](https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices).  
+
 ## Disclaimer
 This project is a proof of concept for testing and educational purposes.  
 Neither the ESP8266, nor its SDK was meant or built for such purposes. Bugs can occur!  
@@ -63,18 +76,6 @@ If you do, it only proves that you didn't understand anything of what this proje
 
 Visit our new [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki) on how to recreate this project and use it.  
 Happy Hacking!
-
-## Official Deauther Boards
-
-![PICTURE DSTIKE Deauther OLED Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/img/DSTIKE_Deauther_Board.jpg)
-
-If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
-- [Tindie](https://tindie.com/stores/lspoplove)  
-- [AliExpress](https://dstike.aliexpress.com/store/2996024)  
-- [Taobao](https://shop135375846.taobao.com)  
-
-Those boards are optimized for this project, ready to use and come preflashed with the Deauther software!  
-For more details visit the [Wiki](https://github.com/spacehuhn/esp8266_deauther/wiki) under [Supported Devices](https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices).  
 
 ## Credits
 A huge thanks to:
