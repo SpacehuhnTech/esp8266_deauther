@@ -1,0 +1,17 @@
+# DSTIKE Deauther v3 & DSTIKE NodeMCU-07 v2
+
+|  |  |
+| - | - |
+| LED Type | Neopixel (WS2812b) |
+| LED Pin | GPIO 15 |
+| Number of LEDs | 1 |
+| Display and buttons enabled | NO |
+| Display Driver | SH1106  |
+| Display SDA | GPIO 5 (D1) |
+| Display SCL | GPIO 4 (D2) |
+| Button Up |GPIO 12 |
+| Button Down | GPIO 13 |
+| Button Left | disabled |
+| Button Right | disabled |
+| Button A | GPIO 14 |
+| Button B |disabled |
