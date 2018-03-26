@@ -12,6 +12,7 @@ Also available: <a href="https://www.tindie.com/products/Spacehuhn/spacehuhn-sti
 </p>
 
 ## What is New
+[Here is a quick video about what is new](https://youtu.be/6oRmm3xfp6U)  
 Version 2.0:
 - Completly rewritten code base for better performance and later enhancements
 - Custom Deauther SDK for easy compiling using Arduino
