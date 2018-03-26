@@ -37,7 +37,7 @@ I hope it raises more attention on the issue. In 2009 the WiFi Alliance actually
 To effectively prevent a deauthentication attack, both client and access point must support the 802.11w standard with protected managment frames (PMF).  
 While most client devices seem to support it when the access point forces it, basically no WiFi access point has it enabled.  
 
-Feel free to test your hardware out,annoy these companies with the problem, share this project and push for a fix!
+Feel free to test your hardware out, annoy these companies with the problem, share this project and push for a fix!
 This project is also a great way to learn more about WiFi, micro controllers, Arduino, hacking and electronics/programming in general.  
 **But please use this tool responsibly and do not use it against others without their permission!**
 
