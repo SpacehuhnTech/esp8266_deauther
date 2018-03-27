@@ -162,6 +162,7 @@ function selectRow(type,id,selected){
 			getFile("run?cmd="+(selected ? "":"de")+"select station "+id);
 			break;
 		case 2:
+			save(id);
 			nameJson[id][5] = selected;
 			drawNames();
 			getFile("run?cmd="+(selected ? "":"de")+"select name "+id);
@@ -188,19 +189,26 @@ function remove(type,id){
 }
 
 function save(id){
-	nameJson[id][0] = getE("name_"+id+"_mac").innerHTML.replace("<br>","");
-	nameJson[id][2] = getE("name_"+id+"_name").innerHTML.replace("<br>","");
-	nameJson[id][3] = getE("name_"+id+"_apbssid").innerHTML.replace("<br>","");
-	nameJson[id][4] = getE("name_"+id+"_ch").innerHTML.replace("<br>","");
-	
-	if(nameJson[id][0].length != 17){
-		showMessage("ERROR: MAC invalid");
-		return;
+	var mac = getE("name_"+id+"_mac").innerHTML.replace("<br>","");
+	var name = getE("name_"+id+"_name").innerHTML.replace("<br>","");
+	var apbssid = getE("name_"+id+"_apbssid").innerHTML.replace("<br>","");
+	var ch = getE("name_"+id+"_ch").innerHTML.replace("<br>","");
+	var changed = mac != nameJson[id][0] || name != nameJson[id][2] || apbssid != nameJson[id][3] || ch != nameJson[id][4];
+	if(changed){
+		nameJson[id][0] = mac;
+		nameJson[id][2] = name;
+		nameJson[id][3] = apbssid;
+		nameJson[id][4] = ch;
+		
+		if(nameJson[id][0].length != 17){
+			showMessage("ERROR: MAC invalid");
+			return;
+		}
+		
+		getFile("run?cmd=replace name "+id+" -n \""+nameJson[id][2]+"\" -m \""+nameJson[id][0]+"\" -ch "+nameJson[id][4]+" -b \""+nameJson[id][3]+"\" "+(nameJson[id][5] ? "-s" : ""));
+		
+		drawNames();
 	}
-	
-	getFile("run?cmd=replace name "+id+" -n \""+nameJson[id][2]+"\" -m \""+nameJson[id][0]+"\" -ch "+nameJson[id][4]+" -b \""+nameJson[id][3]+"\" "+(nameJson[id][5] ? "-s" : ""));
-	
-	drawNames();
 }
 
 function add(type,id){
