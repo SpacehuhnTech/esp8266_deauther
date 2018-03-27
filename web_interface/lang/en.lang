@@ -27,7 +27,7 @@
 	"targets": "Targets",
 	"scan_info": "- Click Scan and wait until the blue LED on your board turns off (or changes to green), then click on Reload.\n- The web interface will be unavailable during a station scan and you will have to reconnect!\n- Please select only one target!\n",
 	"ssids_info": "- This SSID list is used for the beacon and probe attack.\n- Each SSID can be up to 32 characters.\n- Don't forget to click save when you edited a SSID.\n- You have to click Reload after cloning SSIDs.\n",
-	"attack_info": "- You might loose connection when starting an attack!\n- You need to select a target for the deauth attack.\n- You need a saved SSID for the beacon and probe attack.\n- Click reload to refresh the packet rate.\n",
+	"attack_info": "- You might lose connection when starting an attack!\n- You need to select a target for the deauth attack.\n- You need a saved SSID for the beacon and probe attack.\n- Click reload to refresh the packet rate.\n",
 	"settings_info": "- Some settings require a reboot.\n- Click save to make sure that your changes are applied.\n",
 	"info_disclaimer": "In case of an unexpected error, please reload the site and look at the serial monitor for further debugging.",
 	"start_stop": "START / STOP",
