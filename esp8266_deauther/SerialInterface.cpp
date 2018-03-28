@@ -145,7 +145,6 @@ void SerialInterface::runCommands(String input) {
 }
 
 void SerialInterface::runCommand(String input) {
-  input
   input.replace(String(NEWLINE), String());
   input.replace(String(CARRIAGERETURN), String());
   
@@ -159,13 +158,13 @@ void SerialInterface::runCommand(String input) {
   for (int i = 0; i < input.length() && i < 512; i++) {
     c = input.charAt(i);
 
-    // when char is an unescaped \
+    // when char is an unescaped 
     if(!escaped && c == BACKSLASH){
       escaped = true;
     }
     
     // (when char is a unescaped space AND it's not within quotes) OR char is \r or \n
-    else if (c == SPACE && !escaped && !withinQuotes) || c == CARRIAGERETURN || c == NEWLINE) {
+    else if ((c == SPACE && !escaped && !withinQuotes) || c == CARRIAGERETURN || c == NEWLINE) {
       // when tmp string isn't empty, add it to the list
       if (tmp.length() > 0){
         list->add(tmp);
@@ -182,7 +181,7 @@ void SerialInterface::runCommand(String input) {
     
     // add character to tmp string
     else {
-      tmp += c
+      tmp += c;
       escaped = false;
     }
   }
