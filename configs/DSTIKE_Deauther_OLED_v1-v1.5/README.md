@@ -10,6 +10,7 @@
 | Display Driver | SSD1306  |
 | Display SDA | GPIO 5 (D1) |
 | Display SCL | GPIO 4 (D2) |
+| Flip Display | NO |
 | Button Up |GPIO 12 |
 | Button Down | GPIO 13 |
 | Button Left | disabled |

@@ -12,6 +12,7 @@ The display can be enabled over the settings.
 | Display Driver | SSD1306 |
 | Display SDA | GPIO 5 (D1) |
 | Display SCL | GPIO 4 (D2) |
+| Flip Display | NO |
 | Button Up |GPIO 14 (D5) |
 | Button Down | GPIO 12 (D6) |
 | Button Left | disabled |

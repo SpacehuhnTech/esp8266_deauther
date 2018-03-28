@@ -74,6 +74,8 @@
     SDA/MOSI = GPIO 13 (D7) */
 //#define DISPLAY SSD1306Spi display = SSD1306Spi display = SSD1306Spi(5, 4, 15); // for 0.96" OLED with SPI
 //#define DISPLAY SH1106Spi display = SH1106Spi(5, 4); // for 1.3" OLED with SPI
+
+//#define FLIP_DIPLAY // uncomment that to flip the display vertically
 // ========================================================= //
 
 #endif

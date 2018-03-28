@@ -15,7 +15,9 @@ void DisplayUI::setupDisplay() {
   */
   display.setFont(DejaVu_Sans_Mono_12);
   display.setContrast(255);
+#ifndef FLIP_DIPLAY
   display.flipScreenVertically();
+#endif
   display.clear();
   display.display();
   // ====================== //
