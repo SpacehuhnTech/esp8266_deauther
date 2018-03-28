@@ -156,7 +156,7 @@ class DisplayUI {
 // ===== FONT ===== //
 // Created by http://oleddisplay.squix.ch/ Consider a donation
 // In case of problems make sure that you are using the font file with the correct version!
-const char DejaVu_Sans_Mono_12[] PROGMEM = {
+const uint8_t DejaVu_Sans_Mono_12[] PROGMEM = {
   0x07, // Width: 7
   0x0F, // Height: 15
   0x20, // First Char: 32

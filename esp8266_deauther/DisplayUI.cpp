@@ -8,6 +8,11 @@ void DisplayUI::setupDisplay() {
   // ===== adjustable ===== //
   // initialize display
   display.init();
+  /*
+  In case of a compiler (conversion char/uint8_t) error,
+  make sure to have version 4 of the display library installed
+  https://github.com/ThingPulse/esp8266-oled-ssd1306/releases/tag/4.0.0
+  */
   display.setFont(DejaVu_Sans_Mono_12);
   display.setContrast(255);
   display.flipScreenVertically();
