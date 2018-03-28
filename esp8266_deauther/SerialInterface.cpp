@@ -130,6 +130,7 @@ void SerialInterface::runCommands(String input) {
   String tmp;
 
   for (int i = 0; i < input.length(); i++) {
+    // when 2 semicolons in a row without a backslash escaping the first
     if (input.charAt(i) == SEMICOLON && input.charAt(i + 1) == SEMICOLON && input.charAt(i - 1) != BACKSLASH) {
       runCommand(tmp);
       tmp = String();
@@ -144,6 +145,7 @@ void SerialInterface::runCommands(String input) {
 }
 
 void SerialInterface::runCommand(String input) {
+  input
   input.replace(String(NEWLINE), String());
   input.replace(String(CARRIAGERETURN), String());
   
@@ -152,20 +154,40 @@ void SerialInterface::runCommand(String input) {
   // parse/split input in list
   String tmp;
   bool withinQuotes = false;
+  bool escaped = false;
+  char c;
   for (int i = 0; i < input.length() && i < 512; i++) {
-    if ((input.charAt(i) == SPACE && input.charAt(i - 1) != BACKSLASH && !withinQuotes) || input.charAt(i) == CARRIAGERETURN || input.charAt(i) == NEWLINE) {
-      //tmp.toLowerCase();
-      if (tmp.length() > 0) list->add(tmp);
-      tmp = String();
-    } else if(input.charAt(i) == DOUBLEQUOTES && (input.charAt(i-1) != BACKSLASH || (input.charAt(i-1) == BACKSLASH && input.charAt(i-2) == BACKSLASH))){
+    c = input.charAt(i);
+
+    // when char is an unescaped \
+    if(!escaped && c == BACKSLASH){
+      escaped = true;
+    }
+    
+    // (when char is a unescaped space AND it's not within quotes) OR char is \r or \n
+    else if (c == SPACE && !escaped && !withinQuotes) || c == CARRIAGERETURN || c == NEWLINE) {
+      // when tmp string isn't empty, add it to the list
+      if (tmp.length() > 0){
+        list->add(tmp);
+         tmp = String(); // reset tmp string
+      }
+    } 
+    
+    // when char is an unescaped "
+    else if(c == DOUBLEQUOTES && !escaped){
+      // update wheter or not the following chars are within quotes or not
       withinQuotes = !withinQuotes;
-      if(tmp.length() == 0 && !withinQuotes) tmp += SPACE;
-    } else if (input.charAt(i) != BACKSLASH || (input.charAt(i) == BACKSLASH && input.charAt(i - 1) == BACKSLASH)) {
-      tmp += input.charAt(i);
+      if(tmp.length() == 0 && !withinQuotes) tmp += SPACE; // when exiting quotes and tmp string is empty, add a space
+    }
+    
+    // add character to tmp string
+    else {
+      tmp += c
+      escaped = false;
     }
   }
 
-  // add whatever is left from the loop above
+  // add string if something is left from the loop above
   if (tmp.length() > 0) list->add(tmp);
 
   // stop when input is empty/invalid
