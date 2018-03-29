@@ -38,7 +38,7 @@ void Names::save(bool force) {
   String buf = String(OPEN_BRACKET); // [
 
   if (!writeFile(FILE_PATH, buf)) {
-    prnt(N_ERROR_SAVING);
+    prnt(F_ERROR_SAVING);
     prntln(FILE_PATH);
     return;
   }
@@ -61,7 +61,7 @@ void Names::save(bool force) {
 
     if(buf.length() >= 1024){
       if (!appendFile(FILE_PATH, buf)) {
-        prnt(N_ERROR_SAVING);
+        prnt(F_ERROR_SAVING);
         prntln(FILE_PATH);
         return;
       }
@@ -73,7 +73,7 @@ void Names::save(bool force) {
   buf += String(CLOSE_BRACKET); // ]
 
   if (!appendFile(FILE_PATH, buf)) {
-    prnt(N_ERROR_SAVING);
+    prnt(F_ERROR_SAVING);
     prntln(FILE_PATH);
     return;
   }

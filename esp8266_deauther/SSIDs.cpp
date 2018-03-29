@@ -42,7 +42,7 @@ void SSIDs::save(bool force) {
   buf += String(DOUBLEQUOTES) + str(SS_JSON_SSIDS) + String(DOUBLEQUOTES) + String(DOUBLEPOINT) + String(OPEN_BRACKET); // "ssids":[
   
   if (!writeFile(FILE_PATH, buf)) {
-    prnt(SS_ERROR_SAVING);
+    prnt(F_ERROR_SAVING);
     prntln(FILE_PATH);
     return;
   }
@@ -61,7 +61,7 @@ void SSIDs::save(bool force) {
 
     if(buf.length() >= 1024){
       if (!appendFile(FILE_PATH, buf)) {
-        prnt(SS_ERROR_SAVING);
+        prnt(F_ERROR_SAVING);
         prntln(FILE_PATH);
         return;
       }
@@ -73,7 +73,7 @@ void SSIDs::save(bool force) {
   buf += String(CLOSE_BRACKET) + String(CLOSE_CURLY_BRACKET); // ]}
   
   if (!appendFile(FILE_PATH, buf)) {
-    prnt(SS_ERROR_SAVING);
+    prnt(F_ERROR_SAVING);
     prntln(FILE_PATH);
     return;
   }

@@ -253,7 +253,7 @@ void Scan::save(bool force) {
   String buf = String(OPEN_CURLY_BRACKET) + String(DOUBLEQUOTES) + str(SC_JSON_APS) + String(DOUBLEQUOTES) + String(DOUBLEPOINT) + String(OPEN_BRACKET); // {"aps":[
   
   if(!writeFile(FILE_PATH, buf)) { // overwrite old file
-    prnt(SC_ERROR_SAVING);
+    prnt(F_ERROR_SAVING);
     prntln(FILE_PATH);
     return;
   }
@@ -274,7 +274,7 @@ void Scan::save(bool force) {
 
     if(buf.length() >= 1024){
       if(!appendFile(FILE_PATH, buf)) {
-        prnt(SC_ERROR_SAVING);
+        prnt(F_ERROR_SAVING);
         prntln(FILE_PATH);
         return;
       }
@@ -300,7 +300,7 @@ void Scan::save(bool force) {
 
     if(buf.length() >= 1024){
       if(!appendFile(FILE_PATH, buf)) {
-        prnt(SC_ERROR_SAVING);
+        prnt(F_ERROR_SAVING);
         prntln(FILE_PATH);
         return;
       }
@@ -312,7 +312,7 @@ void Scan::save(bool force) {
   buf += String(CLOSE_BRACKET) + String(CLOSE_CURLY_BRACKET); // ]}
 
   if(!appendFile(FILE_PATH, buf)) {
-    prnt(SC_ERROR_SAVING);
+    prnt(F_ERROR_SAVING);
     prntln(FILE_PATH);
     return;
   }

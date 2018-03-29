@@ -473,7 +473,6 @@ static const char S_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
 static const char S_SETTINGS_LOADED[] PROGMEM = "Settings loaded from ";
 static const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";
 static const char S_SETTINGS_SAVED[] PROGMEM = "Settings saved in ";
-static const char S_ERROR_SAVING[] PROGMEM = "ERROR: saving ";
 static const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";
 static const char S_ERROR_VERSION[] PROGMEM = "Sorry, you can't change the version number";
 static const char S_ERROR_NOT_FOUND[] PROGMEM = "ERROR: No setting found for ";
@@ -521,7 +520,6 @@ static const char L_OUTPUT_B[] PROGMEM = "(%u,%u,%u)\r\n";
 // ===== NAMES ===== //
 static const char N_SAVED[] PROGMEM = "Device names saved in ";
 static const char N_LOADED[] PROGMEM = "Device names loaded from ";
-static const char N_ERROR_SAVING[] PROGMEM = "ERROR: saving ";
 static const char N_REMOVED_ALL[] PROGMEM = "Removed all saved device names";
 static const char N_HEADER[] PROGMEM = "[===== Saved Devices =====]";
 static const char N_TABLE_HEADER[] PROGMEM =  "ID MAC               Vendor   Name             AP-BSSID          Ch Selected";
@@ -547,7 +545,6 @@ static const char SS_LOADED[] PROGMEM = "SSIDs loaded from ";
 static const char SS_CLEARED[] PROGMEM = "Cleared SSID list";
 static const char SS_SAVED[] PROGMEM = "SSIDs saved";
 static const char SS_SAVED_IN[] PROGMEM = "SSIDs saved in ";
-static const char SS_ERROR_SAVING[] PROGMEM = "ERROR: saving ";
 static const char SS_REMOVED[] PROGMEM = "Removed SSID ";
 static const char SS_ERROR_FULL[] PROGMEM = "ERROR: SSID list is full! Remove some SSIDs first or run command with -f (force) parameter.";
 static const char SS_ADDED[] PROGMEM = "Added SSID ";
@@ -583,7 +580,6 @@ static const char SC_JSON_STATIONS[] PROGMEM = "stations";
 static const char SC_JSON_NAMES[] PROGMEM = "names";
 static const char SC_SAVED[] PROGMEM = "Saved scan results";
 static const char SC_SAVED_IN[] PROGMEM = "Scan results saved in ";
-static const char SC_ERROR_SAVING[] PROGMEM = "ERROR: Saving scan results in ";
 
 // ===== FUNCTIONS ===== //
 static const char F_ERROR_MAC[] PROGMEM = "ERROR: MAC address invalid";
@@ -596,6 +592,7 @@ static const char F_ERROR_PARSING_JSON[] PROGMEM = "ERROR parsing JSON ";
 static const char F_ERROR_TO_BIG[] PROGMEM = "ERROR file too big ";
 static const char F_TMP[] PROGMEM = "/tmp";
 static const char F_COPY[] PROGMEM = "_copy";
+static const char F_ERROR_SAVING[] PROGMEM = "ERROR: saving file. Try 'format' and restart - ";
 
 // ===== WIFI ===== //
 static const char W_STOPPED_AP[] PROGMEM = "Stopped Access Point";

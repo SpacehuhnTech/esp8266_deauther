@@ -789,17 +789,22 @@ void SerialInterface::runCommand(String input) {
   // ===== WRITE ==== //
   // write <file> <commands>
   else if (list->size() >= 3 && eqlsCMD(0, CLI_WRITE)) {
-    String tmp = String();
-    for (int i = 2; i < list->size(); i++) {
-      tmp += list->get(i);
-      if (i < list->size() - 1) tmp += SPACE;
+    String path = list->get(1);
+    String buf = String();
+    
+    int listSize = list->size();
+    for (int i = 2; i < listSize; i++) {
+      buf += list->get(i);
+      if (i < listSize - 1) buf += SPACE;
     }
+    
     prnt(CLI_WRITTEN);
-    prnt(tmp);
+    prnt(buf);
     prnt(CLI_TO);
     prntln(list->get(1));
-    tmp += NEWLINE;
-    appendFile(list->get(1), tmp);
+    
+    buf += NEWLINE;
+    appendFile(path, buf);
   }
 
   // ===== REPLACE ==== //
