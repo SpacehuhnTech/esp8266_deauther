@@ -3,7 +3,6 @@
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
-#include <LinkedList.h>
 #include "Names.h"
 #include "language.h"
 

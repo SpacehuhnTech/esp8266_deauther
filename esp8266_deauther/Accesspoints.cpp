@@ -14,10 +14,10 @@ void Accesspoints::sort() {
   int c = listSize;
   while(c--){
     for(int i = 1; i <= c; i++){
-      aAP = getAP(i-2);
-      bAP = getAP(i-1);
-      cAP = getAP(i);
-      dAP = getAP(i+1);
+      aAP = getAP(i-2); // prev
+      bAP = aAP ? aAP->next : getAP(i-1); // to be compared
+      cAP = bAP ? bAP->next : getAP(i);  // to be compared
+      dAP = cAP ? cAP->next : getAP(i+1);  // next
 
       // a -> b -> c -> d
       
@@ -52,9 +52,9 @@ void Accesspoints::sortAfterChannel() {
   while(c--){
     for(int i = 1; i <= c; i++){
       aAP = getAP(i-2);
-      bAP = getAP(i-1);
-      cAP = getAP(i);
-      dAP = getAP(i+1);
+      bAP = aAP ? aAP->next : getAP(i-1);
+      cAP = bAP ? bAP->next : getAP(i);
+      dAP = cAP ? cAP->next : getAP(i+1);
       if(WiFi.channel(bAP->id) > WiFi.channel(cAP->id)) {
         cAP->next = bAP;
         
@@ -349,8 +349,8 @@ void Accesspoints::internal_deselect(int num) {
 
 void Accesspoints::internal_remove(int num) {
   AP* aAP = getAP(num-1); // prev
-  AP* bAP = getAP(num); // to-delete
-  AP* cAP = getAP(num+1); // next
+  AP* bAP = aAP ? aAP->next : getAP(num); // to-delete
+  AP* cAP = bAP ? bAP->next : getAP(num+1); // next
   
   if(aAP && cAP) { // a -> b -> c = a -> c
     aAP->next = cAP; // 
