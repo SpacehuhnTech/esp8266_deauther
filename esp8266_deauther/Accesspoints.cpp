@@ -28,22 +28,23 @@ void Accesspoints::add(uint8_t id, bool selected) {
 
 void Accesspoints::printAll() {
   prntln(AP_HEADER);
-  if (list->size() == 0)
+  int c = count();
+  if (c == 0)
     prntln(AP_LIST_EMPTY);
   else
-    for (uint8_t i = 0; i < list->size(); i++)
-      print(i, i == 0, i == list->size() - 1);
+    for (int i = 0; i < c; i++)
+      print(i, i == 0, i == c - 1);
 }
 
 void Accesspoints::printSelected() {
   prntln(AP_HEADER);
-  uint8_t max = selected();
+  int max = selected();
   if (selected() == 0) {
     prntln(AP_NO_AP_SELECTED);
     return;
   }
-  
-  for (uint8_t i = 0, j = 0; i < list->size(), j < max; i++) {
+  int c = count();
+  for (int i = 0, j = 0; i < c, j < max; i++) {
     if (getSelected(i)) {
       print(i, j == 0, j == max - 1);
       j++;
@@ -51,11 +52,11 @@ void Accesspoints::printSelected() {
   }
 }
 
-void Accesspoints::print(uint8_t num) {
+void Accesspoints::print(int num) {
   print(num, true, true);
 }
 
-void Accesspoints::print(uint8_t num, bool header, bool footer) {
+void Accesspoints::print(int num, bool header, bool footer) {
   if (!check(num)) return;
   if (header) {
     prntln(AP_TABLE_HEADER);
@@ -76,39 +77,39 @@ void Accesspoints::print(uint8_t num, bool header, bool footer) {
   }
 }
 
-String Accesspoints::getSSID(uint8_t num) {
+String Accesspoints::getSSID(int num) {
   if (!check(num)) return String();
   if (getHidden(num)){
     return str(AP_HIDDEN);
   } else {
-    String ssid = WiFi.SSID(list->get(num).id);
+    String ssid = WiFi.SSID(getID(num));
     ssid = ssid.substring(0,32);
     ssid = fixUtf8(ssid);
     return ssid;
   }
 }
 
-String Accesspoints::getNameStr(uint8_t num) {
+String Accesspoints::getNameStr(int num) {
   if (!check(num)) return String();
   return names.find(getMac(num));
 }
 
-uint8_t Accesspoints::getCh(uint8_t num) {
+uint8_t Accesspoints::getCh(int num) {
   if (!check(num)) return 0;
-  return WiFi.channel(list->get(num).id);
+  return WiFi.channel(getID(num));
 }
 
-int8_t Accesspoints::getRSSI(uint8_t num) {
+int Accesspoints::getRSSI(int num) {
   if (!check(num)) return 0;
-  return WiFi.RSSI(list->get(num).id);
+  return WiFi.RSSI(getID(num));
 }
 
-uint8_t Accesspoints::getEnc(uint8_t num) {
+uint8_t Accesspoints::getEnc(int num) {
   if (!check(num)) return 0;
-  return WiFi.encryptionType(list->get(num).id);
+  return WiFi.encryptionType(getID(num));
 }
 
-String Accesspoints::getEncStr(uint8_t num) {
+String Accesspoints::getEncStr(int num) {
   if (!check(num)) return String();
   switch (getEnc(num)) {
     case ENC_TYPE_NONE:
@@ -130,20 +131,20 @@ String Accesspoints::getEncStr(uint8_t num) {
   return String(QUESTIONMARK);
 }
 
-String Accesspoints::getSelectedStr(uint8_t num) {
+String Accesspoints::getSelectedStr(int num) {
   return b2a(getSelected(num));
 }
 
-uint8_t* Accesspoints::getMac(uint8_t num) {
+uint8_t* Accesspoints::getMac(int num) {
   if (!check(num)) return 0;
-  return WiFi.BSSID(list->get(num).id);
+  return WiFi.BSSID(getID(num));
 }
 
-String Accesspoints::getMacStr(uint8_t num) {
+String Accesspoints::getMacStr(int num) {
   if (!check(num)) return String();
   uint8_t* mac = getMac(num);
   String value;
-  for (uint8_t i = 0; i < 6; i++) {
+  for (int i = 0; i < 6; i++) {
     if (mac[i] < 0x10) value += ZERO;
     value += String(mac[i], HEX);
     if (i < 5) value += DOUBLEPOINT;
@@ -151,22 +152,27 @@ String Accesspoints::getMacStr(uint8_t num) {
   return value;
 }
 
-String Accesspoints::getVendorStr(uint8_t num) {
+String Accesspoints::getVendorStr(int num) {
   if (!check(num)) return String();
   return searchVendor(getMac(num));
 }
 
-bool Accesspoints::getHidden(uint8_t num) {
+bool Accesspoints::getHidden(int num) {
   if (!check(num)) return false;
-  return WiFi.isHidden(list->get(num).id);
+  return WiFi.isHidden(getID(num));
 }
 
-bool Accesspoints::getSelected(uint8_t num) {
+bool Accesspoints::getSelected(int num) {
   if (!check(num)) return false;
   return list->get(num).selected;
 }
 
-void Accesspoints::select(uint8_t num) {
+int Accesspoints::getID(int num){
+  if (!check(num)) return -1;
+  return list->get(num).id;
+}
+
+void Accesspoints::select(int num) {
   if (!check(num)) return;
   AP changedAP = list->get(num);
   changedAP.selected = true;
@@ -176,7 +182,7 @@ void Accesspoints::select(uint8_t num) {
   changed = true;
 }
 
-void Accesspoints::deselect(uint8_t num) {
+void Accesspoints::deselect(int num) {
   if (!check(num)) return;
   AP changedAP = list->get(num);
   changedAP.selected = false;
@@ -186,7 +192,7 @@ void Accesspoints::deselect(uint8_t num) {
   changed = true;
 }
 
-void Accesspoints::remove(uint8_t num) {
+void Accesspoints::remove(int num) {
   prnt(AP_REMOVED);
   prntln(getSSID(num));
   list->remove(num);
@@ -194,14 +200,16 @@ void Accesspoints::remove(uint8_t num) {
 }
 
 void Accesspoints::selectAll() {
-  for (uint8_t i = 0; i < count(); i++)
+  int c = count();
+  for (int i = 0; i < c; i++)
     internal_select(i);
   prntln(AP_SELECTED_ALL);
   changed = true;
 }
 
 void Accesspoints::deselectAll() {
-  for (uint8_t i = 0; i < count(); i++)
+  int c = count();
+  for (int i = 0; i < c; i++)
     internal_deselect(i);
   prntln(AP_DESELECTED_ALL);
   changed = true;
@@ -213,42 +221,42 @@ void Accesspoints::removeAll() {
   changed = true;
 }
 
-uint8_t Accesspoints::count() {
-  return (uint8_t)list->size();
+int Accesspoints::count() {
+  return list->size();
 }
 
-uint8_t Accesspoints::selected() {
-  uint8_t num = 0;
-  for (uint8_t i = 0; i < count(); i++)
+int Accesspoints::selected() {
+  int num = 0;
+  int c = count();
+  for (int i = 0; i < c; i++)
     if (getSelected(i)) num++;
   return num;
 }
 
-bool Accesspoints::check(uint8_t num) {
+bool Accesspoints::check(int num) {
   if (internal_check(num)) return true;
   prnt(AP_NO_AP_ERROR);
   prntln((String)num);
   return false;
 }
 
-bool Accesspoints::internal_check(uint8_t num) {
+bool Accesspoints::internal_check(int num) {
   return num >= 0 && num < count();
 }
 
-void Accesspoints::internal_select(uint8_t num) {
+void Accesspoints::internal_select(int num) {
   AP changedAP = list->get(num);
   changedAP.selected = true;
   list->set(num, changedAP);
 }
 
-void Accesspoints::internal_deselect(uint8_t num) {
+void Accesspoints::internal_deselect(int num) {
   AP changedAP = list->get(num);
   changedAP.selected = false;
   list->set(num, changedAP);
 }
 
-void Accesspoints::internal_remove(uint8_t num) {
+void Accesspoints::internal_remove(int num) {
   list->remove(num);
 }
-
 

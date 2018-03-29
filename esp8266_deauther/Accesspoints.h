@@ -21,11 +21,11 @@ class Accesspoints {
     void sortAfterChannel();
     
     void add(uint8_t id, bool selected);
-    void print(uint8_t num);
-    void print(uint8_t num, bool header, bool footer);
-    void select(uint8_t num);
-    void deselect(uint8_t num);
-    void remove(uint8_t num);
+    void print(int num);
+    void print(int num, bool header, bool footer);
+    void select(int num);
+    void deselect(int num);
+    void remove(int num);
 
     void printAll();
     void printSelected();
@@ -33,23 +33,24 @@ class Accesspoints {
     void deselectAll();
     void removeAll();
     
-    String getSSID(uint8_t num);
-    String getNameStr(uint8_t num);
-    String getEncStr(uint8_t num);
-    String getMacStr(uint8_t num);
-    String getVendorStr(uint8_t num);
-    String getSelectedStr(uint8_t num);
-    uint8_t getCh(uint8_t num);
-    uint8_t getEnc(uint8_t num);
-    int8_t getRSSI(uint8_t num);
-    uint8_t* getMac(uint8_t num);    
-    bool getHidden(uint8_t num);
-    bool getSelected(uint8_t num);
+    String getSSID(int num);
+    String getNameStr(int num);
+    String getEncStr(int num);
+    String getMacStr(int num);
+    String getVendorStr(int num);
+    String getSelectedStr(int num);
+    uint8_t getCh(int num);
+    uint8_t getEnc(int num);
+    int getID(int num);
+    int getRSSI(int num);
+    uint8_t* getMac(int num);    
+    bool getHidden(int num);
+    bool getSelected(int num);
 
-    uint8_t count();
-    uint8_t selected();
+    int count();
+    int selected();
 
-    bool check(uint8_t num);
+    bool check(int num);
     bool changed = false;
   private:
     struct AP{
@@ -58,11 +59,11 @@ class Accesspoints {
     };
 
     LinkedList<AP>* list;
-
-    bool internal_check(uint8_t num);
-    void internal_select(uint8_t num);
-    void internal_deselect(uint8_t num);
-    void internal_remove(uint8_t num);
+    
+    bool internal_check(int num);
+    void internal_select(int num);
+    void internal_deselect(int num);
+    void internal_remove(int num);
 };
 
 #endif
