@@ -1,28 +1,90 @@
 #include "Accesspoints.h"
 
 Accesspoints::Accesspoints() {
-  list = new LinkedList<AP>;
+
 }
 
 void Accesspoints::sort() {
-  list->sort([](AP & a, AP & b) -> int{
-    if (WiFi.RSSI(a.id) == WiFi.RSSI(b.id)) return 0;
-    if (WiFi.RSSI(a.id) > WiFi.RSSI(b.id)) return -1;
-    if (WiFi.RSSI(a.id) < WiFi.RSSI(b.id)) return 1;
-  });
+  // bubble sort because I was lazy
+  
+  AP* aAP; // prev
+  AP* bAP; // to compare with c
+  AP* cAP; // to compare with b
+  AP* dAP; // next
+  int c = listSize;
+  while(c--){
+    for(int i = 1; i <= c; i++){
+      aAP = getAP(i-2);
+      bAP = getAP(i-1);
+      cAP = getAP(i);
+      dAP = getAP(i+1);
+
+      // a -> b -> c -> d
+      
+      if(WiFi.RSSI(bAP->id) < WiFi.RSSI(cAP->id)) {
+        // a -> b <-> c
+        cAP->next = bAP;
+
+        // a -> b -> d
+        if(dAP){
+          bAP->next = dAP;
+        } else {
+          bAP->next = NULL;
+          listEnd = bAP;
+        }
+
+        // a -> c -> b -> d
+        if(aAP)
+          aAP->next = cAP;
+        else
+          listBegin = cAP;
+      }
+    }
+  }
 }
 
 void Accesspoints::sortAfterChannel() {
-  list->sort([](AP & a, AP & b) -> int{
-    if (WiFi.channel(a.id) == WiFi.channel(b.id)) return 0;
-    if (WiFi.channel(a.id) < WiFi.channel(b.id)) return -1;
-    if (WiFi.channel(a.id) > WiFi.channel(b.id)) return 1;
-  });
+  AP* aAP;
+  AP* bAP;
+  AP* cAP;
+  AP* dAP;
+  int c = listSize;
+  while(c--){
+    for(int i = 1; i <= c; i++){
+      aAP = getAP(i-2);
+      bAP = getAP(i-1);
+      cAP = getAP(i);
+      dAP = getAP(i+1);
+      if(WiFi.channel(bAP->id) > WiFi.channel(cAP->id)) {
+        cAP->next = bAP;
+        
+        if(dAP){
+          bAP->next = dAP;
+        } else {
+          bAP->next = NULL;
+          listEnd = bAP;
+        }
+
+        if(aAP) aAP->next = cAP;
+        else listBegin = cAP;
+      }
+    }
+  }
   changed = true;
 }
 
 void Accesspoints::add(uint8_t id, bool selected) {
-  list->add(AP{id, selected});
+  if(!listEnd){
+    listEnd = new AP{id, selected};
+  } else {
+    listEnd->next = new AP{id, selected};
+    listEnd = listEnd->next;
+  }
+    
+  if(!listBegin)
+    listBegin = listEnd;
+
+  listSize++;
   changed = true;
 }
 
@@ -164,72 +226,92 @@ bool Accesspoints::getHidden(int num) {
 
 bool Accesspoints::getSelected(int num) {
   if (!check(num)) return false;
-  return list->get(num).selected;
+  return getAP(num)->selected;
 }
 
 int Accesspoints::getID(int num){
   if (!check(num)) return -1;
-  return list->get(num).id;
+  return getAP(num)->id;
 }
 
 void Accesspoints::select(int num) {
   if (!check(num)) return;
-  AP changedAP = list->get(num);
-  changedAP.selected = true;
-  list->set(num, changedAP);
+
+  internal_select(num);
+  
   prnt(AP_SELECTED);
   prntln(getSSID(num));
+  
   changed = true;
 }
 
 void Accesspoints::deselect(int num) {
   if (!check(num)) return;
-  AP changedAP = list->get(num);
-  changedAP.selected = false;
-  list->set(num, changedAP);
+
+  internal_deselect(num);
+  
   prnt(AP_DESELECTED);
   prntln(getSSID(num));
+
   changed = true;
 }
 
 void Accesspoints::remove(int num) {
+  if (!check(num)) return;
+  
   prnt(AP_REMOVED);
   prntln(getSSID(num));
-  list->remove(num);
+
+  internal_remove(num);
+  
   changed = true;
 }
 
 void Accesspoints::selectAll() {
-  int c = count();
-  for (int i = 0; i < c; i++)
-    internal_select(i);
+  int i = 0;
+  AP* hAP = listBegin;
+  while(i < listSize){
+    hAP->selected = true;
+    hAP = hAP->next;
+    i++;
+  }
   prntln(AP_SELECTED_ALL);
   changed = true;
 }
 
 void Accesspoints::deselectAll() {
-  int c = count();
-  for (int i = 0; i < c; i++)
-    internal_deselect(i);
+  int i = 0;
+  AP* hAP = listBegin;
+  while(i < listSize){
+    hAP->selected = false;
+    hAP = hAP->next;
+    i++;
+  }
   prntln(AP_DESELECTED_ALL);
   changed = true;
 }
 
 void Accesspoints::removeAll() {
-  list->clear();
+  while(listSize > 0){
+    internal_remove(0);
+  }
   prntln(AP_REMOVED_ALL);
   changed = true;
 }
 
 int Accesspoints::count() {
-  return list->size();
+  return listSize;
 }
 
 int Accesspoints::selected() {
   int num = 0;
-  int c = count();
-  for (int i = 0; i < c; i++)
-    if (getSelected(i)) num++;
+  int i = 0;
+  AP* hAP = listBegin;
+  while(i < listSize){
+    num += hAP->selected;
+    hAP = hAP->next;
+    i++;
+  }
   return num;
 }
 
@@ -240,23 +322,50 @@ bool Accesspoints::check(int num) {
   return false;
 }
 
+AP* Accesspoints::getAP(int num){
+  if(num < 0 || num >= listSize) return NULL;
+  
+  AP* hAP = listBegin;
+  int i = 0;
+  while(hAP->next && i < num){
+    hAP = hAP->next;
+    i++;
+  }
+
+  return hAP;
+}
+
 bool Accesspoints::internal_check(int num) {
   return num >= 0 && num < count();
 }
 
 void Accesspoints::internal_select(int num) {
-  AP changedAP = list->get(num);
-  changedAP.selected = true;
-  list->set(num, changedAP);
+  getAP(num)->selected = true;
 }
 
 void Accesspoints::internal_deselect(int num) {
-  AP changedAP = list->get(num);
-  changedAP.selected = false;
-  list->set(num, changedAP);
+  getAP(num)->selected = false;
 }
 
 void Accesspoints::internal_remove(int num) {
-  list->remove(num);
+  AP* aAP = getAP(num-1); // prev
+  AP* bAP = getAP(num); // to-delete
+  AP* cAP = getAP(num+1); // next
+  
+  if(aAP && cAP) { // a -> b -> c = a -> c
+    aAP->next = cAP; // 
+  } else if(aAP) { // a -> b = a
+    aAP->next = NULL;
+    listEnd = aAP;
+  } else if(cAP) { // b -> c = c
+    listBegin = cAP;
+  } else { // b = EMPTY
+    listBegin = NULL;
+    listEnd = NULL;
+  }
+  
+  free(bAP);
+
+  listSize--;
 }
 

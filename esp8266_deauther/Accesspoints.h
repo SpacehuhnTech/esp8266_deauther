@@ -13,6 +13,12 @@ extern String searchVendor(uint8_t* mac);
 extern String buildString(String left, String right, int maxLen);
 String fixUtf8(String str);
 
+struct AP{
+  uint8_t id;
+  bool selected;
+  AP* next;
+};
+
 class Accesspoints {
   public:
     Accesspoints();
@@ -53,12 +59,12 @@ class Accesspoints {
     bool check(int num);
     bool changed = false;
   private:
-    struct AP{
-      uint8_t id;
-      bool selected;
-    };
+    AP* listBegin = NULL;
+    AP* listEnd = NULL;
+    int listSize = 0;
+    //LinkedList<AP>* listA;
 
-    LinkedList<AP>* list;
+    AP* getAP(int num);
     
     bool internal_check(int num);
     void internal_select(int num);
