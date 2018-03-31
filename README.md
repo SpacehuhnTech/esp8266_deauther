@@ -98,7 +98,7 @@ Shoutout to everyone working on the libraries used for this project:
 - [ArduinoJson](https://github.com/bblanchon/ArduinoJson)
 - [LinkedList](https://github.com/ivanseidel/LinkedList)
 
-Also thanks to everyone that supports this project by [donating](http://spacehuhn.de/donate), beeing my [patron](http://patreon.com/spacehuhn) or buying one of the [official Deauther boards](https://www.tindie.com/stores/lspoplove) from DSTIKE.  
+Also thanks to everyone that supports this project by [donating](http://spacehuhn.de/donate), being my [patron](http://patreon.com/spacehuhn) or buying one of the [official Deauther boards](https://www.tindie.com/stores/lspoplove) from DSTIKE.  
 
 ## License 
 
