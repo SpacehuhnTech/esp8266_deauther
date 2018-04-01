@@ -2,6 +2,7 @@
 #define SimpleList_h
 
 #include <stddef.h>
+#include <functional>
 
 template<class T>
 struct Node {
