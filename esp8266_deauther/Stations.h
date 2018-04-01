@@ -2,14 +2,13 @@
 #define Stations_h
 
 #include "Arduino.h"
-#include "LinkedList.h"
-#include "Accesspoints.h"
-#include "Names.h"
-#include "language.h"
-
 extern "C" {
   #include "user_interface.h"
 }
+#include "Accesspoints.h"
+#include "Names.h"
+#include "language.h"
+#include "SimpleList.h"
 
 #define STATION_LIST_SIZE 60
 extern Accesspoints accesspoints;
@@ -74,7 +73,7 @@ class Stations {
       bool selected;
     };
 
-    LinkedList<Station>* list;
+    SimpleList<Station>* list;
 
     int findStation(uint8_t* mac);
     int findAccesspoint(uint8_t* mac);

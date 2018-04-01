@@ -1,7 +1,7 @@
 #include "Stations.h"
 
 Stations::Stations() {
-  list = new LinkedList<Station>;
+  list = new SimpleList<Station>;
 }
 
 void Stations::add(uint8_t* mac, int accesspointNum) {
@@ -19,8 +19,8 @@ void Stations::add(uint8_t* mac, int accesspointNum) {
 
 int Stations::findStation(uint8_t* mac) {
   uint8_t* station_i_mac;
-
-  for (int i = 0; i < list->size(); i++) {
+  int c = count();
+  for (int i = 0; i < c; i++) {
     if (memcmp(getMac(i), mac, 6) == 0)
       return i;
   }
@@ -28,18 +28,14 @@ int Stations::findStation(uint8_t* mac) {
 }
 
 void Stations::sort() {
-  list->sort([](Station & a, Station & b) -> int{
-    if (*a.pkts == *b.pkts) return 0;
-    if (*a.pkts > *b.pkts) return -1;
-    if (*a.pkts < *b.pkts) return 1;
+  list->sort([](Station &a, Station &b) -> bool{
+    return (*a.pkts < *b.pkts);
   });
 }
 
 void Stations::sortAfterChannel() {
-  list->sort([](Station & a, Station & b) -> int{
-    if (a.ch == b.ch) return 0;
-    if (a.ch < b.ch) return -1;
-    if (a.ch > b.ch) return 1;
+  list->sort([](Station &a, Station &b) -> bool{
+    return (a.ch > b.ch);
   });
 }
 
@@ -59,7 +55,8 @@ void Stations::remove(int num) {
 
 void Stations::removeOldest() {
   int oldest = 0;
-  for (int i = 1; i < list->size(); i++) {
+  int c = count();
+  for (int i = 1; i < c; i++) {
     if (*getTime(i) > *getTime(oldest))
       oldest = i;
   }
@@ -69,23 +66,25 @@ void Stations::removeOldest() {
 
 void Stations::printAll() {
   prntln(ST_HEADER);
-  if (list->size() == 0)
+  int c = count();
+  if (c == 0)
     prntln(ST_LIST_EMPTY);
   else
-    for (int i = 0; i < list->size(); i++)
-      print(i, i == 0, i == list->size() - 1);
+    for (int i = 0; i < c; i++)
+      print(i, i == 0, i == c - 1);
 }
 
 void Stations::printSelected() {
   prntln(ST_HEADER);
   int max = selected();
-
+  int c = count();
+  
   if (max == 0) {
     prntln(ST_NO_DEVICES_SELECTED);
     return;
   }
-
-  for (int i = 0, j = 0; i < list->size() && j < max; i++) {
+  
+  for (int i = 0, j = 0; i < c && j < max; i++) {
     if (getSelected(i)) {
       print(i, j == 0, j == max - 1);
       j++;
@@ -269,19 +268,19 @@ bool Stations::check(int num) {
 }
 
 bool Stations::internal_check(int num) {
-  return num >= 0 && num < list->size();
+  return num >= 0 && num < count();
 }
 
 void Stations::internal_select(int num) {
   Station changedStation = list->get(num);
   changedStation.selected = true;
-  list->set(num, changedStation);
+  list->replace(num, changedStation);
 }
 
 void Stations::internal_deselect(int num) {
   Station changedStation = list->get(num);
   changedStation.selected = false;
-  list->set(num, changedStation);
+  list->replace(num, changedStation);
 }
 
 void Stations::internal_remove(int num) {
@@ -292,7 +291,7 @@ void Stations::internal_remove(int num) {
 }
 
 void Stations::internal_add(uint8_t* mac, int accesspointNum) {
-  if (list->size() >= STATION_LIST_SIZE)
+  if (count() >= STATION_LIST_SIZE)
     removeOldest();
 
   Station newStation;
@@ -311,7 +310,8 @@ void Stations::internal_add(uint8_t* mac, int accesspointNum) {
 }
 
 void Stations::internal_removeAll() {
-  for (int i = 0; i < list->size(); i++) {
+  int c = count();
+  for (int i = 0; i < c; i++) {
     free(getMac(i));
     free(getPkts(i));
     free(getTime(i));
