@@ -23,11 +23,11 @@ class SimpleList{
     virtual T shift();
     virtual T pop();
     virtual T get(int index);
-    virtual int search(bool (*cmp)(T &a));
-    virtual int searchNext(bool (*cmp)(T &a));
-    virtual int binSearch(int (*cmp)(T &a), int lowerEnd, int upperEnd);
-    virtual int binSearch(int (*cmp)(T &a));
-    virtual int count(bool (*cmp)(T &a));
+    virtual int search(std::function<bool(T &a)> cmp);
+    virtual int searchNext(std::function<bool(T &a)> cmp);
+    virtual int binSearch(std::function<int(T &a)> cmp, int lowerEnd, int upperEnd);
+    virtual int binSearch(std::function<int(T &a)> cmp);
+    virtual int count(std::function<bool(T &a)> cmp);
     virtual void clear();
     virtual void sort(bool (*cmp)(T &a, T &b));
     virtual void swap(int x, int y);
@@ -213,7 +213,7 @@ T SimpleList<T>::get(int index){
 }
 
 template<typename T>
-int SimpleList<T>::search(bool (*cmp)(T &a)){
+int SimpleList<T>::search(std::function<bool(T &a)> cmp){
   int i = 0;
   Node<T>* hNode = getNode(i);
   bool found = cmp(hNode->data);
@@ -228,7 +228,7 @@ int SimpleList<T>::search(bool (*cmp)(T &a)){
 }
 
 template<typename T>
-int SimpleList<T>::searchNext(bool (*cmp)(T &a)){
+int SimpleList<T>::searchNext(std::function<bool(T &a)> cmp){
   int i = lastIndexGot;
   Node<T>* hNode = lastNodeGot;
   bool found = cmp(hNode->data);
@@ -243,7 +243,7 @@ int SimpleList<T>::searchNext(bool (*cmp)(T &a)){
 }
 
 template<typename T>
-int SimpleList<T>::binSearch(int (*cmp)(T &a), int lowerEnd, int upperEnd){
+int SimpleList<T>::binSearch(std::function<int(T &a)> cmp, int lowerEnd, int upperEnd){
   int res;
   int mid = (lowerEnd + upperEnd) / 2;
 
@@ -265,12 +265,12 @@ int SimpleList<T>::binSearch(int (*cmp)(T &a), int lowerEnd, int upperEnd){
 }
 
 template<typename T>
-int SimpleList<T>::binSearch(int (*cmp)(T &a)){
+int SimpleList<T>::binSearch(std::function<int(T &a)> cmp){
   return binSearch(cmp,0,listSize-1);
 }
 
 template<typename T>
-int SimpleList<T>::count(bool (*cmp)(T &a)){
+int SimpleList<T>::count(std::function<bool(T &a)> cmp){
   int c = 0;
   
   for(int i=0;i<listSize;i++){

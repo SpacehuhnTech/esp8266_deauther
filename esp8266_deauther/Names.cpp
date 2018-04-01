@@ -1,7 +1,7 @@
 #include "Names.h"
 
 Names::Names() {
-  list = new LinkedList<Device>;
+  list = new SimpleList<Device>;
 }
 
 void Names::load() {
@@ -46,9 +46,9 @@ void Names::save(bool force) {
   buf = String();
   
   String name;
-  int size = list->size();
+  int c = count();
   
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < c; i++) {
     name = escape(getName(i));
     
     buf += String(OPEN_BRACKET) + String(DOUBLEQUOTES) + getMacStr(i) + String(DOUBLEQUOTES) + String(COMMA); // ["00:11:22:00:11:22",
@@ -57,7 +57,7 @@ void Names::save(bool force) {
     buf += String(DOUBLEQUOTES) + getBssidStr(i) + String(DOUBLEQUOTES) + String(COMMA); // "00:11:22:00:11:22",
     buf += String(getCh(i)) + String(COMMA); // 1,
     buf += b2s(getSelected(i)) + String(CLOSE_BRACKET); // false]
-    if(i < size-1) buf += COMMA; // ,
+    if(i < c-1) buf += COMMA; // ,
 
     if(buf.length() >= 1024){
       if (!appendFile(FILE_PATH, buf)) {
@@ -91,8 +91,8 @@ void Names::save(bool force, String filepath) {
 }
 
 void Names::sort() {
-  list->sort([](Device & a, Device & b) -> int{
-    return memcmp(a.mac, b.mac, 6);
+  list->sort([](Device & a, Device & b) -> bool{
+    return memcmp(a.mac, b.mac, 6) > 0;
   });
 }
 
@@ -100,31 +100,6 @@ void Names::removeAll() {
   internal_removeAll();
   prntln(N_REMOVED_ALL);
   changed = true;
-}
-
-int Names::binSearch(uint8_t* searchBytes, int lowerEnd, int upperEnd) {
-  int res;
-  int mid = (lowerEnd + upperEnd) / 2;
-
-  Device tmpDevice;
-  while (lowerEnd <= upperEnd) {
-    tmpDevice = list->get(mid);
-
-    res = memcmp(searchBytes, tmpDevice.mac, 6);
-
-    if (res == 0) {
-      return mid;
-    } else if (res < 0) {
-      upperEnd = mid - 1;
-      mid = (lowerEnd + upperEnd) / 2;
-    } else if (res > 0) {
-      lowerEnd = mid + 1;
-      mid = (lowerEnd + upperEnd) / 2;
-    }
-
-  }
-
-  return -1;
 }
 
 bool Names::check(int num) {
@@ -135,7 +110,9 @@ bool Names::check(int num) {
 }
 
 int Names::findID(uint8_t* mac) {
-  return binSearch(mac, 0, list->size() - 1);
+  return list->binSearch([mac](Device &a) -> int{
+    return memcmp(mac, a.mac, 6);
+  },0,count()-1);
 }
 
 String Names::find(uint8_t* mac) {
@@ -171,23 +148,25 @@ void Names::print(int num, bool header, bool footer) {
 
 void Names::printAll() {
   prntln(N_HEADER);
-  if (list->size() == 0)
+  int c = count();
+  if (c == 0)
     prntln(N_ERROR_LIST_EMPTY);
   else
-    for (int i = 0; i < list->size(); i++)
-      print(i, i == 0, i == list->size() - 1);
+    for (int i = 0; i < c; i++)
+      print(i, i == 0, i == c - 1);
 }
 
 void Names::printSelected() {
   prntln(N_TABLE_HEADER);
   int max = selected();
-
+  int c = count();
+  
   if (max == 0) {
     prntln(N_ERROR_NO_SELECTED);
     return;
   }
 
-  for (int i = 0, j = 0; i < list->size() && j < max; i++) {
+  for (int i = 0, j = 0; i < c && j < max; i++) {
     if (getSelected(i)) {
       print(i, j == 0, j == max - 1);
       j++;
@@ -196,7 +175,7 @@ void Names::printSelected() {
 }
 
 void Names::add(uint8_t* mac, String name, uint8_t* bssid, uint8_t ch, bool selected, bool force) {
-  if (list->size() >= NAME_LIST_SIZE) {
+  if (count() >= NAME_LIST_SIZE) {
     if (force)
       internal_remove(0);
     else {
@@ -216,7 +195,7 @@ void Names::add(uint8_t* mac, String name, uint8_t* bssid, uint8_t ch, bool sele
 }
 
 void Names::add(String macStr, String name, String bssidStr, uint8_t ch, bool selected, bool force) {
-  if (list->size() >= NAME_LIST_SIZE) {
+  if (count() >= NAME_LIST_SIZE) {
     if (force)
       internal_remove(0);
     else {
@@ -305,7 +284,8 @@ void Names::select(int num) {
 }
 
 void Names::select(String name) {
-  for (int i = 0; i < list->size(); i++) {
+  int c = count();
+  for (int i = 0; i < c; i++) {
     if (getName(i).equals(name)) {
       select(i);
       return;
@@ -324,7 +304,8 @@ void Names::deselect(int num) {
 }
 
 void Names::deselect(String name) {
-  for (int i = 0; i < list->size(); i++) {
+  int c = count();
+  for (int i = 0; i < c; i++) {
     if (getName(i).equals(name)) {
       deselect(i);
       return;
@@ -335,13 +316,15 @@ void Names::deselect(String name) {
 }
 
 void Names::selectAll() {
-  for (int i = 0; i < list->size(); i++)
+  int c = count();
+  for (int i = 0; i < c; i++)
     internal_select(i);
   prntln(N_SELECTED_ALL);
 }
 
 void Names::deselectAll() {
-  for (int i = 0; i < list->size(); i++)
+  int c = count();
+  for (int i = 0; i < c; i++)
     internal_deselect(i);
   prntln(N_DESELECTED_ALL);
 }
@@ -422,19 +405,19 @@ int Names::selected() {
 }
 
 bool Names::internal_check(int num) {
-  return num >= 0 && num < list->size();
+  return num >= 0 && num < count();
 }
 
 void Names::internal_select(int num) {
   Device newDevice = list->get(num);
   newDevice.selected = true;
-  list->set(num, newDevice);
+  list->replace(num, newDevice);
 }
 
 void Names::internal_deselect(int num) {
   Device newDevice = list->get(num);
   newDevice.selected = false;
-  list->set(num, newDevice);
+  list->replace(num, newDevice);
 }
 
 void Names::internal_add(uint8_t* mac, String name, uint8_t* bssid, uint8_t ch, bool selected) {
@@ -481,17 +464,19 @@ void Names::internal_add(String macStr, String name, String bssidStr, uint8_t ch
 void Names::internal_remove(int num) {
   free(list->get(num).mac);
   free(list->get(num).name);
-  if (list->get(num).apBssid) free(list->get(num).apBssid);
+  if (list->get(num).apBssid)
+    free(list->get(num).apBssid);
   list->remove(num);
 }
 
 void Names::internal_removeAll() {
-  for (int i = 0; i < list->size(); i++) {
-    free(list->get(i).mac);
-    free(list->get(i).name);
-    if (list->get(i).apBssid) free(list->get(i).apBssid);
+  while(count() > 0){
+    free(list->get(0).mac);
+    free(list->get(0).name);
+    if (list->get(0).apBssid)
+      free(list->get(0).apBssid);
+    list->remove(0);
   }
-  list->clear();
 }
 
 

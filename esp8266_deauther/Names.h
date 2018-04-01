@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "FS.h"
 #include <ArduinoJson.h>
-#include "LinkedList.h"
+#include "SimpleList.h"
 #include "language.h"
 
 #define NAME_LIST_SIZE 25
@@ -82,7 +82,7 @@ class Names {
       bool selected;    // select for attacking
     };
     
-    LinkedList<Device>* list;
+    SimpleList<Device>* list;
     
     int binSearch(uint8_t* searchBytes, int lowerEnd, int upperEnd);
     bool internal_check(int num);
