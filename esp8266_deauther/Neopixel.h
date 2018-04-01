@@ -2,12 +2,16 @@
 #define Neopixel_h
 
 #include "Arduino.h"
+#include <ESP8266WiFi.h>
+extern "C" {
+  #include "user_interface.h"
+}
+#include <Adafruit_NeoPixel.h>
+#include "language.h"
+#include "A_config.h"
 #include "Settings.h"
 #include "Attack.h"
 #include "Scan.h"
-#include "language.h"
-#include <Adafruit_NeoPixel.h>
-#include "A_config.h"
 
 #define LED_MODE_OFF 0
 #define LED_MODE_SCAN 1

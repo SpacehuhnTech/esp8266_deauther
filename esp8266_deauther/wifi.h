@@ -1,12 +1,16 @@
 #ifndef WifiManager_h
 #define WifiManager_h
 
+#include "Arduino.h"
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
 #include <FS.h>
+extern "C" {
+  #include "user_interface.h"
+}
 
 #define WIFI_MODE_OFF 0
 #define WIFI_MODE_AP 1

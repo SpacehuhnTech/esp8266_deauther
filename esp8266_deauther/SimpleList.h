@@ -44,7 +44,6 @@ class SimpleList{
     Node<T>* getNode(int index);
 };
 
-// Initialize LinkedList with default values
 template<typename T>
 SimpleList<T>::SimpleList(){
   listBegin = NULL;

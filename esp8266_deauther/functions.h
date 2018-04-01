@@ -1,12 +1,12 @@
 #ifndef functions_h
 #define functions_h
 
+#include "Arduino.h"
 #include <FS.h>
-#include "ArduinoJson.h"
-
 extern "C" {
   #include "user_interface.h"
 }
+#include <ArduinoJson.h>
 
 /*
   Here is a collection of useful functions and variables.

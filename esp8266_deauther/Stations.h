@@ -5,10 +5,10 @@
 extern "C" {
   #include "user_interface.h"
 }
-#include "Accesspoints.h"
-#include "Names.h"
 #include "language.h"
 #include "SimpleList.h"
+#include "Accesspoints.h"
+#include "Names.h"
 
 #define STATION_LIST_SIZE 60
 extern Accesspoints accesspoints;

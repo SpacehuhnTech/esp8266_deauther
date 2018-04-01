@@ -2,15 +2,14 @@
 #define SerialInterface_h
 
 #include "Arduino.h"
-#include "pgmspace.h"
 #include <ESP8266WiFi.h>
 #include <FS.h>
-
 extern "C" {
   #include "user_interface.h"
 }
-
 #include "language.h"
+#include "A_config.h"
+#include "SimpleList.h"
 #include "Settings.h"
 #include "Names.h"
 #include "SSIDs.h"
@@ -20,8 +19,6 @@ extern "C" {
 #include "DigitalLed.h"
 #include "RGBLed.h"
 #include "Neopixel.h"
-#include "A_config.h"
-#include "SimpleList.h"
 
 #ifdef DIGITAL_LED
 extern DigitalLed led;

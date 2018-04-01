@@ -2,11 +2,15 @@
 #define SSIDs_h
 
 #include "Arduino.h"
-#include "FS.h"
+#include <ESP8266WiFi.h>
+#include <FS.h>
+extern "C" {
+  #include "user_interface.h"
+}
 #include <ArduinoJson.h>
+#include "language.h"
 #include "SimpleList.h"
 #include "Settings.h"
-#include "language.h"
 #include "Accesspoints.h"
 
 #define SSID_LIST_SIZE 60

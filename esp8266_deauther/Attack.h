@@ -3,12 +3,15 @@
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
+extern "C" {
+  #include "user_interface.h"
+}
+#include "language.h"
 #include "Accesspoints.h"
 #include "Stations.h"
 #include "SSIDs.h"
 #include "Settings.h"
 #include "Scan.h"
-#include "language.h"
 
 extern Settings settings;
 extern SSIDs ssids;

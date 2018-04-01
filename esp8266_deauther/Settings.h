@@ -2,14 +2,13 @@
 #define Settings_h
 
 #include "Arduino.h"
-#include "FS.h"
-#include <ArduinoJson.h>
-#include "language.h"
-#include "A_config.h"
-
+#include <FS.h>
 extern "C" {
   #include "user_interface.h"
 }
+#include <ArduinoJson.h>
+#include "language.h"
+#include "A_config.h"
 
 #define VERSION "v2.0.1"
 
