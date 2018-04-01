@@ -1,7 +1,7 @@
 #include "SSIDs.h"
 
 SSIDs::SSIDs() {
-  list = new LinkedList<SSID>;
+  list = new SimpleList<SSID>;
 }
 
 void SSIDs::load() {
@@ -49,15 +49,15 @@ void SSIDs::save(bool force) {
   buf = String(); // clear buffer
   
   String name;
-  int size = list->size();
+  int c = count();
   
-  for (int i = 0; i < size; i++) {
+  for (int i = 0; i < c; i++) {
     name = escape(getName(i));
     
     buf += String(OPEN_BRACKET) + String(DOUBLEQUOTES) + name + String(DOUBLEQUOTES) + String(COMMA); // ["name",
     buf += b2s(getWPA2(i)) + String(COMMA); // false,
     buf += String(getLen(i)) + String(CLOSE_BRACKET); // 12]
-    if(i<size-1) buf += COMMA; // ,
+    if(i < c-1) buf += COMMA; // ,
 
     if(buf.length() >= 1024){
       if (!appendFile(FILE_PATH, buf)) {
@@ -98,7 +98,8 @@ void SSIDs::update() {
       for (int i = 0; i < SSID_LIST_SIZE; i++) {
         SSID newSSID;
 
-        if (check(i)) newSSID = list->get(i);
+        if (check(i)) 
+          newSSID = list->get(i);
 
         newSSID.name = String();
         newSSID.len = 32;
@@ -107,8 +108,10 @@ void SSIDs::update() {
 
         newSSID.wpa2 = random(0, 2);
 
-        if (check(i)) list->set(i, newSSID);
-        else list->add(newSSID);
+        if (check(i)) 
+          list->replace(i, newSSID);
+        else 
+          list->add(newSSID);
       }
       
       randomTime = currentTime;
@@ -132,7 +135,7 @@ int SSIDs::getLen(int num){
 void SSIDs::setWPA2(int num, bool wpa2) {
   SSID newSSID = list->get(num);
   newSSID.wpa2 = wpa2;
-  list->set(num, newSSID);
+  list->replace(num, newSSID);
 }
 
 String SSIDs::getEncStr(int num) {
@@ -215,8 +218,13 @@ void SSIDs::replace(int num, String name, bool wpa2){
   if(!check(num)) return;
   
   int len = name.length();
-  if(len > 32) len = 32;
-  list->set(num,SSID{randomize(name),wpa2,(uint8_t)len});
+  if(len > 32) 
+    len = 32;
+  SSID newSSID;
+  newSSID.name = randomize(name);
+  newSSID.wpa2 = wpa2;
+  newSSID.len = (uint8_t)len;
+  list->replace(num,newSSID);
 
   prnt(SS_REPLACED);
   prntln(name);
@@ -243,11 +251,12 @@ void SSIDs::print(int num, bool header, bool footer) {
 
 void SSIDs::printAll() {
   prntln(SS_HEADER);
-  if (list->size() == 0)
+  int c = count();
+  if (c == 0)
     prntln(SS_ERROR_EMPTY);
   else
-    for (int i = 0; i < list->size(); i++)
-      print(i, i == 0, i == list->size() - 1);
+    for (int i = 0; i < c; i++)
+      print(i, i == 0, i == c - 1);
 }
 
 int SSIDs::count() {
@@ -255,7 +264,7 @@ int SSIDs::count() {
 }
 
 bool SSIDs::check(int num) {
-  return num >= 0 && num < list->size();
+  return num >= 0 && num < count();
 }
 
 void SSIDs::enableRandom(uint32_t randomInterval) {

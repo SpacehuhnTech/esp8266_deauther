@@ -4,7 +4,7 @@
 #include "Arduino.h"
 #include "FS.h"
 #include <ArduinoJson.h>
-#include "LinkedList.h"
+#include "SimpleList.h"
 #include "Settings.h"
 #include "language.h"
 #include "Accesspoints.h"
@@ -69,7 +69,7 @@ class SSIDs {
     
     String FILE_PATH = "/ssids.json";
     
-    LinkedList<SSID>* list;
+    SimpleList<SSID>* list;
 
     bool check(int num);
     String randomize(String name);
