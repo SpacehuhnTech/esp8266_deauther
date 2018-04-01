@@ -1,4 +1,48 @@
-#include "SimpleList.h"
+#ifndef SimpleList_h
+#define SimpleList_h
+
+#include <stddef.h>
+
+template<class T>
+struct Node {
+  T data;
+  Node<T> *next;
+};
+
+template<typename T>
+class SimpleList{
+  public:
+    SimpleList();
+    ~SimpleList();
+  
+    virtual int size();
+    virtual void add(int index, T obj);
+    virtual void add(T obj);
+    virtual void replace(int index, T obj);
+    virtual void remove(int index);
+    virtual T shift();
+    virtual T pop();
+    virtual T get(int index);
+    virtual int search(bool (*cmp)(T &a));
+    virtual int searchNext(bool (*cmp)(T &a));
+    virtual int binSearch(int (*cmp)(T &a), int lowerEnd, int upperEnd);
+    virtual int binSearch(int (*cmp)(T &a));
+    virtual int count(bool (*cmp)(T &a));
+    virtual void clear();
+    virtual void sort(bool (*cmp)(T &a, T &b));
+    virtual void swap(int x, int y);
+  protected:
+    int listSize;
+    Node<T>* listBegin;
+    Node<T>* listEnd;
+    
+    // Helps get() method by saving last position
+    Node<T>* lastNodeGot;
+    int lastIndexGot;
+    bool isCached;
+    
+    Node<T>* getNode(int index);
+};
 
 // Initialize LinkedList with default values
 template<typename T>
@@ -19,6 +63,7 @@ SimpleList<T>::~SimpleList(){
   listBegin = NULL;
   listEnd = NULL;
   listSize = 0;
+  
   lastNodeGot = NULL;
   lastIndexGot = -1;
   isCached = false;
@@ -72,10 +117,6 @@ void SimpleList<T>::add(T obj){
     listEnd = node;
   }
 
-  isCached = true;
-  lastIndexGot = listSize;
-  lastNodeGot = listEnd;
-    
   listSize++;
 }
 
@@ -105,12 +146,15 @@ void SimpleList<T>::add(int index, T obj){
   
   if(!listBegin)
     listBegin = nodeB;
-
-  isCached = true;
-  lastIndexGot = index;
-  lastNodeGot = listEnd;
   
   listSize++;
+}
+
+template<typename T>
+void SimpleList<T>::replace(int index, T obj){
+  if(index >= 0 && index < listSize){
+    getNode(index)->data = obj;
+  }
 }
 
 template<typename T>
@@ -118,9 +162,9 @@ void SimpleList<T>::remove(int index){
   if (index < 0 || index >= listSize)
     return;
 
-  Node<T>* nodeA = getNode(index - 1);                       // prev
-  Node<T>* nodeB = nodeA ? nodeA->next : getNode(index);     // node that shall be deleted
-  Node<T>* nodeC = nodeB ? nodeB->next : getNode(index + 1); // next
+  Node<T>* nodeA = getNode(index - 1); // prev
+  Node<T>* nodeB = getNode(index);     // node to be deleted
+  Node<T>* nodeC = getNode(index + 1); // next
   
   // a -> b -> c
   if(nodeA && nodeC){
@@ -168,6 +212,73 @@ T SimpleList<T>::get(int index){
   return (hNode ? hNode->data : T());
 }
 
+template<typename T>
+int SimpleList<T>::search(bool (*cmp)(T &a)){
+  int i = 0;
+  Node<T>* hNode = getNode(i);
+  bool found = cmp(hNode->data);
+  
+  while(!found && i < listSize){
+    i++;
+    hNode = getNode(i);
+    found = cmp(hNode->data);
+  }
+  
+  return found ? i : -1;
+}
+
+template<typename T>
+int SimpleList<T>::searchNext(bool (*cmp)(T &a)){
+  int i = lastIndexGot;
+  Node<T>* hNode = lastNodeGot;
+  bool found = cmp(hNode->data);
+  
+  while(!found && i < listSize){
+    i++;
+    hNode = getNode(i);
+    found = cmp(hNode->data);
+  }
+  
+  return found ? i : -1;
+}
+
+template<typename T>
+int SimpleList<T>::binSearch(int (*cmp)(T &a), int lowerEnd, int upperEnd){
+  int res;
+  int mid = (lowerEnd + upperEnd) / 2;
+
+  while (lowerEnd <= upperEnd) {
+    res = cmp(getNode(mid)->data);
+
+    if (res == 0) {
+      return mid;
+    } else if (res < 0) {
+      upperEnd = mid - 1;
+      mid = (lowerEnd + upperEnd) / 2;
+    } else if (res > 0) {
+      lowerEnd = mid + 1;
+      mid = (lowerEnd + upperEnd) / 2;
+    }
+  }
+  
+  return -1;
+}
+
+template<typename T>
+int SimpleList<T>::binSearch(int (*cmp)(T &a)){
+  return binSearch(cmp,0,listSize-1);
+}
+
+template<typename T>
+int SimpleList<T>::count(bool (*cmp)(T &a)){
+  int c = 0;
+  
+  for(int i=0;i<listSize;i++){
+    c += cmp(getNode(i)->data);
+  }
+  
+  return c;
+}
 
 template<typename T>
 T SimpleList<T>::pop(){
@@ -199,7 +310,7 @@ template<typename T>
 void SimpleList<T>::swap(int x, int y){
   // only continue when the index numbers are unequal and at least 0
   if(x != y && x >= 0 && y >= 0){
-    if(y > x){ // the first index should be bigger than the second. If not, swap them!
+    if(x > y){ // the first index should be smaller than the second. If not, swap them!
       int h = x;
       x = y;
       y = h;
@@ -207,39 +318,38 @@ void SimpleList<T>::swap(int x, int y){
     
     // Example: a -> b -> c -> ... -> g -> h -> i
     //          we want to swap b with h
-    
-    Node<T>* nodeA = getNode(x - 1);                           // x.prev
-    Node<T>* nodeB = nodeA ? nodeA->next : getNode(x);         // x
-    Node<T>* nodeC = nodeB ? nodeB->next : getNode(x + 1);     // x.next
-    Node<T>* nodeG =  x == y - 1 ? nodeB : getNode(y - 1);     // y.prev
-    Node<T>* nodeH = nodeG ? nodeG->next : getNode(y);         // y
-    Node<T>* nodeI = nodeH ? nodeH->next : getNode(y + 1);     // y.next
-    
+    Node<T>* nodeA = getNode(x - 1);                      // x.prev
+    Node<T>* nodeB = getNode(x);                          // x
+    Node<T>* nodeC = getNode(x + 1);                      // x.next
+    Node<T>* nodeG = y - 1 == x ? nodeB : getNode(y - 1); // y.prev
+    Node<T>* nodeH = getNode(y);                          // y
+    Node<T>* nodeI = getNode(y + 1);                      // y.next
+
     // a -> h -> i      b -> c -> ... -> g -> h -> i
     if(nodeA)
       nodeA->next = nodeH;
     else
       listBegin = nodeH;
+      
+    // a -> h -> c -> ... -> g -> h -> i    b -> i
+    if(nodeH != nodeC) // when nodes between b and h exist
+      nodeH->next = nodeC;
+    else
+      nodeH->next = nodeB; 
     
     // a -> h -> i      b -> i
     nodeB->next = nodeI;
     if(!nodeI)
       listEnd = nodeB;
-    
-    // a -> h -> c -> ... -> g -> h -> i    b -> i
-    if(nodeH != nodeC) // when there are other nodes between x (nodeB) and y (nodeH)
-      nodeH->next = nodeC; // let nodeH.next point at nodeC
-    else // otherwise let nodeH.next point at nodeB
-      nodeH->next = nodeB; 
-    
+
     // a -> h -> c -> ... -> g -> b -> i
-    if(nodeG != nodeB) // when there are more than 1 nodes between x (nodeB) and y (nodeH)
-      nodeG->next = nodeB; // let nodeG.next point at nodeB
+    if(nodeG != nodeB) // when more than 1 nodes between b and h exist
+      nodeG->next = nodeB;
   }
 }
 
 template<typename T>
-void SimpleList<T>::sort(int (*cmp)(T &, T &)) {
+void SimpleList<T>::sort(bool (*cmp)(T &a, T &b)) {
   // bubble sort because I'm lazy
   
   // Example: a -> b -> c -> d
@@ -256,78 +366,13 @@ void SimpleList<T>::sort(int (*cmp)(T &, T &)) {
   while(c--){
     for(int i = 1; i <= c; i++){
       nodeA = getNode(i - 1);
-      nodeB = nodeB ? nodeB->next : getNode(i);
+      nodeB = getNode(i);
 
-      if(cmp(nodeA->data, nodeB->data) <= 0) {
+      if(cmp(nodeA->data, nodeB->data)) {
         swap(i-1,i);
       }
     }
   }
 }
-/*
-template<typename T>
-void LinkedList<T>::sort(int (*cmp)(T &, T &)){
-  if(listSize < 2) return;
 
-  for(;;) { 
-
-    ListNode<T> **joinPoint = &root;
-
-    while(*joinPoint) {
-      ListNode<T> *a = *joinPoint;
-      ListNode<T> *a_end = findEndOfSortedString(a, cmp);
-  
-      if(!a_end->next ) {
-        if(joinPoint == &root) {
-          last = a_end;
-          isCached = false;
-          return;
-        }
-        else {
-          break;
-        }
-      }
-
-      ListNode<T> *b = a_end->next;
-      ListNode<T> *b_end = findEndOfSortedString(b, cmp);
-
-      ListNode<T> *tail = b_end->next;
-
-      a_end->next = NULL;
-      b_end->next = NULL;
-
-      while(a && b) {
-        if(cmp(a->data, b->data) <= 0) {
-          *joinPoint = a;
-          joinPoint = &a->next;
-          a = a->next;  
-        }
-        else {
-          *joinPoint = b;
-          joinPoint = &b->next;
-          b = b->next;  
-        }
-      }
-
-      if(a) {
-        *joinPoint = a;
-        while(a->next) a = a->next;
-        a->next = tail;
-        joinPoint = &a->next;
-      }
-      else {
-        *joinPoint = b;
-        while(b->next) b = b->next;
-        b->next = tail;
-        joinPoint = &b->next;
-      }
-    }
-  }
-}
-*/
-
-/*
-  - search
-  - sort
-  - bin search
-*/
+#endif
