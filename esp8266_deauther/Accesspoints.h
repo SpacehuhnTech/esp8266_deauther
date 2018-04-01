@@ -5,6 +5,7 @@
 #include <ESP8266WiFi.h>
 #include "Names.h"
 #include "language.h"
+#include "SimpleList.h"
 
 extern Names names;
 
@@ -15,7 +16,6 @@ String fixUtf8(String str);
 struct AP{
   uint8_t id;
   bool selected;
-  AP* next;
 };
 
 class Accesspoints {
@@ -58,12 +58,7 @@ class Accesspoints {
     bool check(int num);
     bool changed = false;
   private:
-    AP* listBegin = NULL;
-    AP* listEnd = NULL;
-    int listSize = 0;
-    //LinkedList<AP>* listA;
-
-    AP* getAP(int num);
+    SimpleList<AP>* list;
     
     bool internal_check(int num);
     void internal_select(int num);
