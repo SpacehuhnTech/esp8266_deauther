@@ -12,7 +12,7 @@
 */
 
 SerialInterface::SerialInterface() {
-  list = new LinkedList<String>;
+  list = new SimpleList<String>;
 }
 
 void SerialInterface::load() {

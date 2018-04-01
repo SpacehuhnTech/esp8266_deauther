@@ -21,6 +21,7 @@ extern "C" {
 #include "RGBLed.h"
 #include "Neopixel.h"
 #include "A_config.h"
+#include "SimpleList.h"
 
 #ifdef DIGITAL_LED
 extern DigitalLed led;
@@ -77,7 +78,7 @@ class SerialInterface {
     
   private:
     bool enabled;
-    LinkedList<String>* list;
+    SimpleList<String>* list;
     bool executing = false;
     bool continuously = false;
     uint32_t continueTime = 0;
