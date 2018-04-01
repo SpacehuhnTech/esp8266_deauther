@@ -8,6 +8,7 @@
 #include "SSIDs.h"
 #include "Settings.h"
 #include "language.h"
+#include "SimpleList.h"
 
 #define SCAN_MODE_OFF 0
 #define SCAN_MODE_APS 1
@@ -69,7 +70,7 @@ class Scan {
     uint16_t deauths = 0;
     uint16_t packets = 0;
   private:
-    LinkedList<uint16_t>* list;              // packet list
+    SimpleList<uint16_t>* list;             // packet list
    
     uint32_t sniffTime = SCAN_DEFAULT_TIME; // how long the scan runs
     uint32_t snifferStartTime = 0;          // when the scan started

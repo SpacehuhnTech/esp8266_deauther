@@ -1,7 +1,7 @@
 #include "Scan.h"
 
 Scan::Scan() {
-  list = new LinkedList<uint16_t>;
+  list = new SimpleList<uint16_t>;
 }
 
 void Scan::sniffer(uint8_t* buf, uint16_t len) {
