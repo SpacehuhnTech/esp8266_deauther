@@ -813,7 +813,7 @@ void DisplayUI::goBack() {
 }
 
 void DisplayUI::createMenu(Menu* menu, Menu* parent, std::function<void()> build) {
-  menu->list = new LinkedList<MenuNode>;
+  menu->list = new SimpleList<MenuNode>;
   menu->parentMenu = parent;
   menu->selected = 0;
   menu->build = build;

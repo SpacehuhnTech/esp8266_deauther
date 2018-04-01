@@ -2,7 +2,6 @@
 #define DisplayUI_h
 
 #include "Arduino.h"
-#include "LinkedList.h"
 #include <ESP8266WiFi.h>
 #include <FS.h>
 
@@ -63,7 +62,7 @@ struct Button {
 };
 
 struct Menu {
-  LinkedList<MenuNode>* list;
+  SimpleList<MenuNode>* list;
   Menu* parentMenu;
   uint8_t selected;
   std::function<void()> build; // function that is executed when button is clicked
