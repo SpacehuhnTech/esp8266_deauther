@@ -90,7 +90,8 @@ void SerialInterface::stopScript() {
 
 void SerialInterface::update() {
   if (executing) {
-    if (execPath.charAt(0) != SLASH) execPath = SLASH + execPath;
+    if (execPath.charAt(0) != SLASH) 
+      execPath = SLASH + execPath;
     prnt(CLI_EXECUTING);
     prntln(execPath);
     File f = SPIFFS.open(execPath, "r");
@@ -198,9 +199,11 @@ void SerialInterface::runCommand(String input) {
     return;
   }
 
-  // print command
-  prnt(CLI_INPUT_PREFIX);
-  prntln(input);
+  if(settings.getSerialEcho()){
+    // print command
+    prnt(CLI_INPUT_PREFIX);
+    prntln(input);
+  }
   
   if (list->size() == 0) return;
 

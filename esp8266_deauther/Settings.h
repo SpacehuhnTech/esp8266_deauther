@@ -10,7 +10,7 @@ extern "C" {
 #include "language.h"
 #include "A_config.h"
 
-#define VERSION "v2.0.1"
+#define VERSION "v2.0.2"
 
 extern void checkFile(String path, String data);
 extern JsonVariant parseJSONFile(String path, DynamicJsonBuffer &jsonBuffer);
@@ -63,6 +63,7 @@ class Settings {
     uint16_t getMinDeauths();
     uint32_t getDisplayTimeout();
     String getLang();
+    bool getSerialEcho();
     
     void setDeauthsPerTarget(uint16_t deauthsPerTarget);
     void setDeauthReason(uint8_t deauthReason);
@@ -92,6 +93,7 @@ class Settings {
     void setMinDeauths(uint16_t minDeauths);
     void setDisplayTimeout(uint32_t displayTimeout);
     void setLang(String lang);
+    void setSerialEcho(bool serialEcho);
   private:
     bool changed = false;
 
@@ -105,6 +107,7 @@ class Settings {
     bool webInterface = true;
     bool randomTX = false;
     bool ledEnabled = true;
+    bool serialEcho = true;
 
     uint32_t attackTimeout = 600;
     uint32_t autosaveTime = 10000;

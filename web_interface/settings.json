@@ -11,6 +11,7 @@
     "display":false,
     "displayTimeout":600,
     "serial":true,
+	"serialEcho":true,
     "web":true,
     "led":true,
     "maxch":14,

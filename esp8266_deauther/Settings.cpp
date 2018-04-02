@@ -28,12 +28,13 @@ void Settings::load() {
   if(data.containsKey(keyword(S_DISPLAYINTERFACE))) setDisplayInterface(data.get<bool>(keyword(S_DISPLAYINTERFACE)));
   if(data.containsKey(keyword(S_DISPLAY_TIMEOUT))) setDisplayTimeout(data.get<uint32_t>(keyword(S_DISPLAY_TIMEOUT)));
   if(data.containsKey(keyword(S_SERIALINTERFACE))) setSerialInterface(data.get<bool>(keyword(S_SERIALINTERFACE)));
+  if(data.containsKey(keyword(S_SERIAL_ECHO))) setSerialEcho(data.get<bool>(keyword(S_SERIAL_ECHO)));
   if(data.containsKey(keyword(S_WEBINTERFACE))) setWebInterface(data.get<bool>(keyword(S_WEBINTERFACE)));
   if(data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
   if(data.containsKey(keyword(S_MAXCH))) setMaxCh(data.get<uint8_t>(keyword(S_MAXCH)));
   if(data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
   if(data.containsKey(keyword(S_MACST))) setMacSt(data.get<String>(keyword(S_MACST)));
-
+  
   // SCAN
   if(data.containsKey(keyword(S_CHTIME))) setChTime(data.get<uint16_t>(keyword(S_CHTIME)));
   if(data.containsKey(keyword(S_MIN_DEAUTHS))) setMinDeauths(data.get<uint16_t>(keyword(S_MIN_DEAUTHS)));
@@ -86,12 +87,13 @@ void Settings::reset() {
   setDisplayInterface(USE_DISPLAY);
   setDisplayTimeout(600);
   setSerialInterface(true);
+  serialEcho = true;
   setWebInterface(true);
   setLedEnabled(true);
   setMaxCh(14);
   wifi_get_macaddr(0x00, macSt);
   wifi_get_macaddr(0x01, macAP);
-
+  
   // SCAN
   setChTime(384);
   setMinDeauths(3);
@@ -130,6 +132,7 @@ String Settings::getJsonStr() {
   data.set(keyword(S_DISPLAYINTERFACE), displayInterface);
   data.set(keyword(S_DISPLAY_TIMEOUT), displayTimeout);
   data.set(keyword(S_SERIALINTERFACE), serialInterface);
+  data.set(keyword(S_SERIAL_ECHO), serialEcho);
   data.set(keyword(S_WEBINTERFACE), webInterface);
   data.set(keyword(S_LEDENABLED), ledEnabled);
   data.set(keyword(S_MAXCH), maxCh);
@@ -188,42 +191,43 @@ void Settings::print() {
 
 void Settings::set(const char* str, String value) {
   // booleans
-  if (eqls(str,S_BEACONCHANNEL)) setBeaconChannel(eqls(value,STR_TRUE));
-  else if (eqls(str,S_AUTOSAVE)) setAutosave(eqls(value,STR_TRUE));
-  else if (eqls(str,S_BEACONINTERVAL)) setBeaconInterval(eqls(value,STR_TRUE));
-  else if (eqls(str,S_SERIALINTERFACE)) setSerialInterface(eqls(value,STR_TRUE));
-  else if (eqls(str,S_DISPLAYINTERFACE)) setDisplayInterface(eqls(value,STR_TRUE));
-  else if (eqls(str,S_WEBINTERFACE)) setWebInterface(eqls(value,STR_TRUE));
-  else if (eqls(str,S_RANDOMTX)) setRandomTX(eqls(value,STR_TRUE));
-  else if (eqls(str,S_LEDENABLED)) setLedEnabled(eqls(value,STR_TRUE));
-  else if (eqls(str,S_HIDDEN)) setHidden(eqls(value,STR_TRUE));
-  else if (eqls(str,S_CAPTIVEPORTAL)) setCaptivePortal(eqls(value,STR_TRUE));
-
+  if (eqls(str, S_BEACONCHANNEL)) setBeaconChannel(s2b(value));
+  else if (eqls(str, S_AUTOSAVE)) setAutosave(s2b(value));
+  else if (eqls(str, S_BEACONINTERVAL)) setBeaconInterval(s2b(value));
+  else if (eqls(str, S_SERIALINTERFACE)) setSerialInterface(s2b(value));
+  else if (eqls(str, S_DISPLAYINTERFACE)) setDisplayInterface(s2b(value));
+  else if (eqls(str, S_WEBINTERFACE)) setWebInterface(s2b(value));
+  else if (eqls(str, S_RANDOMTX)) setRandomTX(s2b(value));
+  else if (eqls(str, S_LEDENABLED)) setLedEnabled(s2b(value));
+  else if (eqls(str, S_HIDDEN)) setHidden(s2b(value));
+  else if (eqls(str, S_CAPTIVEPORTAL)) setCaptivePortal(s2b(value));
+  else if (eqls(str, S_SERIAL_ECHO)) setSerialEcho(s2b(value));
+  
   // integer
-  else if (eqls(str,S_FORCEPACKETS)) setForcePackets(value.toInt());
-  else if (eqls(str,S_AUTOSAVETIME)) setAutosaveTime(value.toInt());
-  else if (eqls(str,S_DEAUTHSPERTARGET)) setDeauthsPerTarget(value.toInt());
-  else if (eqls(str,S_CHTIME)) setChTime(value.toInt());
-  else if (eqls(str,S_MAXCH)) setMaxCh(value.toInt());
-  else if (eqls(str,S_CHANNEL)) setChannel(value.toInt());
-  else if (eqls(str,S_DEAUTHREASON)) setDeauthReason(value.toInt());
-  else if (eqls(str,S_ATTACKTIMEOUT)) setAttackTimeout(value.toInt());
-  else if (eqls(str,S_PROBESPERSSID)) setProbesPerSSID(value.toInt());
-  else if (eqls(str,S_MIN_DEAUTHS)) setMinDeauths(value.toInt());
-  else if (eqls(str,S_DISPLAY_TIMEOUT)) setDisplayTimeout(value.toInt());
+  else if (eqls(str, S_FORCEPACKETS)) setForcePackets(value.toInt());
+  else if (eqls(str, S_AUTOSAVETIME)) setAutosaveTime(value.toInt());
+  else if (eqls(str, S_DEAUTHSPERTARGET)) setDeauthsPerTarget(value.toInt());
+  else if (eqls(str, S_CHTIME)) setChTime(value.toInt());
+  else if (eqls(str, S_MAXCH)) setMaxCh(value.toInt());
+  else if (eqls(str, S_CHANNEL)) setChannel(value.toInt());
+  else if (eqls(str, S_DEAUTHREASON)) setDeauthReason(value.toInt());
+  else if (eqls(str, S_ATTACKTIMEOUT)) setAttackTimeout(value.toInt());
+  else if (eqls(str, S_PROBESPERSSID)) setProbesPerSSID(value.toInt());
+  else if (eqls(str, S_MIN_DEAUTHS)) setMinDeauths(value.toInt());
+  else if (eqls(str, S_DISPLAY_TIMEOUT)) setDisplayTimeout(value.toInt());
 
   // strings
-  else if (eqls(str,S_LANG)) setLang(value);
-  else if (eqls(str,S_SSID)) setSSID(value);
-  else if (eqls(str,S_PASSWORD)) setPassword(value);
-  else if (eqls(str,S_MACAP)) setMacAP(value);
-  else if (eqls(str,S_MACST)) setMacSt(value);
-  else if (eqls(str,S_MAC) && value.equalsIgnoreCase("random")){
+  else if (eqls(str, S_LANG)) setLang(value);
+  else if (eqls(str, S_SSID)) setSSID(value);
+  else if (eqls(str, S_PASSWORD)) setPassword(value);
+  else if (eqls(str, S_MACAP)) setMacAP(value);
+  else if (eqls(str, S_MACST)) setMacSt(value);
+  else if (eqls(str, S_MAC) && value.equalsIgnoreCase("random")){
     setMacSt(value);
     setMacAP(value);
   }
 
-  else if (eqls(str,S_VERSION)) prntln(S_ERROR_VERSION);
+  else if (eqls(str, S_VERSION)) prntln(S_ERROR_VERSION);
 
   else {
     prnt(S_ERROR_NOT_FOUND);
@@ -236,40 +240,41 @@ void Settings::set(const char* str, String value) {
 }
 
 String Settings::get(const char* str) {
-  if (eqls(str,S_SETTINGS)) print();
+  if (eqls(str, S_SETTINGS)) print();
   // booleans
-  else if (eqls(str,S_BEACONCHANNEL)) return b2s(getBeaconChannel());
-  else if (eqls(str,S_AUTOSAVE)) return b2s(getAutosave());
-  else if (eqls(str,S_BEACONINTERVAL)) return b2s(getBeaconInterval());
-  else if (eqls(str,S_SERIALINTERFACE)) return b2s(getSerialInterface());
-  else if (eqls(str,S_DISPLAYINTERFACE)) return b2s(getDisplayInterface());
-  else if (eqls(str,S_WEBINTERFACE)) return b2s(getWebInterface());
-  else if (eqls(str,S_RANDOMTX)) return b2s(getRandomTX());
-  else if (eqls(str,S_LEDENABLED)) return b2s(getLedEnabled());
-  else if (eqls(str,S_HIDDEN)) return b2s(getHidden());
-  else if (eqls(str,S_CAPTIVEPORTAL)) return b2s(getCaptivePortal());
+  else if (eqls(str, S_BEACONCHANNEL)) return b2s(beaconChannel);
+  else if (eqls(str, S_AUTOSAVE)) return b2s(autosave);
+  else if (eqls(str, S_BEACONINTERVAL)) return b2s(beaconInterval);
+  else if (eqls(str, S_SERIALINTERFACE)) return b2s(serialInterface);
+  else if (eqls(str, S_DISPLAYINTERFACE)) return b2s(displayInterface);
+  else if (eqls(str, S_WEBINTERFACE)) return b2s(webInterface);
+  else if (eqls(str, S_RANDOMTX)) return b2s(randomTX);
+  else if (eqls(str, S_LEDENABLED)) return b2s(ledEnabled);
+  else if (eqls(str, S_HIDDEN)) return b2s(hidden);
+  else if (eqls(str, S_CAPTIVEPORTAL)) return b2s(captivePortal);
+  else if (eqls(str, S_SERIAL_ECHO)) return b2s(serialEcho);
 
   // integer
-  else if (eqls(str,S_FORCEPACKETS)) return (String)getForcePackets();
-  else if (eqls(str,S_AUTOSAVETIME)) return (String)getAutosaveTime();
-  else if (eqls(str,S_DEAUTHSPERTARGET)) return (String)getDeauthsPerTarget();
-  else if (eqls(str,S_CHTIME)) return (String)getChTime();
-  else if (eqls(str,S_ATTACKTIMEOUT)) return (String)getAttackTimeout();
-  else if (eqls(str,S_MAXCH)) return (String)getMaxCh();
-  else if (eqls(str,S_CHANNEL)) return (String)getChannel();
-  else if (eqls(str,S_DEAUTHREASON)) return (String)getDeauthReason();
-  else if (eqls(str,S_PROBESPERSSID)) return (String)getProbesPerSSID();
-  else if (eqls(str,S_MIN_DEAUTHS)) return (String)getMinDeauths();
-  else if (eqls(str,S_DISPLAY_TIMEOUT)) return (String)getDisplayTimeout();
+  else if (eqls(str, S_FORCEPACKETS)) return (String)forcePackets;
+  else if (eqls(str, S_AUTOSAVETIME)) return (String)autosaveTime;
+  else if (eqls(str, S_DEAUTHSPERTARGET)) return (String)deauthsPerTarget;
+  else if (eqls(str, S_CHTIME)) return (String)chTime;
+  else if (eqls(str, S_ATTACKTIMEOUT)) return (String)attackTimeout;
+  else if (eqls(str, S_MAXCH)) return (String)maxCh;
+  else if (eqls(str, S_CHANNEL)) return (String)channel;
+  else if (eqls(str, S_DEAUTHREASON)) return (String)deauthReason;
+  else if (eqls(str, S_PROBESPERSSID)) return (String)probesPerSSID;
+  else if (eqls(str, S_MIN_DEAUTHS)) return (String)minDeauths;
+  else if (eqls(str, S_DISPLAY_TIMEOUT)) return (String)displayTimeout;
 
   // strings
-  else if (eqls(str,S_SSID)) return getSSID();
-  else if (eqls(str,S_LANG)) return getLang();
-  else if (eqls(str,S_PASSWORD)) return getPassword();
-  else if (eqls(str,S_MACAP)) return macToStr(getMacAP());
-  else if (eqls(str,S_MACST)) return macToStr(getMacSt());
-  else if (eqls(str,S_MAC)) return "AP: " + macToStr(getMacAP()) + ", Station: " + macToStr(getMacSt());
-  else if (eqls(str,S_VERSION)) return getVersion();
+  else if (eqls(str, S_SSID)) return ssid;
+  else if (eqls(str, S_LANG)) return lang;
+  else if (eqls(str, S_PASSWORD)) return password;
+  else if (eqls(str, S_MACAP)) return macToStr(getMacAP());
+  else if (eqls(str, S_MACST)) return macToStr(getMacSt());
+  else if (eqls(str, S_MAC)) return "AP: " + macToStr(macAP) + ", Station: " + macToStr(macSt);
+  else if (eqls(str, S_VERSION)) return version;
 
   else {
     prnt(S_ERROR_NOT_FOUND);
@@ -386,6 +391,10 @@ uint32_t Settings::getDisplayTimeout(){
 
 String Settings::getLang(){
   return lang;
+}
+
+bool Settings::getSerialEcho(){
+  return serialEcho;
 }
 
 // ===== SETTERS ===== //
@@ -572,4 +581,8 @@ void Settings::setLang(String lang){
   changed = true;
 }
 
+void Settings::setSerialEcho(bool serialEcho){
+  Settings::serialEcho = serialEcho;
+  changed = true;
+}
 

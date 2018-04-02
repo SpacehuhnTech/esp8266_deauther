@@ -53,6 +53,7 @@
 	"setting_display": "Aktiviert Display-Interface.",
 	"setting_displayTimeout": "Zeit in Sekunden nachdem der Display automatisch ausschaltet, wenn inaktiv.\nZum Deaktivieren des Timeouts, setze es auf 0.",
 	"setting_serial": "Aktiviere Serial-Interface.\nEs wird empfohlen es immer aktiviert zu lassen!",
+	"setting_serialEcho": "Erlaubt Echo für jede Nachricht über die serielle Verbindung.",
 	"setting_web": "Aktiviert Webinterface.",
 	"setting_led": "Aktiviert (RGB) LED.",
 	"setting_maxch": "Max. Kanal zum Scannen.\nUS = 11, EU = 13, Japan = 14.",

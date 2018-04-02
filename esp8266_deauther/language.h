@@ -469,6 +469,7 @@ static const char S_SSID[] PROGMEM = "ssid";
 static const char S_MAC[] PROGMEM = "mac";
 static const char S_MIN_DEAUTHS[] PROGMEM = "minDeauths";
 static const char S_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
+static const char S_SERIAL_ECHO[] PROGMEM = "serialEcho";
 
 static const char S_SETTINGS_LOADED[] PROGMEM = "Settings loaded from ";
 static const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";

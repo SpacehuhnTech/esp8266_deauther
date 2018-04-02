@@ -53,6 +53,7 @@
 	"setting_display": "Enables display interface.",
 	"setting_displayTimeout": "Time in seconds after which the display turns off when inactive.\nTo disable the display timeout, set it to 0.",
 	"setting_serial": "Enables serial interface.\nIt's recommended not to disable it!",
+	"setting_serialEcho": "Enables echo for each incoming message over serial.",
 	"setting_web": "Enables web interface.",
 	"setting_led": "Enables the (RGB) LED feature.",
 	"setting_maxch": "Max. channel to scan on.\nUS = 11, EU = 13, Japan = 14.",

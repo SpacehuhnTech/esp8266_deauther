@@ -3,21 +3,22 @@
   - [`ssid`](#ssid)
   - [`password`](#password)
   - [`channel`](#channel)
-  - [`hidden`](#HIDDEN)
-  - [`captivePortal`](#CAPTIVEPORTAL)
+  - [`hidden`](#hidden)
+  - [`captivePortal`](#captiveportal)
   - [`lang`](#lang)
   - [`autosave`](#autosave)
   - [`autosaveTime`](#autosave-time)
   - [`displayInterface`](#display-interface)
-  - [`displayTimeout`](#DISPLAYTIMEOUT)
+  - [`displayTimeout`](#displaytimeout)
   - [`serialInterface`](#serial-interface)
+  - [`serialEcho`](#serial-echo)
   - [`webInterface`](#web-interface)
   - [`ledEnabled`](#ledEnabled)
   - [`maxCh`](#max-ch)
   - [`macAP`](#macap)
   - [`macSt`](#macst)
   - [`chTime`](#ch-time)
-  - [`minDeauths`](#MINDEAUTHS)
+  - [`minDeauths`](#mindeauths)
   - [`attackTimeout`](#attacktimeout)
   - [`forcePackets`](#force-packets)
   - [`deauthsPerTarget`](#deauths-per-target)
@@ -25,7 +26,7 @@
   - [`beaconChannel`](#beacon-channel)
   - [`beaconInterval`](#beacon-interval)
   - [`randomTx`](#randomtx)
-  - [`probesPerSSID`](#PROBESPERSSID)
+  - [`probesPerSSID`](#probesperssid)
   
 ## VERSION
 `String version = VERSION;`  
@@ -79,6 +80,10 @@ To disable the display timeout, set it to 0.
 ## SERIAL-INTERFACE
 `bool serialInterface = true;`  
 Enables serial interface.  
+
+## SERIAL-ECHO
+`bool serialEcho = true`  
+Enables echo for each incoming message over serial.  
 
 ## WEB-INTERFACE
 `bool webInterface = false;`  
