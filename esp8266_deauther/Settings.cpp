@@ -30,6 +30,7 @@ void Settings::load() {
   if(data.containsKey(keyword(S_SERIALINTERFACE))) setSerialInterface(data.get<bool>(keyword(S_SERIALINTERFACE)));
   if(data.containsKey(keyword(S_SERIAL_ECHO))) setSerialEcho(data.get<bool>(keyword(S_SERIAL_ECHO)));
   if(data.containsKey(keyword(S_WEBINTERFACE))) setWebInterface(data.get<bool>(keyword(S_WEBINTERFACE)));
+  if(data.containsKey(keyword(S_WEB_SPIFFS))) setWebInterface(data.get<bool>(keyword(S_WEB_SPIFFS)));
   if(data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
   if(data.containsKey(keyword(S_MAXCH))) setMaxCh(data.get<uint8_t>(keyword(S_MAXCH)));
   if(data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
@@ -87,8 +88,9 @@ void Settings::reset() {
   setDisplayInterface(USE_DISPLAY);
   setDisplayTimeout(600);
   setSerialInterface(true);
-  serialEcho = true;
+  setSerialEcho(true);
   setWebInterface(true);
+  setWebSpiffs(false);
   setLedEnabled(true);
   setMaxCh(14);
   wifi_get_macaddr(0x00, macSt);
@@ -134,6 +136,7 @@ String Settings::getJsonStr() {
   data.set(keyword(S_SERIALINTERFACE), serialInterface);
   data.set(keyword(S_SERIAL_ECHO), serialEcho);
   data.set(keyword(S_WEBINTERFACE), webInterface);
+  data.set(keyword(S_WEB_SPIFFS), webSpiffs);
   data.set(keyword(S_LEDENABLED), ledEnabled);
   data.set(keyword(S_MAXCH), maxCh);
   data.set(keyword(S_MACAP), macToStr(getMacAP()));
@@ -202,6 +205,7 @@ void Settings::set(const char* str, String value) {
   else if (eqls(str, S_HIDDEN)) setHidden(s2b(value));
   else if (eqls(str, S_CAPTIVEPORTAL)) setCaptivePortal(s2b(value));
   else if (eqls(str, S_SERIAL_ECHO)) setSerialEcho(s2b(value));
+  else if (eqls(str, S_WEB_SPIFFS)) setWebSpiffs(s2b(value));
   
   // integer
   else if (eqls(str, S_FORCEPACKETS)) setForcePackets(value.toInt());
@@ -253,6 +257,7 @@ String Settings::get(const char* str) {
   else if (eqls(str, S_HIDDEN)) return b2s(hidden);
   else if (eqls(str, S_CAPTIVEPORTAL)) return b2s(captivePortal);
   else if (eqls(str, S_SERIAL_ECHO)) return b2s(serialEcho);
+  else if (eqls(str, S_WEB_SPIFFS)) return b2s(webSpiffs);
 
   // integer
   else if (eqls(str, S_FORCEPACKETS)) return (String)forcePackets;
@@ -395,6 +400,10 @@ String Settings::getLang(){
 
 bool Settings::getSerialEcho(){
   return serialEcho;
+}
+
+bool Settings::getWebSpiffs(){
+  return webSpiffs;
 }
 
 // ===== SETTERS ===== //
@@ -583,6 +592,11 @@ void Settings::setLang(String lang){
 
 void Settings::setSerialEcho(bool serialEcho){
   Settings::serialEcho = serialEcho;
+  changed = true;
+}
+
+void Settings::setWebSpiffs(bool webSpiffs){
+  Settings::webSpiffs = webSpiffs;
   changed = true;
 }
 

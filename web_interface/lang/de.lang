@@ -55,6 +55,7 @@
 	"setting_serial": "Aktiviere Serial-Interface.\nEs wird empfohlen es immer aktiviert zu lassen!",
 	"setting_serialEcho": "Erlaubt Echo für jede Nachricht über die serielle Verbindung.",
 	"setting_web": "Aktiviert Webinterface.",
+	"setting_webSpiffs": "Aktiviert SPIFFS für alle Web-Datein.",
 	"setting_led": "Aktiviert (RGB) LED.",
 	"setting_maxch": "Max. Kanal zum Scannen.\nUS = 11, EU = 13, Japan = 14.",
 	"setting_macAP": "MAC Adresse für Access-Point Modus.\nBeachte, dass die Adresse nur angewendet wird wenn der Access-Point Modus aktiviert ist.",

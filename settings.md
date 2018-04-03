@@ -13,6 +13,7 @@
   - [`serialInterface`](#serial-interface)
   - [`serialEcho`](#serial-echo)
   - [`webInterface`](#web-interface)
+  - [`webSpiffs`](#web-spiffs)
   - [`ledEnabled`](#ledEnabled)
   - [`maxCh`](#max-ch)
   - [`macAP`](#macap)
@@ -88,6 +89,11 @@ Enables echo for each incoming message over serial.
 ## WEB-INTERFACE
 `bool webInterface = false;`  
 Enables web interface.  
+
+## WEB-SPIFFS
+`bool webSpiffs = false`  
+Enables SPIFFS for all web files.  
+Can lead to longer loading times but it nice if you need to edit the the web files regularly.  
 
 ## LEDENABLED
 `bool ledEnabled = true`  
