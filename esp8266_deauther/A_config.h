@@ -45,7 +45,7 @@
 #define LED_NEOPIXEL Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800)
 
 // ===================== DISPLAY CONFIG ==================== //
-#define USE_DISPLAY true // default display setting
+#define USE_DISPLAY false // default display setting
 
 /* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     Adjust the pins to match your setup

@@ -30,9 +30,9 @@
 
 // === Settings for Digital LED and RGB LED === //
 #define LED_CATHODE false // common ground (GND)
-#define LED_PIN_R 2       // ESP-12 LED
+#define LED_PIN_R 16      // NodeMCU on-board LED
 #define LED_PIN_G 0
-#define LED_PIN_B 16      // NodeMCU on-board LED
+#define LED_PIN_B 2       // ESP-12 LED
 
 // === Settings for RGB LED and Neopixel LED === //
 #define LED_MODE_BRIGHTNESS 10 // brightness of LED modes 
@@ -51,9 +51,9 @@
     Adjust the pins to match your setup
     Comment out the buttons you don't use.
    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = */
-#define BUTTON_UP 14 // D5
-#define BUTTON_DOWN 12 // D6
-#define BUTTON_A 13 // D7
+#define BUTTON_UP 14
+#define BUTTON_DOWN 12
+#define BUTTON_A 13
 
 //#define BUTTON_LEFT 12
 //#define BUTTON_RIGHT 13
@@ -63,11 +63,9 @@
     Uncomment the type of display you're using
     Only one of them can be defined at a time!
    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
-    0x3c = I2C address
-    SDA = GPIO 5 (D1)  
-    SCL/SCK = GPIO 4 (D2) */
-//#define DEAUTHER_DISPLAY SSD1306Wire display = SSD1306Wire(0x3c, 5, 4); // for 0.96" OLED
-#define DEAUTHER_DISPLAY SH1106Wire display = SH1106Wire(0x3c, 5, 4); // for 1.3" OLED
+*/
+#define DEAUTHER_DISPLAY SSD1306Wire display = SSD1306Wire(0x3c, 5, 4); // for 0.96" OLED
+//#define DEAUTHER_DISPLAY SH1106Wire display = SH1106Wire(0x3c, 5, 4); // for 1.3" OLED
 
 /*  RST = GPIO 5 (D1)
     DC = GPIO 4 (D2)
