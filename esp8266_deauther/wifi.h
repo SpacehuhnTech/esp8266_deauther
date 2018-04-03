@@ -230,75 +230,80 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
 // ================================================================
 // post here the output of the webConverter.py
+if(!settings.getWebSpiffs()){
+  server.on(PSTR("/"), HTTP_GET, [](){
+  sendProgmem(indexhtml, sizeof(indexhtml), PSTR("text/html"));
+});
+server.on(PSTR("/attack.html"), HTTP_GET, [](){
+  sendProgmem(attackhtml, sizeof(attackhtml), PSTR("text/html"));
+});
+server.on(PSTR("/index.html"), HTTP_GET, [](){
+  sendProgmem(indexhtml, sizeof(indexhtml), PSTR("text/html"));
+});
+server.on(PSTR("/info.html"), HTTP_GET, [](){
+  sendProgmem(infohtml, sizeof(infohtml), PSTR("text/html"));
+});
+server.on(PSTR("/scan.html"), HTTP_GET, [](){
+  sendProgmem(scanhtml, sizeof(scanhtml), PSTR("text/html"));
+});
+server.on(PSTR("/settings.html"), HTTP_GET, [](){
+  sendProgmem(settingshtml, sizeof(settingshtml), PSTR("text/html"));
+});
+server.on(PSTR("/ssids.html"), HTTP_GET, [](){
+  sendProgmem(ssidshtml, sizeof(ssidshtml), PSTR("text/html"));
+});
+server.on(PSTR("/style.css"), HTTP_GET, [](){
+  sendProgmem(stylecss, sizeof(stylecss), PSTR("text/css"));
+});
+server.on(PSTR("/attack.js"), HTTP_GET, [](){
+  sendProgmem(attackjs, sizeof(attackjs), PSTR("application/javascript"));
+});
+server.on(PSTR("/scan.js"), HTTP_GET, [](){
+  sendProgmem(scanjs, sizeof(scanjs), PSTR("application/javascript"));
+});
+server.on(PSTR("/settings.js"), HTTP_GET, [](){
+  sendProgmem(settingsjs, sizeof(settingsjs), PSTR("application/javascript"));
+});
+server.on(PSTR("/site.js"), HTTP_GET, [](){
+  sendProgmem(sitejs, sizeof(sitejs), PSTR("application/javascript"));
+});
+server.on(PSTR("/ssids.js"), HTTP_GET, [](){
+  sendProgmem(ssidsjs, sizeof(ssidsjs), PSTR("application/javascript"));
+});
+server.on(PSTR("/cn.lang"), HTTP_GET, [](){
+  sendProgmem(cnlang, sizeof(cnlang), PSTR("application/json"));
+});
+server.on(PSTR("/cs.lang"), HTTP_GET, [](){
+  sendProgmem(cslang, sizeof(cslang), PSTR("application/json"));
+});
+server.on(PSTR("/de.lang"), HTTP_GET, [](){
+  sendProgmem(delang, sizeof(delang), PSTR("application/json"));
+});
+server.on(PSTR("/en.lang"), HTTP_GET, [](){
+  sendProgmem(enlang, sizeof(enlang), PSTR("application/json"));
+});
+server.on(PSTR("/fr.lang"), HTTP_GET, [](){
+  sendProgmem(frlang, sizeof(frlang), PSTR("application/json"));
+});
+server.on(PSTR("/tlh.lang"), HTTP_GET, [](){
+  sendProgmem(tlhlang, sizeof(tlhlang), PSTR("application/json"));
+});
 
-  if (settings.getWebSpiffs()) {
-    server.on(PSTR("/attack.html"), HTTP_GET, []() {
-      sendProgmem(attackhtml, sizeof(attackhtml), PSTR("text/html"));
-    });
-    server.on(PSTR("/index.html"), HTTP_GET, []() {
-      sendProgmem(indexhtml, sizeof(indexhtml), PSTR("text/html"));
-    });
-    server.on(PSTR("/info.html"), HTTP_GET, []() {
-      sendProgmem(infohtml, sizeof(infohtml), PSTR("text/html"));
-    });
-    server.on(PSTR("/scan.html"), HTTP_GET, []() {
-      sendProgmem(scanhtml, sizeof(scanhtml), PSTR("text/html"));
-    });
-    server.on(PSTR("/settings.html"), HTTP_GET, []() {
-      sendProgmem(settingshtml, sizeof(settingshtml), PSTR("text/html"));
-    });
-    server.on(PSTR("/ssids.html"), HTTP_GET, []() {
-      sendProgmem(ssidshtml, sizeof(ssidshtml), PSTR("text/html"));
-    });
-    server.on(PSTR("/style.css"), HTTP_GET, []() {
-      sendProgmem(stylecss, sizeof(stylecss), PSTR("text/css"));
-    });
-    server.on(PSTR("/attack.js"), HTTP_GET, []() {
-      sendProgmem(attackjs, sizeof(attackjs), PSTR("application/javascript"));
-    });
-    server.on(PSTR("/scan.js"), HTTP_GET, []() {
-      sendProgmem(scanjs, sizeof(scanjs), PSTR("application/javascript"));
-    });
-    server.on(PSTR("/settings.js"), HTTP_GET, []() {
-      sendProgmem(settingsjs, sizeof(settingsjs), PSTR("application/javascript"));
-    });
-    server.on(PSTR("/site.js"), HTTP_GET, []() {
-      sendProgmem(sitejs, sizeof(sitejs), PSTR("application/javascript"));
-    });
-    server.on(PSTR("/ssids.js"), HTTP_GET, []() {
-      sendProgmem(ssidsjs, sizeof(ssidsjs), PSTR("application/javascript"));
-    });
-    server.on(PSTR("/cs.lang"), HTTP_GET, []() {
-      sendProgmem(cslang, sizeof(cslang), PSTR("application/json"));
-    });
-    server.on(PSTR("/de.lang"), HTTP_GET, []() {
-      sendProgmem(delang, sizeof(delang), PSTR("application/json"));
-    });
-    server.on(PSTR("/en.lang"), HTTP_GET, []() {
-      sendProgmem(enlang, sizeof(enlang), PSTR("application/json"));
-    });
-    server.on(PSTR("/fr.lang"), HTTP_GET, []() {
-      sendProgmem(frlang, sizeof(frlang), PSTR("application/json"));
-    });
-    server.on(PSTR("/tlh.lang"), HTTP_GET, []() {
-      sendProgmem(tlhlang, sizeof(tlhlang), PSTR("application/json"));
-    });
+}
+server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){
+  if(!settings.getWebSpiffs()){
+    if(settings.getLang() == String(F("cn"))) sendProgmem(cnlang, sizeof(cnlang), PSTR("application/json"));
+    else if(settings.getLang() == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), PSTR("application/json"));
+    else if(settings.getLang() == String(F("de"))) sendProgmem(delang, sizeof(delang), PSTR("application/json"));
+    else if(settings.getLang() == String(F("en"))) sendProgmem(enlang, sizeof(enlang), PSTR("application/json"));
+    else if(settings.getLang() == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), PSTR("application/json"));
+    else if(settings.getLang() == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), PSTR("application/json"));
 
+    else handleFileRead("/web/lang/"+settings.getLang()+".lang");
+  } else {
+    handleFileRead("/web/lang/"+settings.getLang()+".lang");
   }
-  server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, []() {
-    if (settings.getWebSpiffs()) {
-      if (settings.getLang() == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), PSTR("application/json"));
-      else if (settings.getLang() == String(F("de"))) sendProgmem(delang, sizeof(delang), PSTR("application/json"));
-      else if (settings.getLang() == String(F("en"))) sendProgmem(enlang, sizeof(enlang), PSTR("application/json"));
-      else if (settings.getLang() == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), PSTR("application/json"));
-      else if (settings.getLang() == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), PSTR("application/json"));
-
-      else handleFileRead("/web/lang/" + settings.getLang() + ".lang");
-    } else {
-      handleFileRead("/web/lang/" + settings.getLang() + ".lang");
-    }
-  });
-  
+});
 // ================================================================
 
   server.on(str(W_RUN).c_str(), HTTP_GET, []() {

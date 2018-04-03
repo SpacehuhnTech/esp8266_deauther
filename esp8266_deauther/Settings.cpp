@@ -30,7 +30,7 @@ void Settings::load() {
   if(data.containsKey(keyword(S_SERIALINTERFACE))) setSerialInterface(data.get<bool>(keyword(S_SERIALINTERFACE)));
   if(data.containsKey(keyword(S_SERIAL_ECHO))) setSerialEcho(data.get<bool>(keyword(S_SERIAL_ECHO)));
   if(data.containsKey(keyword(S_WEBINTERFACE))) setWebInterface(data.get<bool>(keyword(S_WEBINTERFACE)));
-  if(data.containsKey(keyword(S_WEB_SPIFFS))) setWebInterface(data.get<bool>(keyword(S_WEB_SPIFFS)));
+  if(data.containsKey(keyword(S_WEB_SPIFFS))) setWebSpiffs(data.get<bool>(keyword(S_WEB_SPIFFS)));
   if(data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
   if(data.containsKey(keyword(S_MAXCH))) setMaxCh(data.get<uint8_t>(keyword(S_MAXCH)));
   if(data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
