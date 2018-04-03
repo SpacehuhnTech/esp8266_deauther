@@ -47,6 +47,8 @@ js_files = []
 lang_files = []
 progmem_definitions = ""
 copy_files_function = ""
+webserver_events = ""
+load_lang = ""
 
 filelist = Path(dir).glob('**/*')
 for x in filelist:
@@ -88,6 +90,7 @@ for file in html_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
+    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("text/html"));\n});\n'
 
 for file in css_files:
     base_file = os.path.basename(str(file))
@@ -115,6 +118,7 @@ for file in css_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
+    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("text/css"));\n});\n'
 
 for file in js_files:
     q = PurePath('js')
@@ -146,6 +150,7 @@ for file in js_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/js/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/js/' + base_file + '.gz")));\n'
+    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/javascript"));\n});\n'
 
 for file in lang_files:
     q = PurePath('lang')
@@ -165,6 +170,7 @@ for file in lang_files:
     content = f_in.read()
     f_in.close()
     array_name = base_file.replace(".", "")
+    lang_name = base_file.replace(".lang", "")
     hex_formatted_content = ""
     hex_content = binascii.hexlify(content)
     hex_content = hex_content.decode("UTF-8")
@@ -174,6 +180,11 @@ for file in lang_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/lang/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/lang/' + base_file + '.gz")));\n'
+    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/json"));\n});\n'
+    if(len(load_lang) > 0):
+        load_lang += '    else if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/json"));\n'
+    else:
+        load_lang += '    if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/json"));\n'
 
 base_file = os.path.basename(license_file_path)
 new_file = str(os.path.join(str(compressed), str("LICENSE")))
@@ -195,7 +206,7 @@ for char in hex_content:
     hex_formatted_content += "0x" + char + ", "
 hex_formatted_content = hex_formatted_content[:-2]
 progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
+copy_files_function += '    if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
 
 print("[+] Saving everything into webfiles.h...")
 f = open(arduino_file_path, 'w')
@@ -219,3 +230,16 @@ f.write("#endif")
 f.close()
 
 print("\n[+] Done, happy uploading :)")
+print("Here are the updated functions for wifi.h, in case you added or removed files:")
+print();
+print('if(settings.getWebSpiffs()){')
+print(webserver_events)
+print('}')
+print("server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){")
+print("  if(settings.getWebSpiffs()){")
+print(load_lang)
+print('    else handleFileRead("/web/lang/"+settings.getLang()+".lang");')
+print('  } else {')
+print('    handleFileRead("/web/lang/"+settings.getLang()+".lang");')
+print('  }')
+print("});");

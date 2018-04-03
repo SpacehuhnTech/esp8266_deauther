@@ -9,7 +9,7 @@
 #include <ESP8266mDNS.h>
 #include <FS.h>
 extern "C" {
-  #include "user_interface.h"
+#include "user_interface.h"
 }
 
 #define WIFI_MODE_OFF 0
@@ -35,8 +35,8 @@ String wifi_config_ssid = str(W_PWNED);
 String wifi_config_password = str(W_DEAUTHER);
 String wifi_config_path = str(W_WEBINTERFACE);
 
-void stopAP(){
-  if(wifiMode == WIFI_MODE_AP){
+void stopAP() {
+  if (wifiMode == WIFI_MODE_AP) {
     wifi_promiscuous_enable(0);
     WiFi.persistent(false);
     WiFi.disconnect(true);
@@ -55,8 +55,8 @@ void wifiUpdate() {
   }
 }
 
-String getWifiMode(){
-  switch(wifiMode){
+String getWifiMode() {
+  switch (wifiMode) {
     case WIFI_MODE_OFF:
       return W_MODE_OFF;
       break;
@@ -73,7 +73,7 @@ String getWifiMode(){
 
 String getContentType(String filename) {
   if (server.hasArg(str(W_DOWNLOAD).c_str())) return str(W_STREAM);
-  else if (filename.endsWith(str(W_DOT_GZIP).c_str())) filename = filename.substring(0,filename.length()-3); //return str(W_GZIP);
+  else if (filename.endsWith(str(W_DOT_GZIP).c_str())) filename = filename.substring(0, filename.length() - 3); //return str(W_GZIP);
   else if (filename.endsWith(str(W_DOT_HTM).c_str())) return str(W_HTML);
   else if (filename.endsWith(str(W_DOT_HTML).c_str())) return str(W_HTML);
   else if (filename.endsWith(str(W_DOT_CSS).c_str())) return str(W_CSS);
@@ -93,7 +93,7 @@ bool handleFileRead(String path) {
   prnt(W_AP_REQUEST);
   prnt(path);
   if (!path.charAt(0) == SLASH) path = String(SLASH) + path;
-  if (path.charAt(path.length()-1) == SLASH) path += str(W_INDEX_HTML);;
+  if (path.charAt(path.length() - 1) == SLASH) path += str(W_INDEX_HTML);;
   String contentType = getContentType(path);
 
   if (!SPIFFS.exists(path)) {
@@ -105,13 +105,13 @@ bool handleFileRead(String path) {
       return false;
     }
   }
-  
+
   File file = SPIFFS.open(path, "r");
   server.streamFile(file, contentType);
   file.close();
   prnt(SPACE);
   prntln(W_OK);
-  
+
   return true;
 }
 
@@ -194,16 +194,22 @@ void handleFileList() {
   server.send(200, str(W_JSON).c_str(), output);
 }
 
+void sendProgmem(const char* ptr, uint32_t size, const char* type) {
+  server.sendHeader(PSTR("Content-Encoding"), PSTR("gzip"));
+  server.sendHeader(PSTR("Cache-Control"), PSTR("max-age=86400"));
+  server.send_P(200, type, ptr, size);
+}
+
 // path = folder of web files, ssid = name of network, password = password ("0" => no password), hidden = if the network is visible, captivePortal = enable a captive portal
 void startAP(String path, String ssid, String password, uint8_t ch, bool hidden, bool captivePortal) {
-  if(password.length() < 8){
+  if (password.length() < 8) {
     prntln(W_ERROR_PASSWORD);
     return;
   }
-  
-  if(!path.charAt(0) == SLASH) path = String(SLASH)+path;
-  if(password == String(ZERO)) password = String(NEWLINE);
-  
+
+  if (!path.charAt(0) == SLASH) path = String(SLASH) + path;
+  if (password == String(ZERO)) password = String(NEWLINE);
+
   wifi_config_path = path;
   wifi_config_ssid = ssid;
   wifi_config_password = password;
@@ -221,19 +227,89 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
   server.on(str(W_LIST).c_str(), HTTP_GET, handleFileList); //list directory
 
-  server.on(str(W_RUN).c_str(), HTTP_GET, [](){
+
+// ================================================================
+// post here the output of the webConverter.py
+
+  if (settings.getWebSpiffs()) {
+    server.on(PSTR("/attack.html"), HTTP_GET, []() {
+      sendProgmem(attackhtml, sizeof(attackhtml), PSTR("text/html"));
+    });
+    server.on(PSTR("/index.html"), HTTP_GET, []() {
+      sendProgmem(indexhtml, sizeof(indexhtml), PSTR("text/html"));
+    });
+    server.on(PSTR("/info.html"), HTTP_GET, []() {
+      sendProgmem(infohtml, sizeof(infohtml), PSTR("text/html"));
+    });
+    server.on(PSTR("/scan.html"), HTTP_GET, []() {
+      sendProgmem(scanhtml, sizeof(scanhtml), PSTR("text/html"));
+    });
+    server.on(PSTR("/settings.html"), HTTP_GET, []() {
+      sendProgmem(settingshtml, sizeof(settingshtml), PSTR("text/html"));
+    });
+    server.on(PSTR("/ssids.html"), HTTP_GET, []() {
+      sendProgmem(ssidshtml, sizeof(ssidshtml), PSTR("text/html"));
+    });
+    server.on(PSTR("/style.css"), HTTP_GET, []() {
+      sendProgmem(stylecss, sizeof(stylecss), PSTR("text/css"));
+    });
+    server.on(PSTR("/attack.js"), HTTP_GET, []() {
+      sendProgmem(attackjs, sizeof(attackjs), PSTR("application/javascript"));
+    });
+    server.on(PSTR("/scan.js"), HTTP_GET, []() {
+      sendProgmem(scanjs, sizeof(scanjs), PSTR("application/javascript"));
+    });
+    server.on(PSTR("/settings.js"), HTTP_GET, []() {
+      sendProgmem(settingsjs, sizeof(settingsjs), PSTR("application/javascript"));
+    });
+    server.on(PSTR("/site.js"), HTTP_GET, []() {
+      sendProgmem(sitejs, sizeof(sitejs), PSTR("application/javascript"));
+    });
+    server.on(PSTR("/ssids.js"), HTTP_GET, []() {
+      sendProgmem(ssidsjs, sizeof(ssidsjs), PSTR("application/javascript"));
+    });
+    server.on(PSTR("/cs.lang"), HTTP_GET, []() {
+      sendProgmem(cslang, sizeof(cslang), PSTR("application/json"));
+    });
+    server.on(PSTR("/de.lang"), HTTP_GET, []() {
+      sendProgmem(delang, sizeof(delang), PSTR("application/json"));
+    });
+    server.on(PSTR("/en.lang"), HTTP_GET, []() {
+      sendProgmem(enlang, sizeof(enlang), PSTR("application/json"));
+    });
+    server.on(PSTR("/fr.lang"), HTTP_GET, []() {
+      sendProgmem(frlang, sizeof(frlang), PSTR("application/json"));
+    });
+    server.on(PSTR("/tlh.lang"), HTTP_GET, []() {
+      sendProgmem(tlhlang, sizeof(tlhlang), PSTR("application/json"));
+    });
+
+  }
+  server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, []() {
+    if (settings.getWebSpiffs()) {
+      if (settings.getLang() == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), PSTR("application/json"));
+      else if (settings.getLang() == String(F("de"))) sendProgmem(delang, sizeof(delang), PSTR("application/json"));
+      else if (settings.getLang() == String(F("en"))) sendProgmem(enlang, sizeof(enlang), PSTR("application/json"));
+      else if (settings.getLang() == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), PSTR("application/json"));
+      else if (settings.getLang() == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), PSTR("application/json"));
+
+      else handleFileRead("/web/lang/" + settings.getLang() + ".lang");
+    } else {
+      handleFileRead("/web/lang/" + settings.getLang() + ".lang");
+    }
+  });
+  
+// ================================================================
+
+  server.on(str(W_RUN).c_str(), HTTP_GET, []() {
     server.send(200, str(W_TXT), str(W_OK).c_str());
     serialInterface.runCommands(server.arg(str(W_CMD).c_str()));
   });
 
-  server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){
-    handleFileRead("/web/lang/"+settings.getLang()+".lang");
-  });
-
-  server.on("/attack.json", HTTP_GET, [](){
+  server.on("/attack.json", HTTP_GET, []() {
     server.send(200, str(W_JSON), attack.getStatusJSON());
   });
-  
+
   /*
     //load editor
     server.on("/edit", HTTP_GET, [](){
@@ -248,11 +324,11 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
     //second callback handles file uploads at that location
     server.on("/edit", HTTP_POST, [](){ server.send(200, str(W_TXT), ""); }, handleFileUpload);
   */
-  
+
   // aggressively caching static assets
   //server.serveStatic("/lang", SPIFFS, String(wifi_config_path+"/lang").c_str(),"max-age=86400");
-  server.serveStatic("/js"  , SPIFFS, String(wifi_config_path+"/js").c_str(),  "max-age=86400"); 
-  
+  server.serveStatic("/js"  , SPIFFS, String(wifi_config_path + "/js").c_str(),  "max-age=86400");
+
   //called when the url is not defined here
   //use it to load content from SPIFFS
   server.onNotFound([]() {
@@ -270,14 +346,14 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
 void printWifiStatus() {
   char s[150];
-  sprintf(s,str(W_STATUS_OUTPUT).c_str(),
-    wifi_config_path.c_str(),
-    str(wifiMode == WIFI_MODE_OFF ? W_OFF : (wifiMode == WIFI_MODE_AP ? W_AP : W_STATION)).c_str(), 
-    wifi_config_ssid.c_str(),
-    wifi_config_password.c_str(),
-    wifi_channel,
-    b2s(wifi_config_hidden).c_str(),
-    b2s(wifi_config_captivePortal).c_str());
+  sprintf(s, str(W_STATUS_OUTPUT).c_str(),
+          wifi_config_path.c_str(),
+          str(wifiMode == WIFI_MODE_OFF ? W_OFF : (wifiMode == WIFI_MODE_AP ? W_AP : W_STATION)).c_str(),
+          wifi_config_ssid.c_str(),
+          wifi_config_password.c_str(),
+          wifi_channel,
+          b2s(wifi_config_hidden).c_str(),
+          b2s(wifi_config_captivePortal).c_str());
   prnt(String(s));
 }
 
@@ -296,8 +372,8 @@ void loadWifiConfigDefaults() {
   wifi_config_captivePortal = settings.getCaptivePortal();
 }
 
-void resumeAP(){
-  if(wifiMode != WIFI_MODE_AP){
+void resumeAP() {
+  if (wifiMode != WIFI_MODE_AP) {
     wifiMode = WIFI_MODE_AP;
     wifi_promiscuous_enable(0);
     WiFi.softAPConfig(apIP, apIP, netMsk);

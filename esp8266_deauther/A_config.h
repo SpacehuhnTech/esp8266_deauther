@@ -15,9 +15,9 @@
     Uncomment the type of LED  you're using
     Only one of them can be defined at a time!
    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = */
-#define DIGITAL_LED
+//#define DIGITAL_LED
 //#define RGB_LED
-//#define NEOPIXEL_LED
+#define NEOPIXEL_LED
 
 /* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     Adjust following settings for your type of LED
@@ -39,8 +39,8 @@
 #define LED_DYNAMIC_BRIGHTNESS false // brightness in scan mode depending on packet rate and deauths per second
 
 // === Settings for Neopixel LED === //
-#define LED_NEOPIXEL_NUM 1
-#define LED_NEOPIXEL_PIN 9
+#define LED_NEOPIXEL_NUM 12
+#define LED_NEOPIXEL_PIN 14
 // if it doesn't work try changing NEO_GRB to NEO_GRBW 
 #define LED_NEOPIXEL Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800)
 
@@ -51,9 +51,9 @@
     Adjust the pins to match your setup
     Comment out the buttons you don't use.
    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = */
-#define BUTTON_UP 12
-#define BUTTON_DOWN 13
-#define BUTTON_A 14
+//#define BUTTON_UP 12
+//#define BUTTON_DOWN 13
+//#define BUTTON_A 14
 
 //#define BUTTON_LEFT 12
 //#define BUTTON_RIGHT 13
@@ -64,8 +64,8 @@
     Only one of them can be defined at a time!
    = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 */
-#define DEAUTHER_DISPLAY SSD1306Wire display = SSD1306Wire(0x3c, 5, 4); // for 0.96" OLED
-//#define DEAUTHER_DISPLAY SH1106Wire display = SH1106Wire(0x3c, 5, 4); // for 1.3" OLED
+//#define DEAUTHER_DISPLAY SSD1306Wire display = SSD1306Wire(0x3c, 5, 4); // for 0.96" OLED
+#define DEAUTHER_DISPLAY SH1106Wire display = SH1106Wire(0x3c, 13, 12); // for 1.3" OLED
 
 /*  RST = GPIO 5 (D1)
     DC = GPIO 4 (D2)
