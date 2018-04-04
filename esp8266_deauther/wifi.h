@@ -362,12 +362,13 @@ void printWifiStatus() {
   prnt(String(s));
 }
 
-void startAP(String path) {
-  startAP(path.c_str(), wifi_config_ssid.c_str(), wifi_config_password.c_str(), wifi_channel, wifi_config_hidden, wifi_config_captivePortal);
+void startAP() {
+  startAP(wifi_config_path.c_str(), wifi_config_ssid.c_str(), wifi_config_password.c_str(), wifi_channel, wifi_config_hidden, wifi_config_captivePortal);
 }
 
-void startAP() {
-  startAP(str(W_WEBINTERFACE));
+void startAP(String path) {
+  wifi_config_path = path.c_str();
+  startAP();
 }
 
 void loadWifiConfigDefaults() {
