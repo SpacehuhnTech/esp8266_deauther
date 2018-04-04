@@ -47,7 +47,7 @@
 	"setting_password": "Passwort des Access-Points für Webinterface (wenn aktiviert).\nDie Länge muss zwischen 8 und 31 Zeichen sein.",
 	"setting_channel": "Standard WiFi Kanal der beim Starten genutzt wird.",
 	"setting_hidden": "Versteckt Access-Point für Webinterface (wenn aktiviert).",
-	"setting_captivePortal": "Aktiviert Captive-Portabel für Webinterface (wenn aktiviert).",
+	"setting_captivePortal": "Aktiviert Captive-Portal für Webinterface (wenn aktiviert).",
 	"setting_autosave": "Aktiviert automatisches Speichern der SSIDs, Geräte und Einstellungen.",
 	"setting_autosavetime": "Zeitintervall für automatisches Speichern in Millisekunden.",
 	"setting_display": "Aktiviert Display-Interface.",
