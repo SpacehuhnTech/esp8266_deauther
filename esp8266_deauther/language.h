@@ -645,7 +645,6 @@ static const char W_DEFAULT_LANG[] PROGMEM = "/lang/default.lang";
 static const char W_CMD[] PROGMEM = "cmd";
 static const char W_DIR[] PROGMEM = "dir";
 static const char W_ERROR_PASSWORD[] PROGMEM = "ERROR: Password must have at least 8 characters!";
-static const char W_STATUS_OUTPUT[] PROGMEM = "[WiFi] Path: '%s', Mode: '%s', SSID: '%s', password: '%s', channel: '%u', hidden: %s, captive-portal: %s\r\n";
 static const char W_AP[] PROGMEM = "AP";
 static const char W_STATION[] PROGMEM = "Station";
 static const char W_MODE_OFF[] PROGMEM = "OFF";
