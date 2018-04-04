@@ -90,7 +90,7 @@ for file in html_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
-    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("text/html"));\n});\n'
+    webserver_events += 'server.on(String(F("/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_HTML);\n});\n'
 
 for file in css_files:
     base_file = os.path.basename(str(file))
@@ -118,7 +118,7 @@ for file in css_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
-    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("text/css"));\n});\n'
+    webserver_events += 'server.on(String(F("/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_CSS);\n});\n'
 
 for file in js_files:
     q = PurePath('js')
@@ -150,7 +150,7 @@ for file in js_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/js/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/js/' + base_file + '.gz")));\n'
-    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/javascript"));\n});\n'
+    webserver_events += 'server.on(String(F("/js/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JS);\n});\n'
 
 for file in lang_files:
     q = PurePath('lang')
@@ -180,11 +180,11 @@ for file in lang_files:
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/lang/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/lang/' + base_file + '.gz")));\n'
-    webserver_events += 'server.on(PSTR("/' + base_file + '"), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/json"));\n});\n'
+    webserver_events += 'server.on(String(F("/lang/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n});\n'
     if(len(load_lang) > 0):
-        load_lang += '    else if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/json"));\n'
+        load_lang += '    else if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
     else:
-        load_lang += '    if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), PSTR("application/json"));\n'
+        load_lang += '    if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
 
 base_file = os.path.basename(license_file_path)
 new_file = str(os.path.join(str(compressed), str("LICENSE")))
@@ -235,16 +235,16 @@ print("\n[+] Done, happy uploading :)")
 print("Here are the updated functions for wifi.h, in case you added or removed files:")
 print();
 print('if(!settings.getWebSpiffs()){')
-print('  server.on(PSTR("/"), HTTP_GET, [](){')
-print('  sendProgmem(indexhtml, sizeof(indexhtml), PSTR("text/html"));')
+print('  server.on(String(SLASH).c_str(), HTTP_GET, [](){')
+print('  sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);')
 print('});')
 print(webserver_events)
 print('}')
 print("server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){")
 print("  if(!settings.getWebSpiffs()){")
 print(load_lang)
-print('    else handleFileRead("/web/lang/"+settings.getLang()+".lang");')
+print('    else handleFileRead(String(F("/web/lang/"))+settings.getLang()+String(F(".lang")));')
 print('  } else {')
-print('    handleFileRead("/web/lang/"+settings.getLang()+".lang");')
+print('    handleFileRead(String(F("/web/lang/"))+settings.getLang()+String(F(".lang")));')
 print('  }')
 print("});");
