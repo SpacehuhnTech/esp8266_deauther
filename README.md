@@ -1,6 +1,6 @@
 # ESP8266 Deauther 2.0
 
-<p align="center"><img alt="logo" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/img/deauther_logo.png" width="200"></p>
+<p align="center"><img alt="PICTURE logo" src="https://raw.githubusercontent.com/spacehuhn/wiki/esp8266_deauther/img/deauther_logo.png" width="200"></p>
 
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
@@ -47,7 +47,7 @@ The difference between deauthing and jamming: [click me](https://github.com/spac
 
 ## Official Deauther Boards
 
-![PICTURE DSTIKE Deauther OLED Board](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/img/DSTIKE_Deauther_Board.jpg)
+![PICTURE DSTIKE Deauther OLED Board](https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/DSTIKE_Deauther_Board.jpg)
 
 If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
 - [Tindie](https://tindie.com/stores/lspoplove)  
