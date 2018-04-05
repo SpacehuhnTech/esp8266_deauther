@@ -18,7 +18,6 @@ void Stations::add(uint8_t* mac, int accesspointNum) {
 }
 
 int Stations::findStation(uint8_t* mac) {
-  uint8_t* station_i_mac;
   int c = count();
   for (int i = 0; i < c; i++) {
     if (memcmp(getMac(i), mac, 6) == 0)

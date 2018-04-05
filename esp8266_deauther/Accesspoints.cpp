@@ -41,7 +41,8 @@ void Accesspoints::printSelected() {
     return;
   }
   int c = count();
-  for (int i = 0, j = 0; i < c, j < max; i++) {
+  int j = 0;
+  for (int i = 0; i < c && j < max; i++) {
     if (getSelected(i)) {
       print(i, j == 0, j == max - 1);
       j++;

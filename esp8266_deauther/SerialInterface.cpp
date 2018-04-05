@@ -337,8 +337,8 @@ void SerialInterface::runCommand(String input) {
   // deselect [<type>] [<id>]
   else if (eqlsCMD(0, CLI_SELECT) || eqlsCMD(0, CLI_DESELECT)) {
     bool select = eqlsCMD(0, CLI_SELECT);
-    int mode; // aps = 0, stations = 1, names = 2
-    int id; // -1 = all, -2 name string
+    int mode = 0; // aps = 0, stations = 1, names = 2
+    int id = -1; // -1 = all, -2 name string
 
     if (list->size() == 1 || eqlsCMD(1, CLI_ALL)) {
       select ? scan.selectAll() : scan.deselectAll();
@@ -998,8 +998,8 @@ void SerialInterface::runCommand(String input) {
     
     for (int i = height; i >= 0; i--) {
       char s[200];
-      if (i == height) sprintf(s,str(CLI_DRAW_OUTPUT).c_str(), scan.getMaxPacket() > height ? scan.getMaxPacket() : height);
-      else if (i == height / 2) sprintf(s,str(CLI_DRAW_OUTPUT).c_str(), scan.getMaxPacket() > height ? scan.getMaxPacket()/2 : height/2);
+      if (i == height) sprintf(s,str(CLI_DRAW_OUTPUT).c_str(), scan.getMaxPacket() > (uint32_t)height ? scan.getMaxPacket() : (uint32_t)height);
+      else if (i == height / 2) sprintf(s,str(CLI_DRAW_OUTPUT).c_str(), scan.getMaxPacket() > (uint32_t)height ? scan.getMaxPacket()/2 : (uint32_t)height/2);
       else if (i == 0) sprintf(s,str(CLI_DRAW_OUTPUT).c_str(), 0);
       else{
         s[0] = SPACE;

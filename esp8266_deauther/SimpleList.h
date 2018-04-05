@@ -358,8 +358,6 @@ void SimpleList<T>::sort(bool (*cmp)(T &a, T &b)) {
   
   Node<T>* nodeA;
   Node<T>* nodeB;
-  Node<T>* nodeC;
-  Node<T>* nodeD;
   
   int c = listSize;
   
