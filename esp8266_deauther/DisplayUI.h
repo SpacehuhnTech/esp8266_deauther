@@ -94,14 +94,13 @@ class DisplayUI {
     uint32_t drawTime = 0; // last time a frame was drawn
     uint32_t startTime = 0; // when the screen was enabled
     bool enabled = false; // display enabled
-
-    // create buttons with default values
-    Button buttonUp = {false, 0, false, false, 0, NULL, NULL, NULL};
-    Button buttonDown = {false, 0, false, false, 0, NULL, NULL, NULL};
-    Button buttonLeft = {false, 0, false, false, 0, NULL, NULL, NULL};
-    Button buttonRight = {false, 0, false, false, 0, NULL, NULL, NULL};
-    Button buttonA = {false, 0, false, false, 0, NULL, NULL, NULL};
-    Button buttonB = {false, 0, false, false, 0, NULL, NULL, NULL};
+    
+    Button buttonUp;
+    Button buttonDown;
+    Button buttonLeft;
+    Button buttonRight;
+    Button buttonA;
+    Button buttonB;
     
     // selected attack modes
     bool beaconSelected = false;

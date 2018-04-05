@@ -324,6 +324,8 @@ bool progmemToSpiffs(const char* adr, int len, String path) {
   f.close();
   
   prntln(SETUP_OK);
+
+  return true;
 }
 
 bool readFile(String path, String &buf) {
@@ -457,6 +459,8 @@ bool removeLines(String path, int lineFrom, int lineTo){
   f2.close();
   SPIFFS.remove(path);
   SPIFFS.rename(tmpPath, path);
+
+  return true;
 }
 
 bool replaceLine(String path, int line, String &buf){
@@ -487,6 +491,8 @@ bool replaceLine(String path, int line, String &buf){
   f2.close();
   SPIFFS.remove(path);
   SPIFFS.rename(tmpPath, path);
+
+  return true;
 }
 
 JsonVariant parseJSONFile(String path, DynamicJsonBuffer &jsonBuffer) {
