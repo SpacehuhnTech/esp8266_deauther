@@ -49,7 +49,7 @@ void SerialInterface::parameterError(String parameter) {
 bool SerialInterface::isInt(String str) {
   if (eqls(str,STR_TRUE) || eqls(str,STR_FALSE))
     return true;
-  for (int i = 0; i < str.length(); i++)
+  for (uint32_t i = 0; i < str.length(); i++)
     if (!isDigit(str.charAt(i))) return false;
   return true;
 }
@@ -130,7 +130,7 @@ void SerialInterface::update() {
 void SerialInterface::runCommands(String input) {
   String tmp;
 
-  for (int i = 0; i < input.length(); i++) {
+  for (uint32_t i = 0; i < input.length(); i++) {
     // when 2 semicolons in a row without a backslash escaping the first
     if (input.charAt(i) == SEMICOLON && input.charAt(i + 1) == SEMICOLON && input.charAt(i - 1) != BACKSLASH) {
       runCommand(tmp);
@@ -156,7 +156,7 @@ void SerialInterface::runCommand(String input) {
   bool withinQuotes = false;
   bool escaped = false;
   char c;
-  for (int i = 0; i < input.length() && i < 512; i++) {
+  for (uint32_t i = 0; i < input.length() && i < 512; i++) {
     c = input.charAt(i);
 
     // when char is an unescaped 

@@ -12,7 +12,7 @@ void SSIDs::load() {
   JsonObject &obj = parseJSONFile(FILE_PATH, jsonBuffer);
   JsonArray &arr = obj.get<JsonArray>(str(SS_JSON_SSIDS));
 
-  for (int i = 0; i < arr.size() && i < SSID_LIST_SIZE; i++) {
+  for (uint32_t i = 0; i < arr.size() && i < SSID_LIST_SIZE; i++) {
     JsonArray &tmpArray = arr.get<JsonVariant>(i);
     internal_add(tmpArray.get<String>(0), tmpArray.get<bool>(1), tmpArray.get<int>(2));
   }

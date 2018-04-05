@@ -261,7 +261,7 @@ void Scan::save(bool force) {
   buf = String(); // clear buffer
   uint32_t apCount = accesspoints.count();
   
-  for (int i = 0; i < apCount; i++) {
+  for (uint32_t i = 0; i < apCount; i++) {
     buf += String(OPEN_BRACKET) + String(DOUBLEQUOTES) + escape(accesspoints.getSSID(i)) + String(DOUBLEQUOTES) + String(COMMA); // ["ssid",
     buf += String(DOUBLEQUOTES) + escape(accesspoints.getNameStr(i)) + String(DOUBLEQUOTES) + String(COMMA); // "name",
     buf += String(accesspoints.getCh(i)) + String(COMMA); // 1,
@@ -287,7 +287,7 @@ void Scan::save(bool force) {
   buf += String(CLOSE_BRACKET) + String(COMMA) + String(DOUBLEQUOTES) + str(SC_JSON_STATIONS) + String(DOUBLEQUOTES) + String(DOUBLEPOINT) + String(OPEN_BRACKET); // ],"stations":[;
   uint32_t stationCount = stations.count();
   
-  for (int i = 0; i < stationCount; i++) {
+  for (uint32_t i = 0; i < stationCount; i++) {
     buf += String(OPEN_BRACKET) + String(DOUBLEQUOTES) + stations.getMacStr(i) + String(DOUBLEQUOTES) + String(COMMA); // ["00:11:22:00:11:22",
     buf += String(stations.getCh(i)) + String(COMMA); // 1,
     buf += String(DOUBLEQUOTES) + stations.getNameStr(i) + String(DOUBLEQUOTES) + String(COMMA); // "name",

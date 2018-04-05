@@ -12,7 +12,7 @@ void Names::load() {
   checkFile(FILE_PATH, String(OPEN_BRACKET) + String(CLOSE_BRACKET));
   JsonArray &arr = parseJSONFile(FILE_PATH, jsonBuffer);
 
-  for (int i = 0; i < arr.size() && i < NAME_LIST_SIZE; i++) {
+  for (uint32_t i = 0; i < arr.size() && i < NAME_LIST_SIZE; i++) {
     JsonArray &tmpArray = arr.get<JsonVariant>(i);
     internal_add(tmpArray.get<String>(0), tmpArray.get<String>(2), tmpArray.get<String>(3), tmpArray.get<uint8_t>(4), false);
     sort();
