@@ -66,7 +66,7 @@
 	"setting_forcepackets": "How many attempts to send out a packet.\nSet this value higher if you want to achieve a better packet rate in a busy area.\nBe careful this setting could make the device slower or more unstable.\nMax value is 255!",
 	"setting_deauthspertarget": "How many deauthentication and disassociation frames are sent out for each target.",
 	"setting_deauthReason": "The reason code that is sent with the deauth frames to tell the target device why the connection will be closed.",
-	"setting_beaconchannel": "If enabled, will sent all frames on different channels when running a beacon attack.",
+	"setting_beaconchannel": "If enabled, will send all frames on different channels when running a beacon attack.",
 	"setting_beaconInterval": "If set true, beacons will be sent out every second. If set to false, the interval will be 100ms.\nA longer interval means more stability and less spamming of packets, but it could take longer until the clients find the ssids when scanning.",
 	"setting_randomTX": "Enables randomized transmission power for sending out beacon and probe request frames.",
 	"setting_probesPerSSID": "How many probe request frames are sent for each SSID.",
