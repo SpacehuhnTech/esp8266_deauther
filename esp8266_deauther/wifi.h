@@ -235,14 +235,17 @@ if(!settings.getWebSpiffs()){
   server.on(String(SLASH).c_str(), HTTP_GET, [](){
   sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
 });
+server.on(String(F("/attack.html")).c_str(), HTTP_GET, [](){
+  sendProgmem(attackhtml, sizeof(attackhtml), W_HTML);
+});
 server.on(String(F("/index.html")).c_str(), HTTP_GET, [](){
   sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
 });
+server.on(String(F("/info.html")).c_str(), HTTP_GET, [](){
+  sendProgmem(infohtml, sizeof(infohtml), W_HTML);
+});
 server.on(String(F("/scan.html")).c_str(), HTTP_GET, [](){
   sendProgmem(scanhtml, sizeof(scanhtml), W_HTML);
-});
-server.on(String(F("/attack.html")).c_str(), HTTP_GET, [](){
-  sendProgmem(attackhtml, sizeof(attackhtml), W_HTML);
 });
 server.on(String(F("/settings.html")).c_str(), HTTP_GET, [](){
   sendProgmem(settingshtml, sizeof(settingshtml), W_HTML);
@@ -250,14 +253,14 @@ server.on(String(F("/settings.html")).c_str(), HTTP_GET, [](){
 server.on(String(F("/ssids.html")).c_str(), HTTP_GET, [](){
   sendProgmem(ssidshtml, sizeof(ssidshtml), W_HTML);
 });
-server.on(String(F("/info.html")).c_str(), HTTP_GET, [](){
-  sendProgmem(infohtml, sizeof(infohtml), W_HTML);
-});
 server.on(String(F("/style.css")).c_str(), HTTP_GET, [](){
   sendProgmem(stylecss, sizeof(stylecss), W_CSS);
 });
 server.on(String(F("/js/attack.js")).c_str(), HTTP_GET, [](){
   sendProgmem(attackjs, sizeof(attackjs), W_JS);
+});
+server.on(String(F("/js/scan.js")).c_str(), HTTP_GET, [](){
+  sendProgmem(scanjs, sizeof(scanjs), W_JS);
 });
 server.on(String(F("/js/settings.js")).c_str(), HTTP_GET, [](){
   sendProgmem(settingsjs, sizeof(settingsjs), W_JS);
@@ -265,51 +268,51 @@ server.on(String(F("/js/settings.js")).c_str(), HTTP_GET, [](){
 server.on(String(F("/js/site.js")).c_str(), HTTP_GET, [](){
   sendProgmem(sitejs, sizeof(sitejs), W_JS);
 });
-server.on(String(F("/js/scan.js")).c_str(), HTTP_GET, [](){
-  sendProgmem(scanjs, sizeof(scanjs), W_JS);
-});
 server.on(String(F("/js/ssids.js")).c_str(), HTTP_GET, [](){
   sendProgmem(ssidsjs, sizeof(ssidsjs), W_JS);
-});
-server.on(String(F("/lang/en.lang")).c_str(), HTTP_GET, [](){
-  sendProgmem(enlang, sizeof(enlang), W_JSON);
-});
-server.on(String(F("/lang/tlh.lang")).c_str(), HTTP_GET, [](){
-  sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
-});
-server.on(String(F("/lang/ru.lang")).c_str(), HTTP_GET, [](){
-  sendProgmem(rulang, sizeof(rulang), W_JSON);
-});
-server.on(String(F("/lang/cs.lang")).c_str(), HTTP_GET, [](){
-  sendProgmem(cslang, sizeof(cslang), W_JSON);
-});
-server.on(String(F("/lang/fr.lang")).c_str(), HTTP_GET, [](){
-  sendProgmem(frlang, sizeof(frlang), W_JSON);
 });
 server.on(String(F("/lang/cn.lang")).c_str(), HTTP_GET, [](){
   sendProgmem(cnlang, sizeof(cnlang), W_JSON);
 });
+server.on(String(F("/lang/cs.lang")).c_str(), HTTP_GET, [](){
+  sendProgmem(cslang, sizeof(cslang), W_JSON);
+});
 server.on(String(F("/lang/de.lang")).c_str(), HTTP_GET, [](){
   sendProgmem(delang, sizeof(delang), W_JSON);
+});
+server.on(String(F("/lang/en.lang")).c_str(), HTTP_GET, [](){
+  sendProgmem(enlang, sizeof(enlang), W_JSON);
+});
+server.on(String(F("/lang/fr.lang")).c_str(), HTTP_GET, [](){
+  sendProgmem(frlang, sizeof(frlang), W_JSON);
+});
+server.on(String(F("/lang/it.lang")).c_str(), HTTP_GET, [](){
+  sendProgmem(itlang, sizeof(itlang), W_JSON);
+});
+server.on(String(F("/lang/ru.lang")).c_str(), HTTP_GET, [](){
+  sendProgmem(rulang, sizeof(rulang), W_JSON);
+});
+server.on(String(F("/lang/tlh.lang")).c_str(), HTTP_GET, [](){
+  sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
 });
 
 }
 server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){
   if(!settings.getWebSpiffs()){
-    if(settings.getLang() == String(F("en"))) sendProgmem(enlang, sizeof(enlang), W_JSON);
-    else if(settings.getLang() == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
-    else if(settings.getLang() == String(F("ru"))) sendProgmem(rulang, sizeof(rulang), W_JSON);
+    if(settings.getLang() == String(F("cn"))) sendProgmem(cnlang, sizeof(cnlang), W_JSON);
     else if(settings.getLang() == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), W_JSON);
-    else if(settings.getLang() == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), W_JSON);
-    else if(settings.getLang() == String(F("cn"))) sendProgmem(cnlang, sizeof(cnlang), W_JSON);
     else if(settings.getLang() == String(F("de"))) sendProgmem(delang, sizeof(delang), W_JSON);
+    else if(settings.getLang() == String(F("en"))) sendProgmem(enlang, sizeof(enlang), W_JSON);
+    else if(settings.getLang() == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), W_JSON);
+    else if(settings.getLang() == String(F("it"))) sendProgmem(itlang, sizeof(itlang), W_JSON);
+    else if(settings.getLang() == String(F("ru"))) sendProgmem(rulang, sizeof(rulang), W_JSON);
+    else if(settings.getLang() == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
 
     else handleFileRead(String(F("/web/lang/"))+settings.getLang()+String(F(".lang")));
   } else {
     handleFileRead(String(F("/web/lang/"))+settings.getLang()+String(F(".lang")));
   }
 });
-
 
 // ================================================================
 
