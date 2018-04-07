@@ -55,7 +55,7 @@
 	"setting_serial": "Enables serial interface.\nIt's recommended not to disable it!",
 	"setting_serialEcho": "Enables echo for each incoming message over serial.",
 	"setting_web": "Enables web interface.",
-	"settings_webSpiffs": "Enables SPIFFS for all web files.",
+	"setting_webSpiffs": "Enables SPIFFS for all web files.",
 	"setting_led": "Enables the (RGB) LED feature.",
 	"setting_maxch": "Max. channel to scan on.\nUS = 11, EU = 13, Japan = 14.",
 	"setting_macAP": "MAC address used for the access point mode.\nPlease note that the MAC address will only replace the internal MAC address when the accesspoint mode is enabled.",

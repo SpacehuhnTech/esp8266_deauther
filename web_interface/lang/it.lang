@@ -55,7 +55,7 @@
 	"setting_serial": "Abilita l'interfaccia seriale.\nSi consiglia di non disattivarlo!",
 	"setting_serialEcho": "Abilita la ripetizione per ogni messaggio in arrivo su seriale.",
 	"setting_web": "Abilita l'interfaccia web.",
-	"settings_webSpiffs": "Abilita SPIFFS per tutti i file Web.",
+	"setting_webSpiffs": "Abilita SPIFFS per tutti i file Web.",
 	"setting_led": "Abilita la funzione LED (RGB).",
 	"setting_maxch": "Max. canale su cui eseguire la scansione.\nUS = 11, EU = 13, Japan = 14.",
 	"setting_macAP": "Indirizzo MAC utilizzato per la modalità punto di accesso.\nSi noti che l'indirizzo MAC sostituirà solo l'indirizzo MAC interno quando la modalità punto di accesso è abilitata.",
