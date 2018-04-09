@@ -52,7 +52,7 @@ class Stations {
     uint32_t* getPkts(int num);
     uint32_t* getTime(int num);
     uint8_t getCh(int num);
-    uint8_t getAP(int num);
+    int getAP(int num);
     bool getSelected(int num);
     bool hasName(int num);
 

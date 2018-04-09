@@ -89,7 +89,7 @@ class DisplayUI {
     void setupDisplay();
     void setupButtons();
     
-    uint16_t selectedID = 0; // i.e. access point ID to draw the apMenu
+    int16_t selectedID = 0; // i.e. access point ID to draw the apMenu
     uint16_t scrollCounter = 0; // for horizontal scrolling
     uint32_t drawTime = 0; // last time a frame was drawn
     uint32_t startTime = 0; // when the screen was enabled

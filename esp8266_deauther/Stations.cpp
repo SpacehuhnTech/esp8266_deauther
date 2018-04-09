@@ -117,7 +117,7 @@ void Stations::print(int num, bool header, bool footer) {
 }
 
 String Stations::getAPStr(int num) {
-  if (!check(num)) return String();
+  if (getAP(num) < 0) return String();
   return accesspoints.getSSID(getAP(num));
 }
 
@@ -132,8 +132,8 @@ String Stations::getAPMacStr(int num){
   return bytesToStr(mac, 6);  
 }
 
-uint8_t Stations::getAP(int num) {
-  if (!check(num)) return 0;
+int Stations::getAP(int num) {
+  if (!check(num)) return -1;
   return accesspoints.find(list->get(num).ap);
 }
 

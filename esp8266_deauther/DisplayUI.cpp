@@ -497,8 +497,11 @@ void DisplayUI::setup() {
     addMenuNode(&stationMenu, [this]() {
       return str(D_AP) + stations.getAPStr(selectedID); // AP: someAP
     }, [this]() {
-      selectedID = stations.getAP(selectedID);
-      changeMenu(&apMenu);
+      int apID = accesspoints.find(stations.getAP(selectedID));
+      if(apID >= 0){
+        selectedID = apID;
+        changeMenu(&apMenu);
+      }
     });
     addMenuNode(&stationMenu, [this]() {
       return str(D_PKTS) + String(*stations.getPkts(selectedID));
@@ -800,6 +803,7 @@ void DisplayUI::changeMenu(Menu* menu) {
     currentMenu = menu;
     currentMenu->selected = 0;
     buttonA.time = currentTime;
+    if(selectedID < 0) selectedID = 0;
     if (currentMenu->parentMenu) {
       addMenuNode(currentMenu, D_BACK, currentMenu->parentMenu); // add [BACK]
       currentMenu->selected = 1;
