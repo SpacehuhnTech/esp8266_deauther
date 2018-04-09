@@ -68,7 +68,10 @@ function drawScan(){
 	
 	for(var i=0;i<scanJson.stations.length;i++){
 		selected = scanJson.stations[i][scanJson.stations[i].length-1];
-
+		ap = "";
+		if(scanJson.stations[i][5] >= 0)
+			ap = esc(scanJson.aps[scanJson.stations[i][5]][0]);
+		
 		html += (selected ? "<tr class='selected'>" : "<tr>")
 			+ "<td class='id'>"+i+"</td>" // ID
 			+ "<td class='vendor'>"+esc(scanJson.stations[i][3])+"</td>" // Vendor
@@ -76,7 +79,7 @@ function drawScan(){
 			+ "<td class='ch'>"+esc(scanJson.stations[i][1])+"</td>" // Ch
 			+ "<td class='name'>"+(scanJson.stations[i][2].length > 0 ? esc(scanJson.stations[i][2]) : "<button onclick='add(1,"+i+")'>"+lang("add")+"</button>")+"</td>" // Name
 			+ "<td class='pkts'>"+esc(scanJson.stations[i][4])+"</td>" // Pkts
-			+ "<td class='ap'>"+esc(scanJson.aps[scanJson.stations[i][5]][0])+"</td>" // AP
+			+ "<td class='ap'>"+ap+"</td>" // AP
 			+ "<td class='lastseen'>"+esc(scanJson.stations[i][6])+"</td>" // Last seen
 			// Select
 			+ "<td class='selectColumn'><label class='checkBoxContainer'><input type='checkbox' "+(selected ? "checked" : "")+" onclick='selectRow(1,"+i+","+(selected ? "false" : "true")+")'><span class='checkmark'></span></label></td>"

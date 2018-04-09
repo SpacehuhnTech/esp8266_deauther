@@ -241,7 +241,7 @@ void Attack:: beaconUpdate() {
 }
 
 bool Attack::deauthStation(int num) {
-  return deauthDevice(accesspoints.getMac(stations.getAP(num)), stations.getMac(num), settings.getDeauthReason(), accesspoints.getCh(stations.getAP(num)));
+  return deauthDevice(stations.getAPMac(num), stations.getMac(num), settings.getDeauthReason(), stations.getCh(num));
 }
 
 bool Attack::deauthAP(int num) {

@@ -423,7 +423,7 @@ void SerialInterface::runCommand(String input) {
       else if (eqlsCMD(i, CLI_AP)) mac = accesspoints.getMacStr(list->get(i + 1).toInt());
       else if (eqlsCMD(i, CLI_STATION)) {
         mac = stations.getMacStr(list->get(i + 1).toInt());
-        bssid = accesspoints.getMacStr(stations.getAP(list->get(i + 1).toInt()));
+        bssid = stations.getAPMacStr(list->get(i + 1).toInt());
       }
       else if (eqlsCMD(i, CLI_CHANNEL)) channel = (uint8_t)list->get(i + 1).toInt();
       else if (eqlsCMD(i, CLI_BSSID)) bssid = list->get(i + 1);

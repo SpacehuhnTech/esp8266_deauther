@@ -340,16 +340,9 @@ uint8_t* Names::getBssid(int num) {
 }
 
 String Names::getMacStr(int num) {
-  String value;
-  if (check(num)) {
-    uint8_t* mac = getMac(num);
-    for (int i = 0; i < 6; i++) {
-      if (mac[i] < 0x10) value += ZERO;
-      value += String(mac[i], HEX);
-      if (i < 5) value += DOUBLEPOINT;
-    }
-  }
-  return value;
+  if (!check(num)) return String();
+  uint8_t* mac = getMac(num);
+  return bytesToStr(mac, 6);
 }
 
 String Names::getVendorStr(int num) {

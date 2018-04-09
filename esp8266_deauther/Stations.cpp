@@ -121,9 +121,20 @@ String Stations::getAPStr(int num) {
   return accesspoints.getSSID(getAP(num));
 }
 
+uint8_t* Stations::getAPMac(int num){
+  if (!check(num)) return 0;
+  return WiFi.BSSID(list->get(num).ap);  
+}
+
+String Stations::getAPMacStr(int num){
+  if (!check(num)) return String();
+  uint8_t* mac = getAPMac(num);
+  return bytesToStr(mac, 6);  
+}
+
 uint8_t Stations::getAP(int num) {
   if (!check(num)) return 0;
-  return list->get(num).ap;
+  return accesspoints.find(list->get(num).ap);
 }
 
 String Stations::getNameStr(int num) {
@@ -142,16 +153,9 @@ uint8_t* Stations::getMac(int num) {
 }
 
 String Stations::getMacStr(int num) {
-  String value = "";
-  if (check(num)) {
-    uint8_t* mac = getMac(num);
-    for (int i = 0; i < 6; i++) {
-      if (mac[i] < 0x10) value += "0";
-      value += String(mac[i], HEX);
-      if (i < 5) value += ":";
-    }
-  }
-  return value;
+  if (!check(num)) return String();
+  uint8_t* mac = getMac(num);
+  return bytesToStr(mac, 6);
 }
 
 String Stations::getMacVendorStr(int num) {

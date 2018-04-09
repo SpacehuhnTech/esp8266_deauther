@@ -141,13 +141,7 @@ uint8_t* Accesspoints::getMac(int num) {
 String Accesspoints::getMacStr(int num) {
   if (!check(num)) return String();
   uint8_t* mac = getMac(num);
-  String value;
-  for (int i = 0; i < 6; i++) {
-    if (mac[i] < 0x10) value += ZERO;
-    value += String(mac[i], HEX);
-    if (i < 5) value += DOUBLEPOINT;
-  }
-  return value;
+  return bytesToStr(mac, 6);
 }
 
 String Accesspoints::getVendorStr(int num) {
@@ -165,7 +159,7 @@ bool Accesspoints::getSelected(int num) {
   return list->get(num).selected;
 }
 
-int Accesspoints::getID(int num){
+uint8_t Accesspoints::getID(int num){
   if (!check(num)) return -1;
   return list->get(num).id;
 }
@@ -222,6 +216,15 @@ void Accesspoints::removeAll() {
     internal_remove(0);
   prntln(AP_REMOVED_ALL);
   changed = true;
+}
+
+int Accesspoints::find(uint8_t id){
+  int s = list->size();
+  for(int i=0;i<s;i++){
+      if(list->get(i).id == id)
+        return i;
+  }
+  return -1;
 }
 
 int Accesspoints::count() {

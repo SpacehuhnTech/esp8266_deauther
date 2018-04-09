@@ -14,7 +14,8 @@ extern Names names;
 
 extern String searchVendor(uint8_t* mac);
 extern String buildString(String left, String right, int maxLen);
-String fixUtf8(String str);
+extern String fixUtf8(String str);
+extern String bytesToStr(uint8_t* b, uint32_t size);
 
 struct AP{
   uint8_t id;
@@ -49,12 +50,14 @@ class Accesspoints {
     String getSelectedStr(int num);
     uint8_t getCh(int num);
     uint8_t getEnc(int num);
-    int getID(int num);
+    uint8_t getID(int num);
     int getRSSI(int num);
     uint8_t* getMac(int num);    
     bool getHidden(int num);
     bool getSelected(int num);
 
+    int find(uint8_t id);
+    
     int count();
     int selected();
 

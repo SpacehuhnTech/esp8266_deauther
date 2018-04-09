@@ -27,13 +27,13 @@ void Scan::sniffer(uint8_t* buf, uint16_t len) {
 
   if (macBroadcast(macTo) || macBroadcast(macFrom) || !macValid(macTo) || !macValid(macFrom) || macMulticast(macTo) || macMulticast(macFrom)) return;
 
-  int16_t accesspointNum = findAccesspoint(macFrom);
+  int accesspointNum = findAccesspoint(macFrom);
   if (accesspointNum >= 0) {
-    stations.add(macTo, accesspointNum);
+    stations.add(macTo, accesspoints.getID(accesspointNum));
   } else {
     accesspointNum = findAccesspoint(macTo);
     if (accesspointNum >= 0) {
-      stations.add(macFrom, accesspointNum);
+      stations.add(macFrom, accesspoints.getID(accesspointNum));
     }
   }
 }

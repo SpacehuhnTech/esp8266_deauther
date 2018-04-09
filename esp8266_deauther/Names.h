@@ -23,6 +23,7 @@ extern String searchVendor(uint8_t* mac);
 extern String fixUtf8(String str);
 extern String buildString(String left, String right, int maxLen);
 extern String escape(String str);
+extern String bytesToStr(uint8_t* b, uint32_t size);
 
 class Names {
   public:

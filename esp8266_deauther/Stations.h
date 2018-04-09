@@ -20,6 +20,7 @@ extern String searchVendor(uint8_t* mac);
 extern bool macMulticast(uint8_t* mac);
 extern bool macValid(uint8_t* mac);
 extern bool macBroadcast(uint8_t* mac);
+extern String bytesToStr(uint8_t* b, uint32_t size);
 
 class Stations {
   public:
@@ -45,6 +46,8 @@ class Stations {
     String getVendorStr(int num);
     String getTimeStr(int num);
     String getSelectedStr(int num);
+    uint8_t* getAPMac(int num);
+    String getAPMacStr(int num);
     uint8_t* getMac(int num);
     uint32_t* getPkts(int num);
     uint32_t* getTime(int num);
