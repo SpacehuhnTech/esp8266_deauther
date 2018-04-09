@@ -306,6 +306,9 @@ To disable the LED in general use `set ledenabled false`.
 ## DELAY
 `delay <time>`  
 Will pause the serial command interface for a given time.  
+`delay 1000` will wait one second.  
+But you can also specify the delay time in seconds directly:  
+`delay 1s`.  
 
 ## DRAW
 `draw [<height>] [<width>]`  
