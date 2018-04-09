@@ -261,6 +261,8 @@ Executes script with given filepath.
 **continue** [-c] (optional, min=1s, default time is 10s): How many seconds until it should run the script again.  
 Please don't use this command within a script! It won't work but it might lead to errors or unexpected behaviour.  
 
+For more information, [![@PwnKitteh made this video about deauther 2.0 scripting. ](https://img.youtube.com/vi/v8xkyR3JXrw/0.jpg)](https://www.youtube.com/watch?v=v8xkyR3JXrw)
+
 ## WRITE
 `write <file> <commands>`  
 Writes (appends) a command to the given file and saves it.  
