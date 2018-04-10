@@ -1,0 +1,88 @@
+# travis script by tobozo
+language: python
+python:
+  - 3.6
+
+addons:
+  apt:
+    packages:
+      - "python3"
+      - "python3-pip"
+      - "python3-wheel"
+
+env:
+  global:
+    - IDE_VERSION=1.8.5
+    - REPO_NAME=esp8266_deauther
+    - REPO_OWNER=spacehuhn
+    - TRAVIS_TAG=v2.1.4
+    - SKETCH="esp8266_deauther"
+  matrix:
+    - BOARD="deauther:esp8266:generic:FlashFreq=80,FlashSize=1M256" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_1MB.bin" CONFIGDIR="Default"
+    - BOARD="deauther:esp8266:generic:FlashFreq=80,FlashSize=4M1M" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_4MB.bin" CONFIGDIR="Default"
+    - BOARD="deauther:esp8266:generic:FlashFreq=80,FlashSize=512K64" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_512KB.bin" CONFIGDIR="Default"
+    - BOARD="deauther:esp8266:dstike:FlashFreq=80,FlashSize=1M256" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_DSTIKE_OLED_v1.bin" CONFIGDIR="DSTIKE_Deauther_OLED_v1-v1.5"
+    - BOARD="deauther:esp8266:dstike:FlashFreq=80,FlashSize=1M256" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_DSTIKE_OLED_v2-v3.bin" CONFIGDIR="DSTIKE_Deauther_OLED_v2-v3"
+    - BOARD="deauther:esp8266:dstike:FlashFreq=80,FlashSize=1M256" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_DSTIKE_OLED_v3.5.bin" CONFIGDIR="DSTIKE_Deauther_OLED_v3.5_+_Monster"
+    - BOARD="deauther:esp8266:nodemcuv2:FlashFreq=80,FlashSize=4M3M" BINNAME="ESP8266_Deauther_${TRAVIS_TAG}_DSTIKE_v3_._NodeMCU-07.bin" CONFIGDIR="DSTIKE_Deauther_v3_+_DSTIKE_NodeMCU-07_v2"
+    - BOARD="deauther:esp8266:esp8285:CpuFrequency=80,FlashSize=1M256" BINNAME="ESP8266_deauther_${TRAVIS_TAG}_ESP8285_._1M_256K.bin" CONFIGDIR="Default"
+
+before_install:
+  - "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_1.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :1 -ac -screen 0 1280x1024x16"
+  - sleep 3
+  - export DISPLAY=:1.0
+  - wget http://downloads.arduino.cc/arduino-$IDE_VERSION-linux64.tar.xz
+  - tar xf arduino-$IDE_VERSION-linux64.tar.xz
+  - rm arduino-$IDE_VERSION-linux64.tar.xz
+  - mv arduino-$IDE_VERSION ~/arduino-ide
+  - export PATH=$PATH:~/arduino-ide
+  - mkdir -p $TRAVIS_BUILD_DIR/build
+  # needed to regen the language files
+  - pip install git+https://github.com/cfpb/github-changelog
+  - echo "**Automated release from Travis CI with added binary files from Arduino compilation**" > CHANGELOG.md
+  - export BODY=$(cat CHANGELOG.md)
+  - echo "\n\n" >> CHANGELOG.md
+  - export GITHUB_API_TOKEN=$GITHUB_TOKEN; changelog -m $REPO_OWNER $REPO_NAME >> CHANGELOG.md
+  - pip install anglerfish
+  # do regen language files
+  - cd $TRAVIS_BUILD_DIR/utils/web_converter_python/
+  - python3 webConverter.py
+  - rm -Rf css_html_js_minify/__pycache__
+  - cd $TRAVIS_BUILD_DIR
+  # remove the oui list to save memory **for 512K54 builds only**
+  - echo "$BOARD" | grep "512K64" && sed -i '/define ENABLE_MAC_LIST /d' $TRAVIS_BUILD_DIR/esp8266_deauther/oui.h || echo
+  # load the relevant config
+  - cp configs/$CONFIGDIR/A_config.h esp8266_deauther/
+
+install:
+  - arduino --pref "boardsmanager.additional.urls=http://arduino.esp8266.com/stable/package_esp8266com_index.json,http://phpsecu.re/esp8266/package_deauther_index.json" --save-prefs
+  - arduino --install-boards esp8266:esp8266
+  - arduino --install-boards deauther:esp8266
+  - arduino --pref "compiler.warning_level=all" --save-prefs
+
+script:
+  - arduino --verbose-build --verify --preserve-temp-files --board $BOARD $TRAVIS_BUILD_DIR/esp8266_deauther/$SKETCH.ino
+  - find /tmp -name \*.bin -exec ls -lrt {} \; #<-- you need that backslash before and space after the semicolon
+  - find /tmp -name \*.bin -exec cp {} $TRAVIS_BUILD_DIR/build/$BINNAME \; #<-- you need that backslash before and space after the semicolon
+  - find $TRAVIS_BUILD_DIR/build -name \*.bin -exec ls -lrt {} \; #<-- you need that backslash before and space after the semicolon
+  - ls $TRAVIS_BUILD_DIR/build/ -la
+  
+before_deploy:
+  # Set up git user name and tag this commit
+  - git config --global user.email "travis@travis-ci.org"
+  - git config --global user.name "Travis CI"
+  - git tag ${TRAVIS_TAG}
+  # - export BODY=$(cat CHANGELOG.md) # boo! Travis doesn't like multiline body
+  
+deploy:
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  overwrite: true
+  target_commitish: $TRAVIS_COMMIT
+  tag_name: ${TRAVIS_TAG}
+  name: deauther-autorelease ${TRAVIS_TAG}
+  body: "${BODY}" # Automated release from Travis CI with added binary files from Arduino compilation 
+#  draft: true
+  file_glob: true
+  file: $TRAVIS_BUILD_DIR/build/$BINNAME
+  skip_cleanup: true
