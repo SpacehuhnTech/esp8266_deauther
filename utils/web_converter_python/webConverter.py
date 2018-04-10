@@ -9,7 +9,7 @@ import binascii
 from pathlib import Path, PurePath
 try:
     from css_html_js_minify.minify import process_single_html_file, process_single_js_file, process_single_css_file
-except ModuleNotFoundError:
+except ImportError:
     print("\n[!] Requirements are not satisfied. Please install the 'anglerfish' package by running 'sudo python3 -m pip install anglerfish'.\n")
     exit()
 
