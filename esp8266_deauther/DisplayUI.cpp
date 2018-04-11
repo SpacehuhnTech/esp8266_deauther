@@ -799,6 +799,13 @@ void DisplayUI::clearMenu(Menu* menu) {
 
 void DisplayUI::changeMenu(Menu* menu) {
   if (menu) {
+    // only open list menu if it has nodes
+    if((menu == &apListMenu && accesspoints.count() == 0) ||
+        (menu == &stationListMenu && stations.count() == 0) ||
+        (menu == &nameListMenu && names.count() == 0) ||
+        (menu == &ssidListMenu && ssids.count() == 0)){
+      return;
+    }
     if (currentMenu) clearMenu(currentMenu);
     currentMenu = menu;
     currentMenu->selected = 0;
