@@ -1048,7 +1048,7 @@ void SerialInterface::runCommand(String input) {
   // ===== START/STOP AP ===== //
   // startap
   else if (eqlsCMD(0, CLI_STARTAP)) {
-    String path = str(W_WEBINTERFACE);
+    String path = String(F("/web"));
     String ssid = settings.getSSID();
     String password = settings.getPassword();
     int ch = wifi_channel;

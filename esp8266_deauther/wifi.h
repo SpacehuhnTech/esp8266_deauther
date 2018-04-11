@@ -21,12 +21,48 @@ extern "C" {
   For compatibility and simplicity, all those functions are global.
 */
 
+// Important strings
+const char W_DEAUTHER[] PROGMEM = "deauth.me"; // captive portal domain (alternative to 192.168.4.1)
+const char W_WEBINTERFACE[] PROGMEM = "/web"; // default folder containing the web files
+const char W_ERROR_PASSWORD[] PROGMEM = "ERROR: Password must have at least 8 characters!";
+const char W_DEFAULT_LANG[] PROGMEM = "/lang/default.lang";
+
+const char W_HTML[] PROGMEM = "text/html";
+const char W_CSS[] PROGMEM = "text/css";
+const char W_JS[] PROGMEM = "application/javascript";
+const char W_PNG[] PROGMEM = "image/png";
+const char W_GIF[] PROGMEM = "image/gif";
+const char W_JPG[] PROGMEM = "image/jpeg";
+const char W_ICON[] PROGMEM = "image/x-icon";
+const char W_XML[] PROGMEM = "text/xml";
+const char W_XPDF[] PROGMEM = "application/x-pdf";
+const char W_XZIP[] PROGMEM = "application/x-zip";
+const char W_GZIP[] PROGMEM = "application/x-gzip";
+const char W_JSON[] PROGMEM = "application/json";
+const char W_TXT[] PROGMEM = "text/plain";
+
+const char W_DOT_HTM[] PROGMEM = ".htm";
+const char W_DOT_HTML[] PROGMEM = ".html";
+const char W_DOT_CSS[] PROGMEM = ".css";
+const char W_DOT_JS[] PROGMEM = ".js";
+const char W_DOT_PNG[] PROGMEM = ".png";
+const char W_DOT_GIF[] PROGMEM = ".gif";
+const char W_DOT_JPG[] PROGMEM = ".jpg";
+const char W_DOT_ICON[] PROGMEM = ".ico";
+const char W_DOT_XML[] PROGMEM = ".xml";
+const char W_DOT_PDF[] PROGMEM = ".pdf";
+const char W_DOT_ZIP[] PROGMEM = ".zip";
+const char W_DOT_GZIP[] PROGMEM = ".gz";
+const char W_DOT_JSON[] PROGMEM = ".json";
+
+// Server and other global objects
 ESP8266WebServer server(80);
 DNSServer dnsServer;
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
 File fsUploadFile;
 
+// current WiFi mode and config
 uint8_t wifiMode = WIFI_MODE_OFF;
 
 bool wifi_config_hidden = false;
@@ -49,9 +85,7 @@ void stopAP() {
 void wifiUpdate() {
   if (wifiMode != WIFI_MODE_OFF && !scan.isScanning()) {
     server.handleClient();
-    yield();
     dnsServer.processNextRequest();
-    yield();
   }
 }
 
@@ -72,30 +106,37 @@ String getWifiMode() {
 }
 
 String getContentType(String filename) {
-  if (server.hasArg(str(W_DOWNLOAD).c_str())) return str(W_STREAM);
-  else if (filename.endsWith(str(W_DOT_GZIP).c_str())) filename = filename.substring(0, filename.length() - 3); //return str(W_GZIP);
-  else if (filename.endsWith(str(W_DOT_HTM).c_str())) return str(W_HTML);
-  else if (filename.endsWith(str(W_DOT_HTML).c_str())) return str(W_HTML);
-  else if (filename.endsWith(str(W_DOT_CSS).c_str())) return str(W_CSS);
-  else if (filename.endsWith(str(W_DOT_JS).c_str())) return str(W_JS);
-  else if (filename.endsWith(str(W_DOT_PNG).c_str())) return str(W_PNG);
-  else if (filename.endsWith(str(W_DOT_GIF).c_str())) return str(W_GIF);
-  else if (filename.endsWith(str(W_DOT_JPG).c_str())) return str(W_JPG);
-  else if (filename.endsWith(str(W_DOT_ICON).c_str())) return str(W_ICON);
-  else if (filename.endsWith(str(W_DOT_XML).c_str())) return str(W_XML);
-  else if (filename.endsWith(str(W_DOT_PDF).c_str())) return str(W_XPDF);
-  else if (filename.endsWith(str(W_DOT_ZIP).c_str())) return str(W_XZIP);
-  else if (filename.endsWith(str(W_DOT_JSON).c_str())) return str(W_JSON);
+  if (server.hasArg("download")) 
+    return String(F("application/octet-stream"));
+  
+  if (filename.endsWith(str(W_DOT_GZIP))) 
+    filename = filename.substring(0, filename.length() - 3);
+  
+  if (filename.endsWith(str(W_DOT_HTM)))  return str(W_HTML);
+  if (filename.endsWith(str(W_DOT_HTML))) return str(W_HTML);
+  if (filename.endsWith(str(W_DOT_CSS)))  return str(W_CSS);
+  if (filename.endsWith(str(W_DOT_JS)))   return str(W_JS);
+  if (filename.endsWith(str(W_DOT_PNG)))  return str(W_PNG);
+  if (filename.endsWith(str(W_DOT_GIF)))  return str(W_GIF);
+  if (filename.endsWith(str(W_DOT_JPG)))  return str(W_JPG);
+  if (filename.endsWith(str(W_DOT_ICON))) return str(W_ICON);
+  if (filename.endsWith(str(W_DOT_XML)))  return str(W_XML);
+  if (filename.endsWith(str(W_DOT_PDF)))  return str(W_XPDF);
+  if (filename.endsWith(str(W_DOT_ZIP)))  return str(W_XZIP);
+  if (filename.endsWith(str(W_DOT_JSON))) return str(W_JSON);
+  
   return str(W_TXT);
 }
 
 bool handleFileRead(String path) {
   prnt(W_AP_REQUEST);
   prnt(path);
+  
   if (!path.charAt(0) == SLASH) path = String(SLASH) + path;
-  if (path.charAt(path.length() - 1) == SLASH) path += str(W_INDEX_HTML);;
+  if (path.charAt(path.length() - 1) == SLASH) path += String(F("index.html"));
+  
   String contentType = getContentType(path);
-
+  
   if (!SPIFFS.exists(path)) {
     if (SPIFFS.exists(path + str(W_DOT_GZIP))) path += str(W_DOT_GZIP);
     else if (SPIFFS.exists(wifi_config_path + path)) path = wifi_config_path + path;
@@ -114,9 +155,12 @@ bool handleFileRead(String path) {
 
   return true;
 }
-
+/*
 void handleFileUpload() {
-  if (server.uri() != W_EDIT) return; // only allow uploads on /edit address
+  // only allow uploads on /edit address
+  if (server.uri() != "/edit") 
+    return; 
+  
   HTTPUpload& upload = server.upload();
   if (upload.status == UPLOAD_FILE_START) {
     String filename = upload.filename;
@@ -136,10 +180,12 @@ void handleFileUpload() {
     //Serial.print("handleFileUpload Size: ");
     //Serial.println(upload.totalSize);
   }
-}
-
+}*/
+/*
 void handleFileDelete() {
-  if (server.args() == 0) return server.send(500, str(W_TXT), str(W_BAD_ARGS));
+  if (server.args() == 0)
+    return server.send(500, str(W_TXT), str(W_BAD_ARGS));
+    
   String path = server.arg(0);
   //Serial.println("handleFileDelete: " + path);
   if (path == String(SLASH))
@@ -148,11 +194,12 @@ void handleFileDelete() {
     return server.send(404, str(W_TXT), str(W_FILE_NOT_FOUND));
   SPIFFS.remove(path);
   server.send(200, str(W_TXT), String());
-}
-
+}*/
+/*
 void handleFileCreate() {
   if (server.args() == 0)
     return server.send(500, str(W_TXT), str(W_BAD_ARGS));
+    
   String path = server.arg(0);
   //Serial.println("handleFileCreate: " + path);
   if (path == String(SLASH))
@@ -165,38 +212,43 @@ void handleFileCreate() {
   else
     return server.send(500, str(W_TXT), "CREATE FAILED");
   server.send(200, str(W_TXT), "");
-}
+}*/
 
 void handleFileList() {
-  if (!server.hasArg(str(W_DIR).c_str())) {
+  if (!server.hasArg("dir")) {
     server.send(500, str(W_TXT), str(W_BAD_ARGS));
     return;
   }
 
-  String path = server.arg(str(W_DIR).c_str());
+  String path = server.arg("dir");
   //Serial.println("handleFileList: " + path);
   Dir dir = SPIFFS.openDir(path);
 
-  String output = "[";
+  String output = String(OPEN_BRACKET); // {
+  File entry;
+  bool first = true;
   while (dir.next()) {
-    File entry = dir.openFile("r");
-    if (output != "[") output += COMMA;
-    bool isDir = false;
-    output += " {\"type\":\"";
-    output += (isDir) ? str(W_DIR) : "file";
-    output += "\",\"name\":\"";
-    output += String(entry.name()).substring(1);
-    output += "\"}";
+    entry = dir.openFile("r");
+    
+    if(first)
+      first = false;
+    else
+      output += COMMA; // ,
+    
+    output += OPEN_BRACKET; // [
+    output += String(DOUBLEQUOTES) + entry.name() + String(DOUBLEQUOTES); // "filename"
+    output += CLOSE_BRACKET; // ]
+    
     entry.close();
   }
 
-  output += "]";
+  output += CLOSE_BRACKET;
   server.send(200, str(W_JSON).c_str(), output);
 }
 
 void sendProgmem(const char* ptr, size_t size, const char* type) {
-  server.sendHeader(str(W_CONTENT_ENCODING).c_str(), String(F("gzip")));
-  server.sendHeader(str(W_CACHE_CONTROL).c_str(), "max-age=86400");
+  server.sendHeader("Content-Encoding", "gzip");
+  server.sendHeader("Cache-Control", "max-age=86400");
   server.send_P(200, str(type).c_str(), ptr, size);
 }
 
@@ -225,7 +277,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
   MDNS.begin(str(W_DEAUTHER).c_str());
 
-  server.on(str(W_LIST).c_str(), HTTP_GET, handleFileList); //list directory
+  server.on(String(F("/list")).c_str(), HTTP_GET, handleFileList); //list directory
 
 
 // ================================================================
@@ -316,32 +368,33 @@ server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){
 
 // ================================================================
 
-  server.on(str(W_RUN).c_str(), HTTP_GET, []() {
+  server.on(String(F("/run")).c_str(), HTTP_GET, []() {
     server.send(200, str(W_TXT), str(W_OK).c_str());
-    serialInterface.runCommands(server.arg(str(W_CMD).c_str()));
+    serialInterface.runCommands(server.arg("cmd"));
   });
 
-  server.on("/attack.json", HTTP_GET, []() {
+  server.on(String(F("/attack.json")).c_str(), HTTP_GET, []() {
     server.send(200, str(W_JSON), attack.getStatusJSON());
   });
 
   /*
-    //load editor
-    server.on("/edit", HTTP_GET, [](){
+  //load editor
+  server.on("/edit", HTTP_GET, [](){
     if(!handleFileRead("/edit.htm")) server.send(404, str(W_TXT), "FileNotFound");
-    });
-
-    server.on("/edit", HTTP_PUT, handleFileCreate); //create file
-    server.on("/edit", HTTP_DELETE, handleFileDelete); //delete file
-
-
-    //first callback is called after the request has ended with all parsed arguments
-    //second callback handles file uploads at that location
-    server.on("/edit", HTTP_POST, [](){ server.send(200, str(W_TXT), ""); }, handleFileUpload);
+  });
+  
+  server.on("/edit", HTTP_PUT, handleFileCreate); //create file
+  server.on("/edit", HTTP_DELETE, handleFileDelete); //delete file
+  
+  //first callback is called after the request has ended with all parsed arguments
+  //second callback handles file uploads at that location
+  server.on("/edit", HTTP_POST, [](){ 
+    server.send(200, str(W_TXT), ""); 
+  }, handleFileUpload);
   */
 
   // aggressively caching static assets
-  server.serveStatic("/js"  , SPIFFS, String(wifi_config_path + "/js").c_str(), "max-age=86400");
+  server.serveStatic("/js", SPIFFS, String(wifi_config_path + "/js").c_str(), "max-age=86400");
 
   //called when the url is not defined here
   //use it to load content from SPIFFS
@@ -360,12 +413,12 @@ server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){
 
 
 void printWifiStatus() {
-  prnt(PSTR("[WiFi] Path: '"));
+  prnt(String(F("[WiFi] Path: '")));
   prnt(wifi_config_path);
-  prnt(PSTR("', Mode: '"));
+  prnt(String(F("', Mode: '")));
   switch(wifiMode){
     case WIFI_MODE_OFF:
-      prnt(W_OFF);
+      prnt(W_MODE_OFF);
       break;
     case WIFI_MODE_AP:
       prnt(W_AP);
@@ -374,15 +427,15 @@ void printWifiStatus() {
       prnt(W_STATION);
       break;
   }
-  prnt(PSTR("', SSID: '"));
+  prnt(String(F("', SSID: '")));
   prnt(wifi_config_ssid);
-  prnt(PSTR("', password: '"));
+  prnt(String(F("', password: '")));
   prnt(wifi_config_password);
-  prnt(PSTR("', channel: '"));
+  prnt(String(F("', channel: '")));
   prnt(wifi_channel);
-  prnt(PSTR("', hidden: "));
+  prnt(String(F("', hidden: ")));
   prnt(b2s(wifi_config_hidden));
-  prnt(PSTR(", captive-portal: "));
+  prnt(String(F(", captive-portal: ")));
   prntln(b2s(wifi_config_captivePortal));
 }
 
