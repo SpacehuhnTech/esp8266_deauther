@@ -100,6 +100,6 @@ function save(id){
 	var wpa2 = ssidJson.ssids[id][1];
 	ssidJson.ssids[id] = [name,wpa2];
 	
-	getFile("run?cmd=replace ssid "+id+" -n "+name+" "+(wpa2 ? "-wpa2" : ""));
+	getFile("run?cmd=replace ssid "+id+" -n \""+name+"\" "+(wpa2 ? "-wpa2" : ""));
 }
 
