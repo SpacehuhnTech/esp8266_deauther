@@ -1046,7 +1046,7 @@ void SerialInterface::runCommand(String input) {
   }
 
   // ===== START/STOP AP ===== //
-  // startap
+  // startap [-p <path][-s <ssid>] [-pswd <password>] [-ch <channel>] [-h] [-cp]
   else if (eqlsCMD(0, CLI_STARTAP)) {
     String path = String(F("/web"));
     String ssid = settings.getSSID();
@@ -1057,17 +1057,17 @@ void SerialInterface::runCommand(String input) {
 
     for (int i = 1; i < list->size(); i++) {
       if (eqlsCMD(i, CLI_PATH)) {
-        path = list->get(i + 1);
         i++;
+        path = list->get(i);
       } else if (eqlsCMD(i, CLI_SSID)) {
-        ssid = list->get(i + 1);
         i++;
+        ssid = list->get(i);
       } else if (eqlsCMD(i, CLI_PASSWORD)) {
-        password = list->get(i + 1);
         i++;
+        password = list->get(i);
       } else if (eqlsCMD(i, CLI_CHANNEL)) {
-        ch = list->get(i + 1).toInt();
         i++;
+        ch = list->get(i).toInt();
       } else if (eqlsCMD(i, CLI_HIDDEN)) {
         hidden = true;
       } else if (eqlsCMD(i, CLI_CAPTIVEPORTAL)) {

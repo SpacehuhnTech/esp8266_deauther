@@ -318,10 +318,18 @@ Will only work if you run a wifi scan first, i.e. `scan wifi -t 65s -ch 1`.
 - **width** (optional, default = 2): Width in characters per bar in graph.  
 
 ## STARTAP
-`startap ...`
-...
-`stopap`
-...
+`startap [-p <path][-s <ssid>] [-pswd <password>] [-ch <channel>] [-h] [-cp]`  
+Starts access point.  
+- **path** [-p] (optional, default = "/web"): Path to web files.  
+- **ssid** [-s] (optional, default = [settings ssid](https://github.com/spacehuhn/esp8266_deauther/blob/master/settings.md#ssid)): Network name.  
+- **password** [-pswd] (optional, default = [settings password](https://github.com/spacehuhn/esp8266_deauther/blob/master/settings.md#password)): Password.  
+- **channel** [-ch] (optional, default = [settings channel](https://github.com/spacehuhn/esp8266_deauther/blob/master/settings.md#channel)): Channel .  
+- **hidden** [-h] (optional, default = [settings hidden](https://github.com/spacehuhn/esp8266_deauther/blob/master/settings.md#hidden)): Hide SSID.  
+- **captiveportal** [-cp] (optional, default = [settings captiveportal](https://github.com/spacehuhn/esp8266_deauther/blob/master/settings.md#captiveportal)): Enable captiveportal.  
+
+`stopap`  
+Stops access point.  
+
 
 ## SCREEN
 `screen <on/off>`  
