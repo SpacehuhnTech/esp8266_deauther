@@ -86,7 +86,7 @@ Prints out the scan results (access points and stations), the saved device names
   - names (-b)  
   - ssids (-ss)  
   
-## SELECT-DESELECT
+## SELECT / DESELECT
 `select [<all/aps/stations/names>] [<id>]`  
 `deselect [<all/aps/stations/names>] [<id>]`  
 (De)Selects a specific or all access points, stations and device names.  
@@ -129,7 +129,7 @@ Saves device with given name and parameters.
 **select** [-s] (optional, default = false): Select the device after adding it.  
 **force** [-f] (optional, default = false): Forces adding name, even if list is full.  
 
-## REPLACE NAME
+## REPLACE-NAME
 `replace name <id> [-n <name>] [-m <mac>] [-ch <channel>] [-b <bssid>] [-s]`  
 Removes name with given ID and creates a new one with the given parameters.  
 
@@ -317,11 +317,10 @@ Will only work if you run a wifi scan first, i.e. `scan wifi -t 65s -ch 1`.
 - **height** (optional, default = 25): Height of the graph in characters.  
 - **width** (optional, default = 2): Width in characters per bar in graph.  
 
-## STARTAP
-`startap ...`
-...
-`stopap`
-...
+## STARTAP / STOPAP
+`startap [something]`  
+`stopap`  
+Start or stop access points.
 
 ## SCREEN
 `screen <on/off>`  
