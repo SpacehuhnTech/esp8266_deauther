@@ -110,10 +110,10 @@ void SimpleList<T>::add(T obj){
   if(!listBegin)
     listBegin = node;
     
-  if(!listEnd){
+  if(listEnd){
+    listEnd->next = node;
     listEnd = node;
   } else {
-    listEnd->next = node;
     listEnd = node;
   }
 
@@ -126,26 +126,18 @@ void SimpleList<T>::add(int index, T obj){
     add(obj);
     return;
   }
-  
-  // Example: a -> c
-  // we want to add b between a and c
-  
-  Node<T>* nodeA = getNode(index);
-  Node<T>* nodeC = nodeA ? nodeA->next : NULL;
 
-  Node<T> *nodeB = new Node<T>();
-  nodeB->data = obj;
-  nodeB->next = nodeC;
-  
-  // a -> b -> c
-  if(nodeA) 
-    nodeA->next = nodeB;
-  
-  if(!nodeC)
-    listEnd = nodeB;
-  
-  if(!listBegin)
-    listBegin = nodeB;
+  Node<T> *nodeNew = new Node<T>();
+  nodeNew->data = obj;
+  nodeNew->next = NULL;
+
+  if(index == 0)
+    listBegin = nodeNew;
+  else{
+    Node<T>* nodePrev = getNode(index - 1);
+    nodeNew->next = nodePrev->next;
+    nodePrev->next = nodeNew;
+  }
   
   listSize++;
 }
@@ -162,44 +154,18 @@ void SimpleList<T>::remove(int index){
   if (index < 0 || index >= listSize)
     return;
 
-  Node<T>* nodeA = getNode(index - 1); // prev
-  Node<T>* nodeB = getNode(index);     // node to be deleted
-  Node<T>* nodeC = getNode(index + 1); // next
-  
-  // a -> b -> c
-  if(nodeA && nodeC){
-    // a -> c
-    nodeA->next = nodeC;
-  }
-  
-  // a -> b
-  else if(nodeA){
-    // a
-    nodeA->next = NULL;
-    listEnd = nodeA;
-  }
-  
-  // b -> c
-  else if(nodeC){
-    // c
-    listBegin = nodeC;
-  }
-  
-  // b
-  else{
-    listBegin = NULL;
-    listEnd = NULL;
-  }
+  Node<T>* nodePrev = getNode(index - 1);
+  Node<T>* nodeToDelete = getNode(index);
 
-  if(listBegin == nodeB){
-    listBegin = nodeB->next;
-  }
-
-  if(listEnd == nodeB){
-    listEnd = getNode(listSize - 2);
+  if(index == 0) {
+    listBegin = nodeToDelete->next;
+  } else {
+    nodePrev->next = nodeToDelete->next;
+    if(!nodePrev->next)
+      listEnd = nodePrev;
   }
   
-  delete(nodeB);
+  delete nodeToDelete;
   
   isCached = false;
   
@@ -350,26 +316,25 @@ void SimpleList<T>::swap(int x, int y){
 
 template<typename T>
 void SimpleList<T>::sort(bool (*cmp)(T &a, T &b)) {
-  // bubble sort because I'm lazy
-  
-  // Example: a -> b -> c -> d
-  // we want to swap b with c when b.value > c.value
-  // and repeat that until the list is sorted
+  // bubble sort :D
   
   Node<T>* nodeA;
   Node<T>* nodeB;
   
-  int c = listSize;
-  
-  while(c--){
-    for(int i = 1; i <= c; i++){
-      nodeA = getNode(i - 1);
-      nodeB = getNode(i);
+  int c = listSize-1;
+  bool swapped = true;
+  while(c > 0 && swapped){
+    swapped = false;
+    for(int i = 0; i < c; i++){
+      nodeA = getNode(i);
+      nodeB = getNode(i+1);
 
       if(cmp(nodeA->data, nodeB->data)) {
-        swap(i-1,i);
+        swap(i,i+1);
+        swapped = true;
       }
     }
+    c--;
   }
 }
 
