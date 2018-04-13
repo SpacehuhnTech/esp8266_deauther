@@ -281,36 +281,48 @@ void SimpleList<T>::swap(int x, int y){
       x = y;
       y = h;
     }
-    
-    // Example: a -> b -> c -> ... -> g -> h -> i
-    //          we want to swap b with h
-    Node<T>* nodeA = getNode(x - 1);                      // x.prev
-    Node<T>* nodeB = getNode(x);                          // x
-    Node<T>* nodeC = getNode(x + 1);                      // x.next
-    Node<T>* nodeG = y - 1 == x ? nodeB : getNode(y - 1); // y.prev
-    Node<T>* nodeH = getNode(y);                          // y
-    Node<T>* nodeI = getNode(y + 1);                      // y.next
 
-    // a -> h -> i      b -> c -> ... -> g -> h -> i
-    if(nodeA)
-      nodeA->next = nodeH;
-    else
-      listBegin = nodeH;
+    // When data is small, copy it
+    if(sizeof(T) < 24){
+      Node<T>* nodeA = getNode(x);
+      Node<T>* nodeB = getNode(y);
+      T h = nodeA->data;
+      nodeA->data = nodeB->data;
+      nodeB->data = h;
+    }
+    
+    // otherwise change the pointers
+    else {
+      // Example: a -> b -> c -> ... -> g -> h -> i
+      //          we want to swap b with h
+      Node<T>* nodeA = getNode(x - 1);                      // x.prev
+      Node<T>* nodeB = getNode(x);                          // x
+      Node<T>* nodeC = getNode(x + 1);                      // x.next
+      Node<T>* nodeG = y - 1 == x ? nodeB : getNode(y - 1); // y.prev
+      Node<T>* nodeH = getNode(y);                          // y
+      Node<T>* nodeI = getNode(y + 1);                      // y.next
+  
+      // a -> h -> i      b -> c -> ... -> g -> h -> i
+      if(nodeA)
+        nodeA->next = nodeH;
+      else
+        listBegin = nodeH;
+        
+      // a -> h -> c -> ... -> g -> h -> i    b -> i
+      if(nodeH != nodeC) // when nodes between b and h exist
+        nodeH->next = nodeC;
+      else
+        nodeH->next = nodeB; 
       
-    // a -> h -> c -> ... -> g -> h -> i    b -> i
-    if(nodeH != nodeC) // when nodes between b and h exist
-      nodeH->next = nodeC;
-    else
-      nodeH->next = nodeB; 
-    
-    // a -> h -> i      b -> i
-    nodeB->next = nodeI;
-    if(!nodeI)
-      listEnd = nodeB;
-
-    // a -> h -> c -> ... -> g -> b -> i
-    if(nodeG != nodeB) // when more than 1 nodes between b and h exist
-      nodeG->next = nodeB;
+      // a -> h -> i      b -> i
+      nodeB->next = nodeI;
+      if(!nodeI)
+        listEnd = nodeB;
+  
+      // a -> h -> c -> ... -> g -> b -> i
+      if(nodeG != nodeB) // when more than 1 nodes between b and h exist
+        nodeG->next = nodeB;
+    }
   }
 }
 
