@@ -56,7 +56,7 @@ void Settings::load() {
     version = VERSION;
     changed = true;
   }
-
+  
   prnt(S_SETTINGS_LOADED);
   prntln(FILE_PATH);
 
@@ -93,8 +93,8 @@ void Settings::reset() {
   setWebSpiffs(false);
   setLedEnabled(true);
   setMaxCh(14);
-  wifi_get_macaddr(0x00, macSt);
-  wifi_get_macaddr(0x01, macAP);
+  wifi_get_macaddr(STATION_IF, macSt);
+  wifi_get_macaddr(SOFTAP_IF, macAP);
   
   // SCAN
   setChTime(384);

@@ -686,11 +686,11 @@ void SerialInterface::runCommand(String input) {
     uint8_t mac[6];
     
     prnt(CLI_SYSTEM_AP_MAC);
-    wifi_get_macaddr(0x01, mac);
+    wifi_get_macaddr(SOFTAP_IF, mac);
     prntln(macToStr(mac));
 
     prnt(CLI_SYSTEM_ST_MAC);
-    wifi_get_macaddr(0x00, mac);
+    wifi_get_macaddr(STATION_IF, mac);
     prntln(macToStr(mac));
 
     FSInfo fs_info;
