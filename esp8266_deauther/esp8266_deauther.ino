@@ -4,6 +4,9 @@
               github.com/spacehuhn
   ===========================================
 */
+extern "C" {
+  #include "user_interface.h"
+}
 #include <EEPROM.h>
 #include "oui.h"
 #include "language.h"
@@ -95,7 +98,7 @@ void setup() {
   wifi_set_promiscuous_rx_cb([](uint8_t* buf, uint16_t len) {
     scan.sniffer(buf, len);
   });
-
+  
   // set mac for station
   wifi_set_macaddr(STATION_IF, settings.getMacSt());
       
@@ -171,6 +174,7 @@ void loop() {
     booted = true;
   }
 }
+
 
 
 

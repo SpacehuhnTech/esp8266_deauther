@@ -397,6 +397,13 @@ int Names::selected() {
   return num;
 }
 
+int Names::stations() {
+  int num = 0;
+  for (int i = 0; i < count(); i++)
+    if (isStation(i)) num++;
+  return num;
+}
+
 bool Names::internal_check(int num) {
   return num >= 0 && num < count();
 }

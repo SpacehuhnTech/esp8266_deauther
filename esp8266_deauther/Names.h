@@ -73,6 +73,7 @@ class Names {
     
     int count();
     int selected();
+    int stations();
 
     bool check(int num);
   private:

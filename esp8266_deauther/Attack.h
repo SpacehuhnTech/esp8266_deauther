@@ -30,6 +30,7 @@ extern String macToStr(uint8_t* mac);
 extern String bytesToStr(uint8_t* b, uint32_t size);
 extern void setWifiChannel(uint8_t ch);
 extern bool writeFile(String path, String &buf);
+extern int8_t free80211_send(uint8_t *buffer, uint16_t len);
 
 class Attack {
   public:
@@ -93,6 +94,9 @@ class Attack {
     uint32_t deauthPkts = 0;
     uint32_t beaconPkts = 0;
     uint32_t probePkts = 0;
+
+    uint32_t tmpPacketRate = 0;
+    uint32_t packetRate = 0;
 
     uint8_t apCount = 0;
     uint8_t stCount = 0;
@@ -198,6 +202,7 @@ class Attack {
 };
 
 #endif
+
 
 
 
