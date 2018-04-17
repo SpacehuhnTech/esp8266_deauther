@@ -127,7 +127,8 @@ String Attack::getStatusJSON() {
   String json = String(OPEN_BRACKET); // [
   json += String(OPEN_BRACKET) + b2s(deauth.active) + String(COMMA) + String(scan.countSelected()) + String(COMMA) + String(deauthPkts) + String(COMMA) + String(deauth.maxPkts) + String(CLOSE_BRACKET) + String(COMMA); // [false,0,0,0],
   json += String(OPEN_BRACKET) + b2s(beacon.active) + String(COMMA) + String(ssids.count()) + String(COMMA) + String(beaconPkts) + String(COMMA) + String(beacon.maxPkts) + String(CLOSE_BRACKET) + String(COMMA); // [false,0,0,0],
-  json += String(OPEN_BRACKET) + b2s(probe.active) + String(COMMA) + String(ssids.count()) + String(COMMA) + String(probePkts) + String(COMMA) + String(probe.maxPkts) + String(CLOSE_BRACKET); // [false,0,0,0]
+  json += String(OPEN_BRACKET) + b2s(probe.active) + String(COMMA) + String(ssids.count()) + String(COMMA) + String(probePkts) + String(COMMA) + String(probe.maxPkts) + String(CLOSE_BRACKET) + String(COMMA); // [false,0,0,0],
+  json += String(packetRate); // 0
   json += CLOSE_BRACKET; // ]
 
   return json;
