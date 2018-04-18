@@ -212,13 +212,22 @@ template<typename T>
 int SimpleList<T>::binSearch(std::function<int(T &a)> cmp, int lowerEnd, int upperEnd){
   int res;
   int mid = (lowerEnd + upperEnd) / 2;
-
+  Node<T>* hNode = listBegin;
+  int hIndex = 0;
+    
   while (lowerEnd <= upperEnd) {
+    hNode = lastNodeGot;
+    hIndex = lastIndexGot;
     res = cmp(getNode(mid)->data);
-
+    
     if (res == 0) {
       return mid;
     } else if (res < 0) {
+      // when going left, set cached node back to previous cached node
+      lastNodeGot = hNode;
+      lastIndexGot = hIndex;
+      isCached = true;
+      
       upperEnd = mid - 1;
       mid = (lowerEnd + upperEnd) / 2;
     } else if (res > 0) {
