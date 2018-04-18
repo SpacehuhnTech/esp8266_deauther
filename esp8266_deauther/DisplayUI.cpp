@@ -604,7 +604,7 @@ void DisplayUI::setup() {
       }
     });
     addMenuNode(&attackMenu, []() { // START
-      return buildString(str(attack.isRunning() ? D_STOP_ATTACK : D_START_ATTACK), (String)attack.getPacketRate(), CHARS_PER_LINE);
+      return buildString(str(attack.isRunning() ? D_STOP_ATTACK : D_START_ATTACK), attack.getPacketRate() > 0 ? (String)attack.getPacketRate() : String(), CHARS_PER_LINE);
     }, [this]() {
       if (attack.isRunning()) attack.stop();
       else attack.start(beaconSelected, deauthSelected, false, probeSelected, true, settings.getAttackTimeout() * 1000);

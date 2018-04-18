@@ -60,6 +60,7 @@ void Attack::stop() {
     deauth.maxPkts = 0;
     beacon.maxPkts = 0;
     probe.maxPkts = 0;
+    packetRate = 0;
     deauth.tc = 0;
     beacon.tc = 0;
     probe.tc = 0;
