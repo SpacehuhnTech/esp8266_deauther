@@ -67,6 +67,8 @@ class Attack {
     uint32_t getDeauthMaxPkts();
     uint32_t getBeaconMaxPkts();
     uint32_t getProbeMaxPkts();
+    
+    uint32_t getPacketRate();
   private:
     void deauthUpdate();
     void deauthAllUpdate();

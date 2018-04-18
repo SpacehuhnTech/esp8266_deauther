@@ -425,3 +425,6 @@ uint32_t Attack::getProbeMaxPkts() {
   return probe.maxPkts;
 }
 
+uint32_t Attack::getPacketRate(){
+  return packetRate;  
+}

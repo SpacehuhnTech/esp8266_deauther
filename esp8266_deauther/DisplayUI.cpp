@@ -576,7 +576,7 @@ void DisplayUI::setup() {
 
   // ATTACK MENU
   createMenu(&attackMenu, &mainMenu, [this]() {
-    addMenuNode(&attackMenu, [this]() {
+    addMenuNode(&attackMenu, [this]() { // *DEAUTH 0/0
       if(attack.isRunning()) return buildString(b2a(deauthSelected) + str(D_DEAUTH), (String)attack.getDeauthPkts() + SLASH + (String)attack.getDeauthMaxPkts(), CHARS_PER_LINE);
       else return buildString(b2a(deauthSelected) + str(D_DEAUTH) , (String)scan.countSelected(), CHARS_PER_LINE);
     }, [this]() { // deauth
@@ -585,7 +585,7 @@ void DisplayUI::setup() {
         attack.start(beaconSelected, deauthSelected, false, probeSelected, true, settings.getAttackTimeout() * 1000);
       }
     });
-    addMenuNode(&attackMenu, [this]() {
+    addMenuNode(&attackMenu, [this]() { // *BEACON 0/0
       if(attack.isRunning()) return buildString(b2a(beaconSelected) + str(D_BEACON), (String)attack.getBeaconPkts() + SLASH + (String)attack.getBeaconMaxPkts(), CHARS_PER_LINE);
       else return buildString(b2a(beaconSelected) + str(D_BEACON), (String)ssids.count(), CHARS_PER_LINE);
     }, [this]() { // beacon
@@ -594,7 +594,7 @@ void DisplayUI::setup() {
         attack.start(beaconSelected, deauthSelected, false, probeSelected, true, settings.getAttackTimeout() * 1000);
       }
     });
-    addMenuNode(&attackMenu, [this]() {
+    addMenuNode(&attackMenu, [this]() { // *PROBE 0/0
       if(attack.isRunning()) return buildString(b2a(probeSelected) + str(D_PROBE), (String)attack.getProbePkts() + SLASH + (String)attack.getProbeMaxPkts(), CHARS_PER_LINE);
       else return buildString(b2a(probeSelected) + str(D_PROBE), (String)ssids.count(), CHARS_PER_LINE);
     }, [this]() { // probe
@@ -603,8 +603,8 @@ void DisplayUI::setup() {
         attack.start(beaconSelected, deauthSelected, false, probeSelected, true, settings.getAttackTimeout() * 1000);
       }
     });
-    addMenuNode(&attackMenu, []() {
-      return str(attack.isRunning() ? D_STOP_ATTACK : D_START_ATTACK);
+    addMenuNode(&attackMenu, []() { // START
+      return buildString(str(attack.isRunning() ? D_STOP_ATTACK : D_START_ATTACK), (String)attack.getPacketRate(), CHARS_PER_LINE);
     }, [this]() {
       if (attack.isRunning()) attack.stop();
       else attack.start(beaconSelected, deauthSelected, false, probeSelected, true, settings.getAttackTimeout() * 1000);
