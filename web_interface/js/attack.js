@@ -12,6 +12,8 @@ function draw(){
 	getE("deauthPkts").innerHTML = esc(attackJSON[0][2] + "/" + attackJSON[0][3]);
 	getE("beaconPkts").innerHTML = esc(attackJSON[1][2] + "/" + attackJSON[1][3]);
 	getE("probePkts").innerHTML = esc(attackJSON[2][2] + "/" + attackJSON[2][3]);
+	
+	getE("allpkts").innerHTML = esc(attackJSON[3]+"");
 }
 
 function start(mode){
