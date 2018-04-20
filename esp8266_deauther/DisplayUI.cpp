@@ -54,31 +54,43 @@ void DisplayUI::setupButtons() {
 #ifdef BUTTON_UP
   buttonUp.enabled = true;
   buttonUp.gpio = BUTTON_UP;
+#else
+  buttonUp.enabled = false;
 #endif
 
 #ifdef BUTTON_DOWN
   buttonDown.enabled = true;
   buttonDown.gpio = BUTTON_DOWN;
+#else
+  buttonDown.enabled = false;
 #endif
 
 #ifdef BUTTON_LEFT
   buttonLeft.enabled = true;
   buttonLeft.gpio = BUTTON_LEFT;
+#else
+  buttonLeft.enabled = false;
 #endif
 
 #ifdef BUTTON_RIGHT
   buttonRight.enabled = true;
   buttonRight.gpio = BUTTON_RIGHT;
+#else
+  buttonRight.enabled = false;
 #endif
 
 #ifdef BUTTON_A
   buttonA.enabled = true;
   buttonA.gpio = BUTTON_A;
+#else
+  buttonA.enabled = false;
 #endif
 
 #ifdef BUTTON_B
   buttonB.enabled = true;
   buttonB.gpio = BUTTON_B;
+#else
+  buttonB.enabled = false;
 #endif
 
   // ====================== //
@@ -190,8 +202,8 @@ void DisplayUI::setup() {
   };
 
   buttonLeft.release = [this]() {
-    if (!buttonDown.pushed) return;
-    buttonDown.pushed = false;
+    if (!buttonLeft.pushed) return;
+    buttonLeft.pushed = false;
   };
 
   // === BUTTON RIGHT === //
@@ -203,8 +215,8 @@ void DisplayUI::setup() {
   };
 
   buttonRight.release = [this]() {
-    if (!buttonDown.pushed) return;
-    buttonDown.pushed = false;
+    if (!buttonRight.pushed) return;
+    buttonRight.pushed = false;
   };
 
   // === BUTTON A === //
@@ -245,7 +257,7 @@ void DisplayUI::setup() {
 
   // === BUTTON B === //
   buttonB.push = [this]() {
-    if(buttonB.time > currentTime - BUTTON_DELAY) return;
+    if(!buttonB.pushed && buttonB.time > currentTime - BUTTON_DELAY) return;
     buttonB.pushed = true;
     buttonB.time = currentTime;
     scrollCounter = 0;
@@ -622,12 +634,15 @@ void DisplayUI::setup() {
 void DisplayUI::update() {
   if (!enabled) return;
 
+  // when display is off
   if (mode == SCREEN_MODE_OFF) {
     if (updateButton(&buttonA)){
       on();
-      buttonA.hold = true;
+      buttonA.hold = true; // to make sure you don't double click
     }
-  } else {
+  } 
+  
+  else {
     // timeout to save display life
     if (mode == SCREEN_MODE_MENU && settings.getDisplayTimeout() > 0 && currentTime > settings.getDisplayTimeout() * 1000) {
       uint32_t buttonTimeout = currentTime - settings.getDisplayTimeout() * 1000;
@@ -642,12 +657,12 @@ void DisplayUI::update() {
     }
 
     // only one button can be pressed at a time
-    if (updateButton(&buttonUp)) draw();
+    if (updateButton(&buttonB)) draw();
+    else if (updateButton(&buttonA)) draw();
+    else if (updateButton(&buttonUp)) draw();
     else if (updateButton(&buttonDown)) draw();
     else if (updateButton(&buttonLeft)) draw();
     else if (updateButton(&buttonRight)) draw();
-    else if (updateButton(&buttonA)) draw();
-    else if (updateButton(&buttonB)) draw();
     else draw();
   }
 }
