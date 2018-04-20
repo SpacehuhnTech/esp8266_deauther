@@ -261,6 +261,10 @@ void DisplayUI::setup() {
     buttonB.pushed = true;
     buttonB.time = currentTime;
     scrollCounter = 0;
+  };
+
+  buttonB.release = [this]() {
+    if (!buttonB.pushed) return;
 
     switch(mode){
       case SCREEN_MODE_MENU:
@@ -272,10 +276,7 @@ void DisplayUI::setup() {
         mode = SCREEN_MODE_MENU;
         break;
     }
-  };
-
-  buttonB.release = [this]() {
-    if (!buttonB.pushed) return;
+    
     buttonB.pushed = false;
   };
 
