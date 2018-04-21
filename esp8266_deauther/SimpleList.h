@@ -337,25 +337,27 @@ void SimpleList<T>::swap(int x, int y){
 
 template<typename T>
 void SimpleList<T>::sort(bool (*cmp)(T &a, T &b)) {
-  // bubble sort :D
-  
-  Node<T>* nodeA;
-  Node<T>* nodeB;
-  
-  int c = listSize-1;
-  bool swapped = true;
-  while(c > 0 && swapped){
-    swapped = false;
-    for(int i = 0; i < c; i++){
-      nodeA = getNode(i);
-      nodeB = getNode(i+1);
+  // selection sort
 
-      if(cmp(nodeA->data, nodeB->data)) {
-        swap(i,i+1);
-        swapped = true;
+  int indexA;
+  int indexB;
+  Node<T>* nodeA; // node at index i
+  Node<T>* nodeB; // next minimum node
+  Node<T>* nodeH; // helper node at index j
+
+  for(int i=0; i<listSize-1; i++){
+    nodeA = getNode(i);
+    nodeB = getNode(i);
+    indexA = i;
+    indexB = i;
+    for(int j=i+1; j<listSize; j++){
+      nodeH = getNode(j);
+      if(cmp(nodeB->data, nodeH->data)){
+        nodeB = nodeH;
+        indexB = j;
       }
     }
-    c--;
+    swap(indexA, indexB);
   }
 }
 
