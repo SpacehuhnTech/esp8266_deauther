@@ -30,7 +30,7 @@ class SimpleList{
     virtual int binSearch(std::function<int(T &a)> cmp);
     virtual int count(std::function<bool(T &a)> cmp);
     virtual void clear();
-    virtual void sort(bool (*cmp)(T &a, T &b));
+    virtual void sort(std::function<bool(T &a, T &b)> cmp);
     virtual void swap(int x, int y);
   protected:
     int listSize;
@@ -336,7 +336,7 @@ void SimpleList<T>::swap(int x, int y){
 }
 
 template<typename T>
-void SimpleList<T>::sort(bool (*cmp)(T &a, T &b)) {
+void SimpleList<T>::sort(std::function<bool(T &a, T &b)> cmp) {
   // selection sort
 
   int indexA;
