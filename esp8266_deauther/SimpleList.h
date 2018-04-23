@@ -339,25 +339,23 @@ template<typename T>
 void SimpleList<T>::sort(std::function<bool(T &a, T &b)> cmp) {
   // selection sort
 
-  int indexA;
-  int indexB;
-  Node<T>* nodeA; // node at index i
-  Node<T>* nodeB; // next minimum node
+  int indexH; // index of node i
+  int indexMin; // index of next minimum node
+  Node<T>* nodeMin; // next minimum node
   Node<T>* nodeH; // helper node at index j
 
   for(int i=0; i<listSize-1; i++){
-    nodeA = getNode(i);
-    nodeB = getNode(i);
-    indexA = i;
-    indexB = i;
+    nodeMin = getNode(i);
+    indexH = i;
+    indexMin = i;
     for(int j=i+1; j<listSize; j++){
       nodeH = getNode(j);
-      if(cmp(nodeB->data, nodeH->data)){
-        nodeB = nodeH;
-        indexB = j;
+      if(cmp(nodeMin->data, nodeH->data)){
+        nodeMin = nodeH;
+        indexMin = j;
       }
     }
-    swap(indexA, indexB);
+    swap(indexH, indexMin);
   }
 }
 
