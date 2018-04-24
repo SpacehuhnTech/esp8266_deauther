@@ -13,6 +13,7 @@ Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">pa
 Also available: <a href="https://www.tindie.com/products/Spacehuhn/spacehuhn-stickers/">Stickers</a></b>!
 </p>
 
+## Click [here](https://github.com/spacehuhn/esp8266_deauther/wiki/Installation) for the installation tutorial.
 
 ## What is New
 [Here is a quick video about what is new](https://youtu.be/6oRmm3xfp6U)  
