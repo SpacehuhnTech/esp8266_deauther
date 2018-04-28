@@ -8,7 +8,8 @@
 | 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br>
 <br>
 <b>Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners!<br><br>
-Click <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Installation">here</a> for the installation tutorial.<br><br>
+Click <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Installation">here</a> for the installation tutorial.<br>
+  Click <a href="https://github.com/spacehuhn/esp8266_deauther/releases">here</a> for the .bin files.<br><br>
 Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>
 Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.<br>
 Also available: <a href="https://www.tindie.com/products/Spacehuhn/spacehuhn-stickers/">Stickers</a></b>!
