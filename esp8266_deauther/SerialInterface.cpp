@@ -94,7 +94,7 @@ void SerialInterface::update() {
       execPath = SLASH + execPath;
     prnt(CLI_EXECUTING);
     prntln(execPath);
-    File f = SPIFFS.open(execPath, "r");
+    fs::File f = SPIFFS.open(execPath, "r");
     if (f.size() > 0) {
       String line;
       char tmp;
@@ -693,17 +693,17 @@ void SerialInterface::runCommand(String input) {
     wifi_get_macaddr(STATION_IF, mac);
     prntln(macToStr(mac));
 
-    FSInfo fs_info;
+    fs::FSInfo fs_info;
     SPIFFS.info(fs_info);
     sprintf(s,str(CLI_SYSTEM_RAM_OUT).c_str(), fs_info.usedBytes, fs_info.usedBytes / (fs_info.totalBytes / 100), fs_info.totalBytes - fs_info.usedBytes, (fs_info.totalBytes - fs_info.usedBytes) / (fs_info.totalBytes / 100), fs_info.totalBytes);
     prnt(String(s));
     sprintf(s,str(CLI_SYSTEM_SPIFFS_OUT).c_str(), fs_info.blockSize, fs_info.pageSize);
     prnt(String(s));
     prntln(CLI_FILES);
-    Dir dir = SPIFFS.openDir(String(SLASH));
+    fs::Dir dir = SPIFFS.openDir(String(SLASH));
     while (dir.next()) {
       prnt(String(SPACE) + String(SPACE) + dir.fileName() + String(SPACE));
-      File f = dir.openFile("r");
+      fs::File f = dir.openFile("r");
       prnt(int(f.size()));
       prntln(str(CLI_BYTES));
     }
@@ -1103,6 +1103,13 @@ void SerialInterface::runCommand(String input) {
     } else if(eqlsCMD(1,CLI_OFF)){
       displayUI.off();
     }
+  }
+
+  // load SD Menu
+  else if (eqlsCMD(0, CLI_SDMENU)) {
+    scan.stop();
+    attack.stop();
+    sdUpdater.run();
   }
   
   // ===== NOT FOUND ===== //

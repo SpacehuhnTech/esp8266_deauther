@@ -47,6 +47,7 @@ Scan scan;
 Attack attack;
 SerialInterface serialInterface;
 DisplayUI displayUI;
+SDUpdater sdUpdater;
 
 #include "wifi.h"
 

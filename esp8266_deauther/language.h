@@ -151,6 +151,7 @@ const char CLI_MODE_BUTTONTEST[] PROGMEM = "buttontest";         // buttontest
 const char CLI_MODE_PACKETMONITOR[] PROGMEM = "packetmonitor";   // packetmonitor
 const char CLI_MODE_LOADINGSCREEN[] PROGMEM = "loadingscreen";   // loading
 const char CLI_MODE_MENU[] PROGMEM = "menu";                     // menu
+const char CLI_SDMENU[] PROGMEM = "sdmenu";                      // SD menu
 
 const char CLI_HELP_HELP[] PROGMEM = "help";
 const char CLI_HELP_SCAN[] PROGMEM = "scan [<all/aps/stations>] [-t <time>] [-c <continue-time>] [-ch <channel>]";

@@ -3,6 +3,7 @@
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
+#include "sdupdater.h"
 #include <FS.h>
 extern "C" {
   #include "user_interface.h"
@@ -19,6 +20,7 @@ extern "C" {
 #include "DigitalLed.h"
 #include "RGBLed.h"
 #include "Neopixel.h"
+
 
 #ifdef DIGITAL_LED
 extern DigitalLed led;
@@ -40,6 +42,7 @@ extern Stations stations;
 extern Scan scan;
 extern Attack attack;
 extern DisplayUI displayUI;
+extern SDUpdater sdUpdater;
 extern uint32_t currentTime;
 extern uint32_t autosaveTime;
 
