@@ -8,6 +8,7 @@
 //     https://github.com/esp8266/Arduino/issues/2281#issuecomment-258706478
 #define FS_NO_GLOBALS
 #include <SD.h>
+#include "A_config.h"
 
 static String MENU_BIN = "/MENU.BIN";
 

@@ -67,6 +67,34 @@
 //#define BUTTON_RIGHT 13
 //#define BUTTON_B 10
 
+#define HAS_SD
+
+#ifdef HAS_SD
+//#define SD_CS 4 // enable this if using a custom CS pin
+//
+/*
+ * PROBLEM WITH SD PINS: using SD.begin() with no arguments requires a specific pinout
+ * GPIO 12 MISO // Conflicts with button_down
+ * GPIO 13 MOSI // Conflicts with button_a
+ * GPIO 14 CLK  // Conflicts with button_up
+ * GPIO 15 CS   // Conflicts with SPI display
+ * 
+ * #define SD_SPI_CLK 13
+ * #define SD_SPI_MISO 12
+ * #define SD_SPI_MOSI 11
+
+ *   
+ * 
+ * For any custom wiring, all SD.begin() statements in sdupdater.cpp must be replaced
+ * with a tested pins combination 
+ *   SD.begin(SD_CS)
+ *   SD.begin(4)
+ * 
+ * #define SD_UPDATER SDUpdater sdUpdater = SDUpdater(5, 4, 15);
+ * 
+*/
+#endif
+
 /* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     Uncomment the type of display you're using
     Only one of them can be defined at a time!
