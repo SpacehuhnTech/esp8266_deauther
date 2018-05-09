@@ -60,6 +60,10 @@ void Settings::load() {
   prnt(S_SETTINGS_LOADED);
   prntln(FILE_PATH);
 
+  // check and fix mac
+  if(!macValid(macSt)) getRandomMac(macSt);
+  if(!macValid(macAP)) getRandomMac(macAP);
+
   save(true); // force saving
 }
 

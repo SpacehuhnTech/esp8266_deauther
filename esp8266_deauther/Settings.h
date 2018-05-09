@@ -22,6 +22,7 @@ extern bool strToMac(String macStr, uint8_t* mac);
 extern void setWifiChannel(uint8_t ch);
 extern String fixUtf8(String str);
 extern void copyWebFiles(bool force);
+extern bool macValid(uint8_t* mac);
 
 class Settings {
   public:
