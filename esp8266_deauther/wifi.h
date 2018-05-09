@@ -60,7 +60,7 @@ ESP8266WebServer server(80);
 DNSServer dnsServer;
 IPAddress apIP(192, 168, 4, 1);
 IPAddress netMsk(255, 255, 255, 0);
-File fsUploadFile;
+fs::File fsUploadFile;
 
 // current WiFi mode and config
 uint8_t wifiMode = WIFI_MODE_OFF;
@@ -147,7 +147,7 @@ bool handleFileRead(String path) {
     }
   }
 
-  File file = SPIFFS.open(path, "r");
+  fs::File file = SPIFFS.open(path, "r");
   server.streamFile(file, contentType);
   file.close();
   prnt(SPACE);
@@ -222,10 +222,10 @@ void handleFileList() {
 
   String path = server.arg("dir");
   //Serial.println("handleFileList: " + path);
-  Dir dir = SPIFFS.openDir(path);
+  fs::Dir dir = SPIFFS.openDir(path);
 
   String output = String(OPEN_BRACKET); // {
-  File entry;
+  fs::File entry;
   bool first = true;
   while (dir.next()) {
     entry = dir.openFile("r");

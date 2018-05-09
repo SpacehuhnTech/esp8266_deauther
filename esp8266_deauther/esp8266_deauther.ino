@@ -4,6 +4,7 @@
               github.com/spacehuhn
   ===========================================
 */
+#define FS_NO_GLOBALS
 extern "C" {
   #include "user_interface.h"
 }

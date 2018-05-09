@@ -423,7 +423,7 @@ String buildString(String left, String right, int maxLen){
 /* ===== SPIFFS ===== */
 bool progmemToSpiffs(const char* adr, int len, String path) {
   prnt(str(SETUP_COPYING) + path + str(SETUP_PROGMEM_TO_SPIFFS));
-  File f = SPIFFS.open(path, "w+");
+  fs::File f = SPIFFS.open(path, "w+");
   if (!f){
     prntln(SETUP_ERROR);
     return false;
@@ -441,7 +441,7 @@ bool progmemToSpiffs(const char* adr, int len, String path) {
 
 bool readFile(String path, String &buf) {
   if (path.charAt(0) != SLASH) path = String(SLASH) + path;
-  File f = SPIFFS.open(path, "r");
+  fs::File f = SPIFFS.open(path, "r");
   if (!f) return false;
   if (f.size() == 0) return false;
 
@@ -454,7 +454,7 @@ bool readFile(String path, String &buf) {
 
 void readFileToSerial(String path, bool showLineNum) {
   if (path.charAt(0) != SLASH) path = String(SLASH) + path;
-  File f = SPIFFS.open(path, "r");
+  fs::File f = SPIFFS.open(path, "r");
   if (!f) {
     prnt(F_ERROR_READING_FILE);
     prntln(path);
@@ -489,8 +489,8 @@ bool copyFile(String pathFrom, String pathTo){
     return false;
   }
   
-  File f1 = SPIFFS.open(pathFrom, "r");
-  File f2 = SPIFFS.open(pathTo, "w+");
+  fs::File f1 = SPIFFS.open(pathFrom, "r");
+  fs::File f2 = SPIFFS.open(pathTo, "w+");
   
   if(!f1 || !f2) return false;
   
@@ -517,7 +517,7 @@ bool renameFile(String pathFrom, String pathTo){
 
 bool writeFile(String path, String &buf) {
   if (path.charAt(0) != SLASH) path = String(SLASH) + path;
-  File f = SPIFFS.open(path, "w+");
+  fs::File f = SPIFFS.open(path, "w+");
   if (!f) return false;
 
   uint32_t len = buf.length();
@@ -530,7 +530,7 @@ bool writeFile(String path, String &buf) {
 
 bool appendFile(String path, String &buf) {
   if (path.charAt(0) != SLASH) path = String(SLASH) + path;
-  File f = SPIFFS.open(path, "a+");
+  fs::File f = SPIFFS.open(path, "a+");
   if (!f) return false;
 
   uint32_t len = buf.length();
@@ -554,8 +554,8 @@ bool removeLines(String path, int lineFrom, int lineTo){
 
   String tmpPath = str(F_TMP)+path+str(F_COPY);
   
-  File f = SPIFFS.open(path, "r");
-  File f2 = SPIFFS.open(tmpPath, "w");
+  fs::File f = SPIFFS.open(path, "r");
+  fs::File f2 = SPIFFS.open(tmpPath, "w");
   
   if (!f || !f2) return false;
 
@@ -581,8 +581,8 @@ bool replaceLine(String path, int line, String &buf){
 
   String tmpPath = "/tmp"+path+"_copy";
   
-  File f = SPIFFS.open(path, "r");
-  File f2 = SPIFFS.open(tmpPath, "w");
+  fs::File f = SPIFFS.open(path, "r");
+  fs::File f2 = SPIFFS.open(tmpPath, "w");
   
   if (!f || !f2) return false;
 
