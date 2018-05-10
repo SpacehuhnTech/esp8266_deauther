@@ -1,5 +1,8 @@
+#include <ESP8266SDUpdater.h>
 #include <EEPROM.h>
 #include <FS.h>
+
+SDUpdater sdUpdater;
 
 /*
   Upload this sketch to your ESP8266 to erase 
@@ -37,9 +40,16 @@ void setup() {
 
   Serial.println("DONE!");
 
-  delay(10000);
+  // reload deauther
+  if(SD.begin(/* SD_CS */) && sdUpdater.updateFromSD("/MENU.BIN") ) {
+    Serial.println("Will restart and load menu");
+    ESP.restart();  
+  } else {
+    Serial.println("Will reset, now flash the deauther!");
+    delay(10000);
+    ESP.reset();
+  }
   
-  ESP.reset();
 }
 
 void loop() {
