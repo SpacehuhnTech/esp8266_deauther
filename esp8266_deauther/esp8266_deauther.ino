@@ -120,7 +120,9 @@ void setup() {
   scan.setup();
 
   // set LED
+  #ifdef DIGITAL_LED
   led.setup();
+  #endif
 
   // set channel
   setWifiChannel(settings.getChannel());
@@ -157,7 +159,9 @@ void loop() {
   serialInterface.update(); // read and run serial input
   scan.update(); // run scan
   ssids.update(); // run random mode, if enabled
+  #ifdef DIGITAL_LED
   led.update(); // update LED color
+  #endif
 
   // auto-save
   if (settings.getAutosave() && currentTime - autosaveTime > settings.getAutosaveTime()) {

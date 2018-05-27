@@ -657,7 +657,9 @@ void SerialInterface::runCommand(String input) {
   // ===== STOP ===== //
   // stop [<mode>]
   else if (eqlsCMD(0, CLI_STOP)) {
+    #ifdef DIGITAL_LED
     led.setMode(LED_MODE_IDLE, true);
+    #endif
     if (list->size() >= 2 && !(eqlsCMD(1, CLI_ALL))) {
       for (int i = 1; i < list->size(); i++) {
         if (eqlsCMD(i, CLI_SCAN)) scan.stop();
@@ -930,30 +932,45 @@ void SerialInterface::runCommand(String input) {
   // ===== LED ===== //
   // led <r> <g> <b> [<brightness>]
   else if (list->size() >= 4 && list->size() <= 5 && eqlsCMD(0, CLI_LED)) {
-    if (list->size() == 4)
+    if (list->size() == 4) {
+      #ifdef DIGITAL_LED
       led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt());
-    else
+      #endif
+    } else {
+      #ifdef DIGITAL_LED
       led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), list->get(4).toInt());
+      #endif
+    }
   }
 
   // led <#rrggbb> [<brightness>]
   else if (list->size() >= 2 && list->size() <= 3 && eqlsCMD(0, CLI_LED) && list->get(1).charAt(0) == HASHSIGN) {
     uint8_t c[3];
     strToColor(list->get(1), c);
-    if (list->size() == 2)
+    if (list->size() == 2) {
+      #ifdef DIGITAL_LED
       led.setColor(c[0], c[1], c[2]);
-    else
+      #endif
+    } else {
+      #ifdef DIGITAL_LED
       led.setColor(c[0], c[1], c[2], list->get(2).toInt());
+      #endif
+    }
   }
 
   // led <enable/disable>
   else if (list->size() == 2 && eqlsCMD(0, CLI_LED)) {
-    if (eqlsCMD(1, CLI_ENABLE))
+    if (eqlsCMD(1, CLI_ENABLE)) {
+      #ifdef DIGITAL_LED
       led.tempEnable();
-    else if (eqlsCMD(1, CLI_DISABLE))
+      #endif
+    } else if (eqlsCMD(1, CLI_DISABLE)) {
+      #ifdef DIGITAL_LED
       led.tempDisable();
-    else
+      #endif
+    } else {
       parameterError(list->get(1));
+    }
 
   }
 
@@ -968,7 +985,9 @@ void SerialInterface::runCommand(String input) {
       scan.update(); // run scan
       attack.update(); // run attacks
       ssids.update(); // run random mode, if enabled
+      #ifdef DIGITAL_LED
       led.update(); // update LED color
+      #endif
 
       // auto-save
       if (settings.getAutosave() && currentTime - autosaveTime > settings.getAutosaveTime()) {
