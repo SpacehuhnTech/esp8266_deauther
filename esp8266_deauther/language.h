@@ -21,43 +21,43 @@ extern void prntln(const char* ptr);
 extern void prntln(int i);
 
 /*
-  The following variables are the strings used for the serial interface, display interface and settings.
-  The keywords for the serial CLI have a simple structure to save a bit of memory and CPU time:
-  - every keyword has a unique string
-  - / is used for optional characters, i.e. 'enable/d' makes 'enable' and 'enabled'
-  - , is used for seperations, i.e. 'select/ed,-s' makes 'select', 'selected' and '-s'
-  - everything is in lowercase
-*/
+   The following variables are the strings used for the serial interface, display interface and settings.
+   The keywords for the serial CLI have a simple structure to save a bit of memory and CPU time:
+   - every keyword has a unique string
+   - / is used for optional characters, i.e. 'enable/d' makes 'enable' and 'enabled'
+   - , is used for seperations, i.e. 'select/ed,-s' makes 'select', 'selected' and '-s'
+   - everything is in lowercase
+ */
 
 // ===== GLOBAL STRINGS ===== //
 
 // Often used characters, therefor in the RAM
-const char CURSOR = '|';
-const char SPACE = ' ';
-const char DOUBLEPOINT = ':';
-const char EQUALS = '=';
-const char HASHSIGN = '#';
-const char ASTERIX = '*';
-const char PERCENT = '%';
-const char DASH = '-';
-const char QUESTIONMARK = '?';
-const char ZERO = '0';
-const char S = 's';
-const char M = 'm';
-const char D = 'd';
-const char DOUBLEQUOTES = '\"';
-const char SLASH = '/';
-const char NEWLINE = '\n';
-const char CARRIAGERETURN = '\r';
-const char SEMICOLON = ';';
-const char BACKSLASH = '\\';
-const char POINT = '.';
-const char VERTICALBAR = '|';
-const char COMMA = ',';
-const char ENDOFLINE = '\0';
-const char OPEN_BRACKET = '[';
-const char CLOSE_BRACKET = ']';
-const char OPEN_CURLY_BRACKET = '{';
+const char CURSOR              = '|';
+const char SPACE               = ' ';
+const char DOUBLEPOINT         = ':';
+const char EQUALS              = '=';
+const char HASHSIGN            = '#';
+const char ASTERIX             = '*';
+const char PERCENT             = '%';
+const char DASH                = '-';
+const char QUESTIONMARK        = '?';
+const char ZERO                = '0';
+const char S                   = 's';
+const char M                   = 'm';
+const char D                   = 'd';
+const char DOUBLEQUOTES        = '\"';
+const char SLASH               = '/';
+const char NEWLINE             = '\n';
+const char CARRIAGERETURN      = '\r';
+const char SEMICOLON           = ';';
+const char BACKSLASH           = '\\';
+const char POINT               = '.';
+const char VERTICALBAR         = '|';
+const char COMMA               = ',';
+const char ENDOFLINE           = '\0';
+const char OPEN_BRACKET        = '[';
+const char CLOSE_BRACKET       = ']';
+const char OPEN_CURLY_BRACKET  = '{';
 const char CLOSE_CURLY_BRACKET = '}';
 
 const char STR_TRUE[] PROGMEM = "true";
@@ -75,82 +75,82 @@ const char SETUP_COPYING[] PROGMEM = "Copying ";
 const char SETUP_PROGMEM_TO_SPIFFS[] PROGMEM = " from PROGMEM to SPIFFS...";
 
 // ===== SERIAL COMMAND LINE INTERFACE ===== //
-const char CLI_SCAN[] PROGMEM = "scan";                          // scan
-const char CLI_REBOOT[] PROGMEM = "reboot";                      // reboot
-const char CLI_STATUS[] PROGMEM = "status";                      // status
-const char CLI_SHOW[] PROGMEM = "show";                          // show
-const char CLI_REMOVE[] PROGMEM = "remove";                      // remove
-const char CLI_SET[] PROGMEM = "set";                            // set
-const char CLI_STOP[] PROGMEM = "stop";                          // stop
-const char CLI_LOAD[] PROGMEM = "load";                          // load
-const char CLI_SAVE[] PROGMEM = "save";                          // save
-const char CLI_ADD[] PROGMEM = "add";                            // add
-const char CLI_DESELECT[] PROGMEM = "deselect";                  // deselect
-const char CLI_CLEAR[] PROGMEM = "clear";                        // clear
-const char CLI_SYSINFO[] PROGMEM = "sysinfo";                    // sysinfo
-const char CLI_RESET[] PROGMEM = "reset";                        // reset
-const char CLI_ON[] PROGMEM = "on";                              // on
-const char CLI_OFF[] PROGMEM = "off";                            // off
-const char CLI_RANDOM[] PROGMEM = "random";                      // random
-const char CLI_GET[] PROGMEM = "get";                            // get
-const char CLI_INFO[] PROGMEM = "info";                          // info
-const char CLI_HELP[] PROGMEM = "help";                          // help
-const char CLI_RICE[] PROGMEM = "rice";                          // rice
-const char CLI_FORMAT[] PROGMEM = "format";                      // format
-const char CLI_DELETE[] PROGMEM = "delete";                      // delete
-const char CLI_PRINT[] PROGMEM = "print";                        // print
-const char CLI_RUN[] PROGMEM = "run";                            // run
-const char CLI_WRITE[] PROGMEM = "write";                        // write
-const char CLI_LED[] PROGMEM = "led";                            // led
-const char CLI_SEND[] PROGMEM = "send";                          // send
-const char CLI_CUSTOM[] PROGMEM = "custom";                      // custom
-const char CLI_DELAY[] PROGMEM = "delay";                        // delay
-const char CLI_REPLACE[] PROGMEM = "replace";                    // replace
-const char CLI_DRAW[] PROGMEM = "draw";                          // draw
-const char CLI_SCRIPT[] PROGMEM = "script";                      // script
-const char CLI_STARTAP[] PROGMEM = "startap";                    // startap
-const char CLI_STOPAP[] PROGMEM = "stopap";                      // stopap
-const char CLI_RENAME[] PROGMEM = "rename";                      // rename
-const char CLI_COPY[] PROGMEM = "copy";                          // copy
-const char CLI_ENABLE[] PROGMEM = "enable/d";                    // enable, enabled
-const char CLI_DISABLE[] PROGMEM = "disable/d";                  // disable, disabled
-const char CLI_WPA2[] PROGMEM = "wpa/2,-wpa/2";                  // wpa, wpa2, -wpa, -wpa2
-const char CLI_ATTACK[] PROGMEM = "attack/s";                    // attack, attacks
-const char CLI_CHICKEN[] PROGMEM = "chicken/s";                  // chicken, chickens
-const char CLI_SETTING[] PROGMEM = "setting/s";                  // setting, settings
-const char CLI_ID[] PROGMEM = "id,-i/d";                         // id, -i, -id
-const char CLI_ALL[] PROGMEM = "all,-a";                         // all, -a
-const char CLI_TIME[] PROGMEM = "time,-t";                       // time, -t
-const char CLI_CONTINUE[] PROGMEM = "continue,-c";               // continue, -c
-const char CLI_CHANNEL[] PROGMEM = "channel,-ch";                // channel, -ch
-const char CLI_MAC[] PROGMEM = "mac,-m";                         // mac, -m
-const char CLI_BSSID[] PROGMEM = "bssid,-b";                     // bssid, -b
-const char CLI_BEACON[] PROGMEM = "beacon,-b";                   // bssid, -b
-const char CLI_DEAUTH[] PROGMEM = "deauth,-d";                   // deauth, -d
-const char CLI_DEAUTHALL[] PROGMEM = "deauthall,-da";            // deauthall, -da
-const char CLI_PROBE[] PROGMEM = "probe,-p";                     // probe, -p
-const char CLI_NOOUTPUT[] PROGMEM = "nooutput,-no";              // nooutput, -no
-const char CLI_FORCE[] PROGMEM = "force,-f";                     // force, -f
-const char CLI_TIMEOUT[] PROGMEM = "timeout,-t";                 // timeout, -t
-const char CLI_WIFI[] PROGMEM = "wifi,-w";                       // wifi, -w
-const char CLI_CLONES[] PROGMEM = "clones,-cl";                  // clones, -cl
-const char CLI_PATH[] PROGMEM = "path,-p";                       // path, -p
-const char CLI_PASSWORD[] PROGMEM = "password,-ps/wd";           // password, -ps, -pswd
-const char CLI_HIDDEN[] PROGMEM = "hidden,-h";                   // hidden, -h
-const char CLI_CAPTIVEPORTAL[] PROGMEM = "captiveportal,-cp";    // captiveportal, -cp
-const char CLI_SELECT[] PROGMEM = "select/ed,-s";                // select, selected, -s
-const char CLI_SSID[] PROGMEM = "ssid/s,-s/s";                   // ssid, ssids, -s, -ss
-const char CLI_AP[] PROGMEM = "ap/s,-ap/s";                      // ap, aps, -ap, -aps
-const char CLI_STATION[] PROGMEM = "station/s,-st";              // station, stations, -st
-const char CLI_NAME[] PROGMEM = "name/s,-n";                     // name, names, -n
-const char CLI_LINE[] PROGMEM = "line/s,-l";                     // line, lines, -l
-const char CLI_COMMENT[] PROGMEM = "//";                         // // 
-const char CLI_SCREEN[] PROGMEM = "screen";                      // screen
-const char CLI_MODE[] PROGMEM = "mode,-m";                       // mode
-const char CLI_MODE_BUTTONTEST[] PROGMEM = "buttontest";         // buttontest
-const char CLI_MODE_PACKETMONITOR[] PROGMEM = "packetmonitor";   // packetmonitor
-const char CLI_MODE_LOADINGSCREEN[] PROGMEM = "loadingscreen";   // loading
-const char CLI_MODE_MENU[] PROGMEM = "menu";                     // menu
+const char CLI_SCAN[] PROGMEM = "scan";                        // scan
+const char CLI_REBOOT[] PROGMEM = "reboot";                    // reboot
+const char CLI_STATUS[] PROGMEM = "status";                    // status
+const char CLI_SHOW[] PROGMEM = "show";                        // show
+const char CLI_REMOVE[] PROGMEM = "remove";                    // remove
+const char CLI_SET[] PROGMEM = "set";                          // set
+const char CLI_STOP[] PROGMEM = "stop";                        // stop
+const char CLI_LOAD[] PROGMEM = "load";                        // load
+const char CLI_SAVE[] PROGMEM = "save";                        // save
+const char CLI_ADD[] PROGMEM = "add";                          // add
+const char CLI_DESELECT[] PROGMEM = "deselect";                // deselect
+const char CLI_CLEAR[] PROGMEM = "clear";                      // clear
+const char CLI_SYSINFO[] PROGMEM = "sysinfo";                  // sysinfo
+const char CLI_RESET[] PROGMEM = "reset";                      // reset
+const char CLI_ON[] PROGMEM = "on";                            // on
+const char CLI_OFF[] PROGMEM = "off";                          // off
+const char CLI_RANDOM[] PROGMEM = "random";                    // random
+const char CLI_GET[] PROGMEM = "get";                          // get
+const char CLI_INFO[] PROGMEM = "info";                        // info
+const char CLI_HELP[] PROGMEM = "help";                        // help
+const char CLI_RICE[] PROGMEM = "rice";                        // rice
+const char CLI_FORMAT[] PROGMEM = "format";                    // format
+const char CLI_DELETE[] PROGMEM = "delete";                    // delete
+const char CLI_PRINT[] PROGMEM = "print";                      // print
+const char CLI_RUN[] PROGMEM = "run";                          // run
+const char CLI_WRITE[] PROGMEM = "write";                      // write
+const char CLI_LED[] PROGMEM = "led";                          // led
+const char CLI_SEND[] PROGMEM = "send";                        // send
+const char CLI_CUSTOM[] PROGMEM = "custom";                    // custom
+const char CLI_DELAY[] PROGMEM = "delay";                      // delay
+const char CLI_REPLACE[] PROGMEM = "replace";                  // replace
+const char CLI_DRAW[] PROGMEM = "draw";                        // draw
+const char CLI_SCRIPT[] PROGMEM = "script";                    // script
+const char CLI_STARTAP[] PROGMEM = "startap";                  // startap
+const char CLI_STOPAP[] PROGMEM = "stopap";                    // stopap
+const char CLI_RENAME[] PROGMEM = "rename";                    // rename
+const char CLI_COPY[] PROGMEM = "copy";                        // copy
+const char CLI_ENABLE[] PROGMEM = "enable/d";                  // enable, enabled
+const char CLI_DISABLE[] PROGMEM = "disable/d";                // disable, disabled
+const char CLI_WPA2[] PROGMEM = "wpa/2,-wpa/2";                // wpa, wpa2, -wpa, -wpa2
+const char CLI_ATTACK[] PROGMEM = "attack/s";                  // attack, attacks
+const char CLI_CHICKEN[] PROGMEM = "chicken/s";                // chicken, chickens
+const char CLI_SETTING[] PROGMEM = "setting/s";                // setting, settings
+const char CLI_ID[] PROGMEM = "id,-i/d";                       // id, -i, -id
+const char CLI_ALL[] PROGMEM = "all,-a";                       // all, -a
+const char CLI_TIME[] PROGMEM = "time,-t";                     // time, -t
+const char CLI_CONTINUE[] PROGMEM = "continue,-c";             // continue, -c
+const char CLI_CHANNEL[] PROGMEM = "channel,-ch";              // channel, -ch
+const char CLI_MAC[] PROGMEM = "mac,-m";                       // mac, -m
+const char CLI_BSSID[] PROGMEM = "bssid,-b";                   // bssid, -b
+const char CLI_BEACON[] PROGMEM = "beacon,-b";                 // bssid, -b
+const char CLI_DEAUTH[] PROGMEM = "deauth,-d";                 // deauth, -d
+const char CLI_DEAUTHALL[] PROGMEM = "deauthall,-da";          // deauthall, -da
+const char CLI_PROBE[] PROGMEM = "probe,-p";                   // probe, -p
+const char CLI_NOOUTPUT[] PROGMEM = "nooutput,-no";            // nooutput, -no
+const char CLI_FORCE[] PROGMEM = "force,-f";                   // force, -f
+const char CLI_TIMEOUT[] PROGMEM = "timeout,-t";               // timeout, -t
+const char CLI_WIFI[] PROGMEM = "wifi,-w";                     // wifi, -w
+const char CLI_CLONES[] PROGMEM = "clones,-cl";                // clones, -cl
+const char CLI_PATH[] PROGMEM = "path,-p";                     // path, -p
+const char CLI_PASSWORD[] PROGMEM = "password,-ps/wd";         // password, -ps, -pswd
+const char CLI_HIDDEN[] PROGMEM = "hidden,-h";                 // hidden, -h
+const char CLI_CAPTIVEPORTAL[] PROGMEM = "captiveportal,-cp";  // captiveportal, -cp
+const char CLI_SELECT[] PROGMEM = "select/ed,-s";              // select, selected, -s
+const char CLI_SSID[] PROGMEM = "ssid/s,-s/s";                 // ssid, ssids, -s, -ss
+const char CLI_AP[] PROGMEM = "ap/s,-ap/s";                    // ap, aps, -ap, -aps
+const char CLI_STATION[] PROGMEM = "station/s,-st";            // station, stations, -st
+const char CLI_NAME[] PROGMEM = "name/s,-n";                   // name, names, -n
+const char CLI_LINE[] PROGMEM = "line/s,-l";                   // line, lines, -l
+const char CLI_COMMENT[] PROGMEM = "//";                       // //
+const char CLI_SCREEN[] PROGMEM = "screen";                    // screen
+const char CLI_MODE[] PROGMEM = "mode,-m";                     // mode
+const char CLI_MODE_BUTTONTEST[] PROGMEM = "buttontest";       // buttontest
+const char CLI_MODE_PACKETMONITOR[] PROGMEM = "packetmonitor"; // packetmonitor
+const char CLI_MODE_LOADINGSCREEN[] PROGMEM = "loadingscreen"; // loading
+const char CLI_MODE_MENU[] PROGMEM = "menu";                   // menu
 
 const char CLI_HELP_HELP[] PROGMEM = "help";
 const char CLI_HELP_SCAN[] PROGMEM = "scan [<all/aps/stations>] [-t <time>] [-c <continue-time>] [-ch <channel>]";
@@ -211,14 +211,17 @@ const char CLI_EXECUTING[] PROGMEM = "Executing ";
 const char CLI_SCRIPT_DONE_CONTINUE[] PROGMEM = "Done executing script - type 'stop script' to end the continuous mode";
 const char CLI_SCRIPT_DONE[] PROGMEM = "Done executing script";
 const char CLI_HELP_HEADER[] PROGMEM = "[===== List of commands =====]";
-const char CLI_HELP_FOOTER[] PROGMEM = "========================================================================\r\nfor more information please visit github.com/spacehuhn/esp8266_deauther\r\n========================================================================";
+const char CLI_HELP_FOOTER[] PROGMEM =
+    "========================================================================\r\nfor more information please visit github.com/spacehuhn/esp8266_deauther\r\n========================================================================";
 const char CLI_ERROR_NAME_LEN[] PROGMEM = "ERROR : Name length 0";
 const char CLI_ERROR_MAC_LEN[] PROGMEM = "ERROR : MAC length 0";
-const char CLI_RICE_START[] PROGMEM = "Starting rice debugger (auto - repair mode enabled), please stand by...\r\nKeep the device connected to a power supply until the debugger ends\r\nYOU RISK TO BRICK THE BOARD!!!";
+const char CLI_RICE_START[] PROGMEM =
+    "Starting rice debugger (auto - repair mode enabled), please stand by...\r\nKeep the device connected to a power supply until the debugger ends\r\nYOU RISK TO BRICK THE BOARD!!!";
 const char CLI_RICE_OUTPUT[] PROGMEM = "[ % d % % ]\r\n";
 const char CLI_RICE_ERROR[] PROGMEM = "ERROR : Memory check failure at block 0x";
 const char CLI_RICE_MEM[] PROGMEM = "Checking memory block 0x";
-const char CLI_CHICKEN_OUTPUT[] PROGMEM = "                                                                 ` - : /////////:-.                    \r\n                                                            ./++so:`   ``    `.:/++/.               \r\n                                                        `/+o+.+o:.s:-++//s`        `:++-            \r\n                                                     `/+oo+//d-   oh/    s-            :o/`         \r\n                                                   .++.o+` `h-   .d.     h`://+`         .o+        \r\n                                                 .o+` +/   +o    y-     +d+.  .y           .s-      \r\n                                                +o`   h    d`   `/     .h-    `h             ++     \r\n                                              .s-     d    -           .`     +/              /o    \r\n                                             :o`      y.                     -y                /+   \r\n                                            /+        :o       `            -h`                 s:  \r\n                                           /o          y..://///////:`     /o/o.                `h  \r\n                                          -s           +o:``       `-++::/+-  `o/                o: \r\n                                          y.          :o              `:::.`   `oo`              -s \r\n                                         -s           h`            .++:---/+/+/:::++.           `h \r\n                                         +/           h            :o`   `  `/s  `  .s-           d \r\n                                         o:          .s            h`   /h-   o:/h-  -s          `h \r\n                                         +/          +/            h`   ``    s- `   +/          -s \r\n                                         .y         `h`            -s-      `+y-.`.:+/           +: \r\n                                          o:        o:              `/+/:/+ss:.-:y/.`           `h` \r\n   .:-`                                   `y-      ++                  `so::-://+y.             +/  \r\n  :o.-/+:  :+//:`                          `s:   `+/                   -h//:::---:/o-          -y   \r\n  :o   `:o:h. `-+/`                         -d+.:o-                    .y.``...-/y/++`        `y.   \r\n   +/    `:hs    -o-                        o/:/yo:-`                   +y++s//+/.           `s.    \r\n    /o`    `oo`   `/+`                   .-:y/-`+:+so+/:-`              s-  y:              -s.     \r\n ++//+y:     -+     .o:            ``-:/+:-.`.:+/:hs+`++:/o/:.`        `h   .y`            /o`      \r\n`h` `./ys-            :o-   .--:////:-.`        `-/o/::.`/sh-:os/:.`   .y oo`+/          -o:        \r\n :o-   `-o+.           `/+o/:-..`                   `.:+++o/``/:-oo++/:.so+://`       `:+/`         \r\n  `/+:`   ..             `++`                           `.-/+/:-/sy.`+o:+y/-.      .-/+-`           \r\n    `-+/-                  .-                                `.:/o+:-:.```-:oy/:://:-`              \r\n       .:+/.                                                      `.-:/+/::s/-..`                   \r\n          .++.                                                          `.-h.                       \r\n            .o/                                                            +/                       \r\n              :o.                                                          :o                       \r\n               .o:                                                         -s                       \r\n                 /o`                                                       :+                       \r\n                  -o-                                                      o:                       \r\n                   `o/                                                     h`                       \r\n                     :o.                                                  -s                        \r\n                      .o:                                                 y.                        \r\n                        /o.                                              /+                         \r\n                         .+/`                                           -s                          \r\n                           -+/.                                        .s`                          \r\n                             ./+/.`                                   -s`                           \r\n                                .:/+:.`                              /o`                            \r\n                                    .:/o/.`                        .o:                              \r\n                                       o/:/+/.`                  .++`                               \r\n                                       -s   `:/+:`            `:+/`                                 \r\n                                        ++`     -+o-`      `-++-                                    \r\n                                         :s/::/+//::+/---/+/:`                                      \r\n                                          +/s:`      `-h-s-                                         \r\n                                          +/s-        `y y.                                         \r\n                                          +/y.        `y h`                                         \r\n                                          //s:`       `y d                                          \r\n                                          +/-:/++/-`  `y h-`                                        \r\n                                          y:hs-ysosss..y --/+++/-`                                  \r\n                                          ds:`s:o+`-:`o:oos./h++osoo`                               \r\n                                          ::   o+++   h:y `o+.s:`.::                                \r\n                                                -+-   -/`   :s.++                                   \r\n                                                             `/+-   ";
+const char CLI_CHICKEN_OUTPUT[] PROGMEM =
+    "                                                                 ` - : /////////:-.                    \r\n                                                            ./++so:`   ``    `.:/++/.               \r\n                                                        `/+o+.+o:.s:-++//s`        `:++-            \r\n                                                     `/+oo+//d-   oh/    s-            :o/`         \r\n                                                   .++.o+` `h-   .d.     h`://+`         .o+        \r\n                                                 .o+` +/   +o    y-     +d+.  .y           .s-      \r\n                                                +o`   h    d`   `/     .h-    `h             ++     \r\n                                              .s-     d    -           .`     +/              /o    \r\n                                             :o`      y.                     -y                /+   \r\n                                            /+        :o       `            -h`                 s:  \r\n                                           /o          y..://///////:`     /o/o.                `h  \r\n                                          -s           +o:``       `-++::/+-  `o/                o: \r\n                                          y.          :o              `:::.`   `oo`              -s \r\n                                         -s           h`            .++:---/+/+/:::++.           `h \r\n                                         +/           h            :o`   `  `/s  `  .s-           d \r\n                                         o:          .s            h`   /h-   o:/h-  -s          `h \r\n                                         +/          +/            h`   ``    s- `   +/          -s \r\n                                         .y         `h`            -s-      `+y-.`.:+/           +: \r\n                                          o:        o:              `/+/:/+ss:.-:y/.`           `h` \r\n   .:-`                                   `y-      ++                  `so::-://+y.             +/  \r\n  :o.-/+:  :+//:`                          `s:   `+/                   -h//:::---:/o-          -y   \r\n  :o   `:o:h. `-+/`                         -d+.:o-                    .y.``...-/y/++`        `y.   \r\n   +/    `:hs    -o-                        o/:/yo:-`                   +y++s//+/.           `s.    \r\n    /o`    `oo`   `/+`                   .-:y/-`+:+so+/:-`              s-  y:              -s.     \r\n ++//+y:     -+     .o:            ``-:/+:-.`.:+/:hs+`++:/o/:.`        `h   .y`            /o`      \r\n`h` `./ys-            :o-   .--:////:-.`        `-/o/::.`/sh-:os/:.`   .y oo`+/          -o:        \r\n :o-   `-o+.           `/+o/:-..`                   `.:+++o/``/:-oo++/:.so+://`       `:+/`         \r\n  `/+:`   ..             `++`                           `.-/+/:-/sy.`+o:+y/-.      .-/+-`           \r\n    `-+/-                  .-                                `.:/o+:-:.```-:oy/:://:-`              \r\n       .:+/.                                                      `.-:/+/::s/-..`                   \r\n          .++.                                                          `.-h.                       \r\n            .o/                                                            +/                       \r\n              :o.                                                          :o                       \r\n               .o:                                                         -s                       \r\n                 /o`                                                       :+                       \r\n                  -o-                                                      o:                       \r\n                   `o/                                                     h`                       \r\n                     :o.                                                  -s                        \r\n                      .o:                                                 y.                        \r\n                        /o.                                              /+                         \r\n                         .+/`                                           -s                          \r\n                           -+/.                                        .s`                          \r\n                             ./+/.`                                   -s`                           \r\n                                .:/+:.`                              /o`                            \r\n                                    .:/o/.`                        .o:                              \r\n                                       o/:/+/.`                  .++`                               \r\n                                       -s   `:/+:`            `:+/`                                 \r\n                                        ++`     -+o-`      `-++-                                    \r\n                                         :s/::/+//::+/---/+/:`                                      \r\n                                          +/s:`      `-h-s-                                         \r\n                                          +/s-        `y y.                                         \r\n                                          +/y.        `y h`                                         \r\n                                          //s:`       `y d                                          \r\n                                          +/-:/++/-`  `y h-`                                        \r\n                                          y:hs-ysosss..y --/+++/-`                                  \r\n                                          ds:`s:o+`-:`o:oos./h++osoo`                               \r\n                                          ::   o+++   h:y `o+.s:`.::                                \r\n                                                -+-   -/`   :s.++                                   \r\n                                                             `/+-   ";
 const char CLI_SYSTEM_INFO[] PROGMEM = "[======== SYSTEM INFO ========]";
 const char CLI_SYSTEM_OUTPUT[] PROGMEM = "RAM usage: %u bytes used [%d%%], %u bytes free [%d%%], %u bytes in total\r\n";
 const char CLI_SYSTEM_AP_MAC[] PROGMEM = "AP MAC address: ";
@@ -241,7 +244,8 @@ const char CLI_TO[] PROGMEM = "\" to ";
 const char CLI_REPLACED_LINE[] PROGMEM = "Replaced line ";
 const char CLI_WITH[] PROGMEM = " with ";
 const char CLI_ERROR_REPLACING_LINE[] PROGMEM = "ERROR: replacing line in ";
-const char CLI_INFO_HEADER[] PROGMEM = "====================================================================================";
+const char CLI_INFO_HEADER[] PROGMEM =
+    "====================================================================================";
 const char CLI_INFO_SOFTWARE[] PROGMEM = "ESP8266 Deauther ";
 const char CLI_INFO_COPYRIGHT[] PROGMEM = "2018 (c) Stefan Kremser";
 const char CLI_INFO_LICENSE[] PROGMEM = "This software is licensed under the MIT License.";
@@ -334,8 +338,10 @@ const char ST_REMOVED_STATION[] PROGMEM = "Removed station ";
 const char ST_LIST_EMPTY[] PROGMEM = "Station list is empty :(";
 const char ST_HEADER[] PROGMEM = "[===== Stations =====]";
 const char ST_NO_DEVICES_SELECTED[] PROGMEM = "No devices selected";
-const char ST_TABLE_HEADER[] PROGMEM =  "ID MAC               Ch Name             Vendor   Pkts     AP                               Last Seen Selected";
-const char ST_TABLE_DIVIDER[] PROGMEM = "==============================================================================================================";
+const char ST_TABLE_HEADER[] PROGMEM =
+    "ID MAC               Ch Name             Vendor   Pkts     AP                               Last Seen Selected";
+const char ST_TABLE_DIVIDER[] PROGMEM =
+    "==============================================================================================================";
 const char ST_SMALLER_ONESEC[] PROGMEM = "<1sec";
 const char ST_SMALLER_ONEMIN[] PROGMEM = "<1min";
 const char ST_BIGER_ONEHOUR[] PROGMEM = ">1h";
@@ -395,8 +401,10 @@ const char S_RANDOM[] PROGMEM = "random";
 const char AP_HEADER[] PROGMEM = "[===== Access Points =====]";
 const char AP_LIST_EMPTY[] PROGMEM = "AP list is empty :(";
 const char AP_NO_AP_SELECTED[] PROGMEM = "No APs selected";
-const char AP_TABLE_HEADER[] PROGMEM =  "ID SSID                             Name             Ch RSSI Enc. Mac               Vendor   Selected";
-const char AP_TABLE_DIVIDER[] PROGMEM = "=====================================================================================================";
+const char AP_TABLE_HEADER[] PROGMEM =
+    "ID SSID                             Name             Ch RSSI Enc. Mac               Vendor   Selected";
+const char AP_TABLE_DIVIDER[] PROGMEM =
+    "=====================================================================================================";
 const char AP_HIDDEN[] PROGMEM = "*HIDDEN*";
 const char AP_WEP[] PROGMEM = "WEP";
 const char AP_WPA[] PROGMEM = "WPA";
@@ -422,8 +430,8 @@ const char A_DISABLED_OUTPUT[] PROGMEM = "Disabled attack output";
 // ===== LED ===== //
 const char L_ENABLED[] PROGMEM = "Enabled LED updates";
 const char L_DISABLED[] PROGMEM = "Disabled LED updates";
-const char L_OUTPUT_A[] PROGMEM = "LED (%u,%u,%u) => ";
-const char L_OUTPUT_B[] PROGMEM = "(%u,%u,%u)\r\n";
+const char L_OUTPUT[] PROGMEM = "LED = (%u,%u,%u)";
+const char L_NOT_CONFIGURED[] PROGMEM = "ERROR: No LED is configured in A_config.h!";
 
 // ===== NAMES ===== //
 const char N_SAVED[] PROGMEM = "Device names saved in ";
@@ -454,7 +462,8 @@ const char SS_CLEARED[] PROGMEM = "Cleared SSID list";
 const char SS_SAVED[] PROGMEM = "SSIDs saved";
 const char SS_SAVED_IN[] PROGMEM = "SSIDs saved in ";
 const char SS_REMOVED[] PROGMEM = "Removed SSID ";
-const char SS_ERROR_FULL[] PROGMEM = "ERROR: SSID list is full! Remove some SSIDs first or run command with -f (force) parameter.";
+const char SS_ERROR_FULL[] PROGMEM =
+    "ERROR: SSID list is full! Remove some SSIDs first or run command with -f (force) parameter.";
 const char SS_ADDED[] PROGMEM = "Added SSID ";
 const char SS_REPLACED[] PROGMEM = "Replaced SSID ";
 const char SS_TABLE_HEADER[] PROGMEM = "ID Enc. SSID";
@@ -471,7 +480,8 @@ const char SS_RANDOM_INFO[] PROGMEM = "Generating new SSIDs... Type \"disable ra
 // ===== SCAN ==== //
 const char SC_START_CLIENT[] PROGMEM = "Starting Scan for stations (client devices) - ";
 const char SS_START_SNIFFER[] PROGMEM = "Starting packet sniffer - ";
-const char SC_ERROR_NO_AP[] PROGMEM = "ERROR: AP-list empty! Can't scan for clients, please Scan for Accesspoints first.";
+const char SC_ERROR_NO_AP[] PROGMEM =
+    "ERROR: AP-list empty! Can't scan for clients, please Scan for Accesspoints first.";
 const char SC_INFINITELY[] PROGMEM = " infinitely";
 const char SC_ON_CHANNEL[] PROGMEM = " on channel ";
 const char SC_START_AP[] PROGMEM = "Starting scan for access points (Wi-Fi networks)...";
@@ -517,4 +527,4 @@ const char W_BAD_PATH[] PROGMEM = "BAD PATH";
 const char W_FILE_NOT_FOUND[] PROGMEM = "ERROR 404 File Not Found";
 const char W_STARTED_AP[] PROGMEM = "Started AP";
 
-#endif
+#endif // ifndef language_h

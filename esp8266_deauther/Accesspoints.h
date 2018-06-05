@@ -17,62 +17,60 @@ extern String buildString(String left, String right, int maxLen);
 extern String fixUtf8(String str);
 extern String bytesToStr(uint8_t* b, uint32_t size);
 
-struct AP{
-  uint8_t id;
-  bool selected;
+struct AP {
+    uint8_t id;
+    bool    selected;
 };
 
 class Accesspoints {
-  public:
-    Accesspoints();
-    
-    void sort();
-    void sortAfterChannel();
-    
-    void add(uint8_t id, bool selected);
-    void print(int num);
-    void print(int num, bool header, bool footer);
-    void select(int num);
-    void deselect(int num);
-    void remove(int num);
+    public:
+        Accesspoints();
 
-    void printAll();
-    void printSelected();
-    void selectAll();
-    void deselectAll();
-    void removeAll();
-    
-    String getSSID(int num);
-    String getNameStr(int num);
-    String getEncStr(int num);
-    String getMacStr(int num);
-    String getVendorStr(int num);
-    String getSelectedStr(int num);
-    uint8_t getCh(int num);
-    uint8_t getEnc(int num);
-    uint8_t getID(int num);
-    int getRSSI(int num);
-    uint8_t* getMac(int num);    
-    bool getHidden(int num);
-    bool getSelected(int num);
+        void sort();
+        void sortAfterChannel();
 
-    int find(uint8_t id);
-    
-    int count();
-    int selected();
+        void add(uint8_t id, bool selected);
+        void print(int num);
+        void print(int num, bool header, bool footer);
+        void select(int num);
+        void deselect(int num);
+        void remove(int num);
 
-    bool check(int num);
-    bool changed = false;
-  private:
-    SimpleList<AP>* list;
-    
-    bool internal_check(int num);
-    void internal_select(int num);
-    void internal_deselect(int num);
-    void internal_remove(int num);
+        void printAll();
+        void printSelected();
+        void selectAll();
+        void deselectAll();
+        void removeAll();
+
+        String getSSID(int num);
+        String getNameStr(int num);
+        String getEncStr(int num);
+        String getMacStr(int num);
+        String getVendorStr(int num);
+        String getSelectedStr(int num);
+        uint8_t getCh(int num);
+        uint8_t getEnc(int num);
+        uint8_t getID(int num);
+        int getRSSI(int num);
+        uint8_t* getMac(int num);
+        bool getHidden(int num);
+        bool getSelected(int num);
+
+        int find(uint8_t id);
+
+        int count();
+        int selected();
+
+        bool check(int num);
+        bool changed = false;
+
+    private:
+        SimpleList<AP>* list;
+
+        bool internal_check(int num);
+        void internal_select(int num);
+        void internal_deselect(int num);
+        void internal_remove(int num);
 };
 
-#endif
-
-
-
+#endif // ifndef Accesspoints_h
