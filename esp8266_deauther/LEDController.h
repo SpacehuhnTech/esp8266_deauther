@@ -11,10 +11,7 @@ extern "C" {
 #include "Attack.h"
 #include "Scan.h"
 
-#include "StatusLED.h"
-#include "DigitalLED.h"
-#include "NeopixelLED.h"
-#include "AnalogRGBLED.h"
+#include <Adafruit_NeoPixel.h>
 
 extern Settings settings;
 extern Attack   attack;
@@ -41,6 +38,65 @@ class LEDController {
         bool getTempEnabled();
 
     private:
+        class StatusLED {
+            public:
+                virtual ~StatusLED() = default;
+
+                virtual void setup() = 0;
+
+                virtual void setColor(uint8_t r, uint8_t g, uint8_t b) = 0;
+                virtual void setBrightness(uint8_t brightness) = 0;
+        };
+
+        class DigitalLED : public StatusLED {
+            public:
+                DigitalLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, bool anode);
+                ~DigitalLED();
+
+                void setup();
+                void setColor(uint8_t r, uint8_t g, uint8_t b);
+                void setBrightness(uint8_t brightness);
+                void setMode(uint8_t mode, bool force);
+
+            private:
+                bool anode   = true;
+                uint8_t rPin = 255;
+                uint8_t gPin = 255;
+                uint8_t bPin = 255;
+        };
+
+        class AnalogRGBLED : public StatusLED {
+            public:
+                AnalogRGBLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, uint8_t brightness, bool anode);
+                ~AnalogRGBLED();
+
+                void setup();
+                void setColor(uint8_t r, uint8_t g, uint8_t b);
+                void setBrightness(uint8_t brightness);
+                void setMode(uint8_t mode, bool force);
+
+            private:
+                bool anode         = true;
+                uint8_t rPin       = 255;
+                uint8_t gPin       = 255;
+                uint8_t bPin       = 255;
+                uint8_t brightness = 0;
+        };
+
+        class NeopixelLED : public StatusLED {
+            public:
+                NeopixelLED(int num, uint8_t dataPin, uint8_t brightness);
+                ~NeopixelLED();
+
+                void setup();
+                void setColor(uint8_t r, uint8_t g, uint8_t b);
+                void setBrightness(uint8_t brightness);
+                void setMode(uint8_t mode, bool force);
+
+            private:
+                Adafruit_NeoPixel* strip;
+        };
+
         bool tempEnabled = true;
         uint8_t mode     = LED_MODE::OFF;
         StatusLED* led   = NULL;

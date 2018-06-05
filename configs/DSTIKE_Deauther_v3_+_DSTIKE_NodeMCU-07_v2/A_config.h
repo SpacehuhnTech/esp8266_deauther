@@ -32,11 +32,16 @@
 
 // === Settings for RGB LED and Neopixel LED === //
 #define LED_MODE_BRIGHTNESS 10 // brightness of LED modes 
-#define LED_DYNAMIC_BRIGHTNESS false // brightness in scan mode depending on packet rate and deauths per second
 
 // === Settings for Neopixel LED === //
 #define LED_NEOPIXEL_NUM 1
 #define LED_NEOPIXEL_PIN 15
+#define LED_NEOPIXEL_MODE NEO_GRB + NEO_KHZ800
+//   NEO_KHZ800  800 KHz bitstream (most NeoPixel products w/WS2812 LEDs)
+//   NEO_KHZ400  400 KHz (classic 'v1' (not v2) FLORA pixels, WS2811 drivers)
+//   NEO_GRB     Pixels are wired for GRB bitstream (most NeoPixel products)
+//   NEO_RGB     Pixels are wired for RGB bitstream (v1 FLORA pixels, not v2)
+//   NEO_RGBW    Pixels are wired for RGBW bitstream (NeoPixel RGBW products)
 
 // ===================== DISPLAY CONFIG ==================== //
 #define USE_DISPLAY false // default display setting
