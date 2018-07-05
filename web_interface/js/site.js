@@ -99,6 +99,7 @@ function parseLang(fileStr){
 			element.innerHTML = lang(element.getAttribute("data-translate"));
 		}
 	}
+        document.querySelector('html').setAttribute("lang", langJson["lang"] );
 	if(typeof load !== 'undefined') load();
 }
 
