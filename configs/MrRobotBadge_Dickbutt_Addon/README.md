@@ -1,8 +1,8 @@
-# MrRobotBadge Dickbutt SHitty Addon
+# MrRobotBadge Dickbutt Shitty Addon
 
 -> https://twitter.com/MrRobotBadge
 
-Has a default SSID "Dickbutt 00:11:22", where 00:11:22 stands for the last 3 bytes of the MAC address.
+Has a default SSID "Dickbutt 00:11:22" (00:11:22 = last 3 bytes of the MAC address)
 
 |  |  |
 | - | - |
