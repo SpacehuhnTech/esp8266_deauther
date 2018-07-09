@@ -113,6 +113,9 @@ void setup() {
     setWifiChannel(settings.getChannel());
 
     // load Wifi settings: SSID, password,...
+    #ifdef DEFAULT_SSID
+      if(settings.getSSID() == "pwned") settings.setSSID(DEFAULT_SSID);
+    #endif
     loadWifiConfigDefaults();
 
     // dis/enable serial command interface
