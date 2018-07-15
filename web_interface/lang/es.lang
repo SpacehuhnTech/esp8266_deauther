@@ -1,8 +1,8 @@
 {
   "lang": "es",
   "warning": "ADVERTENCIA",
-	"disclaimer": "Este proyecto es una prueba de concepto con un motivo didáctico y experimental. \nNi el modulo ESP8266, ni su relativo SDK fueron creados o proyectados para estos propósitos. \n\nUtiliza los frames Wi-Fi válidos descritos en el estándar IEEE 802.11 y no bloquear o interrumpir frecuencia alguna. \nPor favor verificar las normativas legales del proprio pais antes de utilizarlo. \n\n¡Por favor no referirse a este proyecto como \"jammer\", esto destruiría totalmente la verdadera finalidad del proyecto!\nSi lo hace, usted solo demuestra que no entendió nada de lo que este proyecto representa. \nPublicar el contenido sin una explicación adecuada demuestra que lo hace solo por un clic, fama y/o dinero y no tiene ningún respeto por la propriedad intelectual, la comunidad detrás de ello y la lucha por un mejor standard WiFi. \n\nPara más información visite:",
-	"disclaimer-button": "He leído y entendido el aviso de aquí arriba",
+	"disclaimer": "Este proyecto es una prueba de concepto con un motivo didáctico y experimental. \nNi el modulo ESP8266, ni su relativo SDK fueron creados o proyectados para estos propósitos. \n\nUtiliza los frames Wi-Fi válidos descritos en el estándar IEEE 802.11 y no bloquear o interrumpir frecuencia alguna. \nPor favor verificar las normativas legales del proprio pais antes de utilizarlo. \n\n¡Por favor no referirse a este proyecto como \"jammer\", esto destruiría totalmente la verdadera finalidad del proyecto!\nSi lo hace, usted solo demuestra que no entendió nada de lo que este proyecto representa. \nPublicar el contenido sin una explicación adecuada demuestra que lo hace solo por un clic, fama y/o dinero y no tiene ningún respeto por la propriedad intelectual, la comunidad detrás de ello y la lucha por un mejor estándar WiFi. \n\nPara más información visite:",
+	"disclaimer-button": "He leído y entendido el aviso anterior",
 	"reload": "Actualizar",
 	"scan": "Escanear",
 	"ssids": "SSIDs",
@@ -33,9 +33,9 @@
 	"start_stop": "INICIAR / DETENER",
 	"start": "INICIAR",
 	"stop": "DETENER",
-	"wifi_off": "WiFi Apagado",
+	"wifi_off": "Apagar WiFi",
 	"reboot": "Reiniciar",
-	"reset": "Resetear",
+	"reset": "Restablecer",
 	"enable_random": "Habilita la modalidad casual",
 	"disable_random": "Deshabilita la modalidad casual",
 	"random_desc": "Habilitar la modalidad casual para generar una lista SSID casual en un intervalo dado.",
@@ -46,7 +46,7 @@
 	"setting_ssid" : "SSID del AP utilizado para la interfaz web (si habilitado).\nEl tamaño debe comprender entre 1 y 31 caracteres.",
 	"setting_password": "Contraseña del AP utilizada para la interfaz (si habilitado).\nEl tamaño debe comprender entre 8 y 31 caracteres.",
 	"setting_channel": "Canal WiFi predefinido que es utilizado al inicio.",
-	"setting_hidden": "Esconde el AP utilizado para la interfaz web (si habilitado).",
+	"setting_hidden": "Oculta el AP utilizado para la interfaz web (si habilitado).",
 	"setting_captivePortal": "Habilita el portal cautivo para el AP (si habilitado).",
 	"setting_autosave": "Habilita el guardado automático de SSID, nombres de dispositivos y configuraciones.",
 	"setting_autosavetime": "Intervalo de tiempo para el guardado automático en milisegundos.",
@@ -70,5 +70,5 @@
 	"setting_beaconInterval": "Si está habilitado, los Beacons serán enviados cada segundo. Deshabilitado, el intervalo será de 100 ms.\nUn intervalo más largo significa mayor estabilidad y menos 'spammeo' de los paquetes, pero podría nesecitar más tiempo hasta que los clientes encuentren los SSID durante el escaneo.",
 	"setting_randomTX": "Habilita la potencia de transmisión aleatoria para el envío de pedidos de frames 'Beacons' y 'Probe'."
 	"setting_probesPerSSID": "Cuantos frames de pedidos 'Probe' son enviados para cada SSID.",
-	"setting_lang": "Idioma predefinido para la interfaz web.\n¡Asegurese que el archivo del idioma (.lang) exista!"
+	"setting_lang": "Idioma predefinido para la interfaz web.\n¡Asegurese que el archivo del idioma exista!"
 }
