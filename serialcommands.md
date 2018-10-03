@@ -207,7 +207,7 @@ Prints out file from SPIFFS (SPI-Flash-File-System) to the serial console.
 
 ## DELETE
 `delete <file>`  
-Deletes file from the the SPIFFS (SPI-Flash-File-System).  
+Deletes file from the SPIFFS (SPI-Flash-File-System).  
 `delete <file> <lineFrom>`  
 Removes a specific line from a file.  
 `delete <file> <lineFrom> <lineTo>`  
