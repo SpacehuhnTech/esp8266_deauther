@@ -16,9 +16,9 @@ extern "C" {
 #include "Scan.h"
 #include "Attack.h"
 #include "DisplayUI.h"
-#include "LEDController.h"
+#include "LED.h"
 
-extern LEDController* led;
+extern LED* led;
 extern Settings settings;
 extern Names    names;
 extern SSIDs    ssids;

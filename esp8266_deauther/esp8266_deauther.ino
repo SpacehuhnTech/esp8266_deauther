@@ -21,10 +21,10 @@ extern "C" {
 #include "A_config.h"
 #include "webfiles.h"
 
-#include "LEDController.h"
+#include "LED.h"
 
 // Run-Time Variables //
-LEDController* led;
+LED* led;
 Settings settings;
 Names    names;
 SSIDs    ssids;
@@ -106,7 +106,7 @@ void setup() {
     scan.setup();
 
     // setup LED
-    led = new LEDController();
+    led = new LED();
     led->setup();
 
     // set channel
