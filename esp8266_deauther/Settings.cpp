@@ -35,7 +35,7 @@ void Settings::load() {
 
     if (data.containsKey(keyword(S_DISPLAY_TIMEOUT))) setDisplayTimeout(data.get<uint32_t>(keyword(S_DISPLAY_TIMEOUT)));
 
-    if (data.containsKey(keyword(S_SERIALINTERFACE))) setSerialInterface(data.get<bool>(keyword(S_SERIALINTERFACE)));
+    if (data.containsKey(keyword(S_SERIALINTERFACE))) setCLI(data.get<bool>(keyword(S_SERIALINTERFACE)));
 
     if (data.containsKey(keyword(S_SERIAL_ECHO))) setSerialEcho(data.get<bool>(keyword(S_SERIAL_ECHO)));
 
@@ -117,7 +117,7 @@ void Settings::reset() {
     setAutosaveTime(10000);
     setDisplayInterface(USE_DISPLAY);
     setDisplayTimeout(600);
-    setSerialInterface(true);
+    setCLI(true);
     setSerialEcho(true);
     setWebInterface(true);
     setWebSpiffs(false);
@@ -163,7 +163,7 @@ String Settings::getJsonStr() {
     data.set(keyword(S_AUTOSAVETIME), autosaveTime);
     data.set(keyword(S_DISPLAYINTERFACE), displayInterface);
     data.set(keyword(S_DISPLAY_TIMEOUT), displayTimeout);
-    data.set(keyword(S_SERIALINTERFACE), serialInterface);
+    data.set(keyword(S_SERIALINTERFACE), cli);
     data.set(keyword(S_SERIAL_ECHO), serialEcho);
     data.set(keyword(S_WEBINTERFACE), webInterface);
     data.set(keyword(S_WEB_SPIFFS), webSpiffs);
@@ -230,7 +230,7 @@ void Settings::set(const char* str, String value) {
     if (eqls(str, S_BEACONCHANNEL)) setBeaconChannel(s2b(value));
     else if (eqls(str, S_AUTOSAVE)) setAutosave(s2b(value));
     else if (eqls(str, S_BEACONINTERVAL)) setBeaconInterval(s2b(value));
-    else if (eqls(str, S_SERIALINTERFACE)) setSerialInterface(s2b(value));
+    else if (eqls(str, S_SERIALINTERFACE)) setCLI(s2b(value));
     else if (eqls(str, S_DISPLAYINTERFACE)) setDisplayInterface(s2b(value));
     else if (eqls(str, S_WEBINTERFACE)) setWebInterface(s2b(value));
     else if (eqls(str, S_RANDOMTX)) setRandomTX(s2b(value));
@@ -282,7 +282,7 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_BEACONCHANNEL)) return b2s(beaconChannel);
     else if (eqls(str, S_AUTOSAVE)) return b2s(autosave);
     else if (eqls(str, S_BEACONINTERVAL)) return b2s(beaconInterval);
-    else if (eqls(str, S_SERIALINTERFACE)) return b2s(serialInterface);
+    else if (eqls(str, S_SERIALINTERFACE)) return b2s(cli);
     else if (eqls(str, S_DISPLAYINTERFACE)) return b2s(displayInterface);
     else if (eqls(str, S_WEBINTERFACE)) return b2s(webInterface);
     else if (eqls(str, S_RANDOMTX)) return b2s(randomTX);
@@ -371,8 +371,8 @@ String Settings::getPassword() {
     return password;
 }
 
-bool Settings::getSerialInterface() {
-    return serialInterface;
+bool Settings::getCLI() {
+    return cli;
 }
 
 bool Settings::getDisplayInterface() {
@@ -516,8 +516,8 @@ void Settings::setPassword(String password) {
     }
 }
 
-void Settings::setSerialInterface(bool serialInterface) {
-    Settings::serialInterface = serialInterface;
+void Settings::setCLI(bool cli) {
+    Settings::cli = cli;
     changed                   = true;
 }
 

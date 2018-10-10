@@ -16,7 +16,7 @@ extern "C" {
 #include "SSIDs.h"
 #include "Scan.h"
 #include "Attack.h"
-#include "SerialInterface.h"
+#include "CLI.h"
 #include "DisplayUI.h"
 #include "A_config.h"
 #include "webfiles.h"
@@ -32,7 +32,7 @@ Accesspoints accesspoints;
 Stations     stations;
 Scan   scan;
 Attack attack;
-SerialInterface serialInterface;
+CLI cli;
 DisplayUI displayUI;
 
 #include "wifi.h"
@@ -100,7 +100,7 @@ void setup() {
     // load everything else
     names.load();
     ssids.load();
-    serialInterface.load();
+    cli.load();
 
     // create scan.json
     scan.setup();
@@ -119,8 +119,8 @@ void setup() {
     loadWifiConfigDefaults();
 
     // dis/enable serial command interface
-    if (settings.getSerialInterface()) {
-        serialInterface.enable();
+    if (settings.getCLI()) {
+        cli.enable();
     } else {
         prntln(SETUP_SERIAL_WARNING);
         Serial.flush();
@@ -144,7 +144,7 @@ void loop() {
 
     attack.update();          // run attacks
     displayUI.update();
-    serialInterface.update(); // read and run serial input
+    cli.update(); // read and run serial input
     scan.update();            // run scan
     ssids.update();           // run random mode, if enabled
     led->update();            // update LED color

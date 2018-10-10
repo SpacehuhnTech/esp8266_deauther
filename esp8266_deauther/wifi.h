@@ -389,7 +389,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
     server.on(String(F("/run")).c_str(), HTTP_GET, []() {
         server.send(200, str(W_TXT), str(W_OK).c_str());
-        serialInterface.runCommands(server.arg("cmd"));
+        cli.runCommands(server.arg("cmd"));
     });
 
     server.on(String(F("/attack.json")).c_str(), HTTP_GET, []() {

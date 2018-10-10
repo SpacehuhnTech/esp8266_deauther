@@ -1,5 +1,5 @@
-#ifndef SerialInterface_h
-#define SerialInterface_h
+#ifndef CLI_h
+#define CLI_h
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
@@ -44,9 +44,9 @@ extern void printWifiStatus();
 extern void startAP(String path, String ssid, String password, uint8_t ch, bool hidden, bool captivePortal);
 extern void wifiUpdate();
 
-class SerialInterface {
+class CLI {
     public:
-        SerialInterface();
+        CLI();
         void enable();
         void load();
         void load(String filepath);
@@ -81,4 +81,4 @@ class SerialInterface {
         bool eqlsCMD(int i, const char* keyword);
 };
 
-#endif // ifndef SerialInterface_h
+#endif // ifndef CLI_h

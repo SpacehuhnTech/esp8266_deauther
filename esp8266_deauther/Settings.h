@@ -49,7 +49,7 @@ class Settings {
         uint8_t getChannel();
         String getSSID();
         String getPassword();
-        bool getSerialInterface();
+        bool getCLI();
         bool getDisplayInterface();
         bool getWebInterface();
         uint16_t getChTime();
@@ -78,7 +78,7 @@ class Settings {
         void setChannel(uint8_t channel);
         void setSSID(String ssid);
         void setPassword(String password);
-        void setSerialInterface(bool serialInterface);
+        void setCLI(bool cli);
         void setDisplayInterface(bool displayInterface);
         void setWebInterface(bool webInterface);
         void setChTime(uint16_t chTime);
@@ -106,7 +106,7 @@ class Settings {
         bool beaconChannel    = false;
         bool autosave         = true;
         bool beaconInterval   = false;
-        bool serialInterface  = true;
+        bool cli  = true;
         bool displayInterface = USE_DISPLAY;
         bool webInterface     = true;
         bool webSpiffs        = false;
