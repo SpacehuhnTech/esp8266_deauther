@@ -44,6 +44,8 @@ extern void printWifiStatus();
 extern void startAP(String path, String ssid, String password, uint8_t ch, bool hidden, bool captivePortal);
 extern void wifiUpdate();
 
+const char CLI_DEFAULT_AUTOSTART[] PROGMEM = "scan -t 5s";
+
 class CLI {
     public:
         CLI();

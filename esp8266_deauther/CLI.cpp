@@ -19,7 +19,7 @@ CLI::CLI() {
 }
 
 void CLI::load() {
-    checkFile(execPath, String());
+    checkFile(execPath, String(CLI_DEFAULT_AUTOSTART));
     executing = true;
 }
 
