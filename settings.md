@@ -95,7 +95,7 @@ Enables web interface.
 ## WEB-SPIFFS
 `bool webSpiffs = false`  
 Enables SPIFFS for all web files.  
-Can lead to longer loading times but it nice if you need to edit the the web files regularly.  
+Can lead to longer loading times but it nice if you need to edit the web files regularly.  
 
 ## LEDENABLED
 `bool ledEnabled = true`  

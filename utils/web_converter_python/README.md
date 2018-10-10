@@ -10,4 +10,4 @@ Copyright goes to [@xdavidhu](http://github.com/xdavidhu/).
 - `.lang` files will always go in the `/lang` folder
 - `.js` files will always go int the `/js` folder
 - `.json` files will be ignored and not copied
-- only `.html` and `.css` will be minified before beeing gzipped (minifying JS can make problems)
+- only `.html` and `.css` will be minified before being gzipped (minifying JS can make problems)

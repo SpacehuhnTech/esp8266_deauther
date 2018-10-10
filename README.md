@@ -37,7 +37,7 @@ This software allows you to easily perform a variety of actions to test 802.11 w
 The main feature, the deauthentication attack, is used to disconnect devices from their WiFi network.  
 No one seems to care about this huge vulnerability in the official 802.11 WiFi standard, so I took action and enabled everyone who has less than 10 USD to spare to recreate this project.  
 I hope it raises more attention on the issue. In 2009 the WiFi Alliance actually fixed the problem (see [802.11w](https://en.wikipedia.org/wiki/IEEE_802.11w-2009)), but only a few companies implemented it into their devices and software.  
-To effectively prevent a deauthentication attack, both client and access point must support the 802.11w standard with protected managment frames (PMF).  
+To effectively prevent a deauthentication attack, both client and access point must support the 802.11w standard with protected management frames (PMF).  
 While most client devices seem to support it when the access point forces it, basically no WiFi access point has it enabled.  
 
 Feel free to test your hardware out, annoy these companies with the problem, share this project and push for a fix!
@@ -50,7 +50,7 @@ The difference between deauthing and jamming: [click me](https://github.com/spac
 
 ![PICTURE DSTIKE Deauther OLED Board](https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/DSTIKE_Deauther_Board.jpg)
 
-If you want to support the development of this project, you can buy one of the offical boards by DSTIKE (Travis Lin) on following sites:  
+If you want to support the development of this project, you can buy one of the official boards by DSTIKE (Travis Lin) on following sites:  
 - [Tindie](https://tindie.com/stores/lspoplove)  
 - [AliExpress](https://dstike.aliexpress.com/store/2996024)  
 - [Taobao](https://shop135375846.taobao.com)  
@@ -73,7 +73,7 @@ The [deauthentication](https://en.wikipedia.org/wiki/Wi-Fi_deauthentication_atta
 A solution is already there, why don't we use it?
 
 **Please don't refer to this project as "jammer", that totally undermines the real purpose of this project!**
-If you do, it only proves that you didn't understand anything of what this project stands for. Publishing content about this without a proper explaination shows that you only do it for the clicks, fame and/or money and have no respect for intellectual property, the community behind it and the fight for a better WiFi standard!  
+If you do, it only proves that you didn't understand anything of what this project stands for. Publishing content about this without a proper explanation shows that you only do it for the clicks, fame and/or money and have no respect for intellectual property, the community behind it and the fight for a better WiFi standard!  
 
 ## Getting Started
 
