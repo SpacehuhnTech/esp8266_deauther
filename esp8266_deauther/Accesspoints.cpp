@@ -5,16 +5,22 @@ Accesspoints::Accesspoints() {
 }
 
 void Accesspoints::sort() {
-    list->sort([](AP& a, AP& b) -> bool {
-        return WiFi.RSSI(a.id) < WiFi.RSSI(b.id);
+    list->setCompare([](AP& a, AP& b) -> int {
+        if(WiFi.RSSI(a.id) < WiFi.RSSI(b.id)) return -1;
+        if(WiFi.RSSI(a.id) == WiFi.RSSI(b.id)) return 0;
+        return 1;
     });
+    list->sort();
     changed = true;
 }
 
 void Accesspoints::sortAfterChannel() {
-    list->sort([](AP& a, AP& b) -> bool {
-        return WiFi.channel(a.id) > WiFi.channel(b.id);
+    list->setCompare([](AP& a, AP& b) -> int {
+        if(WiFi.channel(a.id) < WiFi.channel(b.id)) return -1;
+        if(WiFi.channel(a.id) == WiFi.channel(b.id)) return 0;
+        return 1;
     });
+    list->sort();
     changed = true;
 }
 

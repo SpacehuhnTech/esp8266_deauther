@@ -1,7 +1,7 @@
 #include "Stations.h"
 
 Stations::Stations() {
-    list = new SimpleList<Station>;
+    list = new SimpleList<Station>();
 }
 
 void Stations::add(uint8_t* mac, int accesspointNum) {
@@ -27,15 +27,21 @@ int Stations::findStation(uint8_t* mac) {
 }
 
 void Stations::sort() {
-    list->sort([](Station& a, Station& b) -> bool {
-        return *a.pkts < *b.pkts;
+    list->setCompare([](Station& a, Station& b) -> int {
+        if(*(a.pkts) < *(b.pkts)) return -1;
+        if(*(a.pkts) == *(b.pkts)) return 0;
+        return 1;
     });
+    list->sort();
 }
 
 void Stations::sortAfterChannel() {
-    list->sort([](Station& a, Station& b) -> bool {
-        return a.ch > b.ch;
+    list->setCompare([](Station& a, Station& b) -> int {
+        if(a.ch < b.ch) return -1;
+        if(a.ch == b.ch) return 0;
+        return 1;
     });
+    list->sort();
 }
 
 void Stations::removeAll() {
