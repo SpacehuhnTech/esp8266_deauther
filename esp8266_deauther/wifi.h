@@ -159,7 +159,7 @@ bool handleFileRead(String path) {
         else if (SPIFFS.exists(wifi_config_path + path + str(W_DOT_GZIP))) path = wifi_config_path + path + str(
                 W_DOT_GZIP);
         else {
-            prntln(W_NOT_FOUND);
+            // prntln(W_NOT_FOUND);
             return false;
         }
     }
