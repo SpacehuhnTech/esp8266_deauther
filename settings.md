@@ -1,3 +1,5 @@
+# Settings
+
 **Overview**
   - [`version`](#version)
   - [`ssid`](#ssid)
