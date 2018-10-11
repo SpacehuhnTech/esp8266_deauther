@@ -33,6 +33,7 @@ extern uint32_t  autosaveTime;
 extern String macToStr(uint8_t* mac);
 extern void strToColor(String str, uint8_t* buf);
 extern void readFileToSerial(String path, bool showLineNum);
+extern bool readFile(String path, String& buf);
 extern bool removeFile(String path);
 extern bool copyFile(String pathFrom, String pathTo);
 extern bool renameFile(String pathFrom, String pathTo);
@@ -44,31 +45,39 @@ extern void printWifiStatus();
 extern void startAP(String path, String ssid, String password, uint8_t ch, bool hidden, bool captivePortal);
 extern void wifiUpdate();
 
-const char CLI_DEFAULT_AUTOSTART[] PROGMEM = "scan -t 5s";
+const char CLI_DEFAULT_AUTOSTART[] PROGMEM = "scan -t 5s\nsysinfo\n";
+const char CLI_RESUMED[] PROGMEM = "Command Line resumed";
 
 class CLI {
     public:
         CLI();
-        void enable();
+        ~CLI();
+        
         void load();
         void load(String filepath);
+
+        void enable();
         void disable();
+        
         void update();
-        void stopScript();
-
-        void runCommands(String input);
-        void runCommand(String input);
-
-        void error(String message);
-        void parameterError(String parameter);
-
+        
+        void enableDelay(uint32_t delayTime);
+      
+        void exec(String& input);
+        void execFile(String path);
+        void runLine(String& input);
+        void runCommand(String& input);
+        
     private:
-        bool enabled;
+        bool enabled = false;
+        
         SimpleList<String>* list;
-        bool executing        = false;
-        bool continuously     = false;
-        uint32_t continueTime = 0;
-        uint32_t loopTime     = 0;
+        SimpleList<String>* queue;
+
+        bool delayed            = false;
+        uint32_t delayTime      = 0;
+        uint32_t delayStartTime = 0;
+        
         String execPath       = "/autostart.txt";
 
         struct Keyword {
@@ -77,6 +86,8 @@ class CLI {
             const char* alt;
         };
 
+        void error(String message);
+        void parameterError(String parameter);
         bool isInt(String str);
         int toInt(String str);
         uint32_t getTime(String time);

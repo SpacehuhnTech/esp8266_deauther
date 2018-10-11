@@ -7,11 +7,14 @@
 
 CLI::CLI() {
     list = new SimpleList<String>;
+    queue = new SimpleList<String>;
 }
+
+CLI::~CLI() {}
 
 void CLI::load() {
     checkFile(execPath, String(CLI_DEFAULT_AUTOSTART));
-    executing = true;
+    execFile(execPath);
 }
 
 void CLI::load(String filepath) {
@@ -27,6 +30,73 @@ void CLI::enable() {
 void CLI::disable() {
     enabled = true;
     prntln(CLI_SERIAL_DISABLED);
+}
+
+void CLI::update() {
+  // when serial available, read input
+  if (Serial.available() > 0) {
+    String input = Serial.readStringUntil('\n');
+    exec(input);
+  }
+
+  // when queue is not empty, delay is off and no scan is active, run it
+  else if ((queue->size() > 0) && !delayed && !scan.isScanning() && !attack.isRunning()) {
+    String s = queue->shift();
+    exec(s);
+  }
+}
+
+void CLI::enableDelay(uint32_t delayTime) {
+  delayed        = true;
+  this->delayTime = delayTime;
+  delayStartTime = millis();
+}
+
+void CLI::exec(String& input) {
+  // quick exit when input is empty
+  if (input.length() == 0) return;
+    
+  // check delay
+  if (delayed && (millis() - delayStartTime > delayTime)) {
+    delayed = false;
+    prntln(CLI_RESUMED);
+  }
+
+  // when delay is on, add it to queue, else run it
+  if (delayed) {
+    queue->add(input);
+  } else {
+    runLine(input);
+  }
+}
+
+void CLI::execFile(String path) {
+  String input;
+
+  if (readFile(path, input)) {
+    String tmpLine;
+    char   tmpChar;
+
+    input += '\n';
+
+    while (!queue->isEmpty()) {
+      input += queue->shift();
+      input += '\n';
+    }
+
+    for (int i = 0; i < input.length(); i++) {
+      tmpChar = input.charAt(i);
+
+      if (tmpChar == '\n') {
+        queue->add(tmpLine);
+        tmpLine = String();
+      } else {
+        tmpLine += tmpChar;
+      }
+    }
+
+    queue->add(tmpLine);
+  }
 }
 
 void CLI::error(String message) {
@@ -70,61 +140,10 @@ bool CLI::eqlsCMD(int i, const char* keyword) {
     return eqls(list->get(i).c_str(), keyword);
 }
 
-void CLI::stopScript() {
-    if (continuously) {
-        continuously = false;
-        prnt(CLI_STOPPED_SCRIPT);
-        prnt(execPath);
-        prntln(DOUBLEQUOTES);
-        prnt(SPACE);
-        prnt(CLI_CONTINUOUSLY);
-    }
-}
-
-void CLI::update() {
-    if (executing) {
-        if (execPath.charAt(0) != SLASH) execPath = SLASH + execPath;
-        prnt(CLI_EXECUTING);
-        prntln(execPath);
-        File f = SPIFFS.open(execPath, "r");
-
-        if (f.size() > 0) {
-            String line;
-            char   tmp;
-
-            while (f.available()) {
-                tmp = f.read();
-
-                if (tmp == NEWLINE) {
-                    runCommands(line);
-                    line = String();
-                } else {
-                    line += tmp;
-                }
-            }
-            runCommand(line);
-        }
-
-        f.close();
-        executing = false;
-
-        if (continuously) prntln(CLI_SCRIPT_DONE_CONTINUE);
-        else prntln(CLI_SCRIPT_DONE);
-
-        loopTime = currentTime;
-    } else {
-        if (enabled && (Serial.available() > 0)) runCommands(Serial.readStringUntil(NEWLINE));
-
-        if (continuously) {
-            if (currentTime - loopTime > continueTime) executing = true;
-        }
-    }
-}
-
-void CLI::runCommands(String input) {
-    String tmp;
-
-    for (uint32_t i = 0; i < input.length(); i++) {
+void CLI::runLine(String &input) {
+  String tmp;
+  
+  for (int i = 0; i < input.length(); i++) {
         // when 2 semicolons in a row without a backslash escaping the first
         if ((input.charAt(i) == SEMICOLON) && (input.charAt(i + 1) == SEMICOLON) &&
             (input.charAt(i - 1) != BACKSLASH)) {
@@ -141,7 +160,7 @@ void CLI::runCommands(String input) {
     if (tmp.length() > 0) runCommand(tmp);
 }
 
-void CLI::runCommand(String input) {
+void CLI::runCommand(String& input) {
     input.replace(String(NEWLINE), String());
     input.replace(String(CARRIAGERETURN), String());
 
@@ -670,13 +689,11 @@ void CLI::runCommand(String input) {
             for (int i = 1; i < list->size(); i++) {
                 if (eqlsCMD(i, CLI_SCAN)) scan.stop();
                 else if (eqlsCMD(i, CLI_ATTACK)) attack.stop();
-                else if (eqlsCMD(i, CLI_SCRIPT)) stopScript();
                 else parameterError(list->get(i));
             }
         } else {
             scan.stop();
             attack.stop();
-            stopScript();
         }
     }
 
@@ -850,20 +867,8 @@ void CLI::runCommand(String input) {
 
     // ===== RUN ==== //
     // run <file> [continue <num>]
-    else if (!executing && (list->size() >= 2) && eqlsCMD(0, CLI_RUN)) {
-        executing = true;
-        execPath  = list->get(1);
-
-        if (eqlsCMD(2, CLI_CONTINUE)) {
-            continuously = true;
-            continueTime = 10000;
-
-            if (list->size() == 3) {
-                continueTime = getTime(list->get(3));
-
-                if (continueTime < 1000) continueTime = 1000;
-            }
-        }
+    else if ((list->size() >= 2) && eqlsCMD(0, CLI_RUN)) {
+        execFile(list->get(1));
     }
 
     // ===== PRINT ==== //

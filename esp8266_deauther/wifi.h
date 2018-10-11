@@ -315,7 +315,8 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
   server.on(String(F("/run")).c_str(), HTTP_GET, []() {
     server.send(200, str(W_TXT), str(W_OK).c_str());
-    cli.runCommands(server.arg("cmd"));
+    String input = server.arg("cmd");
+    cli.exec(input);
   });
 
   server.on(String(F("/attack.json")).c_str(), HTTP_GET, []() {
