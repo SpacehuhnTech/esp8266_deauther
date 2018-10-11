@@ -28,7 +28,7 @@ int Stations::findStation(uint8_t* mac) {
 
 void Stations::sort() {
     list->setCompare([](Station& a, Station& b) -> int {
-        if(*(a.pkts) < *(b.pkts)) return -1;
+        if(*(a.pkts) > *(b.pkts)) return -1;
         if(*(a.pkts) == *(b.pkts)) return 0;
         return 1;
     });
