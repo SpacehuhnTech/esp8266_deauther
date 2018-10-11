@@ -50,15 +50,6 @@ void Stations::removeAll() {
     changed = true;
 }
 
-void Stations::remove(int num) {
-    if (!check(num)) return;
-
-    internal_remove(num);
-    prnt(ST_REMOVED_STATION);
-    prntln(num);
-    changed = true;
-}
-
 void Stations::removeOldest() {
     int oldest = 0;
     int c      = count();
@@ -254,6 +245,33 @@ void Stations::deselect(int num) {
     prnt(ST_DESELECTED_STATION);
     prntln(num);
     changed = true;
+}
+
+void Stations::remove(int num) {
+    if (!check(num)) return;
+
+    internal_remove(num);
+    prnt(ST_REMOVED_STATION);
+    prntln(num);
+    changed = true;
+}
+
+void Stations::select(String ssid) {
+  for(int i=0;i<list->size();i++){
+    if(getAPStr(i).equalsIgnoreCase(ssid)) select(i);
+  }  
+}
+
+void Stations::deselect(String ssid) {
+  for(int i=0;i<list->size();i++){
+    if(getAPStr(i).equalsIgnoreCase(ssid)) deselect(i);
+  }
+}
+
+void Stations::remove(String ssid) {
+  for(int i=0;i<list->size();i++){
+    if(getAPStr(i).equalsIgnoreCase(ssid)) remove(i);
+  }
 }
 
 void Stations::selectAll() {

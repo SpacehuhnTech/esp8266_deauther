@@ -1,18 +1,9 @@
 #include "CLI.h"
 
 /*
-   A short introduction for the reader:
-   This class is a huuuuuuuge mess of if statements!!!!!1!eleven
-   But it works and I tried to make it as compact as possible.
-   If someone was able to make an Arduino framework for parsing an input string in different commands with certain
-      rules,
-   required- and optional parameters of different datatypes to run different callback functions... shoot me a quick
-      message on GitHub or Twitter: @spacehuhn!
-   PS: the framework has to be good in both CPU performance and RAM usage, otherwise it's useless. Good luck!
-   I already wasted way too much time trying to come up with the best way of programming this, so I will just keep it
-      that way for now.
-   Also: NEVER CHANGE A RUNNING SYSTEM!
- */
+   Shitty code used less resources so I will keep this clusterfuck as it is,
+   but if you're interested I made a library for this: github.com/spacehuhn/SimpleCLI 
+*/
 
 CLI::CLI() {
     list = new SimpleList<String>;
@@ -371,8 +362,11 @@ void CLI::runCommand(String input) {
             if (mode == 0) select ? accesspoints.selectAll() : accesspoints.deselectAll();
             else if (mode == 1) select ? stations.selectAll() : stations.deselectAll();
             else if (mode == 2) select ? names.selectAll() : names.deselectAll();
-        } else if ((id == -2) && (mode == 2)) {
-            select ? names.select(list->get(2)) : names.deselect(list->get(2));
+        } else if ((id == -2)) {
+            String name = list->get(2);
+            if (mode == 0) select ? accesspoints.select(name) : accesspoints.deselect(name);
+            else if (mode == 1) select ? stations.select(name) : stations.deselect(name);
+            else if (mode == 2) select ? names.select(name) : names.deselect(name);
         } else {
             parameterError(list->get(1) + SPACE + list->get(2));
         }
