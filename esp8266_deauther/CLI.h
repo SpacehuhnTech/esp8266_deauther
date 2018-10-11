@@ -18,7 +18,7 @@ extern "C" {
 #include "DisplayUI.h"
 #include "LED.h"
 
-extern LED* led;
+extern LED led;
 extern Settings settings;
 extern Names    names;
 extern SSIDs    ssids;

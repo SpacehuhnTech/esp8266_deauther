@@ -22,6 +22,14 @@ void DisplayUI::setupDisplay() {
     // ====================== //
 }
 
+#ifdef HIGHLIGHT_LED
+void DisplayUI::setupLED() {
+  pinMode(HIGHLIGHT_LED, OUTPUT);
+  digitalWrite(HIGHLIGHT_LED, HIGH);
+  highlightLED = true;
+}
+#endif
+
 void DisplayUI::on() {
     // ===== adjustable ===== //
     if (enabled) {
@@ -317,6 +325,12 @@ void DisplayUI::setup() {
             scan.start(SCAN_MODE_SNIFFER, 0, SCAN_MODE_OFF, 0, false, wifi_channel);
             mode = SCREEN_MODE_PACKETMONITOR;
         });
+#ifdef HIGHLIGHT_LED
+        addMenuNode(&mainMenu, D_LED, [this]() { // LED
+          highlightLED = !highlightLED;
+          digitalWrite(HIGHLIGHT_LED, highlightLED);
+        });
+#endif
     });
 
     // SCAN MENU

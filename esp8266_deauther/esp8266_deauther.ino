@@ -24,7 +24,7 @@ extern "C" {
 #include "LED.h"
 
 // Run-Time Variables //
-LED* led;
+LED led;
 Settings settings;
 Names    names;
 SSIDs    ssids;
@@ -105,13 +105,9 @@ void setup() {
     // create scan.json
     scan.setup();
 
-    // setup LED
-    led = new LED();
-    led->setup();
-
     // set channel
     setWifiChannel(settings.getChannel());
-
+       
     // load Wifi settings: SSID, password,...
     #ifdef DEFAULT_SSID
       if(settings.getSSID() == "pwned") settings.setSSID(DEFAULT_SSID);
@@ -135,19 +131,21 @@ void setup() {
 
     // version
     prntln(settings.getVersion());
+
+    // setup LED
+    led.setup();
 }
 
 void loop() {
     currentTime = millis();
 
+    led.update();            // update LED color
     wifiUpdate();             // manage access point
-
     attack.update();          // run attacks
     displayUI.update();
     cli.update(); // read and run serial input
     scan.update();            // run scan
     ssids.update();           // run random mode, if enabled
-    led->update();            // update LED color
 
     // auto-save
     if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {
@@ -162,5 +160,8 @@ void loop() {
         EEPROM.write(0, 0);
         EEPROM.commit();
         booted = true;
+#ifdef HIGHLIGHT_LED
+        displayUI.setupLED();
+#endif
     }
 }

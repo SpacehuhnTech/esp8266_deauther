@@ -688,7 +688,7 @@ void CLI::runCommand(String input) {
     // ===== STOP ===== //
     // stop [<mode>]
     else if (eqlsCMD(0, CLI_STOP)) {
-        led->setMode(led->LED_MODE::IDLE, true);
+        led.setMode(led.LED_MODE::IDLE, true);
 
         if ((list->size() >= 2) && !(eqlsCMD(1, CLI_ALL))) {
             for (int i = 1; i < list->size(); i++) {
@@ -964,9 +964,9 @@ void CLI::runCommand(String input) {
     // led <r> <g> <b> [<brightness>]
     else if ((list->size() >= 4) && (list->size() <= 5) && eqlsCMD(0, CLI_LED)) {
         if (list->size() == 4) {
-            led->setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), true);
+            led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), true);
         } else {
-            led->setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), list->get(4).toInt(), true);
+            led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), list->get(4).toInt(), true);
         }
     }
 
@@ -977,18 +977,18 @@ void CLI::runCommand(String input) {
         strToColor(list->get(1), c);
 
         if (list->size() == 2) {
-            led->setColor(c[0], c[1], c[2], true);
+            led.setColor(c[0], c[1], c[2], true);
         } else {
-            led->setColor(c[0], c[1], c[2], list->get(2).toInt(), true);
+            led.setColor(c[0], c[1], c[2], list->get(2).toInt(), true);
         }
     }
 
     // led <enable/disable>
     else if ((list->size() == 2) && eqlsCMD(0, CLI_LED)) {
         if (eqlsCMD(1, CLI_ENABLE)) {
-            led->tempEnable();
+            led.tempEnable();
         } else if (eqlsCMD(1, CLI_DISABLE)) {
-            led->tempDisable();
+            led.tempDisable();
         } else {
             parameterError(list->get(1));
         }
@@ -1006,7 +1006,7 @@ void CLI::runCommand(String input) {
             scan.update();   // run scan
             attack.update(); // run attacks
             ssids.update();  // run random mode, if enabled
-            led->update();   // update LED color
+            led.update();   // update LED color
 
             // auto-save
             if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {

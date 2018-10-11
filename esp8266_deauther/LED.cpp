@@ -7,28 +7,16 @@ LED::~LED() {
 }
 
 void LED::setup() {
-  #ifdef DIGITAL_LED
+  #if defined(DIGITAL_LED)
     led = new DigitalLED(LED_PIN_R, LED_PIN_G, LED_PIN_B, LED_ANODE);
     led->setup();
-    return;
-
-  #endif // ifdef DIGITAL_LED
-
-  #ifdef RGB_LED
+  #elif defined(RGB_LED)
     led = new LED::AnalogRGBLED(LED_PIN_R, LED_PIN_G, LED_PIN_B, LED_MODE_BRIGHTNESS, LED_ANODE);
     led->setup();
-    return;
-
-  #endif // ifdef RGB_LED
-
-  #ifdef NEOPIXEL_LED
+  #elif defined(NEOPIXEL_LED)
     led = new LED::NeopixelLED(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, LED_MODE_BRIGHTNESS);
     led->setup();
-    return;
-
-  #endif // ifdef NEOPIXEL_LED
-
-    prntln(L_NOT_CONFIGURED);
+  #endif 
 }
 
 void LED::update() {
@@ -52,19 +40,15 @@ void LED::setMode(uint8_t mode, bool force) {
         case LED_MODE::OFF:
             led->setColor(0, 0, 0);
             break;
-
         case LED_MODE::SCAN:
             led->setColor(0, 0, 255);
             break;
-
         case LED_MODE::ATTACK:
             led->setColor(255, 255, 0);
             break;
-
         case LED_MODE::DEAUTH:
             led->setColor(255, 0, 0);
             break;
-
         case LED_MODE::IDLE:
             led->setColor(0, 255, 0);
             break;

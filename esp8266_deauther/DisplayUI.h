@@ -15,7 +15,6 @@ extern "C" {
 #include "Scan.h"
 #include "Attack.h"
 
-
 extern Settings settings;
 extern Names    names;
 extern SSIDs    ssids;
@@ -77,6 +76,12 @@ class DisplayUI {
     public:
         DisplayUI();
         void setup();
+        
+#ifdef HIGHLIGHT_LED
+        void setupLED();
+        bool highlightLED = false;
+#endif
+
         void update();
         void on();
         void off();
