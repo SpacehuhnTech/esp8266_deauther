@@ -46,13 +46,18 @@ void CLI::update() {
   }
 }
 
+void CLI::stop() {
+  queue->clear();
+  prntln(CLI_STOPPED_SCRIPT);
+}
+
 void CLI::enableDelay(uint32_t delayTime) {
   delayed        = true;
   this->delayTime = delayTime;
   delayStartTime = millis();
 }
 
-void CLI::exec(String& input) {
+void CLI::exec(String input) {
   // quick exit when input is empty
   if (input.length() == 0) return;
     
@@ -140,7 +145,7 @@ bool CLI::eqlsCMD(int i, const char* keyword) {
     return eqls(list->get(i).c_str(), keyword);
 }
 
-void CLI::runLine(String &input) {
+void CLI::runLine(String input) {
   String tmp;
   
   for (int i = 0; i < input.length(); i++) {
@@ -160,7 +165,7 @@ void CLI::runLine(String &input) {
     if (tmp.length() > 0) runCommand(tmp);
 }
 
-void CLI::runCommand(String& input) {
+void CLI::runCommand(String input) {
     input.replace(String(NEWLINE), String());
     input.replace(String(CARRIAGERETURN), String());
 
@@ -689,11 +694,13 @@ void CLI::runCommand(String& input) {
             for (int i = 1; i < list->size(); i++) {
                 if (eqlsCMD(i, CLI_SCAN)) scan.stop();
                 else if (eqlsCMD(i, CLI_ATTACK)) attack.stop();
+                else if (eqlsCMD(i, CLI_SCRIPT)) this->stop();
                 else parameterError(list->get(i));
             }
         } else {
             scan.stop();
             attack.stop();
+            this->stop();
         }
     }
 

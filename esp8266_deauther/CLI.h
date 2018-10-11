@@ -57,13 +57,14 @@ class CLI {
         void disable();
         
         void update();
+        void stop();
         
         void enableDelay(uint32_t delayTime);
       
-        void exec(String& input);
+        void exec(String input);
         void execFile(String path);
-        void runLine(String& input);
-        void runCommand(String& input);
+        void runLine(String input);
+        void runCommand(String input);
         
     private:
         bool enabled = false;
