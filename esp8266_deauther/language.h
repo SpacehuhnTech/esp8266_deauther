@@ -1,6 +1,8 @@
 #ifndef language_h
 #define language_h
 
+#include "Arduino.h"
+
 extern String str(const char* ptr);
 extern String keyword(const char* keywordPtr);
 extern bool eqls(const char* str, const char* keywordPtr);

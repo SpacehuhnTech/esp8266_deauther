@@ -1,12 +1,6 @@
 #ifndef DisplayUI_h
 #define DisplayUI_h
 
-#include "Arduino.h"
-#include <ESP8266WiFi.h>
-#include <FS.h>
-extern "C" {
-  #include "user_interface.h"
-}
 #include "language.h"
 #include "A_config.h"
 #include "Settings.h"
@@ -35,42 +29,27 @@ extern String right(String a, int len);
 extern String leftRight(String a, String b, int len);
 extern String replaceUtf8(String str, String r);
 
+// fallback for the buttons
 #ifndef BUTTON_UP
-    #define BUTTON_UP 255
-  #endif
+  #define BUTTON_UP 255
+#endif // ifndef BUTTON_UP
 
-  #ifndef BUTTON_DOWN
-    #define BUTTON_DOWN 255
-  #endif
+#ifndef BUTTON_DOWN
+  #define BUTTON_DOWN 255
+#endif // ifndef BUTTON_DOWN
 
-  #ifndef BUTTON_A
-    #define BUTTON_A 255
-  #endif
+#ifndef BUTTON_A
+  #define BUTTON_A 255
+#endif // ifndef BUTTON_A
 
-  #ifndef BUTTON_B
-    #define BUTTON_B 255
-  #endif
-
-  
-// different display modes
-#define SCREEN_MODE_OFF 0
-#define SCREEN_MODE_BUTTON_TEST 1
-#define SCREEN_MODE_MENU 2
-#define SCREEN_MODE_LOADSCAN 3
-#define SCREEN_MODE_PACKETMONITOR 4
-#define SCREEN_MODE_INTRO 5
-
-// ===== adjustable ===== //
-#define BUTTON_DELAY 280  // in ms
-#define DRAW_INTERVAL 100 // 100ms = 10 FPS
-#define SCROLL_SPEED 5
-#define SCREEN_INTRO_TIME 2500
-// ====================== //
+#ifndef BUTTON_B
+  #define BUTTON_B 255
+#endif // ifndef BUTTON_B
 
 struct MenuNode {
     std::function<String()>getStr; // function used to create the displayed string
-    std::function<void()>  click;  // function that is executed when node is clicked
-    std::function<void()>  hold;   // function that is executed when node is pressed for > 800ms
+    std::function<void()>  click; // function that is executed when node is clicked
+    std::function<void()>  hold;  // function that is executed when node is pressed for > 800ms
 };
 
 struct Menu {
@@ -82,20 +61,26 @@ struct Menu {
 
 class DisplayUI {
     public:
-        Button* up     = NULL;
-        Button* down   = NULL;
-        Button* a = NULL;
-        Button* b   = NULL;
-        
-        DisplayUI();
-        void setup();
-        
-#ifdef HIGHLIGHT_LED
-        void setupLED();
+        enum DISPLAY_MODE { OFF = 0, BUTTON_TEST = 1, MENU = 2, LOADSCAN = 3, PACKETMONITOR = 4, INTRO = 5 };
+
+        uint8_t mode      = DISPLAY_MODE::MENU;
         bool highlightLED = false;
-#endif
+
+        Button* up   = NULL;
+        Button* down = NULL;
+        Button* a    = NULL;
+        Button* b    = NULL;
 
         // ===== adjustable ===== //
+        DEAUTHER_DISPLAY // see config.h
+
+        const uint8_t maxLen           = 18;
+        const uint8_t lineHeight       = 12;
+        const uint8_t scrollSpeed      = 5;
+        const uint8_t buttonDelay      = 250;
+        const uint8_t drawInterval     = 100; // 100ms = 10 FPS
+        const uint16_t screenIntroTime = 2500;
+
         void configInit();
         void configOn();
         void configOff();
@@ -104,57 +89,34 @@ class DisplayUI {
         void drawString(int x, int y, String str);
         void drawString(int row, String str);
         void drawLine(int x1, int y1, int x2, int y2);
-
-        DEAUTHER_DISPLAY // see config.h
-        uint8_t maxLen = 18;
-        uint8_t lineHeight = 12;
-        uint8_t scrollSpeed = 5;
         // ====================== //
+
+        DisplayUI();
+        ~DisplayUI();
+
+        void setup();
+#ifdef HIGHLIGHT_LED
+        void setupLED();
+#endif // ifdef HIGHLIGHT_LED
 
         void update();
         void on();
         void off();
 
-        uint8_t mode = SCREEN_MODE_MENU;
-
     private:
-        void setupDisplay();
-        void setupButtons();
+        int16_t selectedID     = 0; // i.e. access point ID to draw the apMenu
+        uint16_t scrollCounter = 0; // for horizontal scrolling
+        uint32_t drawTime      = 0; // last time a frame was drawn
+        uint32_t startTime     = 0; // when the screen was enabled
+        uint32_t buttonTime    = 0; // last time a button was pressed
 
-        int16_t selectedID     = 0;     // i.e. access point ID to draw the apMenu
-        uint16_t scrollCounter = 0;     // for horizontal scrolling
-        uint32_t drawTime      = 0;     // last time a frame was drawn
-        uint32_t startTime     = 0;     // when the screen was enabled
-        uint32_t buttonTime   = 0; // last time a button was pressed
-        bool enabled           = false; // display enabled
+        bool enabled = false;       // display enabled
+        bool tempOff = false;
 
         // selected attack modes
         bool beaconSelected = false;
         bool deauthSelected = false;
         bool probeSelected  = false;
-
-        String getChannel();
-        
-        // draw functions
-        void draw();
-        void drawButtonTest();
-        void drawMenu();
-        void drawLoadingScan();
-        void drawPacketMonitor();
-        void drawIntro();
-        void clearMenu(Menu* menu);
-
-        // menu functions
-        void changeMenu(Menu* menu);
-        void goBack();
-        void createMenu(Menu* menu, Menu* parent, std::function<void()>build);
-
-        void addMenuNode(Menu* menu, std::function<String()>getStr, std::function<void()>click,
-                         std::function<void()>hold);
-        void addMenuNode(Menu* menu, std::function<String()>getStr, std::function<void()>click);
-        void addMenuNode(Menu* menu, std::function<String()>getStr, Menu* next);
-        void addMenuNode(Menu* menu, const char* ptr, std::function<void()>click);
-        void addMenuNode(Menu* menu, const char* ptr, Menu* next);
 
         // menus
         Menu* currentMenu;
@@ -174,6 +136,30 @@ class DisplayUI {
         Menu stationMenu;
         Menu nameMenu;
         Menu ssidMenu;
+
+        void setupButtons();
+
+        String getChannel();
+
+        // draw functions
+        void draw();
+        void drawButtonTest();
+        void drawMenu();
+        void drawLoadingScan();
+        void drawPacketMonitor();
+        void drawIntro();
+        void clearMenu(Menu* menu);
+
+        // menu functions
+        void changeMenu(Menu* menu);
+        void goBack();
+        void createMenu(Menu* menu, Menu* parent, std::function<void()>build);
+
+        void addMenuNode(Menu* menu, std::function<String()>getStr, std::function<void()>click, std::function<void()>hold);
+        void addMenuNode(Menu* menu, std::function<String()>getStr, std::function<void()>click);
+        void addMenuNode(Menu* menu, std::function<String()>getStr, Menu* next);
+        void addMenuNode(Menu* menu, const char* ptr, std::function<void()>click);
+        void addMenuNode(Menu* menu, const char* ptr, Menu* next);
 };
 
 // ===== FONT ===== //
