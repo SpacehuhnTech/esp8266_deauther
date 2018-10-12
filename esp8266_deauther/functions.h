@@ -202,7 +202,8 @@ bool eqls(const char* str, const char* keywordPtr) {
     uint8_t lenKeyword = strlen(keyword);
 
     if (lenStr > lenKeyword) return false;  // string can't be longer than keyword (but can be smaller because of '/'
-                                            // and ',')
+
+    // and ',')
 
     uint8_t a      = 0;
     uint8_t b      = 0;
@@ -449,14 +450,13 @@ void strToColor(String str, uint8_t* buf) {
     for (uint8_t i = 0; i < 3; i++) buf[i] = strtoul((str.substring(i * 2, i * 2 + 2)).c_str(), NULL, 16);
 }
 
-
 String center(String a, int len) {
     int spaces = len - a.length();
 
-    for (int i = 0; i < spaces; i+=2) {
-      a = ' ' + a + ' ';
+    for (int i = 0; i < spaces; i += 2) {
+        a = ' ' + a + ' ';
     }
-    
+
     a = a.substring(0, len);
 
     return a;

@@ -408,21 +408,26 @@ uint32_t Scan::getPackets(int i) {
     }
 }
 
-String Scan::getMode(){
-  switch(scanMode) {
+String Scan::getMode() {
+    switch (scanMode) {
     case SCAN_MODE_OFF:
-      return String(SC_MODE_OFF);
+        return String(SC_MODE_OFF);
+
     case SCAN_MODE_APS:
-      return String(SC_MODE_AP);
+        return String(SC_MODE_AP);
+
     case SCAN_MODE_STATIONS:
-      return String(SC_MODE_ST);
+        return String(SC_MODE_ST);
+
     case SCAN_MODE_ALL:
-      return String(SC_MODE_ALL);
+        return String(SC_MODE_ALL);
+
     case SCAN_MODE_SNIFFER:
-      return String(SC_MODE_SNIFFER);
+        return String(SC_MODE_SNIFFER);
+
     default:
-      return String();
-  }
+        return String();
+    }
 }
 
 double Scan::getScaleFactor(uint8_t height) {

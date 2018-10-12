@@ -32,7 +32,7 @@ Accesspoints accesspoints;
 Stations     stations;
 Scan   scan;
 Attack attack;
-CLI cli;
+CLI    cli;
 DisplayUI displayUI;
 
 #include "wifi.h"
@@ -107,11 +107,11 @@ void setup() {
 
     // set channel
     setWifiChannel(settings.getChannel());
-       
+
     // load Wifi settings: SSID, password,...
     #ifdef DEFAULT_SSID
-      if(settings.getSSID() == "pwned") settings.setSSID(DEFAULT_SSID);
-    #endif
+    if (settings.getSSID() == "pwned") settings.setSSID(DEFAULT_SSID);
+    #endif // ifdef DEFAULT_SSID
     loadWifiConfigDefaults();
 
     // dis/enable serial command interface
@@ -139,13 +139,13 @@ void setup() {
 void loop() {
     currentTime = millis();
 
-    led.update();            // update LED color
-    wifiUpdate();             // manage access point
-    attack.update();          // run attacks
+    led.update();    // update LED color
+    wifiUpdate();    // manage access point
+    attack.update(); // run attacks
     displayUI.update();
-    cli.update(); // read and run serial input
-    scan.update();            // run scan
-    ssids.update();           // run random mode, if enabled
+    cli.update();    // read and run serial input
+    scan.update();   // run scan
+    ssids.update();  // run random mode, if enabled
 
     // auto-save
     if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {
@@ -162,6 +162,6 @@ void loop() {
         booted = true;
 #ifdef HIGHLIGHT_LED
         displayUI.setupLED();
-#endif
+#endif // ifdef HIGHLIGHT_LED
     }
 }

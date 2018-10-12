@@ -104,7 +104,7 @@ class Settings {
         bool beaconChannel    = false;
         bool autosave         = true;
         bool beaconInterval   = false;
-        bool cli  = true;
+        bool cli              = true;
         bool displayInterface = USE_DISPLAY;
         bool webInterface     = true;
         bool webSpiffs        = false;

@@ -16,7 +16,7 @@ void LED::setup() {
   #elif defined(NEOPIXEL_LED)
     led = new LED::NeopixelLED(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, LED_MODE_BRIGHTNESS);
     led->setup();
-  #endif 
+  #endif // if defined(DIGITAL_LED)
 }
 
 void LED::update() {
@@ -40,15 +40,19 @@ void LED::setMode(uint8_t mode, bool force) {
         case LED_MODE::OFF:
             led->setColor(0, 0, 0);
             break;
+
         case LED_MODE::SCAN:
             led->setColor(0, 0, 255);
             break;
+
         case LED_MODE::ATTACK:
             led->setColor(255, 255, 0);
             break;
+
         case LED_MODE::DEAUTH:
             led->setColor(255, 0, 0);
             break;
+
         case LED_MODE::IDLE:
             led->setColor(0, 255, 0);
             break;
@@ -129,6 +133,7 @@ LED::AnalogRGBLED::AnalogRGBLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, uint8_
     LED::AnalogRGBLED::rPin  = rPin;
     LED::AnalogRGBLED::gPin  = gPin;
     LED::AnalogRGBLED::bPin  = bPin;
+
     setBrightness(brightness);
 }
 

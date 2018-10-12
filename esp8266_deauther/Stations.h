@@ -32,11 +32,11 @@ class Stations {
         void select(int num);
         void deselect(int num);
         void remove(int num);
-        
+
         void select(String ssid);
         void deselect(String ssid);
         void remove(String ssid);
-        
+
         void add(uint8_t* mac, int accesspointNum);
 
         void selectAll();

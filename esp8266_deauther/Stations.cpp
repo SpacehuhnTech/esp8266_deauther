@@ -28,8 +28,10 @@ int Stations::findStation(uint8_t* mac) {
 
 void Stations::sort() {
     list->setCompare([](Station& a, Station& b) -> int {
-        if(*(a.pkts) > *(b.pkts)) return -1;
-        if(*(a.pkts) == *(b.pkts)) return 0;
+        if (*(a.pkts) > *(b.pkts)) return -1;
+
+        if (*(a.pkts) == *(b.pkts)) return 0;
+
         return 1;
     });
     list->sort();
@@ -37,8 +39,10 @@ void Stations::sort() {
 
 void Stations::sortAfterChannel() {
     list->setCompare([](Station& a, Station& b) -> int {
-        if(a.ch < b.ch) return -1;
-        if(a.ch == b.ch) return 0;
+        if (a.ch < b.ch) return -1;
+
+        if (a.ch == b.ch) return 0;
+
         return 1;
     });
     list->sort();
@@ -257,21 +261,21 @@ void Stations::remove(int num) {
 }
 
 void Stations::select(String ssid) {
-  for(int i=0;i<list->size();i++){
-    if(getAPStr(i).equalsIgnoreCase(ssid)) select(i);
-  }  
+    for (int i = 0; i < list->size(); i++) {
+        if (getAPStr(i).equalsIgnoreCase(ssid)) select(i);
+    }
 }
 
 void Stations::deselect(String ssid) {
-  for(int i=0;i<list->size();i++){
-    if(getAPStr(i).equalsIgnoreCase(ssid)) deselect(i);
-  }
+    for (int i = 0; i < list->size(); i++) {
+        if (getAPStr(i).equalsIgnoreCase(ssid)) deselect(i);
+    }
 }
 
 void Stations::remove(String ssid) {
-  for(int i=0;i<list->size();i++){
-    if(getAPStr(i).equalsIgnoreCase(ssid)) remove(i);
-  }
+    for (int i = 0; i < list->size(); i++) {
+        if (getAPStr(i).equalsIgnoreCase(ssid)) remove(i);
+    }
 }
 
 void Stations::selectAll() {

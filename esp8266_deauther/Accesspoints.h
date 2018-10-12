@@ -30,17 +30,17 @@ class Accesspoints {
         void sortAfterChannel();
 
         void add(uint8_t id, bool selected);
-        
+
         void print(int num);
         void print(int num, bool header, bool footer);
-        
+
         void select(int num);
         void deselect(int num);
         void remove(int num);
         void select(String ssid);
         void deselect(String ssid);
         void remove(String ssid);
-        
+
         void printAll();
         void printSelected();
         void selectAll();

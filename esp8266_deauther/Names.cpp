@@ -97,7 +97,7 @@ void Names::save(bool force, String filepath) {
 
 void Names::sort() {
     list->setCompare([](Device& a, Device& b) -> int {
-      return memcmp(a.mac, b.mac, 6);
+        return memcmp(a.mac, b.mac, 6);
     });
     list->sort();
 }
@@ -117,11 +117,11 @@ bool Names::check(int num) {
 }
 
 int Names::findID(uint8_t* mac) {
-  for(int i=0;i<list->size();i++){
-    if(memcmp(mac, list->get(i).mac, 6) == 0) return i;
-  }
-  
-  return -1;
+    for (int i = 0; i < list->size(); i++) {
+        if (memcmp(mac, list->get(i).mac, 6) == 0) return i;
+    }
+
+    return -1;
 }
 
 String Names::find(uint8_t* mac) {

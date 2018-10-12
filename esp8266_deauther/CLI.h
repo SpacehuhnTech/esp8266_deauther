@@ -49,34 +49,34 @@ class CLI {
     public:
         CLI();
         ~CLI();
-        
+
         void load();
         void load(String filepath);
 
         void enable();
         void disable();
-        
+
         void update();
         void stop();
-        
+
         void enableDelay(uint32_t delayTime);
-      
+
         void exec(String input);
         void execFile(String path);
         void runLine(String input);
         void runCommand(String input);
-        
+
     private:
         bool enabled = false;
-        
+
         SimpleList<String>* list;
         SimpleList<String>* queue;
 
         bool delayed            = false;
         uint32_t delayTime      = 0;
         uint32_t delayStartTime = 0;
-        
-        String execPath       = "/autostart.txt";
+
+        String execPath = "/autostart.txt";
 
         struct Keyword {
             const char* name;

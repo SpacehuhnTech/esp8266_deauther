@@ -2,11 +2,11 @@
 
 /*
    Shitty code used less resources so I will keep this clusterfuck as it is,
-   but if you're interested I made a library for this: github.com/spacehuhn/SimpleCLI 
-*/
+   but if you're interested I made a library for this: github.com/spacehuhn/SimpleCLI
+ */
 
 CLI::CLI() {
-    list = new SimpleList<String>;
+    list  = new SimpleList<String>;
     queue = new SimpleList<String>;
 }
 
@@ -33,75 +33,75 @@ void CLI::disable() {
 }
 
 void CLI::update() {
-  // when serial available, read input
-  if (Serial.available() > 0) {
-    String input = Serial.readStringUntil('\n');
-    exec(input);
-  }
+    // when serial available, read input
+    if (Serial.available() > 0) {
+        String input = Serial.readStringUntil('\n');
+        exec(input);
+    }
 
-  // when queue is not empty, delay is off and no scan is active, run it
-  else if ((queue->size() > 0) && !delayed && !scan.isScanning() && !attack.isRunning()) {
-    String s = queue->shift();
-    exec(s);
-  }
+    // when queue is not empty, delay is off and no scan is active, run it
+    else if ((queue->size() > 0) && !delayed && !scan.isScanning() && !attack.isRunning()) {
+        String s = queue->shift();
+        exec(s);
+    }
 }
 
 void CLI::stop() {
-  queue->clear();
-  prntln(CLI_STOPPED_SCRIPT);
+    queue->clear();
+    prntln(CLI_STOPPED_SCRIPT);
 }
 
 void CLI::enableDelay(uint32_t delayTime) {
-  delayed        = true;
-  this->delayTime = delayTime;
-  delayStartTime = millis();
+    delayed         = true;
+    this->delayTime = delayTime;
+    delayStartTime  = millis();
 }
 
 void CLI::exec(String input) {
-  // quick exit when input is empty
-  if (input.length() == 0) return;
-    
-  // check delay
-  if (delayed && (millis() - delayStartTime > delayTime)) {
-    delayed = false;
-    prntln(CLI_RESUMED);
-  }
+    // quick exit when input is empty
+    if (input.length() == 0) return;
 
-  // when delay is on, add it to queue, else run it
-  if (delayed) {
-    queue->add(input);
-  } else {
-    runLine(input);
-  }
+    // check delay
+    if (delayed && (millis() - delayStartTime > delayTime)) {
+        delayed = false;
+        prntln(CLI_RESUMED);
+    }
+
+    // when delay is on, add it to queue, else run it
+    if (delayed) {
+        queue->add(input);
+    } else {
+        runLine(input);
+    }
 }
 
 void CLI::execFile(String path) {
-  String input;
+    String input;
 
-  if (readFile(path, input)) {
-    String tmpLine;
-    char   tmpChar;
+    if (readFile(path, input)) {
+        String tmpLine;
+        char   tmpChar;
 
-    input += '\n';
+        input += '\n';
 
-    while (!queue->isEmpty()) {
-      input += queue->shift();
-      input += '\n';
-    }
+        while (!queue->isEmpty()) {
+            input += queue->shift();
+            input += '\n';
+        }
 
-    for (int i = 0; i < input.length(); i++) {
-      tmpChar = input.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            tmpChar = input.charAt(i);
 
-      if (tmpChar == '\n') {
+            if (tmpChar == '\n') {
+                queue->add(tmpLine);
+                tmpLine = String();
+            } else {
+                tmpLine += tmpChar;
+            }
+        }
+
         queue->add(tmpLine);
-        tmpLine = String();
-      } else {
-        tmpLine += tmpChar;
-      }
     }
-
-    queue->add(tmpLine);
-  }
 }
 
 void CLI::error(String message) {
@@ -146,9 +146,9 @@ bool CLI::eqlsCMD(int i, const char* keyword) {
 }
 
 void CLI::runLine(String input) {
-  String tmp;
-  
-  for (int i = 0; i < input.length(); i++) {
+    String tmp;
+
+    for (int i = 0; i < input.length(); i++) {
         // when 2 semicolons in a row without a backslash escaping the first
         if ((input.charAt(i) == SEMICOLON) && (input.charAt(i + 1) == SEMICOLON) &&
             (input.charAt(i - 1) != BACKSLASH)) {
@@ -1006,7 +1006,7 @@ void CLI::runCommand(String input) {
             scan.update();   // run scan
             attack.update(); // run attacks
             ssids.update();  // run random mode, if enabled
-            led.update();   // update LED color
+            led.update();    // update LED color
 
             // auto-save
             if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {

@@ -19,57 +19,37 @@ void Settings::load() {
 
     // AP
     if (data.containsKey(keyword(S_SSID))) setSSID(data.get<String>(keyword(S_SSID)));
-
     if (data.containsKey(keyword(S_PASSWORD))) setPassword(data.get<String>(keyword(S_PASSWORD)));
-
     if (data.containsKey(keyword(S_CHANNEL))) setChannel(data.get<uint8_t>(keyword(S_CHANNEL)));
-
     if (data.containsKey(keyword(S_HIDDEN))) setHidden(data.get<bool>(keyword(S_HIDDEN)));
-
     if (data.containsKey(keyword(S_CAPTIVEPORTAL))) setCaptivePortal(data.get<bool>(keyword(S_CAPTIVEPORTAL)));
 
     // GENERAL
     if (data.containsKey(keyword(S_LANG))) setLang(data.get<String>(keyword(S_LANG)));
-
     if (data.containsKey(keyword(S_DISPLAYINTERFACE))) setDisplayInterface(data.get<bool>(keyword(S_DISPLAYINTERFACE)));
-
     if (data.containsKey(keyword(S_DISPLAY_TIMEOUT))) setDisplayTimeout(data.get<uint32_t>(keyword(S_DISPLAY_TIMEOUT)));
-
     if (data.containsKey(keyword(S_SERIALINTERFACE))) setCLI(data.get<bool>(keyword(S_SERIALINTERFACE)));
-
     if (data.containsKey(keyword(S_SERIAL_ECHO))) setSerialEcho(data.get<bool>(keyword(S_SERIAL_ECHO)));
-
     if (data.containsKey(keyword(S_WEBINTERFACE))) setWebInterface(data.get<bool>(keyword(S_WEBINTERFACE)));
-
     if (data.containsKey(keyword(S_WEB_SPIFFS))) setWebSpiffs(data.get<bool>(keyword(S_WEB_SPIFFS)));
-
     if (data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
-
     if (data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
-
     if (data.containsKey(keyword(S_MACST))) setMacSt(data.get<String>(keyword(S_MACST)));
 
     // SCAN
     if (data.containsKey(keyword(S_CHTIME))) setChTime(data.get<uint16_t>(keyword(S_CHTIME)));
-
     if (data.containsKey(keyword(S_MIN_DEAUTHS))) setMinDeauths(data.get<uint16_t>(keyword(S_MIN_DEAUTHS)));
 
     // ATTACK
     if (data.containsKey(keyword(S_ATTACKTIMEOUT))) setAttackTimeout(data.get<uint32_t>(keyword(S_ATTACKTIMEOUT)));
-
     if (data.containsKey(keyword(S_FORCEPACKETS))) setForcePackets(data.get<uint8_t>(keyword(S_FORCEPACKETS)));
-
     if (data.containsKey(keyword(S_DEAUTHSPERTARGET))) setDeauthsPerTarget(data.get<uint16_t>(keyword(
                                                                                                   S_DEAUTHSPERTARGET)));
 
     if (data.containsKey(keyword(S_DEAUTHREASON))) setDeauthReason(data.get<uint8_t>(keyword(S_DEAUTHREASON)));
-
     if (data.containsKey(keyword(S_BEACONCHANNEL))) setBeaconChannel(data.get<bool>(keyword(S_BEACONCHANNEL)));
-
     if (data.containsKey(keyword(S_BEACONINTERVAL))) setBeaconInterval(data.get<bool>(keyword(S_BEACONINTERVAL)));
-
     if (data.containsKey(keyword(S_RANDOMTX))) setRandomTX(data.get<bool>(keyword(S_RANDOMTX)));
-
     if (data.containsKey(keyword(S_PROBESPERSSID))) setProbesPerSSID(data.get<uint8_t>(keyword(S_PROBESPERSSID)));
 
     if (version != VERSION) {
@@ -345,8 +325,6 @@ uint32_t Settings::getAutosaveTime() {
     return autosaveTime;
 }
 
-
-
 bool Settings::getBeaconInterval() {
     return beaconInterval;
 }
@@ -435,17 +413,20 @@ bool Settings::getWebSpiffs() {
 
 void Settings::setDeauthsPerTarget(uint16_t deauthsPerTarget) {
     Settings::deauthsPerTarget = deauthsPerTarget;
-    changed                    = true;
+
+    changed = true;
 }
 
 void Settings::setDeauthReason(uint8_t deauthReason) {
     Settings::deauthReason = deauthReason;
-    changed                = true;
+
+    changed = true;
 }
 
 void Settings::setBeaconChannel(bool beaconChannel) {
     Settings::beaconChannel = beaconChannel;
-    changed                 = true;
+
+    changed = true;
 }
 
 void Settings::setForcePackets(uint8_t forcePackets) {
@@ -457,17 +438,20 @@ void Settings::setForcePackets(uint8_t forcePackets) {
 
 void Settings::setAutosave(bool autosave) {
     Settings::autosave = autosave;
-    changed            = true;
+
+    changed = true;
 }
 
 void Settings::setAutosaveTime(uint32_t autosaveTime) {
     Settings::autosaveTime = autosaveTime;
-    changed                = true;
+
+    changed = true;
 }
 
 void Settings::setBeaconInterval(bool beaconInterval) {
     Settings::beaconInterval = beaconInterval;
-    changed                  = true;
+
+    changed = true;
 }
 
 void Settings::setChannel(uint8_t channel) {
@@ -504,22 +488,26 @@ void Settings::setPassword(String password) {
 
 void Settings::setCLI(bool cli) {
     Settings::cli = cli;
-    changed                   = true;
+
+    changed = true;
 }
 
 void Settings::setDisplayInterface(bool displayInterface) {
     Settings::displayInterface = displayInterface;
-    changed                    = true;
+
+    changed = true;
 }
 
 void Settings::setWebInterface(bool webInterface) {
     Settings::webInterface = webInterface;
-    changed                = true;
+
+    changed = true;
 }
 
 void Settings::setChTime(uint16_t chTime) {
     Settings::chTime = chTime;
-    changed          = true;
+
+    changed = true;
 }
 
 void Settings::setMacSt(String macStr) {
@@ -560,17 +548,20 @@ bool Settings::setMacAP(uint8_t* macAP) {
 
 void Settings::setRandomTX(bool randomTX) {
     Settings::randomTX = randomTX;
-    changed            = true;
+
+    changed = true;
 }
 
 void Settings::setAttackTimeout(uint32_t attackTimeout) {
     Settings::attackTimeout = attackTimeout;
-    changed                 = true;
+
+    changed = true;
 }
 
 void Settings::setLedEnabled(bool ledEnabled) {
     Settings::ledEnabled = ledEnabled;
-    changed              = true;
+
+    changed = true;
 }
 
 void Settings::setProbesPerSSID(uint8_t probesPerSSID) {
@@ -582,35 +573,42 @@ void Settings::setProbesPerSSID(uint8_t probesPerSSID) {
 
 void Settings::setHidden(bool hidden) {
     Settings::hidden = hidden;
-    changed          = true;
+
+    changed = true;
 }
 
 void Settings::setCaptivePortal(bool captivePortal) {
     Settings::captivePortal = captivePortal;
-    changed                 = true;
+
+    changed = true;
 }
 
 void Settings::setMinDeauths(uint16_t minDeauths) {
     Settings::minDeauths = minDeauths;
-    changed              = true;
+
+    changed = true;
 }
 
 void Settings::setDisplayTimeout(uint32_t displayTimeout) {
     Settings::displayTimeout = displayTimeout;
-    changed                  = true;
+
+    changed = true;
 }
 
 void Settings::setLang(String lang) {
     Settings::lang = lang;
-    changed        = true;
+
+    changed = true;
 }
 
 void Settings::setSerialEcho(bool serialEcho) {
     Settings::serialEcho = serialEcho;
-    changed              = true;
+
+    changed = true;
 }
 
 void Settings::setWebSpiffs(bool webSpiffs) {
     Settings::webSpiffs = webSpiffs;
-    changed             = true;
+
+    changed = true;
 }
