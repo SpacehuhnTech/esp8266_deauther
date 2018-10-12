@@ -45,8 +45,6 @@ void Settings::load() {
 
     if (data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
 
-    if (data.containsKey(keyword(S_MAXCH))) setMaxCh(data.get<uint8_t>(keyword(S_MAXCH)));
-
     if (data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
 
     if (data.containsKey(keyword(S_MACST))) setMacSt(data.get<String>(keyword(S_MACST)));
@@ -122,7 +120,6 @@ void Settings::reset() {
     setWebInterface(true);
     setWebSpiffs(false);
     setLedEnabled(true);
-    setMaxCh(14);
     wifi_get_macaddr(STATION_IF, macSt);
     wifi_get_macaddr(SOFTAP_IF, macAP);
 
@@ -168,7 +165,6 @@ String Settings::getJsonStr() {
     data.set(keyword(S_WEBINTERFACE), webInterface);
     data.set(keyword(S_WEB_SPIFFS), webSpiffs);
     data.set(keyword(S_LEDENABLED), ledEnabled);
-    data.set(keyword(S_MAXCH), maxCh);
     data.set(keyword(S_MACAP), macToStr(getMacAP()));
     data.set(keyword(S_MACST), macToStr(getMacSt()));
 
@@ -245,7 +241,6 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_AUTOSAVETIME)) setAutosaveTime(value.toInt());
     else if (eqls(str, S_DEAUTHSPERTARGET)) setDeauthsPerTarget(value.toInt());
     else if (eqls(str, S_CHTIME)) setChTime(value.toInt());
-    else if (eqls(str, S_MAXCH)) setMaxCh(value.toInt());
     else if (eqls(str, S_CHANNEL)) setChannel(value.toInt());
     else if (eqls(str, S_DEAUTHREASON)) setDeauthReason(value.toInt());
     else if (eqls(str, S_ATTACKTIMEOUT)) setAttackTimeout(value.toInt());
@@ -298,7 +293,6 @@ String Settings::get(const char* str) {
     else if (eqls(str, S_DEAUTHSPERTARGET)) return (String)deauthsPerTarget;
     else if (eqls(str, S_CHTIME)) return (String)chTime;
     else if (eqls(str, S_ATTACKTIMEOUT)) return (String)attackTimeout;
-    else if (eqls(str, S_MAXCH)) return (String)maxCh;
     else if (eqls(str, S_CHANNEL)) return (String)channel;
     else if (eqls(str, S_DEAUTHREASON)) return (String)deauthReason;
     else if (eqls(str, S_PROBESPERSSID)) return (String)probesPerSSID;
@@ -351,9 +345,7 @@ uint32_t Settings::getAutosaveTime() {
     return autosaveTime;
 }
 
-uint8_t Settings::getMaxCh() {
-    return maxCh;
-}
+
 
 bool Settings::getBeaconInterval() {
     return beaconInterval;
@@ -473,26 +465,20 @@ void Settings::setAutosaveTime(uint32_t autosaveTime) {
     changed                = true;
 }
 
-void Settings::setMaxCh(uint8_t maxCh) {
-    Settings::maxCh = maxCh;
-    changed         = true;
-}
-
 void Settings::setBeaconInterval(bool beaconInterval) {
     Settings::beaconInterval = beaconInterval;
     changed                  = true;
 }
 
 void Settings::setChannel(uint8_t channel) {
-    if ((channel >= 1) && (channel <= maxCh)) {
+    if ((channel >= 1) && (channel <= 14)) {
         Settings::channel = channel;
         setWifiChannel(channel);
         changed = true;
         prnt(S_CHANNEL_CHANGE);
         prntln(channel);
     } else {
-        prnt(S_CHANNEL_ERROR);
-        prntln(maxCh);
+        prntln(S_CHANNEL_ERROR);
     }
 }
 

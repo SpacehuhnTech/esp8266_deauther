@@ -44,7 +44,6 @@ class Settings {
         uint8_t getForcePackets();
         bool getAutosave();
         uint32_t getAutosaveTime();
-        uint8_t getMaxCh();
         bool getBeaconInterval();
         uint8_t getChannel();
         String getSSID();
@@ -73,7 +72,6 @@ class Settings {
         void setForcePackets(uint8_t forcePackets);
         void setAutosave(bool autosave);
         void setAutosaveTime(uint32_t autosaveTime);
-        void setMaxCh(uint8_t maxCh);
         void setBeaconInterval(bool beaconInterval);
         void setChannel(uint8_t channel);
         void setSSID(String ssid);
@@ -121,7 +119,6 @@ class Settings {
         uint16_t chTime           = 384;
         uint16_t minDeauths       = 3;
         uint8_t forcePackets      = 1;
-        uint8_t maxCh             = 13;
         uint8_t channel           = 1;
         uint8_t deauthReason      = 1;
         uint8_t* macSt;

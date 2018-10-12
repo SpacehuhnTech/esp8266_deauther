@@ -360,7 +360,6 @@ const char S_WEBINTERFACE[] PROGMEM = "web/interface";
 const char S_AUTOSAVETIME[] PROGMEM = "autosavetime";
 const char S_DEAUTHSPERTARGET[] PROGMEM = "deauthspertarget";
 const char S_CHTIME[] PROGMEM = "chtime";
-const char S_MAXCH[] PROGMEM = "maxch";
 const char S_DEAUTHREASON[] PROGMEM = "deauthReason";
 const char S_MACST[] PROGMEM = "macSt";
 const char S_MACAP[] PROGMEM = "macAP";
