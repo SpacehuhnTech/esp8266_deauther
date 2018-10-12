@@ -25,7 +25,7 @@ extern bool appendFile(String path, String& buf);
 extern bool writeFile(String path, String& buf);
 extern void readFileToSerial(String path);
 extern String fixUtf8(String str);
-extern String buildString(String left, String right, int maxLen);
+extern String leftRight(String a, String b, int len);
 extern String escape(String str);
 
 class SSIDs {

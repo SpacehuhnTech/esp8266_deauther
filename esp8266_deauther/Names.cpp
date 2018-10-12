@@ -143,13 +143,13 @@ void Names::print(int num, bool header, bool footer) {
         prntln(N_TABLE_DIVIDER);
     }
 
-    prnt(buildString(String(), (String)num, 2));
-    prnt(buildString(String(SPACE) + getMacStr(num), String(), 18));
-    prnt(buildString(String(SPACE) + getVendorStr(num), String(), 9));
-    prnt(buildString(String(SPACE) + getName(num), String(), 17));
-    prnt(buildString(String(SPACE) + getBssidStr(num), String(), 18));
-    prnt(buildString(String(SPACE), (String)getCh(num), 3));
-    prntln(buildString(String(SPACE) + getSelectedStr(num), String(), 9));
+    prnt(leftRight(String(), (String)num, 2));
+    prnt(leftRight(String(SPACE) + getMacStr(num), String(), 18));
+    prnt(leftRight(String(SPACE) + getVendorStr(num), String(), 9));
+    prnt(leftRight(String(SPACE) + getName(num), String(), 17));
+    prnt(leftRight(String(SPACE) + getBssidStr(num), String(), 18));
+    prnt(leftRight(String(SPACE), (String)getCh(num), 3));
+    prntln(leftRight(String(SPACE) + getSelectedStr(num), String(), 9));
 
     if (footer) prntln(N_TABLE_DIVIDER);
 }

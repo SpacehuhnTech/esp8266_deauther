@@ -24,7 +24,11 @@ extern Scan     scan;
 extern Attack   attack;
 extern uint32_t currentTime;
 
-extern String buildString(String left, String right, int maxLen);
+extern String leftRight(String a, String b, int len);
+extern String center(String a, int len);
+extern String left(String a, int len);
+extern String right(String a, int len);
+extern String leftRight(String a, String b, int len);
 extern String replaceUtf8(String str, String r);
 
 // different display modes
@@ -82,6 +86,19 @@ class DisplayUI {
         bool highlightLED = false;
 #endif
 
+        // ===== adjustable ===== //
+        void configInit();
+        void configOn();
+        void configOff();
+        void updatePrefix();
+        void updateSuffix();
+        void drawString(int x, int y, String str);
+        void drawString(int row, String str);
+        void drawLine(int x1, int y1, int x2, int y2);
+        uint8_t maxLen = 18;
+        uint8_t lineHeight = 12;
+        // ====================== //
+
         void update();
         void on();
         void off();
@@ -112,12 +129,13 @@ class DisplayUI {
         bool deauthSelected = false;
         bool probeSelected  = false;
 
+        String getChannel();
+        
         // functions for buttons
         bool updateButton(Button* button); // read and update
-
+        
         // draw functions
         void draw();
-        void drawString(int x, int y, String str);
         void drawButtonTest();
         void drawMenu();
         void drawLoadingScan();

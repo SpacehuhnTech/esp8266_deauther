@@ -449,15 +449,58 @@ void strToColor(String str, uint8_t* buf) {
     for (uint8_t i = 0; i < 3; i++) buf[i] = strtoul((str.substring(i * 2, i * 2 + 2)).c_str(), NULL, 16);
 }
 
-String buildString(String left, String right, int maxLen) {
-    String result      = left;
-    int    spacesToAdd = maxLen - left.length() /*utf8Len(left)*/ - right.length() /*utf8Len(right)*/;
 
-    for (int i = 0; i < spacesToAdd; i++) {
-        result += SPACE;
+String center(String a, int len) {
+    int spaces = len - a.length();
+
+    for (int i = 0; i < spaces; i+=2) {
+      a = ' ' + a + ' ';
     }
-    result += right;
-    return result;
+    
+    a = a.substring(0, len);
+
+    return a;
+}
+
+String left(String a, int len) {
+    int spaces = len - a.length();
+
+    while (spaces > 0) {
+        a = a + ' ';
+        spaces--;
+    }
+
+    a = a.substring(0, len);
+
+    return a;
+}
+
+String right(String a, int len) {
+    int spaces = len - a.length();
+
+    while (spaces > 0) {
+        a = ' ' + a;
+        spaces--;
+    }
+
+    a = a.substring(0, len);
+
+    return a;
+}
+
+String leftRight(String a, String b, int len) {
+    int spaces = len - a.length() - b.length();
+
+    while (spaces > 0) {
+        a = a + ' ';
+        spaces--;
+    }
+
+    a = a + b;
+
+    a = a.substring(0, len);
+
+    return a;
 }
 
 /* ===== SPIFFS ===== */
@@ -509,7 +552,7 @@ void readFileToSerial(String path, bool showLineNum) {
     char     tmp;
 
     if (showLineNum) {
-        prnt(buildString(String(), (String)c + String(VERTICALBAR), 6));
+        prnt(leftRight(String(), (String)c + String(VERTICALBAR), 6));
     }
 
     while (f.available()) {
@@ -518,7 +561,7 @@ void readFileToSerial(String path, bool showLineNum) {
 
         if ((tmp == NEWLINE) && showLineNum) {
             c++;
-            prnt(buildString(String(), (String)c + String(VERTICALBAR), 6));
+            prnt(leftRight(String(), (String)c + String(VERTICALBAR), 6));
         }
     }
 

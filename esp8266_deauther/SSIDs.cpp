@@ -254,9 +254,9 @@ void SSIDs::print(int num, bool header, bool footer) {
         prntln(SS_TABLE_DIVIDER);
     }
 
-    prnt(buildString(String(), (String)num, 2));
-    prnt(buildString(String(SPACE), getEncStr(num), 5));
-    prntln(buildString(String(SPACE) + getName(num), String(), 33));
+    prnt(leftRight(String(), (String)num, 2));
+    prnt(leftRight(String(SPACE), getEncStr(num), 5));
+    prntln(leftRight(String(SPACE) + getName(num), String(), 33));
 
     if (footer) prntln(SS_TABLE_DIVIDER);
 }

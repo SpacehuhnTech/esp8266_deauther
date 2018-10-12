@@ -115,7 +115,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
         if (sniffTime > 0) prnt(String(sniffTime / 1000) + S);
         else prnt(SC_INFINITELY);
         prnt(SC_ON_CHANNEL);
-        prntln(channelHop ? str(SC_ONE_TO) + (String)settings.getMaxCh() : (String)wifi_channel);
+        prntln(channelHop ? str(SC_ONE_TO) + (String)14 : (String)wifi_channel);
 
         // enable sniffer
         stopAP();
@@ -230,8 +230,8 @@ void Scan::stop() {
 }
 
 void Scan::setChannel(uint8_t ch) {
-    if (ch > settings.getMaxCh()) ch = 1;
-    else if (ch < 1) ch = settings.getMaxCh();
+    if (ch > 14) ch = 1;
+    else if (ch < 1) ch = 14;
 
     wifi_promiscuous_enable(0);
     setWifiChannel(ch);
@@ -245,7 +245,7 @@ void Scan::nextChannel() {
         do {
             ch++;
 
-            if (ch > settings.getMaxCh()) ch = 1;
+            if (ch > 14) ch = 1;
         } while (!apWithChannel(ch));
         setChannel(ch);
     }
@@ -406,6 +406,23 @@ uint32_t Scan::getPackets(int i) {
     } else {
         return list->get(i);
     }
+}
+
+String Scan::getMode(){
+  switch(scanMode) {
+    case SCAN_MODE_OFF:
+      return String(SC_MODE_OFF);
+    case SCAN_MODE_APS:
+      return String(SC_MODE_AP);
+    case SCAN_MODE_STATIONS:
+      return String(SC_MODE_ST);
+    case SCAN_MODE_ALL:
+      return String(SC_MODE_ALL);
+    case SCAN_MODE_SNIFFER:
+      return String(SC_MODE_SNIFFER);
+    default:
+      return String();
+  }
 }
 
 double Scan::getScaleFactor(uint8_t height) {

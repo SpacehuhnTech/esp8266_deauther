@@ -268,11 +268,12 @@ const char D_MSG_DISPLAY_OFF[] PROGMEM = "Turned display off";
 const char D_MSG_DISPLAY_ON[] PROGMEM = "Turned display on";
 
 // LOADING SCREEN
-const char D_LOADING_SCREEN_0[] PROGMEM = "Scanning...";
-const char D_LOADING_SCREEN_1[] PROGMEM = "APs: ";
-const char D_LOADING_SCREEN_2[] PROGMEM = "Stations: ";
-const char D_LOADING_SCREEN_3[] PROGMEM = "Searching for";
-const char D_LOADING_SCREEN_4[] PROGMEM = "Access Points...";
+const char DSP_SCAN_FOR[] PROGMEM = "Scan for";
+const char DSP_APS[] PROGMEM = "APs";
+const char DSP_STS[] PROGMEM = "STs";
+const char DSP_PKTS[] PROGMEM = "Pkts";
+const char DSP_S[] PROGMEM = "/s";
+const char DSP_SCAN_DONE[] PROGMEM = "Done";
 
 // ALL MENUS
 const char D_BACK[] PROGMEM = "[BACK]";
@@ -325,10 +326,10 @@ const char D_STOP_ATTACK[] PROGMEM = "STOP";
 const char D_ENCRYPTION[] PROGMEM = "Encryption:";
 const char D_RSSI[] PROGMEM = "RSSI:";
 const char D_CHANNEL[] PROGMEM = "Channel:";
-const char D_CH[] PROGMEM = "CH:";
+const char D_CH[] PROGMEM = "Ch";
 const char D_VENDOR[] PROGMEM = "Vendor:";
 const char D_AP[] PROGMEM = "AP:";
-const char D_PKTS[] PROGMEM = "Pkts:";
+const char D_PKTS[] PROGMEM = "pkts";
 const char D_SEEN[] PROGMEM = "Seen:";
 
 // ===== STATIONS ===== //
@@ -388,7 +389,7 @@ const char S_ERROR_VERSION[] PROGMEM = "Sorry, you can't change the version numb
 const char S_ERROR_NOT_FOUND[] PROGMEM = "ERROR: No setting found for ";
 const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
 const char S_CHANNEL_CHANGE[] PROGMEM = "Switched to Channel ";
-const char S_CHANNEL_ERROR[] PROGMEM = "ERROR: Channel must be between 1 and ";
+const char S_CHANNEL_ERROR[] PROGMEM = "ERROR: Channel must be between 1 and 14";
 const char S_ERROR_SSID_LEN[] PROGMEM = "ERROR: SSID must be between 1 and 32 characters";
 const char S_ERROR_PASSWORD_LEN[] PROGMEM = "ERROR: Password must be between 8 and 32 characters";
 const char S_RANDOM[] PROGMEM = "random";
@@ -492,6 +493,11 @@ const char SC_JSON_STATIONS[] PROGMEM = "stations";
 const char SC_JSON_NAMES[] PROGMEM = "names";
 const char SC_SAVED[] PROGMEM = "Saved scan results";
 const char SC_SAVED_IN[] PROGMEM = "Scan results saved in ";
+const char SC_MODE_OFF[] PROGMEM = "-";
+const char SC_MODE_AP[] PROGMEM = "APs";
+const char SC_MODE_ST[] PROGMEM = "STs";
+const char SC_MODE_ALL[] PROGMEM = "AP+ST";
+const char SC_MODE_SNIFFER[] PROGMEM = "Sniffer";
 
 // ===== FUNCTIONS ===== //
 const char F_ERROR_MAC[] PROGMEM = "ERROR: MAC address invalid";

@@ -13,7 +13,7 @@ extern "C" {
 extern Names names;
 
 extern String searchVendor(uint8_t* mac);
-extern String buildString(String left, String right, int maxLen);
+extern String leftRight(String a, String b, int len);
 extern String fixUtf8(String str);
 extern String bytesToStr(uint8_t* b, uint32_t size);
 

@@ -68,15 +68,15 @@ void Accesspoints::print(int num, bool header, bool footer) {
     prntln(AP_TABLE_HEADER);
     prntln(AP_TABLE_DIVIDER);
   }
-  prnt(buildString(String(), (String)num, 2));
-  prnt(buildString(String(SPACE) + getSSID(num), String(), 33));
-  prnt(buildString(String(SPACE) + getNameStr(num), String(), 17));
-  prnt(buildString(String(SPACE), (String)getCh(num), 3));
-  prnt(buildString(String(SPACE), (String)getRSSI(num), 5));
-  prnt(buildString(String(SPACE), getEncStr(num), 5));
-  prnt(buildString(String(SPACE) + getMacStr(num), String(), 18));
-  prnt(buildString(String(SPACE) + getVendorStr(num), String(), 9));
-  prntln(buildString(String(SPACE) + getSelectedStr(num), String(), 9));
+  prnt(leftRight(String(), (String)num, 2));
+  prnt(leftRight(String(SPACE) + getSSID(num), String(), 33));
+  prnt(leftRight(String(SPACE) + getNameStr(num), String(), 17));
+  prnt(leftRight(String(SPACE), (String)getCh(num), 3));
+  prnt(leftRight(String(SPACE), (String)getRSSI(num), 5));
+  prnt(leftRight(String(SPACE), getEncStr(num), 5));
+  prnt(leftRight(String(SPACE) + getMacStr(num), String(), 18));
+  prnt(leftRight(String(SPACE) + getVendorStr(num), String(), 9));
+  prntln(leftRight(String(SPACE) + getSelectedStr(num), String(), 9));
 
   if (footer) {
     prntln(AP_TABLE_DIVIDER);
