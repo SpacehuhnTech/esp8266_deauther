@@ -15,6 +15,10 @@ extern "C" {
 #include "Scan.h"
 #include "Attack.h"
 
+#include <SimpleButton.h>
+
+using namespace simplebutton;
+
 extern Settings settings;
 extern Names    names;
 extern SSIDs    ssids;
@@ -31,6 +35,23 @@ extern String right(String a, int len);
 extern String leftRight(String a, String b, int len);
 extern String replaceUtf8(String str, String r);
 
+#ifndef BUTTON_UP
+    #define BUTTON_UP 255
+  #endif
+
+  #ifndef BUTTON_DOWN
+    #define BUTTON_DOWN 255
+  #endif
+
+  #ifndef BUTTON_A
+    #define BUTTON_A 255
+  #endif
+
+  #ifndef BUTTON_B
+    #define BUTTON_B 255
+  #endif
+
+  
 // different display modes
 #define SCREEN_MODE_OFF 0
 #define SCREEN_MODE_BUTTON_TEST 1
@@ -42,25 +63,14 @@ extern String replaceUtf8(String str, String r);
 // ===== adjustable ===== //
 #define BUTTON_DELAY 280  // in ms
 #define DRAW_INTERVAL 100 // 100ms = 10 FPS
-#define CHARS_PER_LINE 17
 #define SCROLL_SPEED 5
 #define SCREEN_INTRO_TIME 2500
 // ====================== //
 
-struct Menu;
-struct MenuNode;
-struct Button;
-
-struct Button {
-    bool                 enabled; // use button
-    uint8_t              gpio;    // pin that is used
-    bool                 pushed;  // currently pushed
-    bool                 hold;    // if button was hold (only used for buttonA at the moment)
-    uint32_t             time;    // last time it was pushed
-    std::function<bool()>read;    // function to return if button is pushed
-    std::function<void()>setup;   // function to enable/setup the button, if needed
-    std::function<void()>push;    // function that is executed when button is pushed
-    std::function<void()>release; // function that is executed when button is released
+struct MenuNode {
+    std::function<String()>getStr; // function used to create the displayed string
+    std::function<void()>  click;  // function that is executed when node is clicked
+    std::function<void()>  hold;   // function that is executed when node is pressed for > 800ms
 };
 
 struct Menu {
@@ -70,14 +80,13 @@ struct Menu {
     std::function<void()> build; // function that is executed when button is clicked
 };
 
-struct MenuNode {
-    std::function<String()>getStr; // function used to create the displayed string
-    std::function<void()>  click;  // function that is executed when node is clicked
-    std::function<void()>  hold;   // function that is executed when node is pressed for > 800ms
-};
-
 class DisplayUI {
     public:
+        Button* up     = NULL;
+        Button* down   = NULL;
+        Button* a = NULL;
+        Button* b   = NULL;
+        
         DisplayUI();
         void setup();
         
@@ -95,8 +104,11 @@ class DisplayUI {
         void drawString(int x, int y, String str);
         void drawString(int row, String str);
         void drawLine(int x1, int y1, int x2, int y2);
+
+        DEAUTHER_DISPLAY // see config.h
         uint8_t maxLen = 18;
         uint8_t lineHeight = 12;
+        uint8_t scrollSpeed = 5;
         // ====================== //
 
         void update();
@@ -106,8 +118,6 @@ class DisplayUI {
         uint8_t mode = SCREEN_MODE_MENU;
 
     private:
-        DEAUTHER_DISPLAY // see config.h
-
         void setupDisplay();
         void setupButtons();
 
@@ -115,14 +125,8 @@ class DisplayUI {
         uint16_t scrollCounter = 0;     // for horizontal scrolling
         uint32_t drawTime      = 0;     // last time a frame was drawn
         uint32_t startTime     = 0;     // when the screen was enabled
+        uint32_t buttonTime   = 0; // last time a button was pressed
         bool enabled           = false; // display enabled
-
-        Button buttonUp;
-        Button buttonDown;
-        Button buttonLeft;
-        Button buttonRight;
-        Button buttonA;
-        Button buttonB;
 
         // selected attack modes
         bool beaconSelected = false;
@@ -130,9 +134,6 @@ class DisplayUI {
         bool probeSelected  = false;
 
         String getChannel();
-        
-        // functions for buttons
-        bool updateButton(Button* button); // read and update
         
         // draw functions
         void draw();

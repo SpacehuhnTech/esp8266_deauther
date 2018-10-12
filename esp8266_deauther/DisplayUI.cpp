@@ -26,9 +26,9 @@ void DisplayUI::configInit() {
      https://github.com/ThingPulse/esp8266-oled-ssd1306/releases/tag/4.0.0
   */
   display.setFont(DejaVu_Sans_Mono_12);
-  
+
   display.setContrast(255);
-  
+
 #ifndef FLIP_DIPLAY
   display.flipScreenVertically();
 #endif // ifndef FLIP_DIPLAY
@@ -71,7 +71,7 @@ void DisplayUI::on() {
   if (enabled) {
     configOn();
     mode          = SCREEN_MODE_MENU;
-    buttonUp.time = currentTime; // update a button time to keep display on
+    buttonTime = currentTime; // update a button time to keep display on
     prntln(D_MSG_DISPLAY_ON);
   } else {
     prntln(D_ERROR_NOT_ENABLED);
@@ -89,135 +89,40 @@ void DisplayUI::off() {
 }
 
 void DisplayUI::setupButtons() {
-#ifdef BUTTON_UP
-  buttonUp.enabled = true;
-  buttonUp.gpio    = BUTTON_UP;
-#else // ifdef BUTTON_UP
-  buttonUp.enabled = false;
-#endif // ifdef BUTTON_UP
-
-#ifdef BUTTON_DOWN
-  buttonDown.enabled = true;
-  buttonDown.gpio    = BUTTON_DOWN;
-#else // ifdef BUTTON_DOWN
-  buttonDown.enabled = false;
-#endif // ifdef BUTTON_DOWN
-
-#ifdef BUTTON_LEFT
-  buttonLeft.enabled = true;
-  buttonLeft.gpio    = BUTTON_LEFT;
-#else // ifdef BUTTON_LEFT
-  buttonLeft.enabled = false;
-#endif // ifdef BUTTON_LEFT
-
-#ifdef BUTTON_RIGHT
-  buttonRight.enabled = true;
-  buttonRight.gpio    = BUTTON_RIGHT;
-#else // ifdef BUTTON_RIGHT
-  buttonRight.enabled = false;
-#endif // ifdef BUTTON_RIGHT
-
-#ifdef BUTTON_A
-  buttonA.enabled = true;
-  buttonA.gpio    = BUTTON_A;
-#else // ifdef BUTTON_A
-  buttonA.enabled = false;
-#endif // ifdef BUTTON_A
-
-#ifdef BUTTON_B
-  buttonB.enabled = true;
-  buttonB.gpio    = BUTTON_B;
-#else // ifdef BUTTON_B
-  buttonB.enabled = false;
-#endif // ifdef BUTTON_B
-
-  // ====================== //
-  // setup and read functions
-  // ====================== //
-  buttonUp.setup = [this]() {
-    if (buttonUp.gpio != 2) pinMode(buttonUp.gpio, INPUT_PULLUP);
-    buttonUp.time = currentTime;
-  };
-  buttonUp.read = [this]() {
-    return !digitalRead(buttonUp.gpio);
-  };
-
-  buttonDown.setup = [this]() {
-    if (buttonDown.gpio != 2) pinMode(buttonDown.gpio, INPUT_PULLUP);
-    buttonDown.time = currentTime;
-  };
-  buttonDown.read = [this]() {
-    return !digitalRead(buttonDown.gpio);
-  };
-
-  buttonLeft.setup = [this]() {
-    if (buttonLeft.gpio != 2) pinMode(buttonLeft.gpio, INPUT_PULLUP);
-    buttonLeft.time = currentTime;
-  };
-  buttonLeft.read = [this]() {
-    return !digitalRead(buttonLeft.gpio);
-  };
-
-  buttonRight.setup = [this]() {
-    if (buttonRight.gpio != 2) pinMode(buttonRight.gpio, INPUT_PULLUP);
-    buttonRight.time = currentTime;
-  };
-  buttonRight.read = [this]() {
-    return !digitalRead(buttonRight.gpio);
-  };
-
-  buttonA.setup = [this]() {
-    if (buttonA.gpio != 2) pinMode(buttonA.gpio, INPUT_PULLUP);
-    buttonA.time = currentTime;
-  };
-  buttonA.read = [this]() {
-    return !digitalRead(buttonA.gpio);
-  };
-
-  buttonB.setup = [this]() {
-    if (buttonB.gpio != 2) pinMode(buttonB.gpio, INPUT_PULLUP);
-    buttonB.time = currentTime;
-  };
-  buttonB.read = [this]() {
-    return !digitalRead(buttonB.gpio);
-  };
-}
-
-void DisplayUI::setup() {
-  setupDisplay();
-  setupButtons();
-
-  // ===== PUSH AND RELEASE FUNCTIONS ===== //
+  up     = new ButtonPullup(BUTTON_UP);
+  down   = new ButtonPullup(BUTTON_DOWN);
+  a = new ButtonPullup(BUTTON_A);
+  b   = new ButtonPullup(BUTTON_B);
 
   // === BUTTON UP === //
-  buttonUp.push = [this]() {
-    if (buttonUp.time > currentTime - BUTTON_DELAY) return;
-
-    buttonUp.pushed = true;
-    buttonUp.time   = currentTime;
+  up->setOnClicked([this]() {
     scrollCounter   = 0;
-
+    buttonTime = millis();
+    
     if (mode == SCREEN_MODE_MENU) {                 // when in menu, go up or down with cursor
       if (currentMenu->selected > 0) currentMenu->selected--;
       else currentMenu->selected = currentMenu->list->size() - 1;
     } else if (mode == SCREEN_MODE_PACKETMONITOR) { // when in packet monitor, change channel
       scan.setChannel(wifi_channel + 1);
     }
-  };
+  });
 
-  buttonUp.release = [this]() {
-    if (!buttonUp.pushed) return;
-
-    buttonUp.pushed = false;
-  };
+  up->setOnHolding([this]() {
+    scrollCounter   = 0;
+    buttonTime = millis();
+    
+    if (mode == SCREEN_MODE_MENU) {                 // when in menu, go up or down with cursor
+      if (currentMenu->selected > 0) currentMenu->selected--;
+      else currentMenu->selected = currentMenu->list->size() - 1;
+    } else if (mode == SCREEN_MODE_PACKETMONITOR) { // when in packet monitor, change channel
+      scan.setChannel(wifi_channel + 1);
+    }
+  }, 250);
 
   // === BUTTON DOWN === //
-  buttonDown.push = [this]() {
-    if (buttonDown.time > currentTime - BUTTON_DELAY) return;
-
-    buttonDown.pushed = true;
-    buttonDown.time   = currentTime;
+  down->setOnClicked([this]() {
     scrollCounter     = 0;
+    buttonTime = millis();
 
     if (mode == SCREEN_MODE_MENU) {                 // when in menu, go up or down with cursor
       if (currentMenu->selected < currentMenu->list->size() - 1) currentMenu->selected++;
@@ -225,94 +130,54 @@ void DisplayUI::setup() {
     } else if (mode == SCREEN_MODE_PACKETMONITOR) { // when in packet monitor, change channel
       scan.setChannel(wifi_channel - 1);
     }
-  };
+  });
 
-  buttonDown.release = [this]() {
-    if (!buttonDown.pushed) return;
-
-    buttonDown.pushed = false;
-  };
-
-  // === BUTTON LEFT === //
-  buttonLeft.push = [this]() {
-    if (buttonLeft.time > currentTime - BUTTON_DELAY) return;
-
-    buttonLeft.pushed = true;
-    buttonLeft.time   = currentTime;
+  down->setOnHolding([this]() {
     scrollCounter     = 0;
-  };
+    buttonTime = millis();
 
-  buttonLeft.release = [this]() {
-    if (!buttonLeft.pushed) return;
-
-    buttonLeft.pushed = false;
-  };
-
-  // === BUTTON RIGHT === //
-  buttonRight.push = [this]() {
-    if (buttonRight.time > currentTime - BUTTON_DELAY) return;
-
-    buttonRight.pushed = true;
-    buttonRight.time   = currentTime;
-    scrollCounter      = 0;
-  };
-
-  buttonRight.release = [this]() {
-    if (!buttonRight.pushed) return;
-
-    buttonRight.pushed = false;
-  };
+    if (mode == SCREEN_MODE_MENU) {                 // when in menu, go up or down with cursor
+      if (currentMenu->selected < currentMenu->list->size() - 1) currentMenu->selected++;
+      else currentMenu->selected = 0;
+    } else if (mode == SCREEN_MODE_PACKETMONITOR) { // when in packet monitor, change channel
+      scan.setChannel(wifi_channel - 1);
+    }
+  }, 250);
 
   // === BUTTON A === //
-  buttonA.push = [this]() {
-    if (!buttonA.pushed) { // first push
-      buttonA.pushed = true;
-      buttonA.time   = currentTime;
-      scrollCounter  = 0;
-    } else { // holding button
-      if ((currentTime - buttonA.time > 800) && !buttonA.hold) {
-        if (currentMenu->list->get(currentMenu->selected).hold) currentMenu->list->get(
-            currentMenu->selected).hold();
-        buttonA.hold = true;
-      }
+  a->setOnClicked([this]() {
+    scrollCounter  = 0;
+    buttonTime = millis();
+
+    switch (mode) {
+      case SCREEN_MODE_MENU:
+
+        if (currentMenu->list->get(currentMenu->selected).click) {
+          currentMenu->list->get(currentMenu->selected).click();
+        }
+        break;
+
+      case SCREEN_MODE_PACKETMONITOR:
+      case SCREEN_MODE_LOADSCAN:
+        scan.stop();
+        mode = SCREEN_MODE_MENU;
+        break;
     }
-  };
+  });
 
-  buttonA.release = [this]() {
-    if (!buttonA.pushed) return;  // exit when button wasn't pushed before
+  a->setOnHolding([this]() {
+    scrollCounter  = 0;
+    buttonTime = millis();
 
-    if (!buttonA.hold && (currentTime - buttonA.time > 80)) {
-      switch (mode) {
-        case SCREEN_MODE_MENU:
-
-          if (currentMenu->list->get(currentMenu->selected).click) {
-            currentMenu->list->get(currentMenu->selected).click();
-          }
-          break;
-
-        case SCREEN_MODE_PACKETMONITOR:
-        case SCREEN_MODE_LOADSCAN:
-          scan.stop();
-          mode = SCREEN_MODE_MENU;
-          break;
-      }
+    if (currentMenu->list->get(currentMenu->selected).hold) {
+      currentMenu->list->get(currentMenu->selected).hold();
     }
-
-    buttonA.pushed = false;
-    buttonA.hold   = false;
-  };
+  }, 800);
 
   // === BUTTON B === //
-  buttonB.push = [this]() {
-    if (!buttonB.pushed && (buttonB.time > currentTime - BUTTON_DELAY)) return;
-
-    buttonB.pushed = true;
-    buttonB.time   = currentTime;
+  a->setOnClicked([this]() {
     scrollCounter  = 0;
-  };
-
-  buttonB.release = [this]() {
-    if (!buttonB.pushed) return;
+    buttonTime = millis();
 
     switch (mode) {
       case SCREEN_MODE_MENU:
@@ -325,23 +190,12 @@ void DisplayUI::setup() {
         mode = SCREEN_MODE_MENU;
         break;
     }
+  });
+}
 
-    buttonB.pushed = false;
-  };
-
-  // === RUN SETUPS === //
-  // setting pin modes for buttons
-  if (buttonUp.enabled && buttonUp.setup) buttonUp.setup();
-
-  if (buttonDown.enabled && buttonDown.setup) buttonDown.setup();
-
-  if (buttonLeft.enabled && buttonLeft.setup) buttonLeft.setup();
-
-  if (buttonRight.enabled && buttonRight.setup) buttonRight.setup();
-
-  if (buttonA.enabled && buttonA.setup) buttonA.setup();
-
-  if (buttonB.enabled && buttonB.setup) buttonB.setup();
+void DisplayUI::setup() {
+  setupDisplay();
+  setupButtons();
 
   // ===== MENUS ===== //
 
@@ -380,17 +234,17 @@ void DisplayUI::setup() {
 
   // SHOW MENU
   createMenu(&showMenu, &mainMenu, [this]() {
-    addMenuNode(&showMenu, []() { // Accesspoints 0 [0]
-      return leftRight(str(D_ACCESSPOINTS), (String)accesspoints.count(), CHARS_PER_LINE);
+    addMenuNode(&showMenu, [this]() { // Accesspoints 0 [0]
+      return leftRight(str(D_ACCESSPOINTS), (String)accesspoints.count(), maxLen - 1);
     }, &apListMenu);
-    addMenuNode(&showMenu, []() { // Stations 0 [0]
-      return leftRight(str(D_STATIONS), (String)stations.count(), CHARS_PER_LINE);
+    addMenuNode(&showMenu, [this]() { // Stations 0 [0]
+      return leftRight(str(D_STATIONS), (String)stations.count(), maxLen - 1);
     }, &stationListMenu);
-    addMenuNode(&showMenu, []() { // Names 0 [0]
-      return leftRight(str(D_NAMES), (String)names.count(), CHARS_PER_LINE);
+    addMenuNode(&showMenu, [this]() { // Names 0 [0]
+      return leftRight(str(D_NAMES), (String)names.count(), maxLen - 1);
     }, &nameListMenu);
-    addMenuNode(&showMenu, []() { // SSIDs 0
-      return leftRight(str(D_SSIDS), (String)ssids.count(), CHARS_PER_LINE);
+    addMenuNode(&showMenu, [this]() { // SSIDs 0
+      return leftRight(str(D_SSIDS), (String)ssids.count(), maxLen - 1);
     }, &ssidListMenu);
   });
 
@@ -660,8 +514,8 @@ void DisplayUI::setup() {
     addMenuNode(&attackMenu, [this]() { // *DEAUTH 0/0
       if (attack.isRunning()) return leftRight(b2a(deauthSelected) + str(D_DEAUTH),
                                        (String)attack.getDeauthPkts() + SLASH +
-                                       (String)attack.getDeauthMaxPkts(), CHARS_PER_LINE);
-      else return leftRight(b2a(deauthSelected) + str(D_DEAUTH), (String)scan.countSelected(), CHARS_PER_LINE);
+                                       (String)attack.getDeauthMaxPkts(), maxLen - 1);
+      else return leftRight(b2a(deauthSelected) + str(D_DEAUTH), (String)scan.countSelected(), maxLen - 1);
     }, [this]() { // deauth
       deauthSelected = !deauthSelected;
 
@@ -673,8 +527,8 @@ void DisplayUI::setup() {
     addMenuNode(&attackMenu, [this]() { // *BEACON 0/0
       if (attack.isRunning()) return leftRight(b2a(beaconSelected) + str(D_BEACON),
                                        (String)attack.getBeaconPkts() + SLASH +
-                                       (String)attack.getBeaconMaxPkts(), CHARS_PER_LINE);
-      else return leftRight(b2a(beaconSelected) + str(D_BEACON), (String)ssids.count(), CHARS_PER_LINE);
+                                       (String)attack.getBeaconMaxPkts(), maxLen - 1);
+      else return leftRight(b2a(beaconSelected) + str(D_BEACON), (String)ssids.count(), maxLen - 1);
     }, [this]() { // beacon
       beaconSelected = !beaconSelected;
 
@@ -686,8 +540,8 @@ void DisplayUI::setup() {
     addMenuNode(&attackMenu, [this]() { // *PROBE 0/0
       if (attack.isRunning()) return leftRight(b2a(probeSelected) + str(D_PROBE),
                                        (String)attack.getProbePkts() + SLASH +
-                                       (String)attack.getProbeMaxPkts(), CHARS_PER_LINE);
-      else return leftRight(b2a(probeSelected) + str(D_PROBE), (String)ssids.count(), CHARS_PER_LINE);
+                                       (String)attack.getProbeMaxPkts(), maxLen - 1);
+      else return leftRight(b2a(probeSelected) + str(D_PROBE), (String)ssids.count(), maxLen - 1);
     }, [this]() { // probe
       probeSelected = !probeSelected;
 
@@ -696,9 +550,9 @@ void DisplayUI::setup() {
                      settings.getAttackTimeout() * 1000);
       }
     });
-    addMenuNode(&attackMenu, []() { // START
+    addMenuNode(&attackMenu, [this]() { // START
       return leftRight(str(attack.isRunning() ? D_STOP_ATTACK : D_START_ATTACK),
-                         attack.getPacketRate() > 0 ? (String)attack.getPacketRate() : String(), CHARS_PER_LINE);
+                       attack.getPacketRate() > 0 ? (String)attack.getPacketRate() : String(), maxLen - 1);
     }, [this]() {
       if (attack.isRunning()) attack.stop();
       else attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
@@ -717,39 +571,18 @@ void DisplayUI::setup() {
 void DisplayUI::update() {
   if (!enabled) return;
 
-  // when display is off
-  if (mode == SCREEN_MODE_OFF) {
-    if (updateButton(&buttonA)) {
-      on();
-      buttonA.hold = true; // to make sure you don't double click
-    }
-  }
+  up->update();
+  down->update();
+  a->update();
+  b->update();
 
-  else {
-    // timeout to save display life
-    if ((mode == SCREEN_MODE_MENU) && (settings.getDisplayTimeout() > 0) &&
-        (currentTime > settings.getDisplayTimeout() * 1000)) {
-      uint32_t buttonTimeout = currentTime - settings.getDisplayTimeout() * 1000;
-
-      if ((buttonUp.time < buttonTimeout)
-          && (buttonDown.time < buttonTimeout)
-          && (buttonLeft.time < buttonTimeout)
-          && (buttonRight.time < buttonTimeout)
-          && (buttonA.time < buttonTimeout)
-          && (buttonB.time < buttonTimeout)) {
-        off();
-      }
-    }
-
-    // only one button can be pressed at a time
-    if (updateButton(&buttonB)) draw();
-    else if (updateButton(&buttonA)) draw();
-    else if (updateButton(&buttonUp)) draw();
-    else if (updateButton(&buttonDown)) draw();
-    else if (updateButton(&buttonLeft)) draw();
-    else if (updateButton(&buttonRight)) draw();
-    else draw();
-  }
+  draw();
+/*
+  uint32_t timeout = millis() - (settings.getDisplayTimeout() * 1000);
+  Serial.println(timeout);
+  
+  if (mode != SCREEN_MODE_OFF && buttonTime < timeout) off();
+  else if (mode == SCREEN_MODE_OFF && buttonTime > timeout) on();*/
 }
 
 void DisplayUI::draw() {
@@ -789,17 +622,18 @@ void DisplayUI::draw() {
 }
 
 void DisplayUI::drawButtonTest() {
-  if (buttonUp.enabled) drawString(0, 0, str(D_UP) + b2s(buttonUp.pushed));
+  /*
+    if (buttonUp.enabled) drawString(0, 0, str(D_UP) + b2s(buttonUp.pushed));
 
-  if (buttonDown.enabled) drawString(0, 9, str(D_DOWN) + b2s(buttonDown.pushed));
+    if (buttonDown.enabled) drawString(0, 9, str(D_DOWN) + b2s(buttonDown.pushed));
 
-  if (buttonLeft.enabled) drawString(0, 18, str(D_LEFT) + b2s(buttonLeft.pushed));
+    if (buttonLeft.enabled) drawString(0, 18, str(D_LEFT) + b2s(buttonLeft.pushed));
 
-  if (buttonRight.enabled) drawString(0, 27, str(D_RIGHT) + b2s(buttonRight.pushed));
+    if (buttonRight.enabled) drawString(0, 27, str(D_RIGHT) + b2s(buttonRight.pushed));
 
-  if (buttonA.enabled) drawString(0, 36, str(D_A) + b2s(buttonA.pushed));
+    if (buttonA.enabled) drawString(0, 36, str(D_A) + b2s(buttonA.pushed));
 
-  if (buttonB.enabled) drawString(0, 45, str(D_B) + b2s(buttonB.pushed));
+    if (buttonB.enabled) drawString(0, 45, str(D_B) + b2s(buttonB.pushed));*/
 }
 
 void DisplayUI::drawMenu() {
@@ -817,11 +651,11 @@ void DisplayUI::drawMenu() {
     tmpLen = tmp.length();
 
     // horizontal scrolling
-    if ((currentMenu->selected == i) && (tmpLen > CHARS_PER_LINE)) {
+    if ((currentMenu->selected == i) && (tmpLen > maxLen - 1)) {
       tmp = tmp.substring(scrollCounter / SCROLL_SPEED);
       scrollCounter++;
 
-      if (scrollCounter / SCROLL_SPEED > tmpLen - CHARS_PER_LINE) scrollCounter = 0;
+      if (scrollCounter / SCROLL_SPEED > tmpLen - maxLen - 1) scrollCounter = 0;
     }
 
     tmp = (currentMenu->selected == i ? CURSOR : SPACE) + tmp;
@@ -830,24 +664,24 @@ void DisplayUI::drawMenu() {
 }
 
 void DisplayUI::drawLoadingScan() {
-    String percentage;
+  String percentage;
 
-    if (scan.isScanning()) {
-      percentage = String(scan.getPercentage()) + '%';
-    } else {
-      percentage = String(DSP_SCAN_DONE);
-    }
+  if (scan.isScanning()) {
+    percentage = String(scan.getPercentage()) + '%';
+  } else {
+    percentage = String(DSP_SCAN_DONE);
+  }
 
-    drawString(0, leftRight(String(DSP_SCAN_FOR), scan.getMode(), maxLen));
-    drawString(1, leftRight(String(DSP_APS), String(accesspoints.count()), maxLen));
-    drawString(2, leftRight(String(DSP_STS), String(stations.count()), maxLen));
-    drawString(3, leftRight(String(DSP_PKTS), String(scan.getPacketRate()) + String(DSP_S), maxLen));
-    drawString(4, center(percentage, maxLen));
+  drawString(0, leftRight(String(DSP_SCAN_FOR), scan.getMode(), maxLen));
+  drawString(1, leftRight(String(DSP_APS), String(accesspoints.count()), maxLen));
+  drawString(2, leftRight(String(DSP_STS), String(stations.count()), maxLen));
+  drawString(3, leftRight(String(DSP_PKTS), String(scan.getPacketRate()) + String(DSP_S), maxLen));
+  drawString(4, center(percentage, maxLen));
 }
 
 String DisplayUI::getChannel() {
   String ch = String(wifi_channel);
-  if(ch.length() < 2) ch = ' ' + ch;
+  if (ch.length() < 2) ch = ' ' + ch;
   return ch;
 }
 
@@ -866,25 +700,11 @@ void DisplayUI::drawPacketMonitor() {
 }
 
 void DisplayUI::drawIntro() {
-  drawString(0, lineHeight*0, center(String(F("")), maxLen));
-  drawString(0, lineHeight*1, center(String(F("ESP8266 Deauther")), maxLen));
-  drawString(0, lineHeight*2, center(String(F("by @Spacehuhn")), maxLen));
-  drawString(0, lineHeight*3, center(String(F("")), maxLen));
-  drawString(0, lineHeight*4, center(settings.getVersion(), maxLen));
-}
-
-bool DisplayUI::updateButton(Button* button) {
-  // direct exit when button is disabled or has no read function
-  if (!button->enabled || !button->read) return false;
-
-  // read pin
-  if (button->read()) {
-    if (button->push) button->push();
-  } else {
-    if (button->release) button->release();
-  }
-
-  return button->pushed;
+  drawString(0, lineHeight * 0, center(String(F("")), maxLen));
+  drawString(0, lineHeight * 1, center(String(F("ESP8266 Deauther")), maxLen));
+  drawString(0, lineHeight * 2, center(String(F("by @Spacehuhn")), maxLen));
+  drawString(0, lineHeight * 3, center(String(F("")), maxLen));
+  drawString(0, lineHeight * 4, center(settings.getVersion(), maxLen));
 }
 
 void DisplayUI::clearMenu(Menu* menu) {
@@ -905,7 +725,7 @@ void DisplayUI::changeMenu(Menu* menu) {
     if (currentMenu) clearMenu(currentMenu);
     currentMenu           = menu;
     currentMenu->selected = 0;
-    buttonA.time          = currentTime;
+    buttonTime          = currentTime;
 
     if (selectedID < 0) selectedID = 0;
 
