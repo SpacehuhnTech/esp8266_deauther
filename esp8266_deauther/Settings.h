@@ -119,7 +119,7 @@ class Settings {
         uint16_t chTime           = 384;
         uint16_t minDeauths       = 3;
         uint8_t forcePackets      = 1;
-        uint8_t channel           = 1;
+        uint8_t channel           = 9;
         uint8_t deauthReason      = 1;
         uint8_t* macSt;
         uint8_t* macAP;

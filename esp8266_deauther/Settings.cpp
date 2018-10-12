@@ -105,7 +105,7 @@ void Settings::reset() {
     // AP
     setSSID("pwned");
     setPassword("deauther");
-    setChannel(1);
+    setChannel(9);
     setHidden(false);
     setCaptivePortal(true);
 
