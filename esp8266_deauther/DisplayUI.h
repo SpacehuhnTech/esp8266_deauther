@@ -29,6 +29,11 @@ extern String right(String a, int len);
 extern String leftRight(String a, String b, int len);
 extern String replaceUtf8(String str, String r);
 
+const char D_INTRO_0[] PROGMEM = "";
+const char D_INTRO_1[] PROGMEM = "ESP8266 Deauther";
+const char D_INTRO_2[] PROGMEM = "by @Spacehuhn";
+const char D_INTRO_3[] PROGMEM = "";
+
 // fallback for the buttons
 #ifndef BUTTON_UP
   #define BUTTON_UP 255
@@ -61,7 +66,7 @@ struct Menu {
 
 class DisplayUI {
     public:
-        enum DISPLAY_MODE { OFF = 0, BUTTON_TEST = 1, MENU = 2, LOADSCAN = 3, PACKETMONITOR = 4, INTRO = 5 };
+        enum DISPLAY_MODE { OFF = 0, BUTTON_TEST = 1, MENU = 2, LOADSCAN = 3, PACKETMONITOR = 4, INTRO = 5, CLOCK = 6 };
 
         uint8_t mode      = DISPLAY_MODE::MENU;
         bool highlightLED = false;
@@ -160,6 +165,17 @@ class DisplayUI {
         void addMenuNode(Menu* menu, std::function<String()>getStr, Menu* next);
         void addMenuNode(Menu* menu, const char* ptr, std::function<void()>click);
         void addMenuNode(Menu* menu, const char* ptr, Menu* next);
+
+#ifdef FAKE_CLOCK
+        void drawClock();
+        void setTime(int h, int m, int s);
+
+        int clockHour   = 6;
+        int clockMinute = 0;
+        int clockSecond = 0;
+
+        uint32_t clockTime = 0;
+#endif // ifdef FAKE_CLOCK
 };
 
 // ===== FONT ===== //

@@ -31,12 +31,11 @@ void DisplayUI::configOff() {
 }
 
 void DisplayUI::updatePrefix() {
-    display.clear();                           // clear display
-    display.setTextAlignment(TEXT_ALIGN_LEFT); // reset text alignment just in case ;)
+    display.clear();
 }
 
 void DisplayUI::updateSuffix() {
-    display.display(); // draw changes
+    display.display();
 }
 
 void DisplayUI::drawString(int x, int y, String str) {
@@ -64,6 +63,11 @@ void DisplayUI::setup() {
     setupButtons();
     buttonTime = currentTime;
 
+#ifdef FAKE_CLOCK
+    clockHour   = random(12);
+    clockMinute = random(60);
+#endif // ifdef FAKE_CLOCK
+
     // ===== MENUS ===== //
 
     // MAIN MENU
@@ -75,6 +79,15 @@ void DisplayUI::setup() {
             scan.start(SCAN_MODE_SNIFFER, 0, SCAN_MODE_OFF, 0, false, wifi_channel);
             mode = DISPLAY_MODE::PACKETMONITOR;
         });
+        
+#ifdef FAKE_CLOCK
+        addMenuNode(&mainMenu, D_CLOCK, [this]() { // PACKET MONITOR
+            mode = DISPLAY_MODE::CLOCK;
+            display.setFont(ArialMT_Plain_24);
+            display.setTextAlignment(TEXT_ALIGN_CENTER);
+        });
+#endif // ifdef FAKE_CLOCK
+
 #ifdef HIGHLIGHT_LED
         addMenuNode(&mainMenu, D_LED, [this]() { // LED
             highlightLED = !highlightLED;
@@ -503,6 +516,8 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = currentMenu->list->size() - 1;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel + 1);
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+                setTime(clockHour, clockMinute + 1, clockSecond);
             }
         }
     });
@@ -516,6 +531,8 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = currentMenu->list->size() - 1;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel + 1);
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+                setTime(clockHour, clockMinute + 10, clockSecond);
             }
         }
     }, buttonDelay);
@@ -530,6 +547,8 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = 0;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel - 1);
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+                setTime(clockHour, clockMinute - 1, clockSecond);
             }
         }
     });
@@ -543,6 +562,8 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = 0;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel - 1);
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+                setTime(clockHour, clockMinute - 10, clockSecond);
             }
         }
     }, buttonDelay);
@@ -564,6 +585,12 @@ void DisplayUI::setupButtons() {
             case DISPLAY_MODE::LOADSCAN:
                 scan.stop();
                 mode = DISPLAY_MODE::MENU;
+                break;
+
+            case DISPLAY_MODE::CLOCK:
+                mode = DISPLAY_MODE::MENU;
+                display.setFont(DejaVu_Sans_Mono_12);
+                display.setTextAlignment(TEXT_ALIGN_LEFT);
                 break;
             }
         }
@@ -596,6 +623,10 @@ void DisplayUI::setupButtons() {
                 scan.stop();
                 mode = DISPLAY_MODE::MENU;
                 break;
+
+            case DISPLAY_MODE::CLOCK:
+                mode = DISPLAY_MODE::MENU;
+                break;
             }
         }
     });
@@ -613,6 +644,13 @@ void DisplayUI::draw() {
         drawTime = currentTime;
 
         updatePrefix();
+
+#ifdef FAKE_CLOCK
+        if (clockTime < currentTime - 1000) {
+            setTime(clockHour, clockMinute++, clockSecond + 1);
+            clockTime += 1000;
+        }
+#endif // ifdef FAKE_CLOCK
 
         switch (mode) {
         case DISPLAY_MODE::BUTTON_TEST:
@@ -637,6 +675,12 @@ void DisplayUI::draw() {
             }
             drawIntro();
             break;
+
+#ifdef FAKE_CLOCK
+        case DISPLAY_MODE::CLOCK:
+            drawClock();
+            break;
+#endif // ifdef FAKE_CLOCK
         }
 
         updateSuffix();
@@ -709,12 +753,25 @@ void DisplayUI::drawPacketMonitor() {
 }
 
 void DisplayUI::drawIntro() {
-    drawString(0, lineHeight * 0, center(String(F("")), maxLen));
-    drawString(0, lineHeight * 1, center(String(F("ESP8266 Deauther")), maxLen));
-    drawString(0, lineHeight * 2, center(String(F("by @Spacehuhn")), maxLen));
-    drawString(0, lineHeight * 3, center(String(F("")), maxLen));
-    drawString(0, lineHeight * 4, center(settings.getVersion(), maxLen));
+    drawString(0, center(String(D_INTRO_0), maxLen));
+    drawString(1, center(String(D_INTRO_1), maxLen));
+    drawString(2, center(String(D_INTRO_2), maxLen));
+    drawString(3, center(String(D_INTRO_3), maxLen));
+    drawString(4, center(settings.getVersion(), maxLen));
 }
+
+#ifdef FAKE_CLOCK
+void DisplayUI::drawClock() {
+    String clockTime = String(clockHour);
+
+    clockTime += ':';
+    if (clockMinute < 10) clockTime += '0';
+    clockTime += String(clockMinute);
+
+    display.drawString(64, 20, clockTime);
+}
+
+#endif // ifdef FAKE_CLOCK
 
 void DisplayUI::clearMenu(Menu* menu) {
     while (menu->list->size() > 0) {
@@ -783,4 +840,38 @@ void DisplayUI::addMenuNode(Menu* menu, const char* ptr, Menu* next) {
     addMenuNode(menu, [ptr]() {
         return str(ptr);
     }, next);
+}
+
+void DisplayUI::setTime(int h, int m, int s) {
+    if (s >= 60) {
+        s = 0;
+        m++;
+    }
+
+    if (m >= 60) {
+        m = 0;
+        h++;
+    }
+
+    if (h >= 24) {
+        h = 0;
+    }
+
+    if (s < 0) {
+        s = 59;
+        m--;
+    }
+
+    if (m < 0) {
+        m = 59;
+        h--;
+    }
+
+    if (h < 0) {
+        h = 23;
+    }
+
+    clockHour   = h;
+    clockMinute = m;
+    clockSecond = s;
 }
