@@ -19,4 +19,4 @@ Copy the `A_config.h` file and paste it in the Arduino sektch and replace the de
 - [DSTIKE Deauther Boy](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_Deauther_Boy/A_config.h)
 - [DSTIKE USB Deauther](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_USB_Deauther/A_config.h)
 - [DSTIKE D-duino with LED Ring Shield](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_D-duino_with_LED_Ring_Shield/A_config.h)
-- [MrRobotBadge_Dickbutt_Addon](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/MrRobotBadge_Dickbutt_Addon/A_config.h)
+- [MrRobotBadge Defcon Shitty Dickbutt Addon](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/MrRobotBadge_Dickbutt_Addon/A_config.h)
