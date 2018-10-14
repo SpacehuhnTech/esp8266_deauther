@@ -1,7 +1,9 @@
-Here you find a bunch of modified config files for different boards.  
-Those are meant to be copy and replaced in the Arduino sektch.  
+# Config Files
 
+Here you find a bunch of modified config files for different boards.  
 The default config should be fine for all boards that don't have a display or a RGB LED (like the NodeMCU).  
+
+Copy the `A_config.h` file and paste it in the Arduino sektch and replace the default config file.  
 
 - [Default Config](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/Default/A_config.h)
 - DSTIKE Deauther OLED
