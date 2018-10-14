@@ -2,16 +2,12 @@
 #define config_h
 
 // ===== DISPLAY LIBRARY ===== //
-#include <Wire.h>
-#include <SPI.h>
 #include "SH1106Wire.h"
-#include "SSD1306Wire.h"
-#include "SH1106Spi.h"
-#include "SSD1306Spi.h"
 // =========================== //
 
 // ===================== LED CONFIG ==================== //
 #define DIGITAL_LED
+
 #define LED_ANODE false   // common vcc (+)
 #define LED_PIN_R 16      // NodeMCU on-board LED
 #define LED_PIN_G 255     // 255 = LED disabled
@@ -24,7 +20,7 @@
 #define BUTTON_DOWN 13
 #define BUTTON_A 14
 
-#define DEAUTHER_DISPLAY SSD1306Wire display = SSD1306Wire(0x3c, 5, 4); // for 0.96" OLED
+#define DEAUTHER_DISPLAY SH1106Wire display = SH1106Wire(0x3c, 5, 4); // for 1.3" OLED
 // ========================================================= //
 
 #endif

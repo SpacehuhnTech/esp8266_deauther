@@ -1,10 +1,10 @@
-# DSTIKE D-duino-b-v5 with the LED Ring Shield
+# DSTIKE Deauther OLED v3.5 + DSTIKE Deauth Monster
 
 |  |  |
 | - | - |
 | LED Type | Neopixel (WS2812) |
 | LED Pin | GPIO 15 |
-| Number of LEDs | 12 |
+| Number of LEDs | 1 |
 | Highlight LED | disabled |
 | Display and buttons enabled | YES |
 | Display Driver | SH1106  |
@@ -14,4 +14,4 @@
 | Button Up |GPIO 12 |
 | Button Down | GPIO 13 |
 | Button A | GPIO 14 |
-| Button B |Disabled |
+| Button B |disabled |

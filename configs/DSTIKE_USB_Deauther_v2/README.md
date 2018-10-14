@@ -3,16 +3,15 @@
 |  |  |
 | - | - |
 | LED Type | Neopixel (WS2812b) |
-| LED Pin | GPIO 15 |
+| LED Pin | GPIO 4 |
 | Number of LEDs | 1 |
+| Highlight LED | disabled |
 | Display and buttons enabled | NO |
 | Display Driver | SH1106  |
 | Display SDA | GPIO 5 (D1) |
 | Display SCL | GPIO 4 (D2) |
 | Flip Display | NO |
-| Button Up |GPIO 12 |
-| Button Down | GPIO 13 |
-| Button Left | disabled |
-| Button Right | disabled |
-| Button A | GPIO 14 |
-| Button B |disabled |
+| Button Up | disabled |
+| Button Down | disabled |
+| Button A | disabled |
+| Button B | disabled |

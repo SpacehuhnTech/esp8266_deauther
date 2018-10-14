@@ -10,6 +10,9 @@
 #include "SSD1306Spi.h"
 // =========================== //
 
+//#define DEFAULT_SSID "pwned"
+//#define HIGHLIGHT_LED 16
+
 // ===================== LED CONFIG ==================== //
 /* = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
     Uncomment the type of LED  you're using

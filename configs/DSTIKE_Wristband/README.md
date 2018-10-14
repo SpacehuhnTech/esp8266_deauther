@@ -1,11 +1,11 @@
-# DSTIKE D-duino-b-v5 with the LED Ring Shield
+# DSTIKE Deauther Wristband
 
 |  |  |
 | - | - |
 | LED Type | Neopixel (WS2812) |
 | LED Pin | GPIO 15 |
-| Number of LEDs | 12 |
-| Highlight LED | disabled |
+| Number of LEDs | 1 |
+| Highlight LED | 16 |
 | Display and buttons enabled | YES |
 | Display Driver | SH1106  |
 | Display SDA | GPIO 5 (D1) |
@@ -14,4 +14,4 @@
 | Button Up |GPIO 12 |
 | Button Down | GPIO 13 |
 | Button A | GPIO 14 |
-| Button B |Disabled |
+| Button B |disabled |

@@ -607,7 +607,7 @@ void DisplayUI::setupButtons() {
     }, 800);
 
     // === BUTTON B === //
-    a->setOnClicked([this]() {
+    b->setOnClicked([this]() {
         scrollCounter = 0;
         buttonTime    = currentTime;
         if (!tempOff) {
