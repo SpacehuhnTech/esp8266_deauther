@@ -85,6 +85,8 @@ class DisplayUI {
         const uint8_t buttonDelay      = 250;
         const uint8_t drawInterval     = 100; // 100ms = 10 FPS
         const uint16_t screenIntroTime = 2500;
+        const uint16_t screenWidth = 128;
+        const uint16_t sreenHeight = 64;
 
         void configInit();
         void configOn();

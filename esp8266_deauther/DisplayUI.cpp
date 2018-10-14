@@ -731,17 +731,29 @@ void DisplayUI::drawLoadingScan() {
 }
 
 void DisplayUI::drawPacketMonitor() {
-    double scale = scan.getScaleFactor(50);
+    double scale = scan.getScaleFactor(sreenHeight - lineHeight - 2);
 
     String headline = leftRight(str(D_CH) + getChannel() + String(' ') + String('[') + String(scan.deauths) + String(']'), String(scan.getPacketRate()) + str(D_PKTS), maxLen);
 
     drawString(0, 0, headline);
 
     if (scan.getMaxPacket() > 0) {
-        for (int i = 0; i < SCAN_PACKET_LIST_SIZE * 2; i += 2) {
-            drawLine(i, 64, i, 64 - scan.getPackets(i / 2) * scale);
-            drawLine(i + 1, 64, i + 1, 64 - scan.getPackets(i / 2) * scale);
-        }
+      int i = 0;
+      int x = 0;
+      int y = 0;
+      while(i < SCAN_PACKET_LIST_SIZE && x < screenWidth){
+        y = (sreenHeight-1) - (scan.getPackets(i) * scale);
+        i++;
+
+        //Serial.printf("%d,%d -> %d,%d\n", x, (sreenHeight-1), x, y);
+        drawLine(x, (sreenHeight-1), x, y);
+        x++;
+
+        //Serial.printf("%d,%d -> %d,%d\n", x, (sreenHeight-1), x, y);
+        drawLine(x, (sreenHeight-1), x, y);
+        x++;
+      }
+      //Serial.println("---------");
     }
 }
 
