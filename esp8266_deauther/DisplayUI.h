@@ -166,7 +166,7 @@ class DisplayUI {
         void addMenuNode(Menu* menu, const char* ptr, std::function<void()>click);
         void addMenuNode(Menu* menu, const char* ptr, Menu* next);
 
-#ifdef FAKE_CLOCK
+        // fake clock
         void drawClock();
         void setTime(int h, int m, int s);
 
@@ -175,7 +175,6 @@ class DisplayUI {
         int clockSecond = 0;
 
         uint32_t clockTime = 0;
-#endif // ifdef FAKE_CLOCK
 };
 
 // ===== FONT ===== //

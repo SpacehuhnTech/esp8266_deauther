@@ -63,10 +63,8 @@ void DisplayUI::setup() {
     setupButtons();
     buttonTime = currentTime;
 
-#ifdef FAKE_CLOCK
     clockHour   = random(12);
     clockMinute = random(60);
-#endif // ifdef FAKE_CLOCK
 
     // ===== MENUS ===== //
 
@@ -80,13 +78,11 @@ void DisplayUI::setup() {
             mode = DISPLAY_MODE::PACKETMONITOR;
         });
         
-#ifdef FAKE_CLOCK
         addMenuNode(&mainMenu, D_CLOCK, [this]() { // PACKET MONITOR
             mode = DISPLAY_MODE::CLOCK;
             display.setFont(ArialMT_Plain_24);
             display.setTextAlignment(TEXT_ALIGN_CENTER);
         });
-#endif // ifdef FAKE_CLOCK
 
 #ifdef HIGHLIGHT_LED
         addMenuNode(&mainMenu, D_LED, [this]() { // LED
@@ -562,7 +558,9 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = 0;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel - 1);
-            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+            } 
+            
+            else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
                 setTime(clockHour, clockMinute - 10, clockSecond);
             }
         }
@@ -645,12 +643,10 @@ void DisplayUI::draw() {
 
         updatePrefix();
 
-#ifdef FAKE_CLOCK
         if (clockTime < currentTime - 1000) {
             setTime(clockHour, clockMinute++, clockSecond + 1);
             clockTime += 1000;
         }
-#endif // ifdef FAKE_CLOCK
 
         switch (mode) {
         case DISPLAY_MODE::BUTTON_TEST:
@@ -675,12 +671,9 @@ void DisplayUI::draw() {
             }
             drawIntro();
             break;
-
-#ifdef FAKE_CLOCK
         case DISPLAY_MODE::CLOCK:
             drawClock();
             break;
-#endif // ifdef FAKE_CLOCK
         }
 
         updateSuffix();
@@ -760,7 +753,6 @@ void DisplayUI::drawIntro() {
     drawString(4, center(settings.getVersion(), maxLen));
 }
 
-#ifdef FAKE_CLOCK
 void DisplayUI::drawClock() {
     String clockTime = String(clockHour);
 
@@ -770,8 +762,6 @@ void DisplayUI::drawClock() {
 
     display.drawString(64, 20, clockTime);
 }
-
-#endif // ifdef FAKE_CLOCK
 
 void DisplayUI::clearMenu(Menu* menu) {
     while (menu->list->size() > 0) {
