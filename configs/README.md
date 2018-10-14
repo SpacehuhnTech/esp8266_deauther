@@ -6,6 +6,7 @@ The default config should be fine for all boards that don't have a display or a 
 Copy the `A_config.h` file and paste it in the Arduino sektch and replace the default config file.  
 
 - [Default Config](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/Default/A_config.h)
+- [DSTIKE Deauther (Non-OLED version)](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/Default/A_config.h)
 - DSTIKE Deauther OLED
   - [DSTIKE Deauther OLED v1](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_Deauther_OLED_v1-v1.5/A_config.h)
   - [DSTIKE Deauther OLED v1.5](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_Deauther_OLED_v1-v1.5/A_config.h)
