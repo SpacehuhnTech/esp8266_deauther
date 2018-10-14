@@ -47,7 +47,7 @@ class LED {
                 virtual void setColor(uint8_t r, uint8_t g, uint8_t b) = 0;
                 virtual void setBrightness(uint8_t brightness)         = 0;
         };
-
+#ifdef DIGITAL_LED
         class DigitalLED : public StatusLED {
             public:
                 DigitalLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, bool anode);
@@ -64,7 +64,8 @@ class LED {
                 uint8_t gPin = 255;
                 uint8_t bPin = 255;
         };
-
+#endif
+#ifdef RGB_LED
         class AnalogRGBLED : public StatusLED {
             public:
                 AnalogRGBLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, uint8_t brightness, bool anode);
@@ -82,7 +83,8 @@ class LED {
                 uint8_t bPin       = 255;
                 uint8_t brightness = 0;
         };
-
+#endif
+#ifdef NEOPIXEL_LED
         class NeopixelLED : public StatusLED {
             public:
                 NeopixelLED(int num, uint8_t dataPin, uint8_t brightness);
@@ -96,7 +98,7 @@ class LED {
             private:
                 Adafruit_NeoPixel* strip;
         };
-
+#endif
         bool tempEnabled = true;
         uint8_t mode     = LED_MODE::OFF;
         StatusLED* led   = NULL;

@@ -90,6 +90,7 @@ bool LED::getTempEnabled() {
     return tempEnabled;
 }
 
+#ifdef DIGITAL_LED
 // ===== DigitalLED ===== //
 LED::DigitalLED::DigitalLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, bool anode) {
     LED::DigitalLED::anode = anode;
@@ -125,8 +126,9 @@ void LED::DigitalLED::setColor(uint8_t r, uint8_t g, uint8_t b) {
 }
 
 void LED::DigitalLED::setBrightness(uint8_t brightness) {}
+#endif
 
-
+#ifdef RGB_LED
 // ===== AnalogRGBLED ===== //
 LED::AnalogRGBLED::AnalogRGBLED(uint8_t rPin, uint8_t gPin, uint8_t bPin, uint8_t brightness, bool anode) {
     LED::AnalogRGBLED::anode = anode;
@@ -171,7 +173,9 @@ void LED::AnalogRGBLED::setBrightness(uint8_t brightness) {
     if (brightness > 100) brightness = 100;
     LED::AnalogRGBLED::brightness = brightness;
 }
+#endif
 
+#ifdef NEOPIXEL_LED
 // ===== NeopixelLED ===== //
 LED::NeopixelLED::NeopixelLED(int num, uint8_t dataPin, uint8_t brightness) {
     strip = new Adafruit_NeoPixel(num, dataPin, LED_NEOPIXEL_MODE);
@@ -198,3 +202,4 @@ void LED::NeopixelLED::setBrightness(uint8_t brightness) {
     if (brightness > 100) brightness = 100;
     strip->setBrightness(brightness);
 }
+#endif
