@@ -4,10 +4,19 @@
              github.com/spacehuhn
    ===========================================
  */
+
 extern "C" {
   #include "user_interface.h"
 }
 #include <EEPROM.h>
+
+#include <ArduinoJson.h>
+#if ARDUINOJSON_VERSION_MAJOR != 5
+// The software was build using ArduinoJson v5.x
+// version 6 is still in beta at the time of writing
+#error Please upgrade/downgrade ArduinoJSON library to version 5!
+#endif
+
 #include "oui.h"
 #include "language.h"
 #include "functions.h"
