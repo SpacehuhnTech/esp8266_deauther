@@ -23,4 +23,3 @@ Copy the `A_config.h` file and paste it in the Arduino sektch and replace the de
 - [DSTIKE USB Deauther v1](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/Default/A_config.h)
 - [DSTIKE USB Deauther v2 (with RGB)](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_USB_Deauther_v2/A_config.h)
 - [DSTIKE D-duino with LED Ring Shield](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_D-duino_with_LED_Ring_Shield/A_config.h)
-- [MrRobotBadge Defcon Shitty Dickbutt Addon](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/MrRobotBadge_Dickbutt_Addon/A_config.h)
