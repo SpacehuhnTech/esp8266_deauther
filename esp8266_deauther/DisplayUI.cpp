@@ -504,6 +504,7 @@ void DisplayUI::setupButtons() {
     // === BUTTON UP === //
     up->setOnClicked([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
 
         if (!tempOff) {
@@ -520,6 +521,7 @@ void DisplayUI::setupButtons() {
 
     up->setOnHolding([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {                 // when in menu, go up or down with cursor
@@ -536,6 +538,7 @@ void DisplayUI::setupButtons() {
     // === BUTTON DOWN === //
     down->setOnClicked([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {                 // when in menu, go up or down with cursor
@@ -551,6 +554,7 @@ void DisplayUI::setupButtons() {
 
     down->setOnHolding([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {                 // when in menu, go up or down with cursor
@@ -569,6 +573,7 @@ void DisplayUI::setupButtons() {
     // === BUTTON A === //
     a->setOnClicked([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             switch (mode) {
@@ -596,6 +601,7 @@ void DisplayUI::setupButtons() {
 
     a->setOnHolding([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {
@@ -609,6 +615,7 @@ void DisplayUI::setupButtons() {
     // === BUTTON B === //
     b->setOnClicked([this]() {
         scrollCounter = 0;
+        scrollTime = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             switch (mode) {
@@ -704,11 +711,16 @@ void DisplayUI::drawMenu() {
         tmpLen = tmp.length();
 
         // horizontal scrolling
-        if ((currentMenu->selected == i) && (tmpLen > maxLen - 1)) {
-            tmp = tmp.substring(scrollCounter / scrollSpeed);
-            scrollCounter++;
-
-            if (scrollCounter / scrollSpeed > tmpLen - maxLen - 1) scrollCounter = 0;
+        if ((currentMenu->selected == i) && (tmpLen >= maxLen)) {
+            tmp = tmp + tmp;
+            tmp = tmp.substring(scrollCounter, scrollCounter + maxLen - 1);
+            
+            if ((scrollCounter > 0 && scrollTime < currentTime - scrollSpeed) || (scrollCounter == 0 && scrollTime < currentTime - scrollSpeed * 4)){
+              scrollTime = currentTime;
+              scrollCounter++;
+            }
+            
+            if (scrollCounter > tmpLen) scrollCounter = 0;
         }
 
         tmp = (currentMenu->selected == i ? CURSOR : SPACE) + tmp;

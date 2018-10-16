@@ -81,7 +81,7 @@ class DisplayUI {
 
         const uint8_t maxLen           = 18;
         const uint8_t lineHeight       = 12;
-        const uint8_t scrollSpeed      = 5;
+        const uint8_t scrollSpeed      = 500;
         const uint8_t buttonDelay      = 250;
         const uint8_t drawInterval     = 100; // 100ms = 10 FPS
         const uint16_t screenIntroTime = 2500;
@@ -112,7 +112,9 @@ class DisplayUI {
 
     private:
         int16_t selectedID     = 0; // i.e. access point ID to draw the apMenu
-        uint16_t scrollCounter = 0; // for horizontal scrolling
+        uint8_t scrollCounter = 0; // for horizontal scrolling
+
+        uint32_t scrollTime    = 0; // last time a character was moved
         uint32_t drawTime      = 0; // last time a frame was drawn
         uint32_t startTime     = 0; // when the screen was enabled
         uint32_t buttonTime    = 0; // last time a button was pressed
