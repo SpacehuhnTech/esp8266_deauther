@@ -624,6 +624,8 @@ void DisplayUI::setupButtons() {
 
             case DISPLAY_MODE::CLOCK:
                 mode = DISPLAY_MODE::MENU;
+                display.setFont(DejaVu_Sans_Mono_12);
+                display.setTextAlignment(TEXT_ALIGN_LEFT);
                 break;
             }
         }
