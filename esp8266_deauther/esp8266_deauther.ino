@@ -14,6 +14,7 @@ extern "C" {
 #if ARDUINOJSON_VERSION_MAJOR != 5
 // The software was build using ArduinoJson v5.x
 // version 6 is still in beta at the time of writing
+// go to tools -> manage libraries, search for ArduinoJSON and install the latest version 5
 #error Please upgrade/downgrade ArduinoJSON library to version 5!
 #endif
 

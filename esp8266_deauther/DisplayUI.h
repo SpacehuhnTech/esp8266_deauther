@@ -81,7 +81,7 @@ class DisplayUI {
 
         const uint8_t maxLen           = 18;
         const uint8_t lineHeight       = 12;
-        const uint8_t scrollSpeed      = 500;
+        const uint8_t scrollSpeed      = 500; // time interval in ms
         const uint8_t buttonDelay      = 250;
         const uint8_t drawInterval     = 100; // 100ms = 10 FPS
         const uint16_t screenIntroTime = 2500;

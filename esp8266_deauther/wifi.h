@@ -228,7 +228,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
 
     // ================================================================
     // post here the output of the webConverter.py
-
+#ifdef USE_PROGMEM_WEB_FILES
     if (!settings.getWebSpiffs()) {
         server.on(String(SLASH).c_str(), HTTP_GET, []() {
             sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
@@ -310,7 +310,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
             handleFileRead(String(F("/web/lang/")) + settings.getLang() + String(F(".lang")));
         }
     });
-
+#endif
     // ================================================================
 
     server.on(String(F("/run")).c_str(), HTTP_GET, []() {
