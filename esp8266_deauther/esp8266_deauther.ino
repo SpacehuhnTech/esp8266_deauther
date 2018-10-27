@@ -6,6 +6,9 @@
  */
 
 extern "C" {
+  // Please follow this tutorial:
+  // https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide
+  // And be sure to have the right board selected
   #include "user_interface.h"
 }
 #include <EEPROM.h>

@@ -1,4 +1,4 @@
-# DSTIKE Deauther Wristband
+# DSTIKE Deauther Wristband and Deauther Mini
 
 |  |  |
 | - | - |
