@@ -15,7 +15,7 @@ Copy the `A_config.h` file and paste it in the Arduino sektch and replace the de
   - [DSTIKE Deauther OLED v1.5S (with RGB)](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_OLED_v1.5S/A_config.h)
   - [DSTIKE Deauther OLED v2, v2.5, v3](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_OLED_v2_v2.5_v3/A_config.h)
   - [DSTIKE Deauther OLED v3.5](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_OLED_v3.5_Monster/A_config.h)
-  - [DSTIKE Deauther OLED Mini](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_OLED_v3.5_Monster/A_config.h)
+  - [DSTIKE Deauther OLED Mini](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_Wristband_Mini/A_config.h)
 - [DSTIKE Deauther Wristband](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_Wristband_Mini/A_config.h)
 - [DSTIKE Deauther Monster](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_OLED_v3.5_Monster/A_config.h)
 - [DSTIKE Deauther Boy](https://github.com/spacehuhn/esp8266_deauther/blob/master/configs/DSTIKE_Deauther_Boy/A_config.h)
