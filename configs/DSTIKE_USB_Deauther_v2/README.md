@@ -1,4 +1,4 @@
-# DSTIKE Deauther v3 & DSTIKE NodeMCU-07 v2
+# DSTIKE USB Deauther v2
 
 |  |  |
 | - | - |
