@@ -1,4 +1,4 @@
-# DSTIKE Deauther OLED v1 - v1.5
+# DSTIKE Deauther OLED v1.5S
 
 |  |  |
 | - | - |
