@@ -1,4 +1,4 @@
-# DSTIKE Deauther OLED v3.5 + DSTIKE Deauth Monster
+# DSTIKE Deauth Monster
 
 |  |  |
 | - | - |
