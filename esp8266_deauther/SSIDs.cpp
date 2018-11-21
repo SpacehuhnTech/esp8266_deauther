@@ -194,9 +194,7 @@ void SSIDs::add(String name, bool wpa2, int clones, bool force) {
     if (clones > SSID_LIST_SIZE) clones = SSID_LIST_SIZE;
 
     for (int i = 0; i < clones; i++) {
-        if (clones > 1) name = randomize(name);
-
-        internal_add(name, wpa2, name.length());
+        internal_add(clones > 1 ? randomize(name) : name, wpa2, name.length());
 
         if (list->size() > SSID_LIST_SIZE) internal_remove(0);
     }
