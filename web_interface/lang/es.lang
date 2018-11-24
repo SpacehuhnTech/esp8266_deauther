@@ -65,10 +65,10 @@
 	"setting_attacktimeout": "Después de cuanto tiempo (en segundos) el ataque se detendrá automaticamente.\nConfigurarlo en 0 para deshabilitarlo.",
 	"setting_forcepackets": "Cuantos tentativos de envío de un paquete.\nConfigurar este valor más alto si se desea obtener una mejor velocidad de paquetes en un area ocupada.\nCuidado, esta configuración puede hacer que el dispositivo vaya más lento o hacerlo más inestable.\n¡El valor máximo es 255!",
 	"setting_deauthspertarget": "Cuantos frames de desautentifiación y desasociación son enviados para cada blanco.",
-	"setting_deauthReason": "El codigo motivo que viene enviado con los frames tipo "deauth" para decir al dispositivo de destinación porqué la conexión será terminada.",
+	"setting_deauthReason": "El codigo motivo que viene enviado con los frames tipo \"deauth\" para decir al dispositivo de destinación porqué la conexión será terminada.",
 	"setting_beaconchannel": "Si habilitado, se enviará todos los frames en canales diversos durante la ejecución de un ataque tipo 'Beacon'.",
 	"setting_beaconInterval": "Si está habilitado, los Beacons serán enviados cada segundo. Deshabilitado, el intervalo será de 100 ms.\nUn intervalo más largo significa mayor estabilidad y menos 'spammeo' de los paquetes, pero podría nesecitar más tiempo hasta que los clientes encuentren los SSID durante el escaneo.",
-	"setting_randomTX": "Habilita la potencia de transmisión aleatoria para el envío de pedidos de frames 'Beacons' y 'Probe'."
+	"setting_randomTX": "Habilita la potencia de transmisión aleatoria para el envío de pedidos de frames 'Beacons' y 'Probe'.",
 	"setting_probesPerSSID": "Cuantos frames de pedidos 'Probe' son enviados para cada SSID.",
 	"setting_lang": "Idioma predefinido para la interfaz web.\n¡Asegurese que el archivo del idioma exista!"
 }

@@ -130,8 +130,8 @@ String getContentType(String filename) {
 }
 
 bool handleFileRead(String path) {
-    prnt(W_AP_REQUEST);
-    prnt(path);
+    //prnt(W_AP_REQUEST);
+    //prnt(path);
 
     if (!path.charAt(0) == SLASH) path = String(SLASH) + path;
 
@@ -153,8 +153,8 @@ bool handleFileRead(String path) {
     File file = SPIFFS.open(path, "r");
     server.streamFile(file, contentType);
     file.close();
-    prnt(SPACE);
-    prntln(W_OK);
+    //prnt(SPACE);
+    //prntln(W_OK);
 
     return true;
 }
@@ -281,6 +281,12 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
         server.on(String(F("/lang/en.lang")).c_str(), HTTP_GET, []() {
             sendProgmem(enlang, sizeof(enlang), W_JSON);
         });
+        server.on(String(F("/lang/es.lang")).c_str(), HTTP_GET, []() {
+            sendProgmem(eslang, sizeof(eslang), W_JSON);
+        });
+        server.on(String(F("/lang/fi.lang")).c_str(), HTTP_GET, []() {
+            sendProgmem(filang, sizeof(filang), W_JSON);
+        });
         server.on(String(F("/lang/fr.lang")).c_str(), HTTP_GET, []() {
             sendProgmem(frlang, sizeof(frlang), W_JSON);
         });
@@ -300,6 +306,8 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
             else if (settings.getLang() == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), W_JSON);
             else if (settings.getLang() == String(F("de"))) sendProgmem(delang, sizeof(delang), W_JSON);
             else if (settings.getLang() == String(F("en"))) sendProgmem(enlang, sizeof(enlang), W_JSON);
+            else if (settings.getLang() == String(F("es"))) sendProgmem(eslang, sizeof(eslang), W_JSON);
+            else if (settings.getLang() == String(F("fi"))) sendProgmem(filang, sizeof(filang), W_JSON);
             else if (settings.getLang() == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), W_JSON);
             else if (settings.getLang() == String(F("it"))) sendProgmem(itlang, sizeof(itlang), W_JSON);
             else if (settings.getLang() == String(F("ru"))) sendProgmem(rulang, sizeof(rulang), W_JSON);
