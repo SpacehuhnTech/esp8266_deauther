@@ -13,7 +13,7 @@ CLI::CLI() {
 CLI::~CLI() {}
 
 void CLI::load() {
-    String defaultValue = String(CLI_DEFAULT_AUTOSTART);
+    String defaultValue = str(CLI_DEFAULT_AUTOSTART);
     checkFile(execPath, defaultValue);
     execFile(execPath);
 }
