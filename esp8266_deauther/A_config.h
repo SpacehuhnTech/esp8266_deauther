@@ -74,7 +74,7 @@
     CS = GPIO 15 (D8) or GND
     SCK/SCL = GPIO 14 (D5)
     SDA/MOSI = GPIO 13 (D7) */
-//#define DEAUTHER_DISPLAY SSD1306Spi display = SSD1306Spi display = SSD1306Spi(5, 4, 15); // for 0.96" OLED with SPI
+//#define DEAUTHER_DISPLAY SSD1306Spi display = SSD1306Spi(5, 4, 15); // for 0.96" OLED with SPI
 //#define DEAUTHER_DISPLAY SH1106Spi display = SH1106Spi(5, 4, 15); // for 1.3" OLED with SPI
 
 //#define FLIP_DIPLAY // uncomment that to flip the display vertically
