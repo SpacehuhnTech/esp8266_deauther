@@ -141,7 +141,7 @@ class Attack {
             0x20,               0x20,               0x20, 0x20,
             0x20,               0x20,               0x20, 0x20,
             0x20,               0x20,               0x20, 0x20,
-            /* 58 - 59 */ 0x01, 0x04, // Tag Number: Supported Rates (1), Tag length: 4
+            /* 58 - 59 */ 0x01, 0x08, // Tag Number: Supported Rates (1), Tag length: 8
             /* 60 */ 0x82,            // 1(B)
             /* 61 */ 0x84,            // 2(B)
             /* 62 */ 0x8b,            // 5.5(B)
