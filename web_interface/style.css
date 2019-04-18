@@ -164,7 +164,7 @@ p{
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);
   transform: rotate(45deg);
-} 
+}
 
 /* ERROR */
 .hide {
@@ -181,7 +181,7 @@ p{
 	0%   {opacity: 0;}
 	100% {opacity: 1;}
 }
-	
+
 
 hr {
 	background: #3e4146;
@@ -210,7 +210,7 @@ li{
 .meter_forground{
 	color: #fff;
 	padding: 4px 0;
-	/* + one of the colors below 
+	/* + one of the colors below
 	(width will be set by the JS) */
 }
 .meter_green{
@@ -254,12 +254,12 @@ th, td {
 	#apTable .mac,
 	#apTable .vendor,
 	#apTable .name,
-	
+
 	#stTable .id,
 	#stTable .pkts,
 	#stTable .lastseen,
 	#stTable .mac,
-	
+
 	#nTable .id,
 	#nTable .vendor,
 	#nTable .ap,
@@ -268,7 +268,7 @@ th, td {
 	#ssidTable .id	{
 	  display: none;
 	}
-	
+
 	.meter_background{
 		min-width: 45px;
 	}
@@ -316,7 +316,10 @@ nav a:hover{
 }
 
 button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type="button"]:hover {
-	background: #42444a; 
+	background: #42444a;
+}
+button:active, input[type="submit"]:active, input[type="reset"]:active, input[type="button"]:active {
+	transform: scale(.93);
 }
 
 /* Forms */
