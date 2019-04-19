@@ -128,11 +128,40 @@ function drawNames(){
 	getE("nTable").innerHTML = html;
 }
 				
+var duts;
+var elxtime;
 function scan(type){
+	getE('RButton').disabled = true;
+	switch(type){
+		case 0:
+			getE('scanOne').disabled = true;
+			getE('scanZero').style.visibility = 'hidden';
+			elxtime = 2450;
+			break;
+		case 1:
+			getE('scanZero').disabled = true;
+			getE('scanOne').style.visibility = 'hidden';
+			elxtime = parseInt(getE("scanTime").value+"000") + 1500;
+	}
 	var cmdStr = "scan "
 		+ (type == 0 ? "aps " : "stations -t "+getE("scanTime").value+"s")
 		+ " -ch "+getE("ch").options[getE("ch").selectedIndex].value;
 	getFile("run?cmd="+cmdStr);
+	duts = parseInt(type);
+	setTimeout(buttonFunc, elxtime)
+}
+
+function buttonFunc(){
+	switch (duts) {
+		case 0:
+			getE('scanZero').style.visibility = 'visible';
+			getE('scanOne').disabled = false;
+			break;
+		case 1:
+			getE('scanOne').style.visibility = 'visible';
+			getE('scanZero').disabled = false;
+	}
+	getE('RButton').disabled = false;
 }
 
 function load(){
