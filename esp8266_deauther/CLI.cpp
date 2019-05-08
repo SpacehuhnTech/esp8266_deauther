@@ -14,6 +14,7 @@ CLI::~CLI() {}
 
 void CLI::load() {
     String defaultValue = String(CLI_DEFAULT_AUTOSTART);
+
     checkFile(execPath, defaultValue);
     execFile(execPath);
 }
@@ -689,7 +690,7 @@ void CLI::runCommand(String input) {
     // ===== STOP ===== //
     // stop [<mode>]
     else if (eqlsCMD(0, CLI_STOP)) {
-        led.setMode(led.LED_MODE::IDLE, true);
+        led.setMode(IDLE, true);
 
         if ((list->size() >= 2) && !(eqlsCMD(1, CLI_ALL))) {
             for (int i = 1; i < list->size(); i++) {
