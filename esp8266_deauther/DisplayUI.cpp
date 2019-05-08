@@ -734,13 +734,13 @@ void DisplayUI::drawLoadingScan() {
     if (scan.isScanning()) {
         percentage = String(scan.getPercentage()) + '%';
     } else {
-        percentage = String(DSP_SCAN_DONE);
+        percentage = str(DSP_SCAN_DONE);
     }
 
-    drawString(0, leftRight(String(DSP_SCAN_FOR), scan.getMode(), maxLen));
-    drawString(1, leftRight(String(DSP_APS), String(accesspoints.count()), maxLen));
-    drawString(2, leftRight(String(DSP_STS), String(stations.count()), maxLen));
-    drawString(3, leftRight(String(DSP_PKTS), String(scan.getPacketRate()) + String(DSP_S), maxLen));
+    drawString(0, leftRight(str(DSP_SCAN_FOR), scan.getMode(), maxLen));
+    drawString(1, leftRight(str(DSP_APS), String(accesspoints.count()), maxLen));
+    drawString(2, leftRight(str(DSP_STS), String(stations.count()), maxLen));
+    drawString(3, leftRight(str(DSP_PKTS), String(scan.getPacketRate()) + str(DSP_S), maxLen));
     drawString(4, center(percentage, maxLen));
 }
 
@@ -772,10 +772,10 @@ void DisplayUI::drawPacketMonitor() {
 }
 
 void DisplayUI::drawIntro() {
-    drawString(0, center(String(D_INTRO_0), maxLen));
-    drawString(1, center(String(D_INTRO_1), maxLen));
-    drawString(2, center(String(D_INTRO_2), maxLen));
-    drawString(3, center(String(D_INTRO_3), maxLen));
+    drawString(0, center(str(D_INTRO_0), maxLen));
+    drawString(1, center(str(D_INTRO_1), maxLen));
+    drawString(2, center(str(D_INTRO_2), maxLen));
+    drawString(3, center(str(D_INTRO_3), maxLen));
     drawString(4, center(settings.getVersion(), maxLen));
 }
 
