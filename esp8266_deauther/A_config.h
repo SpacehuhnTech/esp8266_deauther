@@ -186,7 +186,16 @@
   #define DEFAULT_SSID "pwned"
 #endif /* ifndef DEFAULT_SSID */
 
-// ===== LED ===== //
+// =============== LED =============== //
+
+#if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB)
+  #define NEOPIXEL_LED
+#endif /* if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB) */
+
+#if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92)
+  #define LED_DIGITAL
+#endif /* if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92) */
+
 #ifndef LED_PIN_R
   #define LED_PIN_R 255
 #endif /* ifndef LED_PIN_R */
@@ -207,11 +216,8 @@
   #define LED_MODE_BRIGHTNESS 10
 #endif /* ifndef LED_MODE_BRIGHTNESS */
 
-#if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB)
-  #define NEOPIXEL_LED
-#endif /* if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB) */
+// =============== DISPLAY =============== //
 
-// ===== DISPLAY ===== //
 #ifndef DISPLAY_TEXT
   #define DISPLAY_TEXT ""
 #endif /* ifndef DISPLAY_TEXT */
@@ -251,7 +257,7 @@
   #define SPI_CS 15
 #endif /* ifndef SPI_CS */
 
-// ===== BUTTONS ===== //
+// =============== BUTTONS =============== //
 #ifndef BUTTON_UP
   #define BUTTON_UP 255
 #endif // ifndef BUTTON_UP
@@ -277,7 +283,7 @@
  #define LED_DIGITAL
  #define LED_RGB
  #define LED_NEOPIXEL
- #define MY92
+ #define LED_MY92
 
  #define LED_ANODE false
 
@@ -293,15 +299,15 @@
 
  #define LED_MODE_BRIGHTNESS 100
 
- #define MY92_NUM 1
- #define MY92_DATA 4
- #define MY92_CLOCK 5
- #define MY92_CH_R 0
- #define MY92_CH_G 1
- #define MY92_CH_B 2
- #define MY92_CH_BRIGHTNESS 3
- #define MY92_MODEL MY92XX_MODEL_MY9291
- #define MY92_MODEL MY92XX_MODEL_MY9231
+ #define LED_MY92_NUM 1
+ #define LED_MY92_DATA 4
+ #define LED_MY92_CLOCK 5
+ #define LED_MY92_CH_R 0
+ #define LED_MY92_CH_G 1
+ #define LED_MY92_CH_B 2
+ #define LED_MY92_CH_BRIGHTNESS 3
+ #define LED_MY92_MODEL MY92XX_MODEL_MY9291
+ #define LED_MY92_MODEL MY92XX_MODEL_MY9231
 
    // ===== DISPLAY ===== //
  #define USE_DISPLAY false
