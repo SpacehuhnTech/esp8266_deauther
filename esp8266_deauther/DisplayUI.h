@@ -9,12 +9,20 @@
 #include "Scan.h"
 #include "Attack.h"
 
-#include <Wire.h>
-#include <SPI.h>
-#include <SH1106Wire.h>
-#include <SSD1306Wire.h>
-#include <SH1106Spi.h>
-#include <SSD1306Spi.h>
+// ===== adjustable ===== //
+#if defined(SSD1306_I2C)
+  #include <Wire.h>
+  #include <SSD1306Wire.h>
+#elif defined(SSD1306_SPI)
+  #include <SPI.h>
+  #include <SSD1306Spi.h>
+#elif defined(SH1106_I2C)
+  #include <Wire.h>
+  #include <SH1106Wire.h>
+#elif defined(SH1106_SPI)
+  #include <SPI.h>
+  #include <SH1106Spi.h>
+#endif /* if defined(SSD1306_I2C) */
 
 #include <SimpleButton.h>
 
