@@ -26,21 +26,21 @@ class LED {
 
         uint8_t brightness = 100;
 
-#if defined(NEOPIXEL_LED)
-        Adafruit_NeoPixel strip(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, LED_NEOPIXEL_MODE);
+#if defined(LED_NEOPIXEL_RGB)
+        Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400);
+#elif defined(LED_NEOPIXEL_GRB)
+        Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400);
 #elif defined(MY92)
-        my92xx myled(MY92_MODEL, MY92_NUM, MY92_DATA, MY92_CLK, MY92XX_COMMAND_DEFAULT);
+        my92xx myled = my92xx(MY92_MODEL, MY92_NUM, MY92_DATA, MY92_CLK, MY92XX_COMMAND_DEFAULT);
 #endif // if defined(NEOPIXEL_LED)
 
     public:
         void setup() {
             analogWriteRange(0xff);
 
-#if defined(LED_MODE_BRIGHTNESS)
             brightness = LED_MODE_BRIGHTNESS;
-#endif // if defined(LED_MODE_BRIGHTNESS)
 
-#if defined(DIGITAL_LED) || defined(RGB_LED)
+#if defined(LED_DIGITAL) || defined(LED_RGB)
             if (LED_PIN_R < 255) pinMode(LED_PIN_R, OUTPUT);
             if (LED_PIN_G < 255) pinMode(LED_PIN_G, OUTPUT);
             if (LED_PIN_B < 255) pinMode(LED_PIN_B, OUTPUT);
@@ -56,7 +56,7 @@ class LED {
             myled->setChannel(3, 100);
             myled.setState(true);
             myled.update();
-#endif // if defined(DIGITAL_LED) || defined(RGB_LED)
+#endif // if defined(LED_DIGITAL) || defined(LED_RGB)
         }
 
         void update();
@@ -74,7 +74,7 @@ class LED {
         void setColor(uint8_t r, uint8_t g, uint8_t b, bool output = false) {
             if (output) printColor(r, g, b);
 
-#if defined(DIGITAL_LED)
+#if defined(LED_DIGITAL)
             if (LED_ANODE) {
                 if (LED_PIN_R < 255) digitalWrite(LED_PIN_R, r > 0);
                 if (LED_PIN_G < 255) digitalWrite(LED_PIN_G, g > 0);
@@ -84,7 +84,7 @@ class LED {
                 if (LED_PIN_G < 255) digitalWrite(LED_PIN_G, g == 0);
                 if (LED_PIN_B < 255) digitalWrite(LED_PIN_B, b == 0);
             }
-#elif defined(RGB_LED)
+#elif defined(LED_RGB)
             if ((r > 0) && (brightness > 0)) r = r * brightness / 100;
             if ((g > 0) && (brightness > 0)) g = g * brightness / 100;
             if ((b > 0) && (brightness > 0)) b = b * brightness / 100;
@@ -99,9 +99,6 @@ class LED {
             analogWrite(LED_PIN_G, g);
             analogWrite(LED_PIN_B, b);
 #elif defined(NEOPIXEL_LED)
-            if ((r > 0) && (brightness > 0)) r = r * brightness / 100;
-            if ((g > 0) && (brightness > 0)) g = g * brightness / 100;
-            if ((b > 0) && (brightness > 0)) b = b * brightness / 100;
 
             for (size_t i = 0; i < LED_NEOPIXEL_NUM; i++) {
                 strip.setPixelColor(i, r, g, b);
@@ -115,7 +112,7 @@ class LED {
             myled->setChannel(MY92_CH_BRIGHTNESS, brightness);
             myled->setState(true);
             myled->update();
-#endif // if defined(DIGITAL_LED)
+#endif // if defined(LED_DIGITAL)
         }
 
         void tempEnable();
