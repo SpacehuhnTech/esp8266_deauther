@@ -9,6 +9,13 @@
 #include "Scan.h"
 #include "Attack.h"
 
+#include <Wire.h>
+#include <SPI.h>
+#include <SH1106Wire.h>
+#include <SSD1306Wire.h>
+#include <SH1106Spi.h>
+#include <SSD1306Spi.h>
+
 #include <SimpleButton.h>
 
 using namespace simplebutton;
@@ -32,35 +39,18 @@ extern String replaceUtf8(String str, String r);
 const char D_INTRO_0[] PROGMEM = "";
 const char D_INTRO_1[] PROGMEM = "ESP8266 Deauther";
 const char D_INTRO_2[] PROGMEM = "by @Spacehuhn";
-const char D_INTRO_3[] PROGMEM = "";
-
-// fallback for the buttons
-#ifndef BUTTON_UP
-  #define BUTTON_UP 255
-#endif // ifndef BUTTON_UP
-
-#ifndef BUTTON_DOWN
-  #define BUTTON_DOWN 255
-#endif // ifndef BUTTON_DOWN
-
-#ifndef BUTTON_A
-  #define BUTTON_A 255
-#endif // ifndef BUTTON_A
-
-#ifndef BUTTON_B
-  #define BUTTON_B 255
-#endif // ifndef BUTTON_B
+const char D_INTRO_3[] PROGMEM = DISPLAY_TEXT;
 
 struct MenuNode {
     std::function<String()>getStr; // function used to create the displayed string
-    std::function<void()>  click; // function that is executed when node is clicked
-    std::function<void()>  hold;  // function that is executed when node is pressed for > 800ms
+    std::function<void()>  click;  // function that is executed when node is clicked
+    std::function<void()>  hold;   // function that is executed when node is pressed for > 800ms
 };
 
 struct Menu {
-    SimpleList<MenuNode>* list;
-    Menu                * parentMenu;
-    uint8_t               selected;
+    SimpleList<MenuNode>*list;
+    Menu  * parentMenu;
+    uint8_t selected;
     std::function<void()> build; // function that is executed when button is clicked
 };
 
@@ -68,8 +58,8 @@ class DisplayUI {
     public:
         enum DISPLAY_MODE { OFF = 0, BUTTON_TEST = 1, MENU = 2, LOADSCAN = 3, PACKETMONITOR = 4, INTRO = 5, CLOCK = 6 };
 
-        uint8_t mode      = DISPLAY_MODE::MENU;
-        bool highlightLED = false;
+        uint8_t mode         = DISPLAY_MODE::MENU;
+        bool    highlightLED = false;
 
         Button* up   = NULL;
         Button* down = NULL;
@@ -77,16 +67,24 @@ class DisplayUI {
         Button* b    = NULL;
 
         // ===== adjustable ===== //
-        DEAUTHER_DISPLAY // see config.h
+#if defined(SSD1306_I2C)
+        SSD1306Wire display = SSD1306Wire(I2C_ADDR, I2C_SDA, I2C_SCL);
+#elif defined(SSD1306_SPI)
+        SSD1306Spi display = SSD1306Spi(SPI_RES, SPI_DC, SPI_CS);
+#elif defined(SH1106_I2C)
+        SH1106Wire display = SH1106Wire(I2C_ADDR, I2C_SDA, I2C_SCL);
+#elif defined(SH1106_SPI)
+        SH1106Spi display = SH1106Spi(SPI_RES, SPI_DC, SPI_CS);
+#endif /* if defined(SSD1306_I2C) */
 
-        const uint8_t maxLen           = 18;
-        const uint8_t lineHeight       = 12;
-        const uint8_t buttonDelay      = 250;
-        const uint8_t drawInterval     = 100; // 100ms = 10 FPS
+        const uint8_t  maxLen          = 18;
+        const uint8_t  lineHeight      = 12;
+        const uint8_t  buttonDelay     = 250;
+        const uint8_t  drawInterval    = 100; // 100ms = 10 FPS
         const uint16_t scrollSpeed     = 500; // time interval in ms
         const uint16_t screenIntroTime = 2500;
-        const uint16_t screenWidth = 128;
-        const uint16_t sreenHeight = 64;
+        const uint16_t screenWidth     = 128;
+        const uint16_t sreenHeight     = 64;
 
         void configInit();
         void configOn();
@@ -111,15 +109,15 @@ class DisplayUI {
         void off();
 
     private:
-        int16_t selectedID     = 0; // i.e. access point ID to draw the apMenu
+        int16_t selectedID    = 0; // i.e. access point ID to draw the apMenu
         uint8_t scrollCounter = 0; // for horizontal scrolling
 
-        uint32_t scrollTime    = 0; // last time a character was moved
-        uint32_t drawTime      = 0; // last time a frame was drawn
-        uint32_t startTime     = 0; // when the screen was enabled
-        uint32_t buttonTime    = 0; // last time a button was pressed
+        uint32_t scrollTime = 0;   // last time a character was moved
+        uint32_t drawTime   = 0;   // last time a frame was drawn
+        uint32_t startTime  = 0;   // when the screen was enabled
+        uint32_t buttonTime = 0;   // last time a button was pressed
 
-        bool enabled = false;       // display enabled
+        bool enabled = false;      // display enabled
         bool tempOff = false;
 
         // selected attack modes
