@@ -14,6 +14,7 @@ CLI::~CLI() {}
 
 void CLI::load() {
     String defaultValue = str(CLI_DEFAULT_AUTOSTART);
+
     checkFile(execPath, defaultValue);
     execFile(execPath);
 }
@@ -958,40 +959,6 @@ void CLI::runCommand(String input) {
             counter++;
         } else {
             prntln(CLI_CUSTOM_FAILED);
-        }
-    }
-
-    // ===== LED ===== //
-    // led <r> <g> <b> [<brightness>]
-    else if ((list->size() >= 4) && (list->size() <= 5) && eqlsCMD(0, CLI_LED)) {
-        if (list->size() == 4) {
-            led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), true);
-        } else {
-            led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), list->get(4).toInt(), true);
-        }
-    }
-
-    // led <#rrggbb> [<brightness>]
-    else if ((list->size() >= 2) && (list->size() <= 3) &&
-             eqlsCMD(0, CLI_LED) && (list->get(1).charAt(0) == HASHSIGN)) {
-        uint8_t c[3];
-        strToColor(list->get(1), c);
-
-        if (list->size() == 2) {
-            led.setColor(c[0], c[1], c[2], true);
-        } else {
-            led.setColor(c[0], c[1], c[2], list->get(2).toInt(), true);
-        }
-    }
-
-    // led <enable/disable>
-    else if ((list->size() == 2) && eqlsCMD(0, CLI_LED)) {
-        if (eqlsCMD(1, CLI_ENABLE)) {
-            led.tempEnable();
-        } else if (eqlsCMD(1, CLI_DISABLE)) {
-            led.tempDisable();
-        } else {
-            parameterError(list->get(1));
         }
     }
 
