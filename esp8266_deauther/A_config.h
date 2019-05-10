@@ -179,6 +179,10 @@
 // ===== LED ===== //
  #define LED_MY92
 
+ #define LED_MODE_OFF 0, 0, 0
+ #define LED_MODE_SCAN 0, 0, 255
+ #define LED_MODE_ATTACK 255, 0, 0
+ #define LED_MODE_IDLE 0, 255, 0
  #define LED_MODE_BRIGHTNESS 10
 
  #define LED_MY92_NUM 1
@@ -195,6 +199,10 @@
 // ===== LED ===== //
  #define LED_MY92
 
+ #define LED_MODE_OFF 0, 0, 0
+ #define LED_MODE_SCAN 0, 0, 255
+ #define LED_MODE_ATTACK 255, 0, 0
+ #define LED_MODE_IDLE 0, 255, 0
  #define LED_MODE_BRIGHTNESS 10
 
  #define LED_MY92_NUM 1
@@ -247,6 +255,22 @@
 #ifndef LED_ANODE
   #define LED_ANODE false
 #endif /* ifndef LED_ANODE */
+
+#ifndef LED_MODE_OFF
+  #define LED_MODE_OFF 0, 0, 0
+#endif /* ifndef LED_MODE_OFF */
+
+#ifndef LED_MODE_SCAN
+  #define LED_MODE_SCAN 0, 0, 255
+#endif /* ifndef LED_MODE_SCAN */
+
+#ifndef LED_MODE_ATTACK
+  #define LED_MODE_ATTACK 255, 0, 0
+#endif /* ifndef LED_MODE_ATTACK */
+
+#ifndef LED_MODE_IDLE
+  #define LED_MODE_IDLE 0, 255, 0
+#endif /* ifndef LED_MODE_IDLE */
 
 #ifndef LED_MODE_BRIGHTNESS
   #define LED_MODE_BRIGHTNESS 10
@@ -333,7 +357,11 @@
  #define LED_NEOPIXEL_NUM 1
  #define LED_NEOPIXEL_PIN 255
 
- #define LED_MODE_BRIGHTNESS 100
+ #define LED_MODE_OFF 0,0,0
+ #define LED_MODE_SCAN 0,0,255
+ #define LED_MODE_ATTACK 255,0,0
+ #define LED_MODE_IDLE 0,255,0
+ #define LED_MODE_BRIGHTNESS 10
 
  #define LED_MY92_NUM 1
  #define LED_MY92_DATA 4
@@ -369,5 +397,10 @@
  #define BUTTON_B 255
 
  */
+
+// ========== ERROR CHECKS ========== //
+#if LED_MODE_BRIGHTNESS == 0
+#error LED_MODE_BRIGHTNESS must not be zero!
+#endif /* if LED_MODE_BRIGHTNESS == 0 */
 
 #endif /* ifndef config_h */
