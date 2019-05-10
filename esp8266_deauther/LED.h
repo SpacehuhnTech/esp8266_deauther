@@ -31,7 +31,7 @@ class LED {
 #elif defined(LED_NEOPIXEL_GRB)
         Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400);
 #elif defined(LED_MY92)
-        my92xx myled = my92xx(LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, LED_MY92XX_COMMAND_DEFAULT);
+        my92xx myled = my92xx(LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT);
 #endif // if defined(NEOPIXEL_LED)
 
     public:
@@ -52,8 +52,7 @@ class LED {
             myled.setChannel(LED_MY92_CH_R, 0);
             myled.setChannel(LED_MY92_CH_G, 0);
             myled.setChannel(LED_MY92_CH_B, 0);
-            myled->setChannel(LED_MY92_CH_BRIGHTNESS, brightness);
-            myled->setChannel(3, 100);
+            myled.setChannel(LED_MY92_CH_BRIGHTNESS, brightness);
             myled.setState(true);
             myled.update();
 #endif // if defined(LED_DIGITAL) || defined(LED_RGB)
@@ -106,12 +105,12 @@ class LED {
 
             strip.show();
 #elif defined(LED_MY9291)
-            myled->setChannel(LED_MY92_CH_R, r);
-            myled->setChannel(LED_MY92_CH_G, g);
-            myled->setChannel(LED_MY92_CH_B, b);
-            myled->setChannel(LED_MY92_CH_BRIGHTNESS, brightness);
-            myled->setState(true);
-            myled->update();
+            myled.setChannel(LED_MY92_CH_R, r);
+            myled.setChannel(LED_MY92_CH_G, g);
+            myled.setChannel(LED_MY92_CH_B, b);
+            myled.setChannel(LED_MY92_CH_BRIGHTNESS, brightness);
+            myled.setState(true);
+            myled.update();
 #endif // if defined(LED_DIGITAL)
         }
 

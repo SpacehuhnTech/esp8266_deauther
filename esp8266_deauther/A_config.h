@@ -29,17 +29,14 @@
 // #define DEAUTHER_WRISTBAND
 // #define DEAUTHER_WRISTBAND_V2
 // #define DEAUTHER_MINI
+// #define LYASI_7W_E27_LAMP
+// #define AVATAR_5W_E14_LAMP
 
 #define DEFAULT_ESP8266
 
-// ========== CONFIGS ========== //
-#if defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(USB_DEAUTHER) || defined(NODEMCU_07) || defined(DEAUTHER) || defined(DEAUTHER_V1) || defined(DEAUTHER_V2) || defined(DEAUTHER_V3)
-// ===== LED ===== //
-  #define LED_DIGITAL
-  #define LED_PIN_R 16 // NodeMCU on-board LED
-  #define LED_PIN_B 2  // ESP-12 LED
 
-#elif defined(D_DUINO_B_V5_LED_RING)
+// ========== CONFIGS ========== //
+#if defined(D_DUINO_B_V5_LED_RING)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -176,6 +173,45 @@
   #define BUTTON_UP 12
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
+
+#elif defined(LYASI_7W_E27_LAMP)
+
+// ===== LED ===== //
+ #define LED_MY92
+
+ #define LED_MODE_BRIGHTNESS 10
+
+ #define LED_MY92_NUM 1
+ #define LED_MY92_DATA 4
+ #define LED_MY92_CLK 5
+ #define LED_MY92_CH_R 0
+ #define LED_MY92_CH_G 1
+ #define LED_MY92_CH_B 2
+ #define LED_MY92_CH_BRIGHTNESS 3
+ #define LED_MY92_MODEL MY92XX_MODEL_MY9291
+
+#elif defined(AVATAR_5W_E14_LAMP)
+
+// ===== LED ===== //
+ #define LED_MY92
+
+ #define LED_MODE_BRIGHTNESS 10
+
+ #define LED_MY92_NUM 1
+ #define LED_MY92_DATA 13
+ #define LED_MY92_CLK 15
+ #define LED_MY92_CH_R 0
+ #define LED_MY92_CH_G 1
+ #define LED_MY92_CH_B 2
+ #define LED_MY92_CH_BRIGHTNESS 3
+ #define LED_MY92_MODEL MY92XX_MODEL_MY9291
+
+#elif defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(USB_DEAUTHER) || defined(NODEMCU_07) || defined(DEAUTHER) || defined(DEAUTHER_V1) || defined(DEAUTHER_V2) || defined(DEAUTHER_V3)
+// ===== LED ===== //
+   #define LED_DIGITAL
+   #define LED_PIN_R 16 // NodeMCU on-board LED
+   #define LED_PIN_B 2  // ESP-12 LED
+
 #endif /* if defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(USB_DEAUTHER) || defined(NODEMCU_07) || defined(DEAUTHER) || defined(DEAUTHER_V1) || defined(DEAUTHER_V2) || defined(DEAUTHER_V3) */
 // ============================== //
 
@@ -301,7 +337,7 @@
 
  #define LED_MY92_NUM 1
  #define LED_MY92_DATA 4
- #define LED_MY92_CLOCK 5
+ #define LED_MY92_CLK 5
  #define LED_MY92_CH_R 0
  #define LED_MY92_CH_G 1
  #define LED_MY92_CH_B 2

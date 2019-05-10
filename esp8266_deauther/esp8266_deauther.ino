@@ -6,9 +6,9 @@
  */
 
 extern "C" {
-  // Please follow this tutorial:
-  // https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide
-  // And be sure to have the right board selected
+    // Please follow this tutorial:
+    // https://github.com/spacehuhn/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide
+    // And be sure to have the right board selected
   #include "user_interface.h"
 }
 #include <EEPROM.h>
@@ -19,7 +19,7 @@ extern "C" {
 // version 6 is still in beta at the time of writing
 // go to tools -> manage libraries, search for ArduinoJSON and install the latest version 5
 #error Please upgrade/downgrade ArduinoJSON library to version 5!
-#endif
+#endif // if ARDUINOJSON_VERSION_MAJOR != 5
 
 #include "oui.h"
 #include "language.h"
