@@ -21,9 +21,7 @@ void LED::update() {
 
     if (scan.isScanning() && (scan.deauths < settings.getMinDeauths())) {
         setMode(SCAN);
-    } else if (scan.deauths >= settings.getMinDeauths()) {
-        setMode(DEAUTH);
-    } else if (attack.isRunning()) {
+    } else if (attack.isRunning() || (scan.deauths >= settings.getMinDeauths())) {
         setMode(ATTACK);
     } else {
         setMode(IDLE);
@@ -51,10 +49,6 @@ void LED::setMode(LED_MODE mode, bool force) {
                 break;
 
             case ATTACK:
-                setColor(255, 0, 0);
-                break;
-
-            case DEAUTH:
                 setColor(255, 0, 0);
                 break;
 

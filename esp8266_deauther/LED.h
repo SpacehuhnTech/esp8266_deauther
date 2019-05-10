@@ -12,11 +12,10 @@
 #endif // if defined(NEOPIXEL_LED)
 
 enum LED_MODE {
-    OFF    = 0,
-    SCAN   = 1,
-    ATTACK = 2,
-    DEAUTH = 3,
-    IDLE   = 4
+    OFF,
+    SCAN,
+    ATTACK,
+    IDLE
 };
 
 class LED {
