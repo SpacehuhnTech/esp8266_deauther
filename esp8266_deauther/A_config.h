@@ -5,25 +5,27 @@
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
-// #define USB_DEAUTHER
 // #define DEAUTHER
 // #define DEAUTHER_V1
 // #define DEAUTHER_V2
 // #define DEAUTHER_V3
+// #define DEAUTHER_V3_5
 // #define D_DUINO_B_V5_LED_RING
 // #define DEAUTHER_BOY
-// #define DEAUTHER_V3_5
 // #define NODEMCU_07
 // #define NODEMCU_07_V2
-// #define DEAUTHER_OLED_V1_5_S
 // #define DEAUTHER_OLED
+// #define DEAUTHER_OLED_V1_5_S
 // #define DEAUTHER_OLED_V1_5
 // #define DEAUTHER_OLED_V2
 // #define DEAUTHER_OLED_V2_5
 // #define DEAUTHER_OLED_V3
 // #define DEAUTHER_OLED_V3_5
 // #define DEAUTHER_OLED_V4
+// #define DEAUTHER_OLED_V5
 // #define DEAUTHER_MOSTER
+// #define DEAUTHER_MOSTER_V2
+// #define DEAUTHER_MOSTER_V3
 // #define USB_DEAUTHER
 // #define USB_DEAUTHER_V2
 // #define DEAUTHER_WRISTBAND
@@ -131,7 +133,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_OLED_V3_5) || defined(DEAUTHER_OLED_V4)  || defined(DEAUTHER_MOSTER)
+#elif defined(DEAUTHER_OLED_V3_5) || defined(DEAUTHER_OLED_V4)  || defined(DEAUTHER_OLED_V5)  || defined(DEAUTHER_MOSTER)  || defined(DEAUTHER_MOSTER_V2)  || defined(DEAUTHER_MOSTER_V3)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -226,18 +228,101 @@
 
 // ========= FALLBACK ========= //
 
+// ===== ATTACK ===== //
+#ifndef ATTACK_ALL_CH
+  #define ATTACK_ALL_CH false
+#endif /* ifndef ATTACK_ALL_CH */
+
+#ifndef RANDOM_TX
+  #define RANDOM_TX false
+#endif /* ifndef RANDOM_TX */
+
+#ifndef ATTACK_TIMEOUT
+  #define ATTACK_TIMEOUT 600
+#endif /* ifndef ATTACK_TIMEOUT */
+
+#ifndef DEAUTHS_PER_TARGET
+  #define DEAUTHS_PER_TARGET 25
+#endif /* ifndef DEAUTHS_PER_TARGET */
+
+#ifndef DEAUTH_REASON
+  #define DEAUTH_REASON 1
+#endif /* ifndef DEAUTH_REASON */
+
+#ifdef BEACON_INTERVAL_100MS
+  #define BEACON_INTERVAL_100MS true
+#endif /* ifdef BEACON_INTERVAL_100MS */
+
+#ifndef PROBE_FRAMES_PER_SSID
+  #define PROBE_FRAMES_PER_SSID 1
+#endif /* ifndef PROBE_FRAMES_PER_SSID */
+
+// ===== SNIFFER ===== //
+#ifndef CH_TIME
+  #define CH_TIME 200
+#endif /* ifndef CH_TIME */
+
+#ifndef MIN_DEAUTH_FRAMES
+  #define MIN_DEAUTH_FRAMES 3
+#endif /* ifndef MIN_DEAUTH_FRAMES */
+
 #ifndef DEFAULT_SSID
   #define DEFAULT_SSID "pwned"
 #endif /* ifndef DEFAULT_SSID */
 
-// =============== LED =============== //
+// ===== ACCESS POINT ===== //
+#ifndef AP_SSID
+  #define AP_SSID "pwned"
+#endif /* ifndef AP_SSID */
 
+#ifdef AP_PASSWD
+  #define AP_PASSWD "deauther"
+#endif /* ifdef AP_PASSWD */
+
+#ifndef AP_HIDDEN
+  #define AP_HIDDEN false
+#endif /* ifndef AP_HIDDEN */
+
+#ifndef AP_IP_ADDR
+  #define AP_IP_ADDR { 192, 168, 4, 1 }
+#endif /* ifndef AP_IP_ADDR */
+
+// ===== WEB INTERFACE ===== //
+#ifndef WEB_ENABLED
+  #define WEB_ENABLED true
+#endif /* ifndef WEB_ENABLED */
+
+#ifndef WEB_CAPTIVE_PORTAL
+  #define WEB_CAPTIVE_PORTAL true
+#endif /* ifndef WEB_CAPTIVE_PORTAL */
+
+#ifndef WEB_USE_SPIFFS
+  #define WEB_USE_SPIFFS false
+#endif /* ifndef WEB_USE_SPIFFS */
+
+#ifndef DEFAULT_LANG
+  #define DEFAULT_LANG "en"
+#endif /* ifndef DEFAULT_LANG */
+
+// ===== CLI ===== //
+#ifndef CLI_ENABLED
+  #define CLI_ENABLED true
+#endif /* ifndef CLI_ENABLED */
+
+#ifndef CLI_ECHO
+  #define CLI_ECHO true
+#endif /* ifndef CLI_ECHO */
+
+// =============== LED =============== //
 #if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB)
   #define NEOPIXEL_LED
 #endif /* if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB) */
 
 #if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92)
   #define LED_DIGITAL
+  #define USE_LED false
+#else /* if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92) */
+  #define USE_LED true
 #endif /* if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92) */
 
 #ifndef LED_PIN_R
@@ -278,13 +363,17 @@
 
 // =============== DISPLAY =============== //
 
+#ifndef DISPLAY_TIMEOUT
+  #define DISPLAY_TIMEOUT 600
+#endif /* ifndef DISPLAY_TIMEOUT */
+
 #ifndef DISPLAY_TEXT
   #define DISPLAY_TEXT ""
 #endif /* ifndef DISPLAY_TEXT */
 
 #ifndef FLIP_DIPLAY
   #define FLIP_DIPLAY false
-#endif /* ifndef USE_DISPLAY */
+#endif /* ifndef FLIP_DIPLAY */
 
 #if !defined(SSD1306_I2C) && !defined(SSD1306_SPI) && !defined(SH1106_I2C) && !defined(SH1106_SPI)
   #define SSD1306_I2C
@@ -337,9 +426,37 @@
 // ======== AVAILABLE SETTINGS ========== //
 
 /*
- #define DEFAULT_SSID "something"
+   // ===== ATTACK ===== //
+ #define ATTACK_ALL_CH false
+ #define RANDOM_TX false
+ #define ATTACK_TIMEOUT 600
+ #define DEAUTHS_PER_TARGET 25
+ #define DEAUTH_REASON 1
+ #define BEACON_INTERVAL_100MS true
+ #define PROBE_FRAMES_PER_SSID 1
+
+   // ====== SNIFFER ====== //
+ #define CH_TIME 200
+ #define MIN_DEAUTH_FRAMES 3
+
+   // ===== ACCESS POINT ===== //
+ #define AP_SSID "pwned"
+ #define AP_PASSWD "deauther"
+ #define AP_HIDDEN false
+ #define AP_IP_ADDR {192, 168, 4, 1}
+
+   // ===== WEB INTERFACE ===== //
+ #define WEB_ENABLED true
+ #define WEB_CAPTIVE_PORTAL true
+ #define WEB_USE_SPIFFS false
+ #define DEFAULT_LANG "en"
+
+   // ===== CLI ===== //
+ #define CLI_ENABLED true
+ #define CLI_ECHO true
 
    // ===== LED ===== //
+ #define USE_LED true
  #define LED_DIGITAL
  #define LED_RGB
  #define LED_NEOPIXEL
@@ -375,6 +492,7 @@
 
    // ===== DISPLAY ===== //
  #define USE_DISPLAY false
+ #define DISPLAY_TIMEOUT 600
  #define FLIP_DIPLAY false
 
  #define SSD1306_I2C

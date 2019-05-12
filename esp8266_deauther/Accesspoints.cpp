@@ -91,7 +91,7 @@ String Accesspoints::getSSID(int num) {
     if (!check(num)) return String();
 
     if (getHidden(num)) {
-        return str(AP_HIDDEN);
+        return str(AP_HIDDE_SSID);
     } else {
         String ssid = WiFi.SSID(getID(num));
         ssid = ssid.substring(0, 32);
@@ -128,30 +128,30 @@ String Accesspoints::getEncStr(int num) {
     if (!check(num)) return String();
 
     switch (getEnc(num)) {
-    case ENC_TYPE_NONE:
-        return String(DASH);
+        case ENC_TYPE_NONE:
+            return String(DASH);
 
-        break;
+            break;
 
-    case ENC_TYPE_WEP:
-        return str(AP_WEP);
+        case ENC_TYPE_WEP:
+            return str(AP_WEP);
 
-        break;
+            break;
 
-    case ENC_TYPE_TKIP:
-        return str(AP_WPA);
+        case ENC_TYPE_TKIP:
+            return str(AP_WPA);
 
-        break;
+            break;
 
-    case ENC_TYPE_CCMP:
-        return str(AP_WPA2);
+        case ENC_TYPE_CCMP:
+            return str(AP_WPA2);
 
-        break;
+            break;
 
-    case ENC_TYPE_AUTO:
-        return str(AP_AUTO);
+        case ENC_TYPE_AUTO:
+            return str(AP_AUTO);
 
-        break;
+            break;
     }
     return String(QUESTIONMARK);
 }

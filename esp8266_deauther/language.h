@@ -461,7 +461,7 @@ const char AP_LIST_EMPTY[] PROGMEM = "AP list is empty :(";
 const char AP_NO_AP_SELECTED[] PROGMEM = "No APs selected";
 const char AP_TABLE_HEADER[] PROGMEM = "ID SSID                             Name             Ch RSSI Enc. Mac               Vendor   Selected";
 const char AP_TABLE_DIVIDER[] PROGMEM = "=====================================================================================================";
-const char AP_HIDDEN[] PROGMEM = "*HIDDEN*";
+const char AP_HIDDE_SSID[] PROGMEM = "*HIDDEN*";
 const char AP_WEP[] PROGMEM = "WEP";
 const char AP_WPA[] PROGMEM = "WPA";
 const char AP_WPA2[] PROGMEM = "WPA2";
