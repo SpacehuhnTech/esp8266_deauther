@@ -411,6 +411,8 @@ const char ST_SELECTED_ALL[] PROGMEM = "Selected all stations";
 const char ST_DESELECTED_ALL[] PROGMEM  = "Deselected all stations";
 
 // ===== SETTINGS ===== //
+const char S_OK[] PROGMEM = "OK";
+const char S_INVALID_HASH[] PROGMEM = "Invalid Hash - reseted to default";
 const char S_SETTINGS[] PROGMEM = "settings";
 const char S_BEACONCHANNEL[] PROGMEM = "beaconchannel";
 const char S_FORCEPACKETS[] PROGMEM = "forcepackets";
@@ -442,7 +444,7 @@ const char S_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
 const char S_SERIAL_ECHO[] PROGMEM = "serialEcho";
 const char S_WEB_SPIFFS[] PROGMEM = "webSpiffs";
 
-const char S_SETTINGS_LOADED[] PROGMEM = "Settings loaded from ";
+const char S_SETTINGS_LOADED[] PROGMEM = "Loading settings...";
 const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";
 const char S_SETTINGS_SAVED[] PROGMEM = "Settings saved in ";
 const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";

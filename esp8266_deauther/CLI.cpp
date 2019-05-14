@@ -622,7 +622,7 @@ void CLI::runCommand(String input) {
         if (list->size() == 3) { // Todo: check if -f or filename
             if (eqlsCMD(1, CLI_SSID)) load ? ssids.load(list->get(2)) : ssids.save(true, list->get(2));
             else if (eqlsCMD(1, CLI_NAME)) load ? names.load(list->get(2)) : names.save(true, list->get(2));
-            else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load(list->get(2)) : settings.save(true, list->get(2));
+            // else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load(list->get(2)) : settings.save(true, list->get(2));
             else parameterError(list->get(1));
         } else {
             if (eqlsCMD(1, CLI_SSID)) load ? ssids.load() : ssids.save(false);

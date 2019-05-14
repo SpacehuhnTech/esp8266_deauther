@@ -1,123 +1,24 @@
 #include "Settings.h"
 
-Settings::Settings() {
-    macSt = (uint8_t*)malloc(6);
-    macAP = (uint8_t*)malloc(6);
+#include <Hash.h>         // sha1() used in calcHash()
+#include "EEPROMHelper.h" // To load and save settings_t
+
+bool operator==(settings_hash_t a, settings_hash_t b) {
+    for (int i = 0; i<20; i++)
+        if (a.hash[i] != b.hash[i]) return false;
+    return true;
 }
 
-void Settings::load() {
-    DynamicJsonBuffer jsonBuffer(4000);
-
-    // check & read file
-    String json = getJsonStr();
-
-    checkFile(FILE_PATH, json);
-    JsonObject& data = parseJSONFile(FILE_PATH, jsonBuffer);
-
-    // VERSION
-    version = data.get<String>("version");
-
-    // AP
-    if (data.containsKey(keyword(S_SSID))) setSSID(data.get<String>(keyword(S_SSID)));
-    if (data.containsKey(keyword(S_PASSWORD))) setPassword(data.get<String>(keyword(S_PASSWORD)));
-    if (data.containsKey(keyword(S_CHANNEL))) setChannel(data.get<uint8_t>(keyword(S_CHANNEL)));
-    if (data.containsKey(keyword(S_HIDDEN))) setHidden(data.get<bool>(keyword(S_HIDDEN)));
-    if (data.containsKey(keyword(S_CAPTIVEPORTAL))) setCaptivePortal(data.get<bool>(keyword(S_CAPTIVEPORTAL)));
-
-    // GENERAL
-    if (data.containsKey(keyword(S_LANG))) setLang(data.get<String>(keyword(S_LANG)));
-    if (data.containsKey(keyword(S_DISPLAYINTERFACE))) setDisplayInterface(data.get<bool>(keyword(S_DISPLAYINTERFACE)));
-    if (data.containsKey(keyword(S_DISPLAY_TIMEOUT))) setDisplayTimeout(data.get<uint32_t>(keyword(S_DISPLAY_TIMEOUT)));
-    if (data.containsKey(keyword(S_SERIALINTERFACE))) setCLI(data.get<bool>(keyword(S_SERIALINTERFACE)));
-    if (data.containsKey(keyword(S_SERIAL_ECHO))) setSerialEcho(data.get<bool>(keyword(S_SERIAL_ECHO)));
-    if (data.containsKey(keyword(S_WEBINTERFACE))) setWebInterface(data.get<bool>(keyword(S_WEBINTERFACE)));
-    if (data.containsKey(keyword(S_WEB_SPIFFS))) setWebSpiffs(data.get<bool>(keyword(S_WEB_SPIFFS)));
-    if (data.containsKey(keyword(S_LEDENABLED))) setLedEnabled(data.get<bool>(keyword(S_LEDENABLED)));
-    if (data.containsKey(keyword(S_MACAP))) setMacAP(data.get<String>(keyword(S_MACAP)));
-    if (data.containsKey(keyword(S_MACST))) setMacSt(data.get<String>(keyword(S_MACST)));
-
-    // SCAN
-    if (data.containsKey(keyword(S_CHTIME))) setChTime(data.get<uint16_t>(keyword(S_CHTIME)));
-    if (data.containsKey(keyword(S_MIN_DEAUTHS))) setMinDeauths(data.get<uint16_t>(keyword(S_MIN_DEAUTHS)));
-
-    // ATTACK
-    if (data.containsKey(keyword(S_ATTACKTIMEOUT))) setAttackTimeout(data.get<uint32_t>(keyword(S_ATTACKTIMEOUT)));
-    if (data.containsKey(keyword(S_FORCEPACKETS))) setForcePackets(data.get<uint8_t>(keyword(S_FORCEPACKETS)));
-    if (data.containsKey(keyword(S_DEAUTHSPERTARGET))) setDeauthsPerTarget(data.get<uint16_t>(keyword(
-                                                                                                  S_DEAUTHSPERTARGET)));
-
-    if (data.containsKey(keyword(S_DEAUTHREASON))) setDeauthReason(data.get<uint8_t>(keyword(S_DEAUTHREASON)));
-    if (data.containsKey(keyword(S_BEACONCHANNEL))) setBeaconChannel(data.get<bool>(keyword(S_BEACONCHANNEL)));
-    if (data.containsKey(keyword(S_BEACONINTERVAL))) setBeaconInterval(data.get<bool>(keyword(S_BEACONINTERVAL)));
-    if (data.containsKey(keyword(S_RANDOMTX))) setRandomTX(data.get<bool>(keyword(S_RANDOMTX)));
-    if (data.containsKey(keyword(S_PROBESPERSSID))) setProbesPerSSID(data.get<uint8_t>(keyword(S_PROBESPERSSID)));
-
-    if (version != VERSION) {
-        // reset();
-        copyWebFiles(true);
-        version = VERSION;
-        changed = true;
-    }
-
-    prnt(S_SETTINGS_LOADED);
-    prntln(FILE_PATH);
-
-    // check and fix mac
-    if (!macValid(macSt)) getRandomMac(macSt);
-
-    if (!macValid(macAP)) getRandomMac(macAP);
-
-    save(true); // force saving
+bool operator==(version_t a, version_t b) {
+    return a.major == b.major && a.minor == b.minor && a.revision == b.revision;
 }
 
-void Settings::load(String filepath) {
-    String tmp = FILE_PATH;
+// ========== PRIVATE ========== //
+settings_hash_t Settings::calcHash(settings_t data) {
+    settings_hash_t hash;
 
-    FILE_PATH = filepath;
-    load();
-    FILE_PATH = tmp;
-}
-
-void Settings::reset() {
-    // VERSION
-    version = VERSION;
-
-    // AP
-    setSSID("pwned");
-    setPassword("deauther");
-    setChannel(9);
-    setHidden(false);
-    setCaptivePortal(true);
-
-    // GENERAL
-    setLang("en");
-    setAutosave(true);
-    setAutosaveTime(10000);
-    setDisplayInterface(USE_DISPLAY);
-    setDisplayTimeout(600);
-    setCLI(true);
-    setSerialEcho(true);
-    setWebInterface(true);
-    setWebSpiffs(false);
-    setLedEnabled(true);
-    wifi_get_macaddr(STATION_IF, macSt);
-    wifi_get_macaddr(SOFTAP_IF, macAP);
-
-    // SCAN
-    setChTime(384);
-    setMinDeauths(3);
-
-    // ATTACK
-    setAttackTimeout(600);
-    setForcePackets(3);
-    setDeauthsPerTarget(20);
-    setDeauthReason(1);
-    setBeaconChannel(false);
-    setBeaconInterval(false);
-    setRandomTX(false);
-    setProbesPerSSID(1);
-
-    prntln(S_SETTINGS_RESETED);
+    sha1((uint8_t*)&data, sizeof(settings_t), &hash.hash[0]);
+    return hash;
 }
 
 String Settings::getJsonStr() {
@@ -125,42 +26,41 @@ String Settings::getJsonStr() {
     JsonObject& data = jsonBuffer.createObject();
 
     // Version
-    data.set("version", VERSION);
+    data.set("version", DEAUTHER_VERSION);
 
     // AP
-    data.set(keyword(S_SSID), ssid);
-    data.set(keyword(S_PASSWORD), password);
-    data.set(keyword(S_CHANNEL), channel);
-    data.set(keyword(S_HIDDEN), hidden);
-    data.set(keyword(S_CAPTIVEPORTAL), captivePortal);
+    data.set(keyword(S_SSID), getSSID());
+    data.set(keyword(S_PASSWORD), getPassword());
+    data.set(keyword(S_CHANNEL), getChannel());
+    data.set(keyword(S_HIDDEN), getHidden());
+    data.set(keyword(S_CAPTIVEPORTAL), getCaptivePortal());
 
     // GENERAL
-    data.set(keyword(S_LANG), lang);
-    data.set(keyword(S_AUTOSAVE), autosave);
-    data.set(keyword(S_AUTOSAVETIME), autosaveTime);
-    data.set(keyword(S_DISPLAYINTERFACE), displayInterface);
-    data.set(keyword(S_DISPLAY_TIMEOUT), displayTimeout);
-    data.set(keyword(S_SERIALINTERFACE), cli);
-    data.set(keyword(S_SERIAL_ECHO), serialEcho);
-    data.set(keyword(S_WEBINTERFACE), webInterface);
-    data.set(keyword(S_WEB_SPIFFS), webSpiffs);
-    data.set(keyword(S_LEDENABLED), ledEnabled);
+    data.set(keyword(S_LANG), getLang());
+    data.set(keyword(S_AUTOSAVE), getAutosave());
+    data.set(keyword(S_AUTOSAVETIME), getAutosaveTime());
+    data.set(keyword(S_DISPLAYINTERFACE), getDisplayInterface());
+    data.set(keyword(S_DISPLAY_TIMEOUT), getDisplayTimeout());
+    data.set(keyword(S_SERIALINTERFACE), getCLI());
+    data.set(keyword(S_SERIAL_ECHO), getSerialEcho());
+    data.set(keyword(S_WEBINTERFACE), getWebInterface());
+    data.set(keyword(S_WEB_SPIFFS), getWebSpiffs());
+    data.set(keyword(S_LEDENABLED), getLedEnabled());
     data.set(keyword(S_MACAP), macToStr(getMacAP()));
     data.set(keyword(S_MACST), macToStr(getMacSt()));
 
     // SCAN
-    data.set(keyword(S_CHTIME), chTime);
-    data.set(keyword(S_MIN_DEAUTHS), minDeauths);
+    data.set(keyword(S_CHTIME), getChTime());
+    data.set(keyword(S_MIN_DEAUTHS), getMinDeauths());
 
     // ATTACK
-    data.set(keyword(S_ATTACKTIMEOUT), attackTimeout);
-    data.set(keyword(S_FORCEPACKETS), forcePackets);
-    data.set(keyword(S_DEAUTHSPERTARGET), deauthsPerTarget);
-    data.set(keyword(S_DEAUTHREASON), deauthReason);
-    data.set(keyword(S_BEACONCHANNEL), beaconChannel);
-    data.set(keyword(S_BEACONINTERVAL), beaconInterval);
-    data.set(keyword(S_RANDOMTX), randomTX);
-    data.set(keyword(S_PROBESPERSSID), probesPerSSID);
+    data.set(keyword(S_ATTACKTIMEOUT), getAttackTimeout());
+    data.set(keyword(S_DEAUTHSPERTARGET), getDeauthsPerTarget());
+    data.set(keyword(S_DEAUTHREASON), getDeauthReason());
+    data.set(keyword(S_BEACONCHANNEL), getBeaconChannel());
+    data.set(keyword(S_BEACONINTERVAL), getBeaconInterval());
+    data.set(keyword(S_RANDOMTX), getRandomTX());
+    data.set(keyword(S_PROBESPERSSID), getProbesPerSSID());
 
     String buf;
     data.printTo(buf);
@@ -168,27 +68,58 @@ String Settings::getJsonStr() {
     return buf;
 }
 
-void Settings::save(bool force) {
-    if (force || changed) {
-        String buf = getJsonStr();
+// ========== PUBLIC ========== //
+void Settings::load() {
+    prnt(S_SETTINGS_LOADED);
 
-        if (writeFile(FILE_PATH, buf)) {
-            prnt(S_SETTINGS_SAVED);
-            prntln(FILE_PATH);
-            changed = false;
-        } else {
-            prnt(F("ERROR: saving "));
-            prntln(FILE_PATH);
-        }
+    // read hash from eeprom
+    settings_hash_t hash;
+
+    EEPROMHelper::getObject(SETTINGS_HASH_ADDR, hash);
+
+    // read data from eeproms
+    settings_t newData;
+    EEPROMHelper::getObject(SETTINGS_ADDR, newData);
+
+    // calc and check hash
+    if ((newData.version == data.version) && (calcHash(newData) == hash)) {
+        this->data = newData;
+        prntln(S_OK);
+    } else {
+        prntln(S_INVALID_HASH);
     }
+
+    // check and fix mac
+    if (!macValid(getMacSt())) getRandomMac(data.wifi.mac_st);
+    if (!macValid(getMacAP())) getRandomMac(data.wifi.mac_ap);
+
+    changed = true;
 }
 
-void Settings::save(bool force, String filepath) {
-    String tmp = FILE_PATH;
+void Settings::reset() {
+    settings_t newData;
 
-    FILE_PATH = filepath;
-    save(force);
-    FILE_PATH = tmp;
+    this->data = newData;
+
+    prntln(S_SETTINGS_RESETED);
+}
+
+void Settings::save(bool force) {
+    if (force || changed) {
+        EEPROMHelper::saveObject(SETTINGS_HASH_ADDR, calcHash(data));
+        EEPROMHelper::saveObject(SETTINGS_ADDR, data);
+
+        changed = false;
+
+        String buf = getJsonStr();
+        if (writeFile(SETTINGS_PATH, buf)) {
+            prnt(S_SETTINGS_SAVED);
+            prntln(SETTINGS_PATH);
+        } else {
+            prnt(F("ERROR: saving "));
+            prntln(SETTINGS_PATH);
+        }
+    }
 }
 
 void Settings::print() {
@@ -197,6 +128,7 @@ void Settings::print() {
     settingsJson.replace("{", "{\r\n");
     settingsJson.replace("}", "\r\n}");
     settingsJson.replace(",", "\r\n");
+
     prntln(S_SETTINGS_HEADER);
     prntln(settingsJson);
 }
@@ -217,7 +149,6 @@ void Settings::set(const char* str, String value) {
     else if (eqls(str, S_WEB_SPIFFS)) setWebSpiffs(s2b(value));
 
     // integer
-    else if (eqls(str, S_FORCEPACKETS)) setForcePackets(value.toInt());
     else if (eqls(str, S_AUTOSAVETIME)) setAutosaveTime(value.toInt());
     else if (eqls(str, S_DEAUTHSPERTARGET)) setDeauthsPerTarget(value.toInt());
     else if (eqls(str, S_CHTIME)) setChTime(value.toInt());
@@ -254,39 +185,36 @@ void Settings::set(const char* str, String value) {
 String Settings::get(const char* str) {
     if (eqls(str, S_SETTINGS)) print();
     // booleans
-    else if (eqls(str, S_BEACONCHANNEL)) return b2s(beaconChannel);
-    else if (eqls(str, S_AUTOSAVE)) return b2s(autosave);
-    else if (eqls(str, S_BEACONINTERVAL)) return b2s(beaconInterval);
-    else if (eqls(str, S_SERIALINTERFACE)) return b2s(cli);
-    else if (eqls(str, S_DISPLAYINTERFACE)) return b2s(displayInterface);
-    else if (eqls(str, S_WEBINTERFACE)) return b2s(webInterface);
-    else if (eqls(str, S_RANDOMTX)) return b2s(randomTX);
-    else if (eqls(str, S_LEDENABLED)) return b2s(ledEnabled);
-    else if (eqls(str, S_HIDDEN)) return b2s(hidden);
-    else if (eqls(str, S_CAPTIVEPORTAL)) return b2s(captivePortal);
-    else if (eqls(str, S_SERIAL_ECHO)) return b2s(serialEcho);
-    else if (eqls(str, S_WEB_SPIFFS)) return b2s(webSpiffs);
+    else if (eqls(str, S_BEACONCHANNEL)) return b2s(getBeaconChannel());
+    else if (eqls(str, S_BEACONINTERVAL)) return b2s(getBeaconInterval());
+    else if (eqls(str, S_SERIALINTERFACE)) return b2s(getCLI());
+    else if (eqls(str, S_DISPLAYINTERFACE)) return b2s(getDisplayInterface());
+    else if (eqls(str, S_WEBINTERFACE)) return b2s(getWebInterface());
+    else if (eqls(str, S_RANDOMTX)) return b2s(getRandomTX());
+    else if (eqls(str, S_LEDENABLED)) return b2s(getLedEnabled());
+    else if (eqls(str, S_HIDDEN)) return b2s(getHidden());
+    else if (eqls(str, S_CAPTIVEPORTAL)) return b2s(getCaptivePortal());
+    else if (eqls(str, S_SERIAL_ECHO)) return b2s(getSerialEcho());
+    else if (eqls(str, S_WEB_SPIFFS)) return b2s(getWebSpiffs());
 
     // integer
-    else if (eqls(str, S_FORCEPACKETS)) return (String)forcePackets;
-    else if (eqls(str, S_AUTOSAVETIME)) return (String)autosaveTime;
-    else if (eqls(str, S_DEAUTHSPERTARGET)) return (String)deauthsPerTarget;
-    else if (eqls(str, S_CHTIME)) return (String)chTime;
-    else if (eqls(str, S_ATTACKTIMEOUT)) return (String)attackTimeout;
-    else if (eqls(str, S_CHANNEL)) return (String)channel;
-    else if (eqls(str, S_DEAUTHREASON)) return (String)deauthReason;
-    else if (eqls(str, S_PROBESPERSSID)) return (String)probesPerSSID;
-    else if (eqls(str, S_MIN_DEAUTHS)) return (String)minDeauths;
-    else if (eqls(str, S_DISPLAY_TIMEOUT)) return (String)displayTimeout;
+    else if (eqls(str, S_DEAUTHSPERTARGET)) return (String)getDeauthsPerTarget();
+    else if (eqls(str, S_CHTIME)) return (String)getChTime();
+    else if (eqls(str, S_ATTACKTIMEOUT)) return (String)getAttackTimeout();
+    else if (eqls(str, S_CHANNEL)) return (String)getChannel();
+    else if (eqls(str, S_DEAUTHREASON)) return (String)getDeauthReason();
+    else if (eqls(str, S_PROBESPERSSID)) return (String)getProbesPerSSID();
+    else if (eqls(str, S_MIN_DEAUTHS)) return (String)getMinDeauths();
+    else if (eqls(str, S_DISPLAY_TIMEOUT)) return (String)getDisplayTimeout();
 
     // strings
-    else if (eqls(str, S_SSID)) return ssid;
-    else if (eqls(str, S_LANG)) return lang;
-    else if (eqls(str, S_PASSWORD)) return password;
+    else if (eqls(str, S_SSID)) return getSSID();
+    else if (eqls(str, S_LANG)) return getLang();
+    else if (eqls(str, S_PASSWORD)) return getPassword();
     else if (eqls(str, S_MACAP)) return macToStr(getMacAP());
     else if (eqls(str, S_MACST)) return macToStr(getMacSt());
-    else if (eqls(str, S_MAC)) return "AP: " + macToStr(macAP) + ", Station: " + macToStr(macSt);
-    else if (eqls(str, S_VERSION)) return version;
+    else if (eqls(str, S_MAC)) return "AP: " + macToStr(getMacAP()) + ", Station: " + macToStr(getMacSt());
+    else if (eqls(str, S_VERSION)) return getVersion();
 
     else {
         prnt(S_ERROR_NOT_FOUND);
@@ -298,167 +226,150 @@ String Settings::get(const char* str) {
 
 // ===== GETTERS ===== //
 String Settings::getVersion() {
-    return version;
+    return DEAUTHER_VERSION;
 }
 
 uint16_t Settings::getDeauthsPerTarget() {
-    return deauthsPerTarget;
+    return data.attack.deauths_per_target;
 }
 
 uint8_t Settings::getDeauthReason() {
-    return deauthReason;
+    return data.attack.deauth_reason;
 }
 
 bool Settings::getBeaconChannel() {
-    return beaconChannel;
-}
-
-uint8_t Settings::getForcePackets() {
-    return forcePackets;
+    return data.attack.attack_all_ch;
 }
 
 bool Settings::getAutosave() {
-    return autosave;
+    return data.autosave;
 }
 
 uint32_t Settings::getAutosaveTime() {
-    return autosaveTime;
+    return data.autosave_time;
 }
 
 bool Settings::getBeaconInterval() {
-    return beaconInterval;
+    return (int)data.attack.beacon_interval;
 }
 
 uint8_t Settings::getChannel() {
-    return channel;
+    return data.wifi.channel;
 }
 
 String Settings::getSSID() {
-    return ssid;
+    return String(data.ap.ssid);
 }
 
 String Settings::getPassword() {
-    return password;
+    return String(data.ap.password);
 }
 
 bool Settings::getCLI() {
-    return cli;
+    return data.cli.enabled;
 }
 
 bool Settings::getDisplayInterface() {
-    return displayInterface;
+    return data.display.enabled;
 }
 
 bool Settings::getWebInterface() {
-    return webInterface;
+    return data.web.enabled;
 }
 
 uint16_t Settings::getChTime() {
-    return chTime;
+    return data.sniffer.channel_time;
 }
 
 uint8_t* Settings::getMacSt() {
-    return macSt;
+    return data.wifi.mac_st;
 }
 
 uint8_t* Settings::getMacAP() {
-    return macAP;
+    return data.wifi.mac_ap;
 }
 
 bool Settings::getRandomTX() {
-    return randomTX;
+    return data.attack.random_tx;
 }
 
 uint32_t Settings::getAttackTimeout() {
-    return attackTimeout;
+    return data.attack.timeout;
 }
 
 bool Settings::getLedEnabled() {
-    return ledEnabled;
+    return data.led.enabled;
 }
 
 uint8_t Settings::getProbesPerSSID() {
-    return probesPerSSID;
+    return data.attack.probe_frames_per_ssid;
 }
 
 bool Settings::getHidden() {
-    return hidden;
+    return data.ap.hidden;
 }
 
 bool Settings::getCaptivePortal() {
-    return captivePortal;
+    return data.web.captive_portal;
 }
 
 uint16_t Settings::getMinDeauths() {
-    return minDeauths;
+    return data.sniffer.min_deauth_frames;
 }
 
 uint32_t Settings::getDisplayTimeout() {
-    return displayTimeout;
+    return data.display.timeout;
 }
 
 String Settings::getLang() {
-    return lang;
+    return data.web.lang;
 }
 
 bool Settings::getSerialEcho() {
-    return serialEcho;
+    return data.cli.serial_echo;
 }
 
 bool Settings::getWebSpiffs() {
-    return webSpiffs;
+    return data.web.use_spiffs;
 }
 
 // ===== SETTERS ===== //
 
-void Settings::setDeauthsPerTarget(uint16_t deauthsPerTarget) {
-    Settings::deauthsPerTarget = deauthsPerTarget;
-
-    changed = true;
+void Settings::setDeauthsPerTarget(uint8_t deauthsPerTarget) {
+    data.attack.deauths_per_target = deauthsPerTarget;
+    changed                        = true;
 }
 
 void Settings::setDeauthReason(uint8_t deauthReason) {
-    Settings::deauthReason = deauthReason;
-
-    changed = true;
+    data.attack.deauth_reason = deauthReason;
+    changed                   = true;
 }
 
 void Settings::setBeaconChannel(bool beaconChannel) {
-    Settings::beaconChannel = beaconChannel;
-
-    changed = true;
-}
-
-void Settings::setForcePackets(uint8_t forcePackets) {
-    if (forcePackets > 0) {
-        Settings::forcePackets = forcePackets;
-        changed                = true;
-    }
+    data.attack.attack_all_ch = beaconChannel;
+    changed                   = true;
 }
 
 void Settings::setAutosave(bool autosave) {
-    Settings::autosave = autosave;
-
-    changed = true;
+    data.autosave = autosave;
 }
 
 void Settings::setAutosaveTime(uint32_t autosaveTime) {
-    Settings::autosaveTime = autosaveTime;
-
-    changed = true;
+    data.autosave_time = autosaveTime;
 }
 
 void Settings::setBeaconInterval(bool beaconInterval) {
-    Settings::beaconInterval = beaconInterval;
-
-    changed = true;
+    data.attack.beacon_interval = (beacon_interval_t)(int)beaconInterval;
+    changed                     = true;
 }
 
 void Settings::setChannel(uint8_t channel) {
     if ((channel >= 1) && (channel <= 14)) {
-        Settings::channel = channel;
+        data.wifi.channel = channel;
+        changed           = true;
+
         setWifiChannel(channel);
-        changed = true;
+
         prnt(S_CHANNEL_CHANGE);
         prntln(channel);
     } else {
@@ -468,9 +379,11 @@ void Settings::setChannel(uint8_t channel) {
 
 void Settings::setSSID(String ssid) {
     if ((ssid.length() > 0) && (ssid.length() <= 32)) {
-        ssid           = fixUtf8(ssid);
-        Settings::ssid = ssid;
-        changed        = true;
+        ssid = fixUtf8(ssid);
+
+        strncpy(data.ap.ssid, ssid.c_str(), 32);
+
+        changed = true;
     } else {
         prntln(S_ERROR_SSID_LEN);
     }
@@ -478,36 +391,34 @@ void Settings::setSSID(String ssid) {
 
 void Settings::setPassword(String password) {
     if ((password.length() >= 8) && (password.length() <= 32)) {
-        password           = fixUtf8(password);
-        Settings::password = password;
-        changed            = true;
+        password = fixUtf8(password);
+
+        strncpy(data.ap.password, password.c_str(), 64);
+
+        changed = true;
     } else {
         prntln(S_ERROR_PASSWORD_LEN);
     }
 }
 
 void Settings::setCLI(bool cli) {
-    Settings::cli = cli;
-
-    changed = true;
+    data.cli.enabled = cli;
+    changed          = true;
 }
 
 void Settings::setDisplayInterface(bool displayInterface) {
-    Settings::displayInterface = displayInterface;
-
-    changed = true;
+    data.display.enabled = displayInterface;
+    changed              = true;
 }
 
 void Settings::setWebInterface(bool webInterface) {
-    Settings::webInterface = webInterface;
-
-    changed = true;
+    data.web.enabled = webInterface;
+    changed          = true;
 }
 
 void Settings::setChTime(uint16_t chTime) {
-    Settings::chTime = chTime;
-
-    changed = true;
+    data.sniffer.channel_time = chTime;
+    changed                   = true;
 }
 
 void Settings::setMacSt(String macStr) {
@@ -521,7 +432,7 @@ void Settings::setMacSt(String macStr) {
 
 bool Settings::setMacSt(uint8_t* macSt) {
     if (macSt[0] % 2 == 0) {
-        memcpy(Settings::macSt, macSt, 6);
+        memcpy(data.wifi.mac_st, macSt, 6);
         changed = true;
         return true;
     }
@@ -539,7 +450,7 @@ void Settings::setMacAP(String macStr) {
 
 bool Settings::setMacAP(uint8_t* macAP) {
     if (macAP[0] % 2 == 0) {
-        memcpy(Settings::macAP, macAP, 6);
+        memcpy(data.wifi.mac_ap, macAP, 6);
         changed = true;
         return true;
     }
@@ -547,68 +458,58 @@ bool Settings::setMacAP(uint8_t* macAP) {
 }
 
 void Settings::setRandomTX(bool randomTX) {
-    Settings::randomTX = randomTX;
-
-    changed = true;
+    data.attack.random_tx = randomTX;
+    changed               = true;
 }
 
 void Settings::setAttackTimeout(uint32_t attackTimeout) {
-    Settings::attackTimeout = attackTimeout;
-
-    changed = true;
+    data.attack.timeout = attackTimeout;
+    changed             = true;
 }
 
 void Settings::setLedEnabled(bool ledEnabled) {
-    Settings::ledEnabled = ledEnabled;
-
-    changed = true;
+    data.led.enabled = ledEnabled;
+    changed          = true;
 }
 
 void Settings::setProbesPerSSID(uint8_t probesPerSSID) {
     if (probesPerSSID > 0) {
-        Settings::probesPerSSID = probesPerSSID;
-        changed                 = true;
+        data.attack.probe_frames_per_ssid = probesPerSSID;
+        changed                           = true;
     }
 }
 
 void Settings::setHidden(bool hidden) {
-    Settings::hidden = hidden;
-
-    changed = true;
+    data.ap.hidden = hidden;
+    changed        = true;
 }
 
 void Settings::setCaptivePortal(bool captivePortal) {
-    Settings::captivePortal = captivePortal;
-
-    changed = true;
+    data.web.captive_portal = captivePortal;
+    changed                 = true;
 }
 
 void Settings::setMinDeauths(uint16_t minDeauths) {
-    Settings::minDeauths = minDeauths;
-
-    changed = true;
+    data.sniffer.min_deauth_frames = minDeauths;
+    changed                        = true;
 }
 
 void Settings::setDisplayTimeout(uint32_t displayTimeout) {
-    Settings::displayTimeout = displayTimeout;
-
-    changed = true;
+    data.display.timeout = displayTimeout;
+    changed              = true;
 }
 
 void Settings::setLang(String lang) {
-    Settings::lang = lang;
-
+    strncpy(data.web.lang, lang.c_str(), 2);
     changed = true;
 }
 
 void Settings::setSerialEcho(bool serialEcho) {
-    Settings::serialEcho = serialEcho;
-
-    changed = true;
+    data.cli.serial_echo = serialEcho;
+    changed              = true;
 }
 
 void Settings::setWebSpiffs(bool webSpiffs) {
-    Settings::webSpiffs = webSpiffs;
-
-    changed = true;
+    data.web.use_spiffs = webSpiffs;
+    changed             = true;
 }
