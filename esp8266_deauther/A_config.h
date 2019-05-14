@@ -249,9 +249,9 @@
   #define DEAUTH_REASON 1
 #endif /* ifndef DEAUTH_REASON */
 
-#ifdef BEACON_INTERVAL_100MS
+#ifndef BEACON_INTERVAL_100MS
   #define BEACON_INTERVAL_100MS true
-#endif /* ifdef BEACON_INTERVAL_100MS */
+#endif /* ifndef BEACON_INTERVAL_100MS */
 
 #ifndef PROBE_FRAMES_PER_SSID
   #define PROBE_FRAMES_PER_SSID 1
@@ -275,9 +275,9 @@
   #define AP_SSID "pwned"
 #endif /* ifndef AP_SSID */
 
-#ifdef AP_PASSWD
+#ifndef AP_PASSWD
   #define AP_PASSWD "deauther"
-#endif /* ifdef AP_PASSWD */
+#endif /* ifndef AP_PASSWD */
 
 #ifndef AP_HIDDEN
   #define AP_HIDDEN false
@@ -423,7 +423,20 @@
   #define BUTTON_B 255
 #endif // ifndef BUTTON_B
 
+// ======== CONSTANTS ========== //
+// Do not change these values unless you know what you're doing!
+#define DEAUTHER_VERSION "2.2.0"
+#define DEAUTHER_VERSION_MAJOR 2
+#define DEAUTHER_VERSION_MINOR 2
+#define DEAUTHER_VERSION_REVISION 0
+
+#define EEPROM_SIZE 4095
+#define BOOT_COUNTER_ADDR 1
+#define SETTINGS_HASH_ADDR 6
+#define SETTINGS_ADDR 26
+
 // ======== AVAILABLE SETTINGS ========== //
+
 
 /*
    // ===== ATTACK ===== //
