@@ -11,13 +11,14 @@ extern "C" {
     // And be sure to have the right board selected
   #include "user_interface.h"
 }
-#include <EEPROM.h>
+
+#include "EEPROMHelper.h"
 
 #include <ArduinoJson.h>
 #if ARDUINOJSON_VERSION_MAJOR != 5
 // The software was build using ArduinoJson v5.x
 // version 6 is still in beta at the time of writing
-// go to tools -> manage libraries, search for ArduinoJSON and install the latest version 5
+// go to tools -> manage libraries, search for ArduinoJSON and install version 5
 #error Please upgrade/downgrade ArduinoJSON library to version 5!
 #endif // if ARDUINOJSON_VERSION_MAJOR != 5
 
@@ -65,21 +66,18 @@ void setup() {
 
     // start SPIFFS
     prnt(SETUP_MOUNT_SPIFFS);
-    prntln(SPIFFS.begin() ? SETUP_OK : SETUP_ERROR);
+    bool spiffsError = !SPIFFS.begin();
+    prntln(spiffsError ? SETUP_ERROR : SETUP_OK);
 
     // Start EEPROM
-    EEPROM.begin(4096);
+    EEPROMHelper::begin(EEPROM_SIZE);
 
-    // auto repair when in boot-loop
-    uint8_t bootCounter = EEPROM.read(0);
-
-    if (bootCounter >= 3) {
+    // Format SPIFFS when in boot-loop
+    if (spiffsError || !EEPROMHelper::checkBootNum(BOOT_COUNTER_ADDR)) {
         prnt(SETUP_FORMAT_SPIFFS);
         SPIFFS.format();
         prntln(SETUP_OK);
-    } else {
-        EEPROM.write(0, bootCounter + 1); // add 1 to the boot counter
-        EEPROM.commit();
+        EEPROMHelper::resetBootNum(BOOT_COUNTER_ADDR);
     }
 
     // get time
@@ -169,10 +167,8 @@ void loop() {
     }
 
     if (!booted) {
-        // reset boot counter
-        EEPROM.write(0, 0);
-        EEPROM.commit();
         booted = true;
+        EEPROMHelper::resetBootNum(BOOT_COUNTER_ADDR);
 #ifdef HIGHLIGHT_LED
         displayUI.setupLED();
 #endif // ifdef HIGHLIGHT_LED
