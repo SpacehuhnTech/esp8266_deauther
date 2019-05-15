@@ -224,7 +224,7 @@ void CLI::runCommand(String input) {
         return;
     }
 
-    if (settings.getSerialEcho()) {
+    if (settings.getCLISettings().serial_echo) {
         // print command
         prnt(CLI_INPUT_PREFIX);
         prntln(input);
@@ -653,7 +653,7 @@ void CLI::runCommand(String input) {
         bool deauthAll   = false;
         bool probe       = false;
         bool output      = true;
-        uint32_t timeout = settings.getAttackTimeout() * 1000;
+        uint32_t timeout = settings.getAttackSettings().timeout * 1000;
 
         for (int i = 1; i < list->size(); i++) {
             if (eqlsCMD(i, CLI_BEACON)) beacon = true;
@@ -674,12 +674,13 @@ void CLI::runCommand(String input) {
     // ===== GET/SET ===== //
     // get <setting>
     else if (eqlsCMD(0, CLI_GET) && (list->size() == 2)) {
-        prntln(settings.get(list->get(1).c_str()));
+        settings.print();
+        // prntln(settings.get(list->get(1).c_str()));
     }
 
     // set <setting> <value>
     else if (eqlsCMD(0, CLI_SET) && (list->size() == 3)) {
-        settings.set(list->get(1).c_str(), list->get(2));
+        // settings.set(list->get(1).c_str(), list->get(2));
     }
 
     // ====== CHICKEN ===== //
@@ -717,7 +718,7 @@ void CLI::runCommand(String input) {
         prntln(String(s));
 
         prnt(CLI_SYSTEM_CHANNEL);
-        prntln(settings.getChannel());
+        prntln(settings.getWifiSettings().channel);
 
         uint8_t mac[6];
 
@@ -892,7 +893,7 @@ void CLI::runCommand(String input) {
     else if (eqlsCMD(0, CLI_INFO)) {
         prntln(CLI_INFO_HEADER);
         prnt(CLI_INFO_SOFTWARE);
-        prntln(settings.getVersion());
+        prntln(DEAUTHER_VERSION);
         prntln(CLI_INFO_COPYRIGHT);
         prntln(CLI_INFO_LICENSE);
         prntln(CLI_INFO_ADDON);
@@ -977,7 +978,7 @@ void CLI::runCommand(String input) {
             led.update();    // update LED color
 
             // auto-save
-            if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {
+            if (settings.getAutosaveSettings().enabled && (currentTime - autosaveTime > settings.getAutosaveSettings().time)) {
                 autosaveTime = currentTime;
                 names.save(false);
                 ssids.save(false);
@@ -1066,11 +1067,11 @@ void CLI::runCommand(String input) {
     // startap [-p <path][-s <ssid>] [-pswd <password>] [-ch <channel>] [-h] [-cp]
     else if (eqlsCMD(0, CLI_STARTAP)) {
         String path          = String(F("/web"));
-        String ssid          = settings.getSSID();
-        String password      = settings.getPassword();
+        String ssid          = settings.getAccessPointSettings().ssid;
+        String password      = settings.getAccessPointSettings().password;
         int    ch            = wifi_channel;
-        bool   hidden        = settings.getHidden();
-        bool   captivePortal = settings.getCaptivePortal();
+        bool   hidden        = settings.getAccessPointSettings().hidden;
+        bool   captivePortal = settings.getWebSettings().captive_portal;
 
         for (int i = 1; i < list->size(); i++) {
             if (eqlsCMD(i, CLI_PATH)) {

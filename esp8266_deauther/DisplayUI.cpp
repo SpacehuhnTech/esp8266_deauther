@@ -395,7 +395,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackTimeout() * 1000);
+                             settings.getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // *BEACON 0/0
@@ -408,7 +408,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackTimeout() * 1000);
+                             settings.getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // *PROBE 0/0
@@ -421,7 +421,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackTimeout() * 1000);
+                             settings.getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // START
@@ -430,7 +430,7 @@ void DisplayUI::setup() {
         }, [this]() {
             if (attack.isRunning()) attack.stop();
             else attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                              settings.getAttackTimeout() * 1000);
+                              settings.getAttackSettings().timeout * 1000);
         });
     });
 
@@ -461,7 +461,7 @@ void DisplayUI::update() {
 
     draw();
 
-    uint32_t timeout = settings.getDisplayTimeout() * 1000;
+    uint32_t timeout = settings.getAttackSettings().timeout * 1000;
 
     if (currentTime > timeout) {
         if (!tempOff) {
@@ -775,7 +775,7 @@ void DisplayUI::drawIntro() {
     drawString(1, center(str(D_INTRO_1), maxLen));
     drawString(2, center(str(D_INTRO_2), maxLen));
     drawString(3, center(str(D_INTRO_3), maxLen));
-    drawString(4, center(settings.getVersion(), maxLen));
+    drawString(4, center(DEAUTHER_VERSION, maxLen));
 }
 
 void DisplayUI::drawClock() {

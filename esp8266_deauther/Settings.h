@@ -25,12 +25,80 @@ extern void copyWebFiles(bool force);
 extern bool macValid(uint8_t* mac);
 extern String bytesToStr(uint8_t* b, uint32_t size);
 
+const char S_JSON_TRUE[] PROGMEM = "true";
+const char S_JSON_FALSE[] PROGMEM = "true";
+
+const char S_JSON_VERSION[] PROGMEM = "version";
+const char S_JSON_AUTOSAVE[] PROGMEM = "autosave";
+const char S_JSON_AUTOSAVETIME[] PROGMEM = "autosavetime";
+
+const char S_JSON_BEACONCHANNEL[] PROGMEM = "beaconchannel";
+const char S_JSON_RANDOMTX[] PROGMEM = "randomTX";
+const char S_JSON_ATTACKTIMEOUT[] PROGMEM = "attacktimeout";
+const char S_JSON_DEAUTHSPERTARGET[] PROGMEM = "deauthspertarget";
+const char S_JSON_DEAUTHREASON[] PROGMEM = "deauthReason";
+const char S_JSON_BEACONINTERVAL[] PROGMEM = "beaconInterval";
+const char S_JSON_PROBESPERSSID[] PROGMEM = "probesPerSSID";
+
+const char S_JSON_CHANNEL[] PROGMEM = "channel";
+const char S_JSON_MACST[] PROGMEM = "macSt";
+const char S_JSON_MACAP[] PROGMEM = "macAP";
+
+const char S_JSON_CHTIME[] PROGMEM = "chtime";
+const char S_JSON_MIN_DEAUTHS[] PROGMEM = "minDeauths";
+
+const char S_JSON_SSID[] PROGMEM = "ssid";
+const char S_JSON_PASSWORD[] PROGMEM = "password";
+const char S_JSON_HIDDEN[] PROGMEM = "hidden";
+const char S_JSON_IP[] PROGMEM = "ip";
+
+const char S_JSON_WEBINTERFACE[] PROGMEM = "webinterface";
+const char S_JSON_CAPTIVEPORTAL[] PROGMEM = "captivePortal";
+const char S_JSON_WEB_SPIFFS[] PROGMEM = "webSpiffs";
+const char S_JSON_LANG[] PROGMEM = "lang";
+
+const char S_JSON_SERIALINTERFACE[] PROGMEM = "serial";
+const char S_JSON_SERIAL_ECHO[] PROGMEM = "serialEcho";
+
+const char S_JSON_LEDENABLED[] PROGMEM = "led";
+
+const char S_JSON_DISPLAYINTERFACE[] PROGMEM = "display";
+const char S_JSON_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
+
+// ============
+const char S_OK[] PROGMEM = "OK";
+const char S_INVALID_HASH[] PROGMEM = "Invalid Hash - reseted to default";
+const char S_SETTINGS[] PROGMEM = "settings";
+const char S_FORCEPACKETS[] PROGMEM = "forcepackets";
+const char S_AUTOSAVETIME[] PROGMEM = "autosavetime";
+const char S_VERSION[] PROGMEM = "version";
+const char S_MAC[] PROGMEM = "mac";
+
+const char S_SETTINGS_LOADED[] PROGMEM = "Loading settings...";
+const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";
+const char S_SETTINGS_SAVED[] PROGMEM = "Settings saved in ";
+const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";
+const char S_ERROR_VERSION[] PROGMEM = "Sorry, you can't change the version number";
+const char S_ERROR_NOT_FOUND[] PROGMEM = "ERROR: No setting found for ";
+const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
+const char S_CHANNEL_CHANGE[] PROGMEM = "Switched to Channel ";
+const char S_CHANNEL_ERROR[] PROGMEM = "ERROR: Channel must be between 1 and 14";
+const char S_ERROR_SSID_LEN[] PROGMEM = "ERROR: SSID must be between 1 and 32 characters";
+const char S_ERROR_PASSWORD_LEN[] PROGMEM = "ERROR: Password must be between 8 and 32 characters";
+const char S_RANDOM[] PROGMEM = "random";
+
 // ===== VERSION ===== //
 typedef struct version_t {
     uint8_t major    = DEAUTHER_VERSION_MAJOR;
     uint8_t minor    = DEAUTHER_VERSION_MINOR;
     uint8_t revision = DEAUTHER_VERSION_REVISION;
 } version_t;
+
+// ===== AUTOSAVE ===== //
+typedef struct autosave_settings_t {
+    bool     enabled = AUTOSAVE_ENABLED;
+    uint32_t time    = AUTOSAVE_TIME;
+} autosave_t;
 
 // ===== ATTACK ===== //
 typedef enum beacon_interval_t {
@@ -104,6 +172,7 @@ typedef struct display_settings_t {
 // ===== SETTINGS ===== //
 typedef struct settings_t {
     version_t               version;
+    autosave_settings_t     autosave;
     attack_settings_t       attack;
     wifi_settings_t         wifi;
     sniffer_settings_t      sniffer;
@@ -112,9 +181,6 @@ typedef struct settings_t {
     cli_settings_t          cli;
     led_settings_t          led;
     display_settings_t      display;
-
-    bool     autosave;
-    uint32_t autosave_time;
 } settings_t;
 
 // ===== CHECK SUM / HASH ====== //
@@ -139,65 +205,29 @@ class Settings {
         void reset();
         void print();
 
-        void set(const char* str, String value);
-        String get(const char* str);
+        // void set(const char* str, String value);
+        // String get(const char* str);
 
-        String getVersion();
-        uint16_t getDeauthsPerTarget();
-        uint8_t getDeauthReason();
-        bool getBeaconChannel();
-        bool getAutosave();
-        uint32_t getAutosaveTime();
-        bool getBeaconInterval();
-        uint8_t getChannel();
-        String getSSID();
-        String getPassword();
-        bool getCLI();
-        bool getDisplayInterface();
-        bool getWebInterface();
-        uint16_t getChTime();
-        uint8_t* getMacSt();
-        uint8_t* getMacAP();
-        bool getRandomTX();
-        uint32_t getAttackTimeout();
-        bool getLedEnabled();
-        uint8_t getProbesPerSSID();
-        bool getHidden();
-        bool getCaptivePortal();
-        uint16_t getMinDeauths();
-        uint32_t getDisplayTimeout();
-        String getLang();
-        bool getSerialEcho();
-        bool getWebSpiffs();
+        const version_t& getVersion();
+        const autosave_settings_t& getAutosaveSettings();
+        const attack_settings_t  & getAttackSettings();
+        const wifi_settings_t    & getWifiSettings();
+        const sniffer_settings_t & getSnifferSettings();
+        const access_point_settings_t& getAccessPointSettings();
+        const web_settings_t& getWebSettings();
+        const cli_settings_t& getCLISettings();
+        const led_settings_t& getLEDSettings();
+        const display_settings_t& getDisplaySettings();
 
-        void setDeauthsPerTarget(uint8_t deauthsPerTarget);
-        void setDeauthReason(uint8_t deauthReason);
-        void setBeaconChannel(bool beaconChannel);
-        void setAutosave(bool autosave);
-        void setAutosaveTime(uint32_t autosaveTime);
-        void setBeaconInterval(bool beaconInterval);
-        void setChannel(uint8_t channel);
-        void setSSID(String ssid);
-        void setPassword(String password);
-        void setCLI(bool cli);
-        void setDisplayInterface(bool displayInterface);
-        void setWebInterface(bool webInterface);
-        void setChTime(uint16_t chTime);
-        void setMacSt(String macStr);
-        bool setMacSt(uint8_t* macSt);
-        void setMacAP(String macStr);
-        bool setMacAP(uint8_t* macAP);
-        void setRandomTX(bool randomTX);
-        void setAttackTimeout(uint32_t attackTimeout);
-        void setLedEnabled(bool ledEnabled);
-        void setProbesPerSSID(uint8_t probesPerSSID);
-        void setHidden(bool hidden);
-        void setCaptivePortal(bool captivePortal);
-        void setMinDeauths(uint16_t minDeauths);
-        void setDisplayTimeout(uint32_t displayTimeout);
-        void setLang(String lang);
-        void setSerialEcho(bool serialEcho);
-        void setWebSpiffs(bool webSpiffs);
+        void setAutosaveSettings(const autosave_settings_t& autosave);
+        void setAttackSettings(const attack_settings_t& attack);
+        void setWifiSettings(const wifi_settings_t& wifi);
+        void setSnifferSettings(const sniffer_settings_t& sniffer);
+        void setAccessPointSettings(const access_point_settings_t& ap);
+        void setWebSettings(const web_settings_t& web);
+        void setCLISettings(const cli_settings_t& cli);
+        void setLEDSettings(const led_settings_t& led);
+        void setDisplaySettings(const display_settings_t& display);
 };
 
 #endif // ifndef Settings_h

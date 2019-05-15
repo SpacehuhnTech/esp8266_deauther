@@ -3,6 +3,7 @@
 #include <Hash.h>         // sha1() used in calcHash()
 #include "EEPROMHelper.h" // To load and save settings_t
 
+// ===== INTERNAL ===== //
 bool operator==(settings_hash_t a, settings_hash_t b) {
     for (int i = 0; i<20; i++)
         if (a.hash[i] != b.hash[i]) return false;
@@ -11,6 +12,64 @@ bool operator==(settings_hash_t a, settings_hash_t b) {
 
 bool operator==(version_t a, version_t b) {
     return a.major == b.major && a.minor == b.minor && a.revision == b.revision;
+}
+
+void jsonStr(String& str, const char* name, const char* value) {
+    str += '"';
+    str += String(name);
+    str += '"';
+    str += ':';
+    str += '"';
+    str += String(value);
+    str += '"';
+    str += ',';
+}
+
+void jsonFlag(String& str, const char* name, bool value) {
+    str += '"';
+    str += String(name);
+    str += '"';
+    str += ':';
+    str += String(value ? S_JSON_TRUE : S_JSON_FALSE);
+    str += ',';
+}
+
+void jsonValue(String& str, const char* name, int value) {
+    str += '"';
+    str += String(name);
+    str += '"';
+    str += ':';
+    str += String(value);
+    str += ',';
+}
+
+void jsonHex(String& str, const char* name, uint8_t* byteArr, int len) {
+    str += '"';
+    str += String(name);
+    str += '"';
+    str += ':';
+
+    for (int i = 0; i<len; i++) {
+        if (i > 0) str += ':';
+        if (byteArr[i] < 0x10) str += '0';
+        str += String(byteArr[i], HEX);
+    }
+
+    str += ',';
+}
+
+void jsonDec(String& str, const char* name, uint8_t* byteArr, int len) {
+    str += '"';
+    str += String(name);
+    str += '"';
+    str += ':';
+
+    for (int i = 0; i<len; i++) {
+        if (i > 0) str += '.';
+        str += String(byteArr[i]);
+    }
+
+    str += ',';
 }
 
 // ========== PRIVATE ========== //
@@ -22,50 +81,63 @@ settings_hash_t Settings::calcHash(settings_t data) {
 }
 
 String Settings::getJsonStr() {
-    DynamicJsonBuffer jsonBuffer(4000);
-    JsonObject& data = jsonBuffer.createObject();
+    String str((char*)0);
+
+    str.reserve(600);
+
+    str += '{';
 
     // Version
-    data.set("version", DEAUTHER_VERSION);
+    jsonStr(str, S_JSON_VERSION, DEAUTHER_VERSION);
 
-    // AP
-    data.set(keyword(S_SSID), getSSID());
-    data.set(keyword(S_PASSWORD), getPassword());
-    data.set(keyword(S_CHANNEL), getChannel());
-    data.set(keyword(S_HIDDEN), getHidden());
-    data.set(keyword(S_CAPTIVEPORTAL), getCaptivePortal());
+    // Autosave
+    jsonFlag(str, S_JSON_AUTOSAVE, data.autosave.enabled);
+    jsonValue(str, S_JSON_AUTOSAVETIME, data.autosave.time);
 
-    // GENERAL
-    data.set(keyword(S_LANG), getLang());
-    data.set(keyword(S_AUTOSAVE), getAutosave());
-    data.set(keyword(S_AUTOSAVETIME), getAutosaveTime());
-    data.set(keyword(S_DISPLAYINTERFACE), getDisplayInterface());
-    data.set(keyword(S_DISPLAY_TIMEOUT), getDisplayTimeout());
-    data.set(keyword(S_SERIALINTERFACE), getCLI());
-    data.set(keyword(S_SERIAL_ECHO), getSerialEcho());
-    data.set(keyword(S_WEBINTERFACE), getWebInterface());
-    data.set(keyword(S_WEB_SPIFFS), getWebSpiffs());
-    data.set(keyword(S_LEDENABLED), getLedEnabled());
-    data.set(keyword(S_MACAP), macToStr(getMacAP()));
-    data.set(keyword(S_MACST), macToStr(getMacSt()));
+    // Attack
+    jsonFlag(str, S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
+    jsonFlag(str, S_JSON_RANDOMTX, data.attack.random_tx);
+    jsonValue(str, S_JSON_ATTACKTIMEOUT, data.attack.timeout);
+    jsonValue(str, S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
+    jsonValue(str, S_JSON_DEAUTHREASON, data.attack.deauth_reason);
+    jsonFlag(str, S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
+    jsonValue(str, S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
 
-    // SCAN
-    data.set(keyword(S_CHTIME), getChTime());
-    data.set(keyword(S_MIN_DEAUTHS), getMinDeauths());
+    // WiFi
+    jsonValue(str, S_JSON_CHANNEL, data.wifi.channel);
+    jsonHex(str, S_JSON_MACST, data.wifi.mac_st, 6);
+    jsonHex(str, S_JSON_MACAP, data.wifi.mac_ap, 6);
 
-    // ATTACK
-    data.set(keyword(S_ATTACKTIMEOUT), getAttackTimeout());
-    data.set(keyword(S_DEAUTHSPERTARGET), getDeauthsPerTarget());
-    data.set(keyword(S_DEAUTHREASON), getDeauthReason());
-    data.set(keyword(S_BEACONCHANNEL), getBeaconChannel());
-    data.set(keyword(S_BEACONINTERVAL), getBeaconInterval());
-    data.set(keyword(S_RANDOMTX), getRandomTX());
-    data.set(keyword(S_PROBESPERSSID), getProbesPerSSID());
+    // Sniffer
+    jsonValue(str, S_JSON_CHTIME, data.sniffer.channel_time);
+    jsonValue(str, S_JSON_MIN_DEAUTHS, data.sniffer.min_deauth_frames);
 
-    String buf;
-    data.printTo(buf);
+    // Access Point
+    jsonStr(str, S_JSON_SSID, data.ap.ssid);
+    jsonStr(str, S_JSON_PASSWORD, data.ap.password);
+    jsonFlag(str, S_JSON_HIDDEN, data.ap.hidden);
+    jsonDec(str, S_JSON_IP, data.ap.ip, 4);
 
-    return buf;
+    // Web Interface
+    jsonFlag(str, S_JSON_WEBINTERFACE, data.web.enabled);
+    jsonFlag(str, S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
+    jsonFlag(str, S_JSON_WEB_SPIFFS, data.web.use_spiffs);
+    jsonStr(str, S_JSON_LANG, data.web.lang);
+
+    // CLI
+    jsonFlag(str, S_JSON_SERIALINTERFACE, data.cli.enabled);
+    jsonFlag(str, S_JSON_SERIAL_ECHO, data.cli.serial_echo);
+
+    // LED
+    jsonFlag(str, S_JSON_LEDENABLED, data.led.enabled);
+
+    // Display
+    jsonFlag(str, S_JSON_DISPLAYINTERFACE, data.display.enabled);
+    jsonValue(str, S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
+
+    str[str.length()-1] = '}';
+
+    return str;
 }
 
 // ========== PUBLIC ========== //
@@ -90,8 +162,8 @@ void Settings::load() {
     }
 
     // check and fix mac
-    if (!macValid(getMacSt())) getRandomMac(data.wifi.mac_st);
-    if (!macValid(getMacAP())) getRandomMac(data.wifi.mac_ap);
+    if (!macValid(data.wifi.mac_st)) getRandomMac(data.wifi.mac_st);
+    if (!macValid(data.wifi.mac_ap)) getRandomMac(data.wifi.mac_ap);
 
     changed = true;
 }
@@ -125,15 +197,19 @@ void Settings::save(bool force) {
 void Settings::print() {
     String settingsJson = getJsonStr();
 
-    settingsJson.replace("{", "{\r\n");
-    settingsJson.replace("}", "\r\n}");
+    settingsJson.replace("\":", " = ");
+    settingsJson.replace("\"", "");
+    settingsJson.replace("{", "");
+    settingsJson.replace("}", "");
     settingsJson.replace(",", "\r\n");
 
     prntln(S_SETTINGS_HEADER);
-    prntln(settingsJson);
+    Serial.println(settingsJson);
+    // printf("%s\r\n", settingsJson.c_str());
 }
 
-void Settings::set(const char* str, String value) {
+/*
+   void Settings::set(const char* str, String value) {
     // booleans
     if (eqls(str, S_BEACONCHANNEL)) setBeaconChannel(s2b(value));
     else if (eqls(str, S_AUTOSAVE)) setAutosave(s2b(value));
@@ -180,9 +256,9 @@ void Settings::set(const char* str, String value) {
 
     prnt(S_CHANGED_SETTING);
     prntln(str);
-}
+   }
 
-String Settings::get(const char* str) {
+   String Settings::get(const char* str) {
     if (eqls(str, S_SETTINGS)) print();
     // booleans
     else if (eqls(str, S_BEACONCHANNEL)) return b2s(getBeaconChannel());
@@ -222,294 +298,382 @@ String Settings::get(const char* str) {
     }
 
     return "";
-}
-
+   }
+ */
 // ===== GETTERS ===== //
-String Settings::getVersion() {
-    return DEAUTHER_VERSION;
+
+const version_t& Settings::getVersion() {
+    return data.version;
 }
 
-uint16_t Settings::getDeauthsPerTarget() {
-    return data.attack.deauths_per_target;
-}
-
-uint8_t Settings::getDeauthReason() {
-    return data.attack.deauth_reason;
-}
-
-bool Settings::getBeaconChannel() {
-    return data.attack.attack_all_ch;
-}
-
-bool Settings::getAutosave() {
+const autosave_settings_t& Settings::getAutosaveSettings() {
     return data.autosave;
 }
 
-uint32_t Settings::getAutosaveTime() {
-    return data.autosave_time;
+const attack_settings_t& Settings::getAttackSettings() {
+    return data.attack;
 }
 
-bool Settings::getBeaconInterval() {
+const wifi_settings_t& Settings::getWifiSettings() {
+    return data.wifi;
+}
+
+const sniffer_settings_t& Settings::getSnifferSettings() {
+    return data.sniffer;
+}
+
+const access_point_settings_t& Settings::getAccessPointSettings() {
+    return data.ap;
+}
+
+const web_settings_t& Settings::getWebSettings() {
+    return data.web;
+}
+
+const cli_settings_t& Settings::getCLISettings() {
+    return data.cli;
+}
+
+const led_settings_t& Settings::getLEDSettings() {
+    return data.led;
+}
+
+const display_settings_t& Settings::getDisplaySettings() {
+    return data.display;
+}
+
+/*
+   String Settings::getVersion() {
+    return DEAUTHER_VERSION;
+   }
+
+   uint16_t Settings::getDeauthsPerTarget() {
+    return data.attack.deauths_per_target;
+   }
+
+   uint8_t Settings::getDeauthReason() {
+    return data.attack.deauth_reason;
+   }
+
+   bool Settings::getBeaconChannel() {
+    return data.attack.attack_all_ch;
+   }
+
+   bool Settings::getAutosave() {
+    return data.autosave.enabled;
+   }
+
+   uint32_t Settings::getAutosaveTime() {
+    return data.autosave.time;
+   }
+
+   bool Settings::getBeaconInterval() {
     return (int)data.attack.beacon_interval;
-}
+   }
 
-uint8_t Settings::getChannel() {
+   uint8_t Settings::getChannel() {
     return data.wifi.channel;
-}
+   }
 
-String Settings::getSSID() {
+   String Settings::getSSID() {
     return String(data.ap.ssid);
-}
+   }
 
-String Settings::getPassword() {
+   String Settings::getPassword() {
     return String(data.ap.password);
-}
+   }
 
-bool Settings::getCLI() {
+   bool Settings::getCLI() {
     return data.cli.enabled;
-}
+   }
 
-bool Settings::getDisplayInterface() {
+   bool Settings::getDisplayInterface() {
     return data.display.enabled;
-}
+   }
 
-bool Settings::getWebInterface() {
+   bool Settings::getWebInterface() {
     return data.web.enabled;
-}
+   }
 
-uint16_t Settings::getChTime() {
+   uint16_t Settings::getChTime() {
     return data.sniffer.channel_time;
-}
+   }
 
-uint8_t* Settings::getMacSt() {
+   uint8_t* Settings::getMacSt() {
     return data.wifi.mac_st;
-}
+   }
 
-uint8_t* Settings::getMacAP() {
+   uint8_t* Settings::getMacAP() {
     return data.wifi.mac_ap;
-}
+   }
 
-bool Settings::getRandomTX() {
+   bool Settings::getRandomTX() {
     return data.attack.random_tx;
-}
+   }
 
-uint32_t Settings::getAttackTimeout() {
+   uint32_t Settings::getAttackTimeout() {
     return data.attack.timeout;
-}
+   }
 
-bool Settings::getLedEnabled() {
+   bool Settings::getLedEnabled() {
     return data.led.enabled;
-}
+   }
 
-uint8_t Settings::getProbesPerSSID() {
+   uint8_t Settings::getProbesPerSSID() {
     return data.attack.probe_frames_per_ssid;
-}
+   }
 
-bool Settings::getHidden() {
+   bool Settings::getHidden() {
     return data.ap.hidden;
-}
+   }
 
-bool Settings::getCaptivePortal() {
+   bool Settings::getCaptivePortal() {
     return data.web.captive_portal;
-}
+   }
 
-uint16_t Settings::getMinDeauths() {
+   uint16_t Settings::getMinDeauths() {
     return data.sniffer.min_deauth_frames;
-}
+   }
 
-uint32_t Settings::getDisplayTimeout() {
+   uint32_t Settings::getDisplayTimeout() {
     return data.display.timeout;
-}
+   }
 
-String Settings::getLang() {
+   String Settings::getLang() {
     return data.web.lang;
-}
+   }
 
-bool Settings::getSerialEcho() {
+   bool Settings::getSerialEcho() {
     return data.cli.serial_echo;
-}
+   }
 
-bool Settings::getWebSpiffs() {
+   bool Settings::getWebSpiffs() {
     return data.web.use_spiffs;
-}
-
+   }
+ */
 // ===== SETTERS ===== //
 
-void Settings::setDeauthsPerTarget(uint8_t deauthsPerTarget) {
+void Settings::setAutosaveSettings(const autosave_settings_t& autosave) {
+    data.autosave = autosave;
+    changed       = true;
+}
+
+void Settings::setAttackSettings(const attack_settings_t& attack) {
+    data.attack = attack;
+    changed     = true;
+}
+
+void Settings::setWifiSettings(const wifi_settings_t& wifi) {
+    data.wifi = wifi;
+    changed   = true;
+}
+
+void Settings::setSnifferSettings(const sniffer_settings_t& sniffer) {
+    data.sniffer = sniffer;
+    changed      = true;
+}
+
+void Settings::setAccessPointSettings(const access_point_settings_t& ap) {
+    data.ap = ap;
+    changed = true;
+}
+
+void Settings::setWebSettings(const web_settings_t& web) {
+    data.web = web;
+    changed  = true;
+}
+
+void Settings::setCLISettings(const cli_settings_t& cli) {
+    data.cli = cli;
+    changed  = true;
+}
+
+void Settings::setLEDSettings(const led_settings_t& led) {
+    data.led = led;
+    changed  = true;
+}
+
+void Settings::setDisplaySettings(const display_settings_t& display) {
+    data.display = display;
+    changed      = true;
+}
+
+/*
+   void Settings::setDeauthsPerTarget(uint8_t deauthsPerTarget) {
     data.attack.deauths_per_target = deauthsPerTarget;
     changed                        = true;
-}
+   }
 
-void Settings::setDeauthReason(uint8_t deauthReason) {
+   void Settings::setDeauthReason(uint8_t deauthReason) {
     data.attack.deauth_reason = deauthReason;
     changed                   = true;
-}
+   }
 
-void Settings::setBeaconChannel(bool beaconChannel) {
+   void Settings::setBeaconChannel(bool beaconChannel) {
     data.attack.attack_all_ch = beaconChannel;
     changed                   = true;
-}
+   }
 
-void Settings::setAutosave(bool autosave) {
-    data.autosave = autosave;
-}
+   void Settings::setAutosave(bool autosave) {
+    data.autosave.enabled = autosave;
+   }
 
-void Settings::setAutosaveTime(uint32_t autosaveTime) {
-    data.autosave_time = autosaveTime;
-}
+   void Settings::setAutosaveTime(uint32_t autosaveTime) {
+    data.autosave.time = autosaveTime;
+   }
 
-void Settings::setBeaconInterval(bool beaconInterval) {
+   void Settings::setBeaconInterval(bool beaconInterval) {
     data.attack.beacon_interval = (beacon_interval_t)(int)beaconInterval;
     changed                     = true;
-}
+   }
 
-void Settings::setChannel(uint8_t channel) {
+   void Settings::setChannel(uint8_t channel) {
     if ((channel >= 1) && (channel <= 14)) {
-        data.wifi.channel = channel;
-        changed           = true;
+   data.wifi.channel = channel;
+   changed           = true;
 
-        setWifiChannel(channel);
+   setWifiChannel(channel);
 
-        prnt(S_CHANNEL_CHANGE);
-        prntln(channel);
+   prnt(S_CHANNEL_CHANGE);
+   prntln(channel);
     } else {
-        prntln(S_CHANNEL_ERROR);
+   prntln(S_CHANNEL_ERROR);
     }
-}
+   }
 
-void Settings::setSSID(String ssid) {
+   void Settings::setSSID(String ssid) {
     if ((ssid.length() > 0) && (ssid.length() <= 32)) {
-        ssid = fixUtf8(ssid);
+   ssid = fixUtf8(ssid);
 
-        strncpy(data.ap.ssid, ssid.c_str(), 32);
+   strncpy(data.ap.ssid, ssid.c_str(), 32);
 
-        changed = true;
+   changed = true;
     } else {
-        prntln(S_ERROR_SSID_LEN);
+   prntln(S_ERROR_SSID_LEN);
     }
-}
+   }
 
-void Settings::setPassword(String password) {
+   void Settings::setPassword(String password) {
     if ((password.length() >= 8) && (password.length() <= 32)) {
-        password = fixUtf8(password);
+   password = fixUtf8(password);
 
-        strncpy(data.ap.password, password.c_str(), 64);
+   strncpy(data.ap.password, password.c_str(), 64);
 
-        changed = true;
+   changed = true;
     } else {
-        prntln(S_ERROR_PASSWORD_LEN);
+   prntln(S_ERROR_PASSWORD_LEN);
     }
-}
+   }
 
-void Settings::setCLI(bool cli) {
+   void Settings::setCLI(bool cli) {
     data.cli.enabled = cli;
     changed          = true;
-}
+   }
 
-void Settings::setDisplayInterface(bool displayInterface) {
+   void Settings::setDisplayInterface(bool displayInterface) {
     data.display.enabled = displayInterface;
     changed              = true;
-}
+   }
 
-void Settings::setWebInterface(bool webInterface) {
+   void Settings::setWebInterface(bool webInterface) {
     data.web.enabled = webInterface;
     changed          = true;
-}
+   }
 
-void Settings::setChTime(uint16_t chTime) {
+   void Settings::setChTime(uint16_t chTime) {
     data.sniffer.channel_time = chTime;
     changed                   = true;
-}
+   }
 
-void Settings::setMacSt(String macStr) {
+   void Settings::setMacSt(String macStr) {
     uint8_t mac[6];
 
     if (eqls(macStr, S_RANDOM)) getRandomMac(mac);
     else strToMac(macStr, mac);
 
     setMacSt(mac);
-}
+   }
 
-bool Settings::setMacSt(uint8_t* macSt) {
+   bool Settings::setMacSt(uint8_t* macSt) {
     if (macSt[0] % 2 == 0) {
-        memcpy(data.wifi.mac_st, macSt, 6);
-        changed = true;
-        return true;
+   memcpy(data.wifi.mac_st, macSt, 6);
+   changed = true;
+   return true;
     }
     return false;
-}
+   }
 
-void Settings::setMacAP(String macStr) {
+   void Settings::setMacAP(String macStr) {
     uint8_t mac[6];
 
     if (eqls(macStr, S_RANDOM)) getRandomMac(mac);
     else strToMac(macStr, mac);
 
     setMacAP(mac);
-}
+   }
 
-bool Settings::setMacAP(uint8_t* macAP) {
+   bool Settings::setMacAP(uint8_t* macAP) {
     if (macAP[0] % 2 == 0) {
-        memcpy(data.wifi.mac_ap, macAP, 6);
-        changed = true;
-        return true;
+   memcpy(data.wifi.mac_ap, macAP, 6);
+   changed = true;
+   return true;
     }
     return false;
-}
+   }
 
-void Settings::setRandomTX(bool randomTX) {
+   void Settings::setRandomTX(bool randomTX) {
     data.attack.random_tx = randomTX;
     changed               = true;
-}
+   }
 
-void Settings::setAttackTimeout(uint32_t attackTimeout) {
+   void Settings::setAttackTimeout(uint32_t attackTimeout) {
     data.attack.timeout = attackTimeout;
     changed             = true;
-}
+   }
 
-void Settings::setLedEnabled(bool ledEnabled) {
+   void Settings::setLedEnabled(bool ledEnabled) {
     data.led.enabled = ledEnabled;
     changed          = true;
-}
+   }
 
-void Settings::setProbesPerSSID(uint8_t probesPerSSID) {
+   void Settings::setProbesPerSSID(uint8_t probesPerSSID) {
     if (probesPerSSID > 0) {
-        data.attack.probe_frames_per_ssid = probesPerSSID;
-        changed                           = true;
+   data.attack.probe_frames_per_ssid = probesPerSSID;
+   changed                           = true;
     }
-}
+   }
 
-void Settings::setHidden(bool hidden) {
+   void Settings::setHidden(bool hidden) {
     data.ap.hidden = hidden;
     changed        = true;
-}
+   }
 
-void Settings::setCaptivePortal(bool captivePortal) {
+   void Settings::setCaptivePortal(bool captivePortal) {
     data.web.captive_portal = captivePortal;
     changed                 = true;
-}
+   }
 
-void Settings::setMinDeauths(uint16_t minDeauths) {
+   void Settings::setMinDeauths(uint16_t minDeauths) {
     data.sniffer.min_deauth_frames = minDeauths;
     changed                        = true;
-}
+   }
 
-void Settings::setDisplayTimeout(uint32_t displayTimeout) {
+   void Settings::setDisplayTimeout(uint32_t displayTimeout) {
     data.display.timeout = displayTimeout;
     changed              = true;
-}
+   }
 
-void Settings::setLang(String lang) {
+   void Settings::setLang(String lang) {
     strncpy(data.web.lang, lang.c_str(), 2);
     changed = true;
-}
+   }
 
-void Settings::setSerialEcho(bool serialEcho) {
+   void Settings::setSerialEcho(bool serialEcho) {
     data.cli.serial_echo = serialEcho;
     changed              = true;
-}
+   }
 
-void Settings::setWebSpiffs(bool webSpiffs) {
+   void Settings::setWebSpiffs(bool webSpiffs) {
     data.web.use_spiffs = webSpiffs;
     changed             = true;
-}
+   }*/

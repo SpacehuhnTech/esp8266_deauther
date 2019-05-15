@@ -83,11 +83,11 @@ void LED::setup() {
 }
 
 void LED::update() {
-    if (!settings.getLedEnabled()) {
+    if (!settings.getLEDSettings().enabled) {
         setMode(OFF);
-    } else if (scan.isScanning() && (scan.deauths < settings.getMinDeauths())) {
+    } else if (scan.isScanning() && (scan.deauths < settings.getSnifferSettings().min_deauth_frames)) {
         setMode(SCAN);
-    } else if (attack.isRunning() || (scan.deauths >= settings.getMinDeauths())) {
+    } else if (attack.isRunning()) {
         setMode(ATTACK);
     } else {
         setMode(IDLE);

@@ -84,10 +84,16 @@ void setup() {
     currentTime = millis();
 
     // load settings
+    #ifndef RESET_SETTINGS
     settings.load();
+    #else // ifndef RESET_SETTINGS
+    settings.reset();
+    settings.save();
+    #endif // ifndef RESET_SETTINGS
 
-    // set mac for access point
-    wifi_set_macaddr(SOFTAP_IF, settings.getMacAP());
+    // set mac address
+    wifi_set_macaddr(STATION_IF, (uint8_t*)settings.getWifiSettings().mac_st);
+    wifi_set_macaddr(SOFTAP_IF, (uint8_t*)settings.getWifiSettings().mac_ap);
 
     // start WiFi
     WiFi.mode(WIFI_OFF);
@@ -96,11 +102,8 @@ void setup() {
         scan.sniffer(buf, len);
     });
 
-    // set mac for station
-    wifi_set_macaddr(STATION_IF, settings.getMacSt());
-
     // start display
-    if (settings.getDisplayInterface()) {
+    if (settings.getDisplaySettings().enabled) {
         displayUI.setup();
         displayUI.mode = displayUI.DISPLAY_MODE::INTRO;
     }
@@ -117,16 +120,13 @@ void setup() {
     scan.setup();
 
     // set channel
-    setWifiChannel(settings.getChannel());
+    setWifiChannel(settings.getWifiSettings().channel);
 
     // load Wifi settings: SSID, password,...
-    #ifdef DEFAULT_SSID
-    if (settings.getSSID() == "pwned") settings.setSSID(DEFAULT_SSID);
-    #endif // ifdef DEFAULT_SSID
     loadWifiConfigDefaults();
 
     // dis/enable serial command interface
-    if (settings.getCLI()) {
+    if (settings.getCLISettings().enabled) {
         cli.enable();
     } else {
         prntln(SETUP_SERIAL_WARNING);
@@ -135,13 +135,13 @@ void setup() {
     }
 
     // start access point/web interface
-    if (settings.getWebInterface()) startAP();
+    if (settings.getWebSettings().enabled) startAP();
 
     // STARTED
     prntln(SETUP_STARTED);
 
     // version
-    prntln(settings.getVersion());
+    prntln(DEAUTHER_VERSION);
 
     // setup LED
     led.setup();
@@ -159,7 +159,8 @@ void loop() {
     ssids.update();  // run random mode, if enabled
 
     // auto-save
-    if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {
+    if (settings.getAutosaveSettings().enabled
+        && (currentTime - autosaveTime > settings.getAutosaveSettings().time)) {
         autosaveTime = currentTime;
         names.save(false);
         ssids.save(false);

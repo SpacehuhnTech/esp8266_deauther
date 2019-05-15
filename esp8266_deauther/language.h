@@ -410,53 +410,6 @@ const char ST_ERROR_ID[] PROGMEM = "ERROR: No station found with ID ";
 const char ST_SELECTED_ALL[] PROGMEM = "Selected all stations";
 const char ST_DESELECTED_ALL[] PROGMEM  = "Deselected all stations";
 
-// ===== SETTINGS ===== //
-const char S_OK[] PROGMEM = "OK";
-const char S_INVALID_HASH[] PROGMEM = "Invalid Hash - reseted to default";
-const char S_SETTINGS[] PROGMEM = "settings";
-const char S_BEACONCHANNEL[] PROGMEM = "beaconchannel";
-const char S_FORCEPACKETS[] PROGMEM = "forcepackets";
-const char S_AUTOSAVE[] PROGMEM = "autosave";
-const char S_LANG[] PROGMEM = "lang";
-const char S_SERIALINTERFACE[] PROGMEM = "serial";
-const char S_DISPLAYINTERFACE[] PROGMEM = "display";
-const char S_WEBINTERFACE[] PROGMEM = "web/interface";
-const char S_AUTOSAVETIME[] PROGMEM = "autosavetime";
-const char S_DEAUTHSPERTARGET[] PROGMEM = "deauthspertarget";
-const char S_CHTIME[] PROGMEM = "chtime";
-const char S_DEAUTHREASON[] PROGMEM = "deauthReason";
-const char S_MACST[] PROGMEM = "macSt";
-const char S_MACAP[] PROGMEM = "macAP";
-const char S_RANDOMTX[] PROGMEM = "randomTX";
-const char S_ATTACKTIMEOUT[] PROGMEM = "attacktimeout";
-const char S_LEDENABLED[] PROGMEM = "led/Enabled";
-const char S_PROBESPERSSID[] PROGMEM = "probesPerSSID";
-const char S_BEACONINTERVAL[] PROGMEM = "beaconInterval";
-const char S_VERSION[] PROGMEM = "version";
-const char S_CHANNEL[] PROGMEM = "channel";
-const char S_CAPTIVEPORTAL[] PROGMEM = "captivePortal";
-const char S_HIDDEN[] PROGMEM = "hidden";
-const char S_PASSWORD[] PROGMEM = "password";
-const char S_SSID[] PROGMEM = "ssid";
-const char S_MAC[] PROGMEM = "mac";
-const char S_MIN_DEAUTHS[] PROGMEM = "minDeauths";
-const char S_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
-const char S_SERIAL_ECHO[] PROGMEM = "serialEcho";
-const char S_WEB_SPIFFS[] PROGMEM = "webSpiffs";
-
-const char S_SETTINGS_LOADED[] PROGMEM = "Loading settings...";
-const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";
-const char S_SETTINGS_SAVED[] PROGMEM = "Settings saved in ";
-const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";
-const char S_ERROR_VERSION[] PROGMEM = "Sorry, you can't change the version number";
-const char S_ERROR_NOT_FOUND[] PROGMEM = "ERROR: No setting found for ";
-const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
-const char S_CHANNEL_CHANGE[] PROGMEM = "Switched to Channel ";
-const char S_CHANNEL_ERROR[] PROGMEM = "ERROR: Channel must be between 1 and 14";
-const char S_ERROR_SSID_LEN[] PROGMEM = "ERROR: SSID must be between 1 and 32 characters";
-const char S_ERROR_PASSWORD_LEN[] PROGMEM = "ERROR: Password must be between 8 and 32 characters";
-const char S_RANDOM[] PROGMEM = "random";
-
 // ===== ACCESS POINTS ===== //
 const char AP_HEADER[] PROGMEM = "[===== Access Points =====]";
 const char AP_LIST_EMPTY[] PROGMEM = "AP list is empty :(";

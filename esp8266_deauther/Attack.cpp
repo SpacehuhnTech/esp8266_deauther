@@ -3,7 +3,7 @@
 Attack::Attack() {
     getRandomMac(mac);
 
-    if (settings.getBeaconInterval()) {
+    if (settings.getAttackSettings().beacon_interval == INTERVAL_1S) {
         // 1s beacon interval
         beaconPacket[32] = 0xe8;
         beaconPacket[33] = 0x03;
@@ -83,9 +83,9 @@ void Attack::updateCounter() {
 
     // deauth packets per second
     if (deauth.active) {
-        if (deauthAll) deauth.maxPkts = settings.getDeauthsPerTarget() *
+        if (deauthAll) deauth.maxPkts = settings.getAttackSettings().deauths_per_target *
                                         (accesspoints.count() + stations.count() * 2 - names.selected());
-        else deauth.maxPkts = settings.getDeauthsPerTarget() *
+        else deauth.maxPkts = settings.getAttackSettings().deauths_per_target *
                               (accesspoints.selected() + stations.selected() * 2 + names.selected() + names.stations());
     } else {
         deauth.maxPkts = 0;
@@ -95,17 +95,17 @@ void Attack::updateCounter() {
     if (beacon.active) {
         beacon.maxPkts = ssids.count();
 
-        if (!settings.getBeaconInterval()) beacon.maxPkts *= 10;
+        if (settings.getAttackSettings().beacon_interval == INTERVAL_100MS) beacon.maxPkts *= 10;
     } else {
         beacon.maxPkts = 0;
     }
 
     // probe packets per second
-    if (probe.active) probe.maxPkts = ssids.count() * settings.getProbesPerSSID();
+    if (probe.active) probe.maxPkts = ssids.count() * settings.getAttackSettings().probe_frames_per_ssid;
     else probe.maxPkts = 0;
 
     // random transmission power
-    if (settings.getRandomTX() && (beacon.active || probe.active)) setOutputPower(random(21));
+    if (settings.getAttackSettings().random_tx && (beacon.active || probe.active)) setOutputPower(random(21));
     else setOutputPower(20.5f);
 
     // reset counters
@@ -240,7 +240,7 @@ void Attack::deauthAllUpdate() {
 void Attack::probeUpdate() {
     if (probe.active && (probe.maxPkts > 0) && (probe.packetCounter < probe.maxPkts)) {
         if (probe.time <= currentTime - (1000 / probe.maxPkts)) {
-            if (settings.getBeaconChannel()) setWifiChannel(probe.tc % 11);
+            if (settings.getAttackSettings().attack_all_ch) setWifiChannel(probe.tc % 11);
             probe.tc += sendProbe(probe.tc);
 
             if (probe.tc >= ssids.count()) probe.tc = 0;
@@ -259,18 +259,18 @@ void Attack::beaconUpdate() {
 }
 
 bool Attack::deauthStation(int num) {
-    return deauthDevice(stations.getAPMac(num), stations.getMac(num), settings.getDeauthReason(), stations.getCh(num));
+    return deauthDevice(stations.getAPMac(num), stations.getMac(num), settings.getAttackSettings().deauth_reason, stations.getCh(num));
 }
 
 bool Attack::deauthAP(int num) {
-    return deauthDevice(accesspoints.getMac(num), broadcast, settings.getDeauthReason(), accesspoints.getCh(num));
+    return deauthDevice(accesspoints.getMac(num), broadcast, settings.getAttackSettings().deauth_reason, accesspoints.getCh(num));
 }
 
 bool Attack::deauthName(int num) {
     if (names.isStation(num)) {
-        return deauthDevice(names.getBssid(num), names.getMac(num), settings.getDeauthReason(), names.getCh(num));
+        return deauthDevice(names.getBssid(num), names.getMac(num), settings.getAttackSettings().deauth_reason, names.getCh(num));
     } else {
-        return deauthDevice(names.getMac(num), broadcast, settings.getDeauthReason(), names.getCh(num));
+        return deauthDevice(names.getMac(num), broadcast, settings.getAttackSettings().deauth_reason, names.getCh(num));
     }
 }
 
@@ -334,7 +334,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 }
 
 bool Attack::sendBeacon(uint8_t tc) {
-    if (settings.getBeaconChannel()) setWifiChannel(tc % 11);
+    if (settings.getAttackSettings().attack_all_ch) setWifiChannel(tc % 11);
     mac[5] = tc;
     return sendBeacon(mac, ssids.getName(tc).c_str(), wifi_channel, ssids.getWPA2(tc));
 }
@@ -379,7 +379,7 @@ bool Attack::sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2) {
 }
 
 bool Attack::sendProbe(uint8_t tc) {
-    if (settings.getBeaconChannel()) setWifiChannel(tc % 11);
+    if (settings.getAttackSettings().attack_all_ch) setWifiChannel(tc % 11);
     mac[5] = tc;
     return sendProbe(mac, ssids.getName(tc).c_str(), wifi_channel);
 }

@@ -36,6 +36,8 @@
 
 #define DEFAULT_ESP8266
 
+// Forces a reset of all settings at startup
+// #define RESET_SETTINGS
 
 // ========== CONFIGS ========== //
 #if defined(D_DUINO_B_V5_LED_RING)
@@ -227,6 +229,15 @@
 
 
 // ========= FALLBACK ========= //
+
+// ===== AUTOSAVE ===== //
+#ifndef AUTOSAVE_ENABLED
+  #define AUTOSAVE_ENABLED true
+#endif /* ifndef ATTACK_ALL_CH */
+
+#ifndef AUTOSAVE_TIME
+  #define AUTOSAVE_TIME 60
+#endif /* ifndef ATTACK_ALL_CH */
 
 // ===== ATTACK ===== //
 #ifndef ATTACK_ALL_CH
