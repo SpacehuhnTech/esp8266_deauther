@@ -186,11 +186,10 @@ void Settings::save(bool force) {
         String buf = getJsonStr();
         if (writeFile(SETTINGS_PATH, buf)) {
             prnt(S_SETTINGS_SAVED);
-            prntln(SETTINGS_PATH);
         } else {
-            prnt(F("ERROR: saving "));
-            prntln(SETTINGS_PATH);
+            prnt(S_ERROR_SAVING);
         }
+        prntln(SETTINGS_PATH);
     }
 }
 
@@ -204,8 +203,7 @@ void Settings::print() {
     settingsJson.replace(",", "\r\n");
 
     prntln(S_SETTINGS_HEADER);
-    Serial.println(settingsJson);
-    // printf("%s\r\n", settingsJson.c_str());
+    prntln(settingsJson);
 }
 
 /*

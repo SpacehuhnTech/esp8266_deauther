@@ -1,30 +1,34 @@
 #ifndef Settings_h
 #define Settings_h
 
-#include <Arduino.h> // String
+// ====== Includes ====== //
+// Libraries
+#include <Arduino.h>  // Arduino String, Serial
+#include <FS.h>       // SPIFFS
 
-// Load and save JSON files
-#include <ArduinoJSON.h>
-#include <FS.h>
-
+// Local files
 #include "A_config.h" // Default Settings
-#include "language.h" // Debug strings
+#include "language.h" // prnt and prntln
 
+// ====== Constants ====== //
 #define SETTINGS_PATH "/settings.json"
 
-extern void checkFile(String path, String data);
-extern JsonVariant parseJSONFile(String path, DynamicJsonBuffer& jsonBuffer);
+// ====== External Functions ===== //
 extern bool writeFile(String path, String& buf);
-extern void saveJSONFile(String path, JsonObject& root);
-extern String macToStr(uint8_t* mac);
 extern void getRandomMac(uint8_t* mac);
-extern bool strToMac(String macStr, uint8_t* mac);
-extern void setWifiChannel(uint8_t ch);
-extern String fixUtf8(String str);
-extern void copyWebFiles(bool force);
 extern bool macValid(uint8_t* mac);
-extern String bytesToStr(uint8_t* b, uint32_t size);
 
+// ====== Strings ===== //
+const char S_OK[] PROGMEM = "OK";
+const char S_INVALID_HASH[] PROGMEM = "Invalid Hash - reseted to default";
+const char S_SETTINGS_LOADED[] PROGMEM = "Loading settings...";
+const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";
+const char S_SETTINGS_SAVED[] PROGMEM = "Settings saved in ";
+const char S_ERROR_SAVING[] PROGMEM = "ERROR: saving ";
+const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";
+const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
+
+// ===== JSON Strings ====== //
 const char S_JSON_TRUE[] PROGMEM = "true";
 const char S_JSON_FALSE[] PROGMEM = "true";
 
@@ -64,28 +68,6 @@ const char S_JSON_LEDENABLED[] PROGMEM = "led";
 
 const char S_JSON_DISPLAYINTERFACE[] PROGMEM = "display";
 const char S_JSON_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
-
-// ============
-const char S_OK[] PROGMEM = "OK";
-const char S_INVALID_HASH[] PROGMEM = "Invalid Hash - reseted to default";
-const char S_SETTINGS[] PROGMEM = "settings";
-const char S_FORCEPACKETS[] PROGMEM = "forcepackets";
-const char S_AUTOSAVETIME[] PROGMEM = "autosavetime";
-const char S_VERSION[] PROGMEM = "version";
-const char S_MAC[] PROGMEM = "mac";
-
-const char S_SETTINGS_LOADED[] PROGMEM = "Loading settings...";
-const char S_SETTINGS_RESETED[] PROGMEM = "Settings reseted";
-const char S_SETTINGS_SAVED[] PROGMEM = "Settings saved in ";
-const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";
-const char S_ERROR_VERSION[] PROGMEM = "Sorry, you can't change the version number";
-const char S_ERROR_NOT_FOUND[] PROGMEM = "ERROR: No setting found for ";
-const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
-const char S_CHANNEL_CHANGE[] PROGMEM = "Switched to Channel ";
-const char S_CHANNEL_ERROR[] PROGMEM = "ERROR: Channel must be between 1 and 14";
-const char S_ERROR_SSID_LEN[] PROGMEM = "ERROR: SSID must be between 1 and 32 characters";
-const char S_ERROR_PASSWORD_LEN[] PROGMEM = "ERROR: Password must be between 8 and 32 characters";
-const char S_RANDOM[] PROGMEM = "random";
 
 // ===== VERSION ===== //
 typedef struct version_t {
@@ -188,6 +170,7 @@ typedef struct settings_hash_t {
     uint8_t hash[20];
 } settings_hash_t;
 
+// ===== SETTINGS ===== //
 class Settings {
     private:
         settings_t data;
@@ -204,9 +187,6 @@ class Settings {
 
         void reset();
         void print();
-
-        // void set(const char* str, String value);
-        // String get(const char* str);
 
         const version_t& getVersion();
         const autosave_settings_t& getAutosaveSettings();
