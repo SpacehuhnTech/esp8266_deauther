@@ -72,11 +72,28 @@ void setup() {
     // Start EEPROM
     EEPROMHelper::begin(EEPROM_SIZE);
 
+#ifdef FORMAT_SPIFFS
+    prnt(SETUP_FORMAT_SPIFFS);
+    SPIFFS.format();
+    prntln(SETUP_OK);
+#endif // ifdef FORMAT_SPIFFS
+
+#ifdef FORMAT_EEPROM
+    prnt(SETUP_FORMAT_EEPROM);
+    EEPROMHelper::format(EEPROM_SIZE);
+    prntln(SETUP_OK);
+#endif // ifdef FORMAT_EEPROM
+
     // Format SPIFFS when in boot-loop
     if (spiffsError || !EEPROMHelper::checkBootNum(BOOT_COUNTER_ADDR)) {
         prnt(SETUP_FORMAT_SPIFFS);
         SPIFFS.format();
         prntln(SETUP_OK);
+
+        prnt(SETUP_FORMAT_EEPROM);
+        EEPROMHelper::format(EEPROM_SIZE);
+        prntln(SETUP_OK);
+
         EEPROMHelper::resetBootNum(BOOT_COUNTER_ADDR);
     }
 

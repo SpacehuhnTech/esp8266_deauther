@@ -71,6 +71,7 @@ const char SETUP_OK[] PROGMEM = "OK";
 const char SETUP_ERROR[] PROGMEM = "ERROR";
 const char SETUP_MOUNT_SPIFFS[] PROGMEM = "Mounting SPIFFS...";
 const char SETUP_FORMAT_SPIFFS[] PROGMEM = "Formatting SPIFFS...";
+const char SETUP_FORMAT_EEPROM[] PROGMEM = "Formatting EEPROM...";
 const char SETUP_SERIAL_WARNING[] PROGMEM = "Warning: Serial deactivated";
 const char SETUP_STARTED[] PROGMEM = "STARTED! \\o/";
 const char SETUP_COPYING[] PROGMEM = "Copying ";

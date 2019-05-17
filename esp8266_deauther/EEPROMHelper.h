@@ -53,6 +53,11 @@ class EEPROMHelper {
         static void resetBootNum(const int address) {
             saveObject(address, boot{ BOOT_MAGIC_NUM, 1 });
         }
+
+        static void format(unsigned long size) {
+            for (unsigned long i = 0; i<size; i++) EEPROM.write(i, 0x00);
+            EEPROM.commit();
+        }
 };
 
 #endif /* ifndef EEPROMHELPER_H */

@@ -1,7 +1,11 @@
 #ifndef config_h
 #define config_h
 
-/* !!! Uncomment the board taht you're using !!! */
+#define DEFAULT_ESP8266
+
+/* ---------------------------------------------------------- */
+/* ===>> !!! Uncomment the board taht you're using: !!! <<=== */
+/* ---------------------------------------------------------- */
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
@@ -34,7 +38,9 @@
 // #define LYASI_7W_E27_LAMP
 // #define AVATAR_5W_E14_LAMP
 
-#define DEFAULT_ESP8266
+// Forces formatting of SPIFFS and EEPROM ot startup
+// #define FORMAT_SPIFFS
+// #define FORMAT_EEPROM
 
 // Forces a reset of all settings at startup
 // #define RESET_SETTINGS
