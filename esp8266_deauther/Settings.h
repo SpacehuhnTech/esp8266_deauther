@@ -29,13 +29,16 @@ const char S_SETTINGS_HEADER[] PROGMEM = "[========== Settings ==========]";
 const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
 
 // ===== JSON Strings ====== //
+// General
 const char S_JSON_TRUE[] PROGMEM = "true";
 const char S_JSON_FALSE[] PROGMEM = "true";
 
+// Version
 const char S_JSON_VERSION[] PROGMEM = "version";
 const char S_JSON_AUTOSAVE[] PROGMEM = "autosave";
 const char S_JSON_AUTOSAVETIME[] PROGMEM = "autosavetime";
 
+// Attack
 const char S_JSON_BEACONCHANNEL[] PROGMEM = "beaconchannel";
 const char S_JSON_RANDOMTX[] PROGMEM = "randomTX";
 const char S_JSON_ATTACKTIMEOUT[] PROGMEM = "attacktimeout";
@@ -44,28 +47,35 @@ const char S_JSON_DEAUTHREASON[] PROGMEM = "deauthReason";
 const char S_JSON_BEACONINTERVAL[] PROGMEM = "beaconInterval";
 const char S_JSON_PROBESPERSSID[] PROGMEM = "probesPerSSID";
 
+// WiFi
 const char S_JSON_CHANNEL[] PROGMEM = "channel";
 const char S_JSON_MACST[] PROGMEM = "macSt";
 const char S_JSON_MACAP[] PROGMEM = "macAP";
 
+// Sniffer
 const char S_JSON_CHTIME[] PROGMEM = "chtime";
 const char S_JSON_MIN_DEAUTHS[] PROGMEM = "minDeauths";
 
+// AP
 const char S_JSON_SSID[] PROGMEM = "ssid";
 const char S_JSON_PASSWORD[] PROGMEM = "password";
 const char S_JSON_HIDDEN[] PROGMEM = "hidden";
 const char S_JSON_IP[] PROGMEM = "ip";
 
+// Web
 const char S_JSON_WEBINTERFACE[] PROGMEM = "webinterface";
 const char S_JSON_CAPTIVEPORTAL[] PROGMEM = "captivePortal";
 const char S_JSON_WEB_SPIFFS[] PROGMEM = "webSpiffs";
 const char S_JSON_LANG[] PROGMEM = "lang";
 
+// CLI
 const char S_JSON_SERIALINTERFACE[] PROGMEM = "serial";
 const char S_JSON_SERIAL_ECHO[] PROGMEM = "serialEcho";
 
+// LED
 const char S_JSON_LEDENABLED[] PROGMEM = "led";
 
+// Display
 const char S_JSON_DISPLAYINTERFACE[] PROGMEM = "display";
 const char S_JSON_DISPLAY_TIMEOUT[] PROGMEM = "displayTimeout";
 
