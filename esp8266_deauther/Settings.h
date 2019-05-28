@@ -31,7 +31,7 @@ const char S_CHANGED_SETTING[] PROGMEM = "Changed setting ";
 // ===== JSON Strings ====== //
 // General
 const char S_JSON_TRUE[] PROGMEM = "true";
-const char S_JSON_FALSE[] PROGMEM = "true";
+const char S_JSON_FALSE[] PROGMEM = "false";
 
 // Version
 const char S_JSON_VERSION[] PROGMEM = "version";

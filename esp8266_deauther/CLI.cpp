@@ -625,10 +625,10 @@ void CLI::runCommand(String input) {
             // else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load(list->get(2)) : settings.save(true, list->get(2));
             else parameterError(list->get(1));
         } else {
-            if (eqlsCMD(1, CLI_SSID)) load ? ssids.load() : ssids.save(false);
-            else if (eqlsCMD(1, CLI_NAME)) load ? names.load() : names.save(false);
-            else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load() : settings.save(false);
-            else if ((eqlsCMD(1, CLI_SCAN) || eqlsCMD(1, CLI_AP) || eqlsCMD(1, CLI_STATION)) && !load) scan.save(false);
+            if (eqlsCMD(1, CLI_SSID)) load ? ssids.load() : ssids.save(true);
+            else if (eqlsCMD(1, CLI_NAME)) load ? names.load() : names.save(true);
+            else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load() : settings.save(true);
+            else if ((eqlsCMD(1, CLI_SCAN) || eqlsCMD(1, CLI_AP) || eqlsCMD(1, CLI_STATION)) && !load) scan.save(true);
             else parameterError(list->get(1));
         }
     }
@@ -727,7 +727,7 @@ void CLI::runCommand(String input) {
 
         else {
             prnt(_tmp);
-            prntln(" settings not found");
+            prntln(" setting not found");
         }
     }
 

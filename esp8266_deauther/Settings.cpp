@@ -25,15 +25,15 @@ void jsonStr(String& str, const char* name, const char* value) {
     str += ',';
 }
 
-/*
-   void jsonFlag(String& str, const char* name, bool value) {
+void jsonFlag(String& str, const char* name, bool value) {
     str += '"';
     str += String(name);
     str += '"';
     str += ':';
-    str += String(value ? S_JSON_TRUE : S_JSON_FALSE);
+    str += value ? String(S_JSON_TRUE) : String(S_JSON_FALSE);
     str += ',';
-   }*/
+}
+
 void jsonValue(String& str, const char* name, int value) {
     str += '"';
     str += String(name);
@@ -49,12 +49,15 @@ void jsonHex(String& str, const char* name, uint8_t* byteArr, int len) {
     str += '"';
     str += ':';
 
+    str += '"';
+
     for (int i = 0; i<len; i++) {
         if (i > 0) str += ':';
         if (byteArr[i] < 0x10) str += '0';
         str += String(byteArr[i], HEX);
     }
 
+    str += '"';
     str += ',';
 }
 
@@ -64,11 +67,14 @@ void jsonDec(String& str, const char* name, uint8_t* byteArr, int len) {
     str += '"';
     str += ':';
 
+    str += '"';
+
     for (int i = 0; i<len; i++) {
         if (i > 0) str += '.';
         str += String(byteArr[i]);
     }
 
+    str += '"';
     str += ',';
 }
 
@@ -91,16 +97,16 @@ String Settings::getJsonStr() {
     jsonStr(str, S_JSON_VERSION, DEAUTHER_VERSION);
 
     // Autosave
-    /*jsonFlag*/ jsonValue(str, S_JSON_AUTOSAVE, data.autosave.enabled);
+    jsonFlag(str, S_JSON_AUTOSAVE, data.autosave.enabled);
     jsonValue(str, S_JSON_AUTOSAVETIME, data.autosave.time);
 
     // Attack
-    /*jsonFlag*/ jsonValue(str, S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
-    /*jsonFlag*/ jsonValue(str, S_JSON_RANDOMTX, data.attack.random_tx);
+    jsonFlag(str, S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
+    jsonFlag(str, S_JSON_RANDOMTX, data.attack.random_tx);
     jsonValue(str, S_JSON_ATTACKTIMEOUT, data.attack.timeout);
     jsonValue(str, S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
     jsonValue(str, S_JSON_DEAUTHREASON, data.attack.deauth_reason);
-    /*jsonFlag*/ jsonValue(str, S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
+    jsonFlag(str, S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
     jsonValue(str, S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
 
     // WiFi
@@ -115,24 +121,24 @@ String Settings::getJsonStr() {
     // Access Point
     jsonStr(str, S_JSON_SSID, data.ap.ssid);
     jsonStr(str, S_JSON_PASSWORD, data.ap.password);
-    /*jsonFlag*/ jsonValue(str, S_JSON_HIDDEN, data.ap.hidden);
+    jsonFlag(str, S_JSON_HIDDEN, data.ap.hidden);
     jsonDec(str, S_JSON_IP, data.ap.ip, 4);
 
     // Web Interface
-    /*jsonFlag*/ jsonValue(str, S_JSON_WEBINTERFACE, data.web.enabled);
-    /*jsonFlag*/ jsonValue(str, S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
-    /*jsonFlag*/ jsonValue(str, S_JSON_WEB_SPIFFS, data.web.use_spiffs);
+    jsonFlag(str, S_JSON_WEBINTERFACE, data.web.enabled);
+    jsonFlag(str, S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
+    jsonFlag(str, S_JSON_WEB_SPIFFS, data.web.use_spiffs);
     jsonStr(str, S_JSON_LANG, data.web.lang);
 
     // CLI
-    /*jsonFlag*/ jsonValue(str, S_JSON_SERIALINTERFACE, data.cli.enabled);
-    /*jsonFlag*/ jsonValue(str, S_JSON_SERIAL_ECHO, data.cli.serial_echo);
+    jsonFlag(str, S_JSON_SERIALINTERFACE, data.cli.enabled);
+    jsonFlag(str, S_JSON_SERIAL_ECHO, data.cli.serial_echo);
 
     // LED
-    /*jsonFlag*/ jsonValue(str, S_JSON_LEDENABLED, data.led.enabled);
+    jsonFlag(str, S_JSON_LEDENABLED, data.led.enabled);
 
     // Display
-    /*jsonFlag*/ jsonValue(str, S_JSON_DISPLAYINTERFACE, data.display.enabled);
+    jsonFlag(str, S_JSON_DISPLAYINTERFACE, data.display.enabled);
     jsonValue(str, S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
 
     str[str.length()-1] = '}';
