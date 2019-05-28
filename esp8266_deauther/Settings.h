@@ -35,6 +35,8 @@ const char S_JSON_FALSE[] PROGMEM = "true";
 
 // Version
 const char S_JSON_VERSION[] PROGMEM = "version";
+
+// Autosave
 const char S_JSON_AUTOSAVE[] PROGMEM = "autosave";
 const char S_JSON_AUTOSAVETIME[] PROGMEM = "autosavetime";
 
@@ -198,7 +200,8 @@ class Settings {
         void reset();
         void print();
 
-        const version_t& getVersion();
+        const settings_t& getAllSettings();
+        const version_t & getVersion();
         const autosave_settings_t& getAutosaveSettings();
         const attack_settings_t  & getAttackSettings();
         const wifi_settings_t    & getWifiSettings();
@@ -209,6 +212,7 @@ class Settings {
         const led_settings_t& getLEDSettings();
         const display_settings_t& getDisplaySettings();
 
+        void setAllSettings(settings_t& settings);
         void setAutosaveSettings(const autosave_settings_t& autosave);
         void setAttackSettings(const attack_settings_t& attack);
         void setWifiSettings(const wifi_settings_t& wifi);

@@ -25,15 +25,15 @@ void jsonStr(String& str, const char* name, const char* value) {
     str += ',';
 }
 
-void jsonFlag(String& str, const char* name, bool value) {
+/*
+   void jsonFlag(String& str, const char* name, bool value) {
     str += '"';
     str += String(name);
     str += '"';
     str += ':';
     str += String(value ? S_JSON_TRUE : S_JSON_FALSE);
     str += ',';
-}
-
+   }*/
 void jsonValue(String& str, const char* name, int value) {
     str += '"';
     str += String(name);
@@ -91,16 +91,16 @@ String Settings::getJsonStr() {
     jsonStr(str, S_JSON_VERSION, DEAUTHER_VERSION);
 
     // Autosave
-    jsonFlag(str, S_JSON_AUTOSAVE, data.autosave.enabled);
+    /*jsonFlag*/ jsonValue(str, S_JSON_AUTOSAVE, data.autosave.enabled);
     jsonValue(str, S_JSON_AUTOSAVETIME, data.autosave.time);
 
     // Attack
-    jsonFlag(str, S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
-    jsonFlag(str, S_JSON_RANDOMTX, data.attack.random_tx);
+    /*jsonFlag*/ jsonValue(str, S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
+    /*jsonFlag*/ jsonValue(str, S_JSON_RANDOMTX, data.attack.random_tx);
     jsonValue(str, S_JSON_ATTACKTIMEOUT, data.attack.timeout);
     jsonValue(str, S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
     jsonValue(str, S_JSON_DEAUTHREASON, data.attack.deauth_reason);
-    jsonFlag(str, S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
+    /*jsonFlag*/ jsonValue(str, S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
     jsonValue(str, S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
 
     // WiFi
@@ -115,24 +115,24 @@ String Settings::getJsonStr() {
     // Access Point
     jsonStr(str, S_JSON_SSID, data.ap.ssid);
     jsonStr(str, S_JSON_PASSWORD, data.ap.password);
-    jsonFlag(str, S_JSON_HIDDEN, data.ap.hidden);
+    /*jsonFlag*/ jsonValue(str, S_JSON_HIDDEN, data.ap.hidden);
     jsonDec(str, S_JSON_IP, data.ap.ip, 4);
 
     // Web Interface
-    jsonFlag(str, S_JSON_WEBINTERFACE, data.web.enabled);
-    jsonFlag(str, S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
-    jsonFlag(str, S_JSON_WEB_SPIFFS, data.web.use_spiffs);
+    /*jsonFlag*/ jsonValue(str, S_JSON_WEBINTERFACE, data.web.enabled);
+    /*jsonFlag*/ jsonValue(str, S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
+    /*jsonFlag*/ jsonValue(str, S_JSON_WEB_SPIFFS, data.web.use_spiffs);
     jsonStr(str, S_JSON_LANG, data.web.lang);
 
     // CLI
-    jsonFlag(str, S_JSON_SERIALINTERFACE, data.cli.enabled);
-    jsonFlag(str, S_JSON_SERIAL_ECHO, data.cli.serial_echo);
+    /*jsonFlag*/ jsonValue(str, S_JSON_SERIALINTERFACE, data.cli.enabled);
+    /*jsonFlag*/ jsonValue(str, S_JSON_SERIAL_ECHO, data.cli.serial_echo);
 
     // LED
-    jsonFlag(str, S_JSON_LEDENABLED, data.led.enabled);
+    /*jsonFlag*/ jsonValue(str, S_JSON_LEDENABLED, data.led.enabled);
 
     // Display
-    jsonFlag(str, S_JSON_DISPLAYINTERFACE, data.display.enabled);
+    /*jsonFlag*/ jsonValue(str, S_JSON_DISPLAYINTERFACE, data.display.enabled);
     jsonValue(str, S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
 
     str[str.length()-1] = '}';
@@ -197,6 +197,8 @@ void Settings::print() {
     String settingsJson = getJsonStr();
 
     settingsJson.replace("\":", " = ");
+    settingsJson.replace("= 0\r\n", "= false\r\n");
+    settingsJson.replace("= 1\r\n", "= true\r\n");
     settingsJson.replace("\"", "");
     settingsJson.replace("{", "");
     settingsJson.replace("}", "");
@@ -207,6 +209,10 @@ void Settings::print() {
 }
 
 // ===== GETTERS ===== //
+
+const settings_t& Settings::getAllSettings() {
+    return data;
+}
 
 const version_t& Settings::getVersion() {
     return data.version;
@@ -249,6 +255,12 @@ const display_settings_t& Settings::getDisplaySettings() {
 }
 
 // ===== SETTERS ===== //
+
+void Settings::setAllSettings(settings_t& newSettings) {
+    newSettings.version = this->data.version;
+    data                = newSettings;
+    changed             = true;
+}
 
 void Settings::setAutosaveSettings(const autosave_settings_t& autosave) {
     data.autosave = autosave;

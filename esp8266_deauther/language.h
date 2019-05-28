@@ -10,17 +10,21 @@ extern bool eqls(String str, const char* keywordPtr);
 extern String b2s(bool input);
 extern String b2a(bool input);
 extern bool s2b(String input);
-extern void prnt(String s);
-extern void prnt(bool b);
-extern void prnt(char c);
+extern void prnt(const String s);
+extern void prnt(const bool b);
+extern void prnt(const char c);
 extern void prnt(const char* ptr);
-extern void prnt(int i);
+extern void prnt(const char* ptr, int len);
+extern void prnt(const int i);
+extern void prnt(const uint32_t i);
 extern void prntln();
-extern void prntln(String s);
-extern void prntln(bool b);
-extern void prntln(char c);
+extern void prntln(const String s);
+extern void prntln(const bool b);
+extern void prntln(const char c);
 extern void prntln(const char* ptr);
-extern void prntln(int i);
+extern void prntln(const char* ptr, int len);
+extern void prntln(const int i);
+extern void prntln(const uint32_t i);
 
 /*
    The following variables are the strings used for the serial interface, display interface and settings.
