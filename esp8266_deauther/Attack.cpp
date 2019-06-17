@@ -366,15 +366,16 @@ bool Attack::sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2) {
     tmpPacket[37] = ssidLen;                                             // update SSID length byte
     memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer
 
-    if (sendPacket(tmpPacket, tmpPacketSize, ch, 1)) {
+    bool success = sendPacket(tmpPacket, tmpPacketSize, ch, 1);
+
+    if (success) {
         beacon.time = currentTime;
         beacon.packetCounter++;
-        delete tmpPacket; // free memory of allocated buffer
-        return true;
-    } else {
-        delete tmpPacket; // free memory of allocated buffer
-        return false;
     }
+
+    delete[] tmpPacket; // free memory of allocated buffer
+
+    return success;
     // =====
 }
 
