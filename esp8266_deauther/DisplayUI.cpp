@@ -461,7 +461,7 @@ void DisplayUI::update() {
 
     draw();
 
-    uint32_t timeout = settings.getAttackSettings().timeout * 1000;
+    uint32_t timeout = settings.getDisplaySettings().timeout * 1000;
 
     if (currentTime > timeout) {
         if (!tempOff) {
