@@ -1,13 +1,16 @@
-var nameJson = [];
-var scanJson = {aps:[],stations:[]};
-				
-function drawScan(){
-	var html;
-	var selected;
-	var width;
-	var color;
-	var macVendor;
-	
+let nameJson = [];
+let scanJson = {
+	aps: [],
+	stations: []
+};
+
+const drawScan = () => {
+	let html;
+	let selected;
+	let width;
+	let color;
+	let macVendor;
+
 	// Access Points
 	getE("apNum").innerHTML = scanJson.aps.length;
 	html = "<tr>"
@@ -23,7 +26,7 @@ function drawScan(){
 		+ "<th class='selectColumn'></th>"
 		+ "<th class='remove'></th>"
 		+ "</tr>";
-	
+
 	for(var i=0;i<scanJson.aps.length;i++){
 		selected = scanJson.aps[i][scanJson.aps[i].length-1];
 		width = parseInt(scanJson.aps[i][3]) + 130;
@@ -31,7 +34,7 @@ function drawScan(){
 		if(width < 50) color = "meter_red";
 		else if(width < 70) color = "meter_orange";
 		else color = "meter_green";
-						
+
 		html += (selected ? "<tr class='selected'>" : "<tr>")
 			+ "<td class='id'>"+i+"</td>" // ID
 			+ "<td class='ssid'>"+esc(scanJson.aps[i][0])+"</td>" // SSID
@@ -48,9 +51,9 @@ function drawScan(){
 			+ "<td class='remove'><button class='red' onclick='remove(0,"+i+")'>X</button></td>" // Remove
 			+ "</tr>";
 	}
-	
+
 	getE("apTable").innerHTML = html;
-					
+
 	// Stations
 	getE("stNum").innerHTML = scanJson.stations.length;
 	html = "<tr>"
@@ -65,13 +68,13 @@ function drawScan(){
 		+ "<th class='selectColumn'></th>"
 		+ "<th class='remove'></th>"
 		+ "</tr>";
-	
+
 	for(var i=0;i<scanJson.stations.length;i++){
 		selected = scanJson.stations[i][scanJson.stations[i].length-1];
 		ap = "";
 		if(scanJson.stations[i][5] >= 0)
 			ap = esc(scanJson.aps[scanJson.stations[i][5]][0]);
-		
+
 		html += (selected ? "<tr class='selected'>" : "<tr>")
 			+ "<td class='id'>"+i+"</td>" // ID
 			+ "<td class='vendor'>"+esc(scanJson.stations[i][3])+"</td>" // Vendor
@@ -86,14 +89,14 @@ function drawScan(){
 			+ "<td class='remove'><button class='red' onclick='remove(1,"+i+")'>X</button></td>" // Remove
 			+ "</tr>";
 	}
-	
+
 	getE("stTable").innerHTML = html;
 }
 
 function drawNames(){
 	var html;
 	var selected;
-	
+
 	// Names
 	getE("nNum").innerHTML = nameJson.length;
 	html = "<tr>"
@@ -107,10 +110,10 @@ function drawNames(){
 		+ "<th class='selectColumn'></th>"
 		+ "<th class='remove'></th>"
 		+ "</tr>";
-		
+
 	for(var i=0;i<nameJson.length;i++){
 		selected = nameJson[i][nameJson[i].length-1];
-		
+
 		html += (selected ? "<tr class='selected'>" : "<tr>")
 			+ "<td class='id'>"+i+"</td>" // ID
 			+ "<td class='mac' contentEditable='true' id='name_"+i+"_mac'>"+esc(nameJson[i][0])+"</td>" // MAC
@@ -124,10 +127,10 @@ function drawNames(){
 			+ "<td class='remove'><button class='red' onclick='remove(2,"+i+")'>X</button></td>" // Remove
 			+ "</tr>";
 	}
-		
+
 	getE("nTable").innerHTML = html;
 }
-				
+
 function scan(type){
 	var cmdStr = "scan "
 		+ (type == 0 ? "aps " : "stations -t "+getE("scanTime").value+"s")
@@ -202,14 +205,14 @@ function save(id){
 		nameJson[id][2] = name;
 		nameJson[id][3] = apbssid;
 		nameJson[id][4] = ch;
-		
+
 		if(nameJson[id][0].length != 17){
 			showMessage("ERROR: MAC invalid");
 			return;
 		}
-		
+
 		getFile("run?cmd=replace name "+id+" -n \""+nameJson[id][2]+"\" -m \""+nameJson[id][0]+"\" -ch "+nameJson[id][4]+" -b \""+nameJson[id][3]+"\" "+(nameJson[id][5] ? "-s" : ""));
-		
+
 		drawNames();
 	}
 }
@@ -218,8 +221,8 @@ function add(type,id){
 	if(nameJson.length >= 25){
 		showMessage("Device Name List is full!");
 		return;
-	}				
-	
+	}
+
 	switch(type){
 		case 0:
 			getFile("run?cmd=add name \""+scanJson.aps[id][0]+"\" -ap "+id);
@@ -238,7 +241,7 @@ function add(type,id){
 			nameJson.push(["00:00:00:00:00:00","","device_"+nameJson.length,"",1,false]);
 			drawNames();
 	}
-	
+
 	drawNames();
 }
 
