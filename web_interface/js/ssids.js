@@ -24,7 +24,6 @@ const draw = () => {
 	`;
 
 	ssidJson.ssids.map((item, i) => {
-
 		html += `
 			<tr>
 				<td class="id">${i}</td>

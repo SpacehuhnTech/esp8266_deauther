@@ -5,9 +5,9 @@ const attackJSON = [
 ];
 
 const draw = () => {
-	getE("deauth").innerHTML = attackJSON[0][0] ? lang("stop") : lang("start");
-	getE("beacon").innerHTML = attackJSON[1][0] ? lang("stop") : lang("start");
-	getE("probe").innerHTML = attackJSON[2][0] ? lang("stop") : lang("start");
+	getE("deauth").innerHTML = lang(attackJSON[0][0] ? "stop" : "start");
+	getE("beacon").innerHTML = lang(attackJSON[1][0] ? "stop" : "start");
+	getE("probe").innerHTML = lang(attackJSON[2][0] ? "stop" : "start");
 
 	getE("deauthTargets").innerHTML = esc(`${attackJSON[0][1]}`);
 	getE("beaconTargets").innerHTML = esc(`${attackJSON[1][1]}`);
@@ -23,12 +23,7 @@ const draw = () => {
 const start = (mode) => {
 	attackJSON[mode][0] = !attackJSON[mode][0];
 
-	getFile(
-		`run?cmd=attack${attackJSON[0][0] ? " -d":""}${attackJSON[1][0] ? " -b":""}${attackJSON[2][0] ? " -p":""}`,
-		() => {
-			draw();
-		}
-	);
+	getFile(`run?cmd=attack${attackJSON[0][0] ? " -d":""}${attackJSON[1][0] ? " -b":""}${attackJSON[2][0] ? " -p":""}`, draw);
 }
 
 const load = () => {

@@ -28,7 +28,7 @@ const convertLineBreaks = str => {
 
 const showMessage = (msg, closeAfter) => {
 	const elmt = getE("error");
-	elmt.innerHTML = `${esc(msg)}<a onclick='closeMessage()' id='closeError'>x</a>`;
+	elmt.innerHTML = `${esc(msg)}<a onclick="closeMessage()" id="closeError">x</a>`;
 
 	elmt.classList.remove("hide");
 	elmt.classList.add("show");
