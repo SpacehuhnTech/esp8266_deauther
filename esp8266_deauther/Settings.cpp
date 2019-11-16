@@ -54,7 +54,6 @@ void Settings::load() {
 
     if (version != VERSION) {
         // reset();
-        copyWebFiles(true);
         version = VERSION;
         changed = true;
     }

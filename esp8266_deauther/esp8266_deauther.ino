@@ -31,7 +31,6 @@ extern "C" {
 #include "Attack.h"
 #include "CLI.h"
 #include "A_config.h"
-#include "webfiles.h"
 
 #include "LED.h"
 
@@ -98,9 +97,6 @@ void setup() {
 
     // set mac for station
     wifi_set_macaddr(STATION_IF, settings.getMacSt());
-
-    // copy web files to SPIFFS
-    copyWebFiles(false);
 
     // load everything else
     names.load();
