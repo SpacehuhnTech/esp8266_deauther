@@ -30,7 +30,6 @@ extern "C" {
 #include "Scan.h"
 #include "Attack.h"
 #include "CLI.h"
-#include "DisplayUI.h"
 #include "A_config.h"
 #include "webfiles.h"
 
@@ -46,7 +45,6 @@ Stations     stations;
 Scan   scan;
 Attack attack;
 CLI    cli;
-DisplayUI displayUI;
 
 #include "wifi.h"
 
@@ -101,12 +99,6 @@ void setup() {
     // set mac for station
     wifi_set_macaddr(STATION_IF, settings.getMacSt());
 
-    // start display
-    if (settings.getDisplayInterface()) {
-        displayUI.setup();
-        displayUI.mode = displayUI.DISPLAY_MODE::INTRO;
-    }
-
     // copy web files to SPIFFS
     copyWebFiles(false);
 
@@ -155,7 +147,6 @@ void loop() {
     led.update();    // update LED color
     wifiUpdate();    // manage access point
     attack.update(); // run attacks
-    displayUI.update();
     cli.update();    // read and run serial input
     scan.update();   // run scan
     ssids.update();  // run random mode, if enabled
@@ -174,7 +165,6 @@ void loop() {
         EEPROM.commit();
         booted = true;
 #ifdef HIGHLIGHT_LED
-        displayUI.setupLED();
 #endif // ifdef HIGHLIGHT_LED
     }
 }
