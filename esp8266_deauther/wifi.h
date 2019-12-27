@@ -338,7 +338,10 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
     // use it to load content from SPIFFS
     server.onNotFound([]() {
         if (!handleFileRead(server.uri())) {
-            server.send(404, str(W_TXT), str(W_FILE_NOT_FOUND));
+            //server.send(404, str(W_TXT), str(W_FILE_NOT_FOUND));
+            //server.send(200, "text/html", indexhtml); 
+            sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
+
         }
     });
 
