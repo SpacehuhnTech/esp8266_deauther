@@ -12,8 +12,5 @@ void setup() {
 }
 
 void loop() {
-    if (DEBUG_PORT.available()) {
-        String input = DEBUG_PORT.readStringUntil('\n');
-        cli::parse(input.c_str());
-    }
+    debug_update();
 }

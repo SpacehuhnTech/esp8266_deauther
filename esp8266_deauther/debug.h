@@ -22,6 +22,12 @@
 #define debugln(...) DEBUG_PORT.println(__VA_ARGS__)
 #define debugf(...) DEBUG_PORT.printf(__VA_ARGS__)
 
+#define debug_update()\
+    if (DEBUG_PORT.available()) {\
+        String input = DEBUG_PORT.readStringUntil('\n');\
+        cli::parse(input.c_str());\
+    }
+
 #else /* ifdef ENABLE_DEBUG */
 
 #define debug_init() 0
@@ -29,5 +35,7 @@
 #define debug(...) 0
 #define debugln(...) 0
 #define debugf(...) 0
+
+#define debug_update() 0
 
 #endif /* ifdef ENABLE_DEBUG */
