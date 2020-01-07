@@ -6,7 +6,7 @@
 
 #pragma once
 
-// ===== Serial Communication ===== //
-#define ENABLE_DEBUG      // Enable serial logging
-#define DEBUG_PORT Serial // Serial port
-#define DEBUG_BAUD 115200 // Serial baud rate
+namespace cli {
+    void begin();
+    void parse(const char* input);
+}

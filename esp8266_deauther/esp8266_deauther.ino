@@ -4,13 +4,16 @@
    Source: github.com/spacehuhn/esp8266_deauther
  */
 
-#include "log.h"
+#include "debug.h"
+#include "cli.h"
 
 void setup() {
-    log_init();
+    debug_init();
 }
 
 void loop() {
-    logln("Hello World!");
-    delay(1000);
+    if (DEBUG_PORT.available()) {
+        String input = DEBUG_PORT.readStringUntil('\n');
+        cli::parse(input.c_str());
+    }
 }
