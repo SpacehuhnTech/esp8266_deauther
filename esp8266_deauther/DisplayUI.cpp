@@ -14,9 +14,7 @@ void DisplayUI::configInit() {
 
     display.setContrast(255);
 
-#ifndef FLIP_DIPLAY
-    display.flipScreenVertically();
-#endif // ifndef FLIP_DIPLAY
+    if (FLIP_DIPLAY) display.flipScreenVertically();
 
     display.clear();
     display.display();
@@ -77,7 +75,7 @@ void DisplayUI::setup() {
             scan.start(SCAN_MODE_SNIFFER, 0, SCAN_MODE_OFF, 0, false, wifi_channel);
             mode = DISPLAY_MODE::PACKETMONITOR;
         });
-        
+
         addMenuNode(&mainMenu, D_CLOCK, [this]() { // PACKET MONITOR
             mode = DISPLAY_MODE::CLOCK;
             display.setFont(ArialMT_Plain_24);
@@ -397,7 +395,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackTimeout() * 1000);
+                             settings.getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // *BEACON 0/0
@@ -410,7 +408,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackTimeout() * 1000);
+                             settings.getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // *PROBE 0/0
@@ -423,7 +421,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackTimeout() * 1000);
+                             settings.getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // START
@@ -432,7 +430,7 @@ void DisplayUI::setup() {
         }, [this]() {
             if (attack.isRunning()) attack.stop();
             else attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                              settings.getAttackTimeout() * 1000);
+                              settings.getAttackSettings().timeout * 1000);
         });
     });
 
@@ -463,7 +461,7 @@ void DisplayUI::update() {
 
     draw();
 
-    uint32_t timeout = settings.getDisplayTimeout() * 1000;
+    uint32_t timeout = settings.getDisplaySettings().timeout * 1000;
 
     if (currentTime > timeout) {
         if (!tempOff) {
@@ -504,7 +502,7 @@ void DisplayUI::setupButtons() {
     // === BUTTON UP === //
     up->setOnClicked([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
 
         if (!tempOff) {
@@ -521,7 +519,7 @@ void DisplayUI::setupButtons() {
 
     up->setOnHolding([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {                 // when in menu, go up or down with cursor
@@ -538,7 +536,7 @@ void DisplayUI::setupButtons() {
     // === BUTTON DOWN === //
     down->setOnClicked([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {                 // when in menu, go up or down with cursor
@@ -554,7 +552,7 @@ void DisplayUI::setupButtons() {
 
     down->setOnHolding([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {                 // when in menu, go up or down with cursor
@@ -562,9 +560,9 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = 0;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel - 1);
-            } 
-            
-            else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+            }
+
+            else if (mode == DISPLAY_MODE::CLOCK) { // when in packet monitor, change channel
                 setTime(clockHour, clockMinute - 10, clockSecond);
             }
         }
@@ -573,35 +571,35 @@ void DisplayUI::setupButtons() {
     // === BUTTON A === //
     a->setOnClicked([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             switch (mode) {
-            case DISPLAY_MODE::MENU:
+                case DISPLAY_MODE::MENU:
 
-                if (currentMenu->list->get(currentMenu->selected).click) {
-                    currentMenu->list->get(currentMenu->selected).click();
-                }
-                break;
+                    if (currentMenu->list->get(currentMenu->selected).click) {
+                        currentMenu->list->get(currentMenu->selected).click();
+                    }
+                    break;
 
-            case DISPLAY_MODE::PACKETMONITOR:
-            case DISPLAY_MODE::LOADSCAN:
-                scan.stop();
-                mode = DISPLAY_MODE::MENU;
-                break;
+                case DISPLAY_MODE::PACKETMONITOR:
+                case DISPLAY_MODE::LOADSCAN:
+                    scan.stop();
+                    mode = DISPLAY_MODE::MENU;
+                    break;
 
-            case DISPLAY_MODE::CLOCK:
-                mode = DISPLAY_MODE::MENU;
-                display.setFont(DejaVu_Sans_Mono_12);
-                display.setTextAlignment(TEXT_ALIGN_LEFT);
-                break;
+                case DISPLAY_MODE::CLOCK:
+                    mode = DISPLAY_MODE::MENU;
+                    display.setFont(DejaVu_Sans_Mono_12);
+                    display.setTextAlignment(TEXT_ALIGN_LEFT);
+                    break;
             }
         }
     });
 
     a->setOnHolding([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             if (mode == DISPLAY_MODE::MENU) {
@@ -615,25 +613,25 @@ void DisplayUI::setupButtons() {
     // === BUTTON B === //
     b->setOnClicked([this]() {
         scrollCounter = 0;
-        scrollTime = currentTime;
+        scrollTime    = currentTime;
         buttonTime    = currentTime;
         if (!tempOff) {
             switch (mode) {
-            case DISPLAY_MODE::MENU:
-                goBack();
-                break;
+                case DISPLAY_MODE::MENU:
+                    goBack();
+                    break;
 
-            case DISPLAY_MODE::PACKETMONITOR:
-            case DISPLAY_MODE::LOADSCAN:
-                scan.stop();
-                mode = DISPLAY_MODE::MENU;
-                break;
+                case DISPLAY_MODE::PACKETMONITOR:
+                case DISPLAY_MODE::LOADSCAN:
+                    scan.stop();
+                    mode = DISPLAY_MODE::MENU;
+                    break;
 
-            case DISPLAY_MODE::CLOCK:
-                mode = DISPLAY_MODE::MENU;
-                display.setFont(DejaVu_Sans_Mono_12);
-                display.setTextAlignment(TEXT_ALIGN_LEFT);
-                break;
+                case DISPLAY_MODE::CLOCK:
+                    mode = DISPLAY_MODE::MENU;
+                    display.setFont(DejaVu_Sans_Mono_12);
+                    display.setTextAlignment(TEXT_ALIGN_LEFT);
+                    break;
             }
         }
     });
@@ -658,31 +656,31 @@ void DisplayUI::draw() {
         }
 
         switch (mode) {
-        case DISPLAY_MODE::BUTTON_TEST:
-            drawButtonTest();
-            break;
+            case DISPLAY_MODE::BUTTON_TEST:
+                drawButtonTest();
+                break;
 
-        case DISPLAY_MODE::MENU:
-            drawMenu();
-            break;
+            case DISPLAY_MODE::MENU:
+                drawMenu();
+                break;
 
-        case DISPLAY_MODE::LOADSCAN:
-            drawLoadingScan();
-            break;
+            case DISPLAY_MODE::LOADSCAN:
+                drawLoadingScan();
+                break;
 
-        case DISPLAY_MODE::PACKETMONITOR:
-            drawPacketMonitor();
-            break;
+            case DISPLAY_MODE::PACKETMONITOR:
+                drawPacketMonitor();
+                break;
 
-        case DISPLAY_MODE::INTRO:
-            if (currentTime - startTime >= screenIntroTime) {
-                mode = DISPLAY_MODE::MENU;
-            }
-            drawIntro();
-            break;
-        case DISPLAY_MODE::CLOCK:
-            drawClock();
-            break;
+            case DISPLAY_MODE::INTRO:
+                if (currentTime - startTime >= screenIntroTime) {
+                    mode = DISPLAY_MODE::MENU;
+                }
+                drawIntro();
+                break;
+            case DISPLAY_MODE::CLOCK:
+                drawClock();
+                break;
         }
 
         updateSuffix();
@@ -714,12 +712,12 @@ void DisplayUI::drawMenu() {
         if ((currentMenu->selected == i) && (tmpLen >= maxLen)) {
             tmp = tmp + tmp;
             tmp = tmp.substring(scrollCounter, scrollCounter + maxLen - 1);
-            
-            if ((scrollCounter > 0 && scrollTime < currentTime - scrollSpeed) || (scrollCounter == 0 && scrollTime < currentTime - scrollSpeed * 4)){
-              scrollTime = currentTime;
-              scrollCounter++;
+
+            if (((scrollCounter > 0) && (scrollTime < currentTime - scrollSpeed)) || ((scrollCounter == 0) && (scrollTime < currentTime - scrollSpeed * 4))) {
+                scrollTime = currentTime;
+                scrollCounter++;
             }
-            
+
             if (scrollCounter > tmpLen) scrollCounter = 0;
         }
 
@@ -752,22 +750,23 @@ void DisplayUI::drawPacketMonitor() {
     drawString(0, 0, headline);
 
     if (scan.getMaxPacket() > 0) {
-      int i = 0;
-      int x = 0;
-      int y = 0;
-      while(i < SCAN_PACKET_LIST_SIZE && x < screenWidth){
-        y = (sreenHeight-1) - (scan.getPackets(i) * scale);
-        i++;
+        int i = 0;
+        int x = 0;
+        int y = 0;
 
-        //Serial.printf("%d,%d -> %d,%d\n", x, (sreenHeight-1), x, y);
-        drawLine(x, (sreenHeight-1), x, y);
-        x++;
+        while (i < SCAN_PACKET_LIST_SIZE && x < screenWidth) {
+            y = (sreenHeight-1) - (scan.getPackets(i) * scale);
+            i++;
 
-        //Serial.printf("%d,%d -> %d,%d\n", x, (sreenHeight-1), x, y);
-        drawLine(x, (sreenHeight-1), x, y);
-        x++;
-      }
-      //Serial.println("---------");
+            // Serial.printf("%d,%d -> %d,%d\n", x, (sreenHeight-1), x, y);
+            drawLine(x, (sreenHeight-1), x, y);
+            x++;
+
+            // Serial.printf("%d,%d -> %d,%d\n", x, (sreenHeight-1), x, y);
+            drawLine(x, (sreenHeight-1), x, y);
+            x++;
+        }
+        // Serial.println("---------");
     }
 }
 
@@ -776,7 +775,7 @@ void DisplayUI::drawIntro() {
     drawString(1, center(str(D_INTRO_1), maxLen));
     drawString(2, center(str(D_INTRO_2), maxLen));
     drawString(3, center(str(D_INTRO_3), maxLen));
-    drawString(4, center(settings.getVersion(), maxLen));
+    drawString(4, center(DEAUTHER_VERSION, maxLen));
 }
 
 void DisplayUI::drawClock() {

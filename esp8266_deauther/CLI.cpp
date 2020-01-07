@@ -14,6 +14,7 @@ CLI::~CLI() {}
 
 void CLI::load() {
     String defaultValue = str(CLI_DEFAULT_AUTOSTART);
+
     checkFile(execPath, defaultValue);
     execFile(execPath);
 }
@@ -223,7 +224,7 @@ void CLI::runCommand(String input) {
         return;
     }
 
-    if (settings.getSerialEcho()) {
+    if (settings.getCLISettings().serial_echo) {
         // print command
         prnt(CLI_INPUT_PREFIX);
         prntln(input);
@@ -621,13 +622,13 @@ void CLI::runCommand(String input) {
         if (list->size() == 3) { // Todo: check if -f or filename
             if (eqlsCMD(1, CLI_SSID)) load ? ssids.load(list->get(2)) : ssids.save(true, list->get(2));
             else if (eqlsCMD(1, CLI_NAME)) load ? names.load(list->get(2)) : names.save(true, list->get(2));
-            else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load(list->get(2)) : settings.save(true, list->get(2));
+            // else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load(list->get(2)) : settings.save(true, list->get(2));
             else parameterError(list->get(1));
         } else {
-            if (eqlsCMD(1, CLI_SSID)) load ? ssids.load() : ssids.save(false);
-            else if (eqlsCMD(1, CLI_NAME)) load ? names.load() : names.save(false);
-            else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load() : settings.save(false);
-            else if ((eqlsCMD(1, CLI_SCAN) || eqlsCMD(1, CLI_AP) || eqlsCMD(1, CLI_STATION)) && !load) scan.save(false);
+            if (eqlsCMD(1, CLI_SSID)) load ? ssids.load() : ssids.save(true);
+            else if (eqlsCMD(1, CLI_NAME)) load ? names.load() : names.save(true);
+            else if (eqlsCMD(1, CLI_SETTING)) load ? settings.load() : settings.save(true);
+            else if ((eqlsCMD(1, CLI_SCAN) || eqlsCMD(1, CLI_AP) || eqlsCMD(1, CLI_STATION)) && !load) scan.save(true);
             else parameterError(list->get(1));
         }
     }
@@ -652,7 +653,7 @@ void CLI::runCommand(String input) {
         bool deauthAll   = false;
         bool probe       = false;
         bool output      = true;
-        uint32_t timeout = settings.getAttackTimeout() * 1000;
+        uint32_t timeout = settings.getAttackSettings().timeout * 1000;
 
         for (int i = 1; i < list->size(); i++) {
             if (eqlsCMD(i, CLI_BEACON)) beacon = true;
@@ -672,13 +673,133 @@ void CLI::runCommand(String input) {
 
     // ===== GET/SET ===== //
     // get <setting>
-    else if (eqlsCMD(0, CLI_GET) && (list->size() == 2)) {
-        prntln(settings.get(list->get(1).c_str()));
+    else if (eqlsCMD(0, CLI_GET) /*&& (list->size() == 2)*/) {
+        String _tmp     = list->get(1);
+        const char* str = _tmp.c_str();
+
+        if (eqls(str, "settings")) settings.print();
+
+        // Version
+        else if (eqls(str, S_JSON_VERSION)) prntln(DEAUTHER_VERSION);
+        else if (eqls(str, S_JSON_AUTOSAVE)) prntln(settings.getAutosaveSettings().enabled);
+        else if (eqls(str, S_JSON_AUTOSAVETIME)) prntln(settings.getAutosaveSettings().time);
+
+        // Attack
+        else if (eqls(str, S_JSON_BEACONCHANNEL)) prntln((int)settings.getAttackSettings().attack_all_ch);
+        else if (eqls(str, S_JSON_RANDOMTX)) prntln(settings.getAttackSettings().random_tx);
+        else if (eqls(str, S_JSON_ATTACKTIMEOUT)) prntln(settings.getAttackSettings().timeout);
+        else if (eqls(str, S_JSON_DEAUTHSPERTARGET)) prntln(settings.getAttackSettings().deauths_per_target);
+        else if (eqls(str, S_JSON_DEAUTHREASON)) prntln(settings.getAttackSettings().deauth_reason);
+        else if (eqls(str, S_JSON_BEACONINTERVAL)) prntln((bool)settings.getAttackSettings().beacon_interval);
+        else if (eqls(str, S_JSON_PROBESPERSSID)) prntln(settings.getAttackSettings().probe_frames_per_ssid);
+
+        // WiFi
+        else if (eqls(str, S_JSON_CHANNEL)) prntln(settings.getWifiSettings().channel);
+        else if (eqls(str, S_JSON_MACST)) prntln(macToStr(settings.getWifiSettings().mac_st));
+        else if (eqls(str, S_JSON_MACAP)) prntln(macToStr(settings.getWifiSettings().mac_ap));
+
+        // Sniffer
+        else if (eqls(str, S_JSON_CHTIME)) prntln(settings.getSnifferSettings().channel_time);
+        else if (eqls(str, S_JSON_MIN_DEAUTHS)) prntln(settings.getSnifferSettings().min_deauth_frames);
+
+        // AP
+        else if (eqls(str, S_JSON_SSID)) prntln(settings.getAccessPointSettings().ssid);
+        else if (eqls(str, S_JSON_PASSWORD)) prntln(settings.getAccessPointSettings().password);
+        else if (eqls(str, S_JSON_HIDDEN)) prntln(settings.getAccessPointSettings().hidden);
+        else if (eqls(str, S_JSON_IP)) prntln(settings.getAccessPointSettings().ip);
+
+        // Web
+        else if (eqls(str, S_JSON_WEBINTERFACE)) prntln(settings.getWebSettings().enabled);
+        else if (eqls(str, S_JSON_CAPTIVEPORTAL)) prntln(settings.getWebSettings().captive_portal);
+        else if (eqls(str, S_JSON_WEB_SPIFFS)) prntln(settings.getWebSettings().use_spiffs);
+        else if (eqls(str, S_JSON_LANG)) prntln(settings.getWebSettings().lang, 3);
+
+        // CLI
+        else if (eqls(str, S_JSON_SERIALINTERFACE)) prntln(settings.getCLISettings().enabled);
+        else if (eqls(str, S_JSON_SERIAL_ECHO)) prntln(settings.getCLISettings().serial_echo);
+
+        // LED
+        else if (eqls(str, S_JSON_LEDENABLED)) prntln(settings.getLEDSettings().enabled);
+
+        // Display
+        else if (eqls(str, S_JSON_DISPLAYINTERFACE)) prntln(settings.getDisplaySettings().enabled);
+        else if (eqls(str, S_JSON_DISPLAY_TIMEOUT)) prntln(settings.getDisplaySettings().timeout);
+
+        else {
+            prnt(_tmp);
+            prntln(" setting not found");
+        }
     }
 
     // set <setting> <value>
     else if (eqlsCMD(0, CLI_SET) && (list->size() == 3)) {
-        settings.set(list->get(1).c_str(), list->get(2));
+        String _tmp     = list->get(1);
+        const char* str = _tmp.c_str();
+
+        String   strVal      = list->get(2);
+        bool     boolVal     = s2b(strVal);
+        int      intVal      = strVal.toInt();
+        uint32_t unsignedVal = intVal < 0 ? 0 : (uint32_t)intVal;
+
+        settings_t newSettings = settings.getAllSettings();
+
+        // Autosave
+        if (eqls(str, S_JSON_AUTOSAVE)) newSettings.autosave.enabled = boolVal;
+        else if (eqls(str, S_JSON_AUTOSAVETIME)) newSettings.autosave.time = unsignedVal;
+
+        // Attack
+        else if (eqls(str, S_JSON_BEACONCHANNEL)) newSettings.attack.attack_all_ch = boolVal;
+        else if (eqls(str, S_JSON_RANDOMTX)) newSettings.attack.random_tx = boolVal;
+        else if (eqls(str, S_JSON_ATTACKTIMEOUT)) newSettings.attack.timeout = unsignedVal;
+        else if (eqls(str, S_JSON_DEAUTHSPERTARGET)) newSettings.attack.deauths_per_target = unsignedVal;
+        else if (eqls(str, S_JSON_DEAUTHREASON)) newSettings.attack.deauth_reason = unsignedVal;
+        else if (eqls(str, S_JSON_BEACONINTERVAL)) newSettings.attack.beacon_interval = (beacon_interval_t)boolVal;
+        else if (eqls(str, S_JSON_PROBESPERSSID)) newSettings.attack.probe_frames_per_ssid = unsignedVal;
+
+        // WiFi
+        else if (eqls(str, S_JSON_CHANNEL)) newSettings.wifi.channel = unsignedVal;
+        else if (eqls(str, S_JSON_MACST)) strToMac(strVal, newSettings.wifi.mac_st);
+        else if (eqls(str, S_JSON_MACAP)) strToMac(strVal, newSettings.wifi.mac_ap);
+
+        // Sniffer
+        else if (eqls(str, S_JSON_CHTIME)) newSettings.sniffer.channel_time = unsignedVal;
+        else if (eqls(str, S_JSON_MIN_DEAUTHS)) newSettings.sniffer.min_deauth_frames = unsignedVal;
+
+        // AP
+        else if (eqls(str, S_JSON_SSID)) strncpy(newSettings.ap.ssid, strVal.c_str(), 32);
+        else if (eqls(str, S_JSON_PASSWORD)) strncpy(newSettings.ap.password, strVal.c_str(), 64);
+        else if (eqls(str, S_JSON_HIDDEN)) newSettings.ap.hidden = boolVal;
+        else if (eqls(str, S_JSON_IP)) strToIP(strVal, newSettings.ap.ip);
+
+        // Web
+        else if (eqls(str, S_JSON_WEBINTERFACE)) newSettings.web.enabled = boolVal;
+        else if (eqls(str, S_JSON_CAPTIVEPORTAL)) newSettings.web.captive_portal = boolVal;
+        else if (eqls(str, S_JSON_WEB_SPIFFS)) newSettings.web.use_spiffs = boolVal;
+        else if (eqls(str, S_JSON_LANG)) strncpy(newSettings.web.lang, strVal.c_str(), 3);
+
+        // CLI
+        else if (eqls(str, S_JSON_SERIALINTERFACE)) newSettings.cli.enabled = boolVal;
+        else if (eqls(str, S_JSON_SERIAL_ECHO)) newSettings.cli.serial_echo = boolVal;
+
+        // LED
+        else if (eqls(str, S_JSON_LEDENABLED)) newSettings.led.enabled = boolVal;
+
+        // Display
+        else if (eqls(str, S_JSON_DISPLAYINTERFACE)) newSettings.display.enabled = boolVal;
+        else if (eqls(str, S_JSON_DISPLAY_TIMEOUT)) newSettings.display.timeout = unsignedVal;
+
+        else {
+            prnt(str);
+            prntln(" not found");
+            return;
+        }
+
+        prnt("Set ");
+        prnt(str);
+        prnt(" = ");
+        prntln(strVal);
+
+        settings.setAllSettings(newSettings);
     }
 
     // ====== CHICKEN ===== //
@@ -689,7 +810,7 @@ void CLI::runCommand(String input) {
     // ===== STOP ===== //
     // stop [<mode>]
     else if (eqlsCMD(0, CLI_STOP)) {
-        led.setMode(led.LED_MODE::IDLE, true);
+        led.setMode(IDLE, true);
 
         if ((list->size() >= 2) && !(eqlsCMD(1, CLI_ALL))) {
             for (int i = 1; i < list->size(); i++) {
@@ -716,7 +837,7 @@ void CLI::runCommand(String input) {
         prntln(String(s));
 
         prnt(CLI_SYSTEM_CHANNEL);
-        prntln(settings.getChannel());
+        prntln(settings.getWifiSettings().channel);
 
         uint8_t mac[6];
 
@@ -891,7 +1012,7 @@ void CLI::runCommand(String input) {
     else if (eqlsCMD(0, CLI_INFO)) {
         prntln(CLI_INFO_HEADER);
         prnt(CLI_INFO_SOFTWARE);
-        prntln(settings.getVersion());
+        prntln(DEAUTHER_VERSION);
         prntln(CLI_INFO_COPYRIGHT);
         prntln(CLI_INFO_LICENSE);
         prntln(CLI_INFO_ADDON);
@@ -961,40 +1082,6 @@ void CLI::runCommand(String input) {
         }
     }
 
-    // ===== LED ===== //
-    // led <r> <g> <b> [<brightness>]
-    else if ((list->size() >= 4) && (list->size() <= 5) && eqlsCMD(0, CLI_LED)) {
-        if (list->size() == 4) {
-            led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), true);
-        } else {
-            led.setColor(list->get(1).toInt(), list->get(2).toInt(), list->get(3).toInt(), list->get(4).toInt(), true);
-        }
-    }
-
-    // led <#rrggbb> [<brightness>]
-    else if ((list->size() >= 2) && (list->size() <= 3) &&
-             eqlsCMD(0, CLI_LED) && (list->get(1).charAt(0) == HASHSIGN)) {
-        uint8_t c[3];
-        strToColor(list->get(1), c);
-
-        if (list->size() == 2) {
-            led.setColor(c[0], c[1], c[2], true);
-        } else {
-            led.setColor(c[0], c[1], c[2], list->get(2).toInt(), true);
-        }
-    }
-
-    // led <enable/disable>
-    else if ((list->size() == 2) && eqlsCMD(0, CLI_LED)) {
-        if (eqlsCMD(1, CLI_ENABLE)) {
-            led.tempEnable();
-        } else if (eqlsCMD(1, CLI_DISABLE)) {
-            led.tempDisable();
-        } else {
-            parameterError(list->get(1));
-        }
-    }
-
     // ===== DELAY ===== //
     else if ((list->size() == 2) && eqlsCMD(0, CLI_DELAY)) {
         uint32_t endTime = currentTime + getTime(list->get(1));
@@ -1010,7 +1097,7 @@ void CLI::runCommand(String input) {
             led.update();    // update LED color
 
             // auto-save
-            if (settings.getAutosave() && (currentTime - autosaveTime > settings.getAutosaveTime())) {
+            if (settings.getAutosaveSettings().enabled && (currentTime - autosaveTime > settings.getAutosaveSettings().time)) {
                 autosaveTime = currentTime;
                 names.save(false);
                 ssids.save(false);
@@ -1099,11 +1186,11 @@ void CLI::runCommand(String input) {
     // startap [-p <path][-s <ssid>] [-pswd <password>] [-ch <channel>] [-h] [-cp]
     else if (eqlsCMD(0, CLI_STARTAP)) {
         String path          = String(F("/web"));
-        String ssid          = settings.getSSID();
-        String password      = settings.getPassword();
+        String ssid          = settings.getAccessPointSettings().ssid;
+        String password      = settings.getAccessPointSettings().password;
         int    ch            = wifi_channel;
-        bool   hidden        = settings.getHidden();
-        bool   captivePortal = settings.getCaptivePortal();
+        bool   hidden        = settings.getAccessPointSettings().hidden;
+        bool   captivePortal = settings.getWebSettings().captive_portal;
 
         for (int i = 1; i < list->size(); i++) {
             if (eqlsCMD(i, CLI_PATH)) {

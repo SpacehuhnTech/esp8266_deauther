@@ -321,7 +321,16 @@ button:hover, input[type="submit"]:hover, input[type="reset"]:hover, input[type=
 button:active, input[type="submit"]:active, input[type="reset"]:active, input[type="button"]:active {
 	transform: scale(.93);
 }
-
+button:disabled:hover, input[type="submit"]:disabled:hover, input[type="reset"]:disabled:hover, input[type="button"]:disabled:hover {
+	background: white;
+	cursor: not-allowed;
+	opacity: 0.40;
+	filter: alpha(opacity=40);
+	transform: scale(1);
+}
+button::-moz-focus-inner {
+  border: 0;
+}
 /* Forms */
 input[type="email"], input[type="number"], input[type="search"], input[type="text"], input[type="tel"], input[type="url"], input[type="password"], textarea, select {
 	height: 38px;
