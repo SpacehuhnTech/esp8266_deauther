@@ -4,14 +4,8 @@
    Source: github.com/spacehuhn/esp8266_deauther
  */
 
-#include "debug.h"
-#include "cli.h"
+#pragma once
 
-void setup() {
-    debug_init();
-    cli::begin();
-}
-
-void loop() {
-    debug_update();
+namespace scan {
+    void searchAPs();
 }
