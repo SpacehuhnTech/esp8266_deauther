@@ -16,6 +16,87 @@ extern "C" {
 
 namespace scan {
     // ===== PRIVATE ===== //
+    typedef struct station_t {
+        uint8_t    mac[6];
+        uint8_t    associate[6];
+        uint32_t   pkts;
+        uint8_t    channel;
+        station_t* next;
+    } station_t;
+
+    typedef struct station_list_t {
+        station_t* begin;
+        station_t* end;
+        uint8_t    size;
+    } station_list_t;
+
+    station_list_t station_list { NULL, NULL };
+
+    void station_print(station_t* s) {
+        debug(strh::mac(s->mac));
+        debug(' ');
+        debug(strh::mac(s->associate));
+        debug(' ');
+        debug(s->pkts);
+        debug(' ');
+        debug(s->channel);
+        debugln();
+    }
+
+    station_t* station_create(uint8_t* mac, uint8_t* associate, uint8_t channel) {
+        station_t* s = (station_t*)malloc(sizeof(station_t));
+
+        memcpy(s->mac, mac, 6);
+        memcpy(s->associate, associate, 6);
+        s->pkts    = 1;
+        s->channel = channel;
+        s->next    = NULL;
+
+        station_print(s);
+
+        return s;
+    }
+
+    void station_list_push(station_list_t* list, station_t* s) {
+        if (list->size < 255) {
+            if (!list->begin) {
+                list->begin = s;
+                list->end   = s;
+            } else {
+                list->end->next = s;
+                list->end       = s;
+            }
+            ++(list->size);
+        }
+    }
+
+    bool station_list_contains(station_list_t* list, uint8_t* mac) {
+        station_t* h = list->begin;
+
+        while (h) {
+            if (memcmp(h->mac, mac, 6) == 0) {
+                ++(h->pkts);
+                return true;
+            }
+            h = h->next;
+        }
+        return false;
+    }
+
+    void station_list_clear(station_list_t* list) {
+        station_t* h = list->begin;
+
+        while (h) {
+            station_t* to_delete = h;
+            h = h->next;
+            free(to_delete);
+        }
+
+        list->begin = NULL;
+        list->end   = NULL;
+        list->size  = 0;
+    }
+
     String encstr(int enc) {
         switch (enc) {
             case ENC_TYPE_NONE:
@@ -55,7 +136,7 @@ namespace scan {
         return true;
     }
 
-    void sniffer(uint8_t* buf, uint16_t len) {
+    void station_sniffer(uint8_t* buf, uint16_t len) {
         // drop frames that are too short to have a valid MAC header
         if (len < 28) return;
 
@@ -78,26 +159,21 @@ namespace scan {
         if (is_multicast(macA) || is_multicast(macB)) return;
 
         // probe request to broadcast = unassociated station
-        if ((buf[12] == 0x40) && is_broadcast(macA)) {
-            debug("Unassociated ");
-            debugln(strh::mac(macB));
-        }
         // no broadcast address = associated station
-        else if (!is_broadcast(macA) && !is_broadcast(macB)) {
-            debug("Associated ");
-            debug(strh::mac(macA));
-            debug(" ");
-            debugln(strh::mac(macB));
+        if (((buf[12] == 0x40) && is_broadcast(macA)) ||
+            (!is_broadcast(macA) && !is_broadcast(macB))) {
+            if (!station_list_contains(&station_list, macB)) {
+                station_t* s = station_create(macB, macA, wifi_get_channel());
+                station_list_push(&station_list, s);
+            }
         }
     }
 
     // ===== PUBLIC ===== //
-    void begin() {
-        wifi_set_promiscuous_rx_cb(sniffer);
-    }
+    void begin() {}
 
     void searchAPs() {
-        debug("Scanning for access points");
+        debug("Scanning for access points (WiFi networks)");
 
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
@@ -119,8 +195,6 @@ namespace scan {
             debug(n);
             debugln(" networks");
 
-            debug('>');
-            debug(' ');
             debug(strh::right(2, "ID"));
             debug(' ');
             debug(strh::left(34, "SSID (Network Name)"));
@@ -136,11 +210,9 @@ namespace scan {
             debug(strh::left(8, "Vendor"));
             debugln();
 
-            debugln("===============================================================================");
+            debugln("=============================================================================");
 
             for (int i = 0; i < n; ++i) {
-                debug(/*__SELECTED__*/ ' ');
-                debug(' ');
                 debug(strh::right(2, String(i)));
                 debug(' ');
 
@@ -164,7 +236,6 @@ namespace scan {
             }
 
             debugln("===============================================================================");
-            debugln(">    = Selected");
             debugln("Ch   = Channel (2.4 GHz WiFi)");
             debugln("RSSI = Signal strengh");
             debugln("WPA* = WPA & WPA2 auto mode");
@@ -173,14 +244,16 @@ namespace scan {
     }
 
     void searchSTs() {
+        station_list_clear(&station_list);
+
+        wifi_set_promiscuous_rx_cb(station_sniffer);
         wifi_promiscuous_enable(true);
 
-        debugln("Scanning for stations...");
+        debugln("Scanning for stations (WiFi client devices)");
 
         for (uint8_t i = 1; i<=14; ++i) {
-            debug("On channel ");
-            debug(i);
-            debugln(":");
+            debug("Channel ");
+            debugln(i);
 
             wifi_set_channel(i);
             unsigned long start_time = millis();
@@ -191,8 +264,17 @@ namespace scan {
             debugln();
         }
 
-        debugln("FINISHED!");
-
         wifi_promiscuous_enable(false);
+
+        debug("Found ");
+        debug(station_list.size);
+        debugln(" stations:");
+
+        station_t* h = station_list.begin;
+
+        while (h) {
+            station_print(h);
+            h = h->next;
+        }
     }
 }
