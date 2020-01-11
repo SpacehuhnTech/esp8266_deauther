@@ -18,9 +18,8 @@ namespace scan {
     // ===== PRIVATE ===== //
     typedef struct station_t {
         uint8_t    mac[6];
-        uint8_t    associate[6];
+        int8_t     ap;
         uint32_t   pkts;
-        uint8_t    channel;
         station_t* next;
     } station_t;
 
@@ -30,29 +29,16 @@ namespace scan {
         uint8_t    size;
     } station_list_t;
 
+    int ap_scan_results = 0;
     station_list_t station_list { NULL, NULL };
 
-    void station_print(station_t* s) {
-        debug(strh::mac(s->mac));
-        debug(' ');
-        debug(strh::mac(s->associate));
-        debug(' ');
-        debug(s->pkts);
-        debug(' ');
-        debug(s->channel);
-        debugln();
-    }
-
-    station_t* station_create(uint8_t* mac, uint8_t* associate, uint8_t channel) {
+    station_t* station_create(uint8_t* mac, int8_t ap_id) {
         station_t* s = (station_t*)malloc(sizeof(station_t));
 
         memcpy(s->mac, mac, 6);
-        memcpy(s->associate, associate, 6);
-        s->pkts    = 1;
-        s->channel = channel;
-        s->next    = NULL;
-
-        station_print(s);
+        s->ap   = ap_id;
+        s->pkts = 1;
+        s->next = NULL;
 
         return s;
     }
@@ -70,11 +56,12 @@ namespace scan {
         }
     }
 
-    bool station_list_contains(station_list_t* list, uint8_t* mac) {
+    bool station_list_search(station_list_t* list, uint8_t* mac, int8_t ap) {
         station_t* h = list->begin;
 
         while (h) {
             if (memcmp(h->mac, mac, 6) == 0) {
+                if ((ap >= 0) && (h->ap < 0)) h->ap = ap;
                 ++(h->pkts);
                 return true;
             }
@@ -95,6 +82,15 @@ namespace scan {
         list->begin = NULL;
         list->end   = NULL;
         list->size  = 0;
+    }
+
+    int8_t ap_search(uint8_t* mac) {
+        for (int8_t i = 0; i<ap_scan_results && i < 127; ++i) {
+            if (memcmp(WiFi.BSSID(i), mac, 6) == 0) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     String encstr(int enc) {
@@ -149,21 +145,38 @@ namespace scan {
         // only allow data frames
         // if(buf[12] != 0x08 && buf[12] != 0x88) return;
 
-        uint8_t* macA = &buf[16]; // To (Receiver)
-        uint8_t* macB = &buf[22]; // From (Transmitter)
+        uint8_t* mac_a = &buf[16]; // To (Receiver)
+        uint8_t* mac_b = &buf[22]; // From (Transmitter)
 
         // drop frames with corrupted MAC addresses
-        if (!is_valid(macA) || !is_valid(macB)) return;
+        if (!is_valid(mac_a) || !is_valid(mac_b)) return;
 
-        // drop frames containing mulicast addresses
-        if (is_multicast(macA) || is_multicast(macB)) return;
+        // frame from AP to station
+        if (!is_multicast(mac_a)) {
+            int8_t ap_id = ap_search(mac_b);
+            if (ap_id >= 0) {
+                if (!station_list_search(&station_list, mac_a, ap_id)) {
+                    station_t* s = station_create(mac_a, ap_id);
 
-        // probe request to broadcast = unassociated station
-        // no broadcast address = associated station
-        if (((buf[12] == 0x40) && is_broadcast(macA)) ||
-            (!is_broadcast(macA) && !is_broadcast(macB))) {
-            if (!station_list_contains(&station_list, macB)) {
-                station_t* s = station_create(macB, macA, wifi_get_channel());
+                    debug("Found ");
+                    debug(strh::mac(s->mac));
+                    debug(" connected to \"");
+                    debug(WiFi.SSID(s->ap));
+                    debugln('"');
+
+                    station_list_push(&station_list, s);
+                }
+            }
+        }
+        // broadcast probe request from unassociated station
+        else if (buf[12] == 0x40) {
+            if (!station_list_search(&station_list, mac_b, -1)) {
+                station_t* s = station_create(mac_b, -1);
+
+                debug("Found ");
+                debug(strh::mac(s->mac));
+                debugln();
+
                 station_list_push(&station_list, s);
             }
         }
@@ -180,10 +193,10 @@ namespace scan {
 
         WiFi.scanNetworks(true, true);
 
-        int n = WiFi.scanComplete();
+        int n = ap_scan_results = WiFi.scanComplete();
 
         for (int i = 0; i<100 && n < 0; ++i) {
-            n = WiFi.scanComplete();
+            n = ap_scan_results = WiFi.scanComplete();
             debug(".");
             delay(200);
         }
@@ -195,7 +208,7 @@ namespace scan {
             debug(n);
             debugln(" networks");
 
-            debug(strh::right(2, "ID"));
+            debug(strh::right(3, "ID"));
             debug(' ');
             debug(strh::left(34, "SSID (Network Name)"));
             debug(' ');
@@ -205,15 +218,15 @@ namespace scan {
             debug(' ');
             debug(strh::right(2, "Ch"));
             debug(' ');
-            debug(strh::left(17, "MAC Address"));
+            debug(strh::left(17, "MAC-Address"));
             debug(' ');
             debug(strh::left(8, "Vendor"));
             debugln();
 
-            debugln("=============================================================================");
+            debugln("==============================================================================");
 
             for (int i = 0; i < n; ++i) {
-                debug(strh::right(2, String(i)));
+                debug(strh::right(3, String(i)));
                 debug(' ');
 
                 if (WiFi.isHidden(i)) {
@@ -235,11 +248,11 @@ namespace scan {
                 debugln();
             }
 
-            debugln("===============================================================================");
-            debugln("Ch   = Channel (2.4 GHz WiFi)");
+            debugln("================================================================================");
+            debugln("Ch   = 2.4 GHz Channel");
             debugln("RSSI = Signal strengh");
             debugln("WPA* = WPA & WPA2 auto mode");
-            debugln("===============================================================================");
+            debugln("================================================================================");
         }
     }
 
@@ -261,7 +274,6 @@ namespace scan {
             while (millis() - start_time < 3000) {
                 delay(1);
             }
-            debugln();
         }
 
         wifi_promiscuous_enable(false);
@@ -270,11 +282,46 @@ namespace scan {
         debug(station_list.size);
         debugln(" stations:");
 
+        debug(strh::right(3, "ID"));
+        debug(' ');
+        debug(strh::left(17, "MAC-Address"));
+        debug(' ');
+        debug(strh::left(34, "Connected to"));
+        debug(' ');
+        debug(strh::right(4, "Pkts"));
+        debug(' ');
+        debug(strh::left(8, "Vendor"));
+        debugln();
+
+        debugln("======================================================================");
+
+        int i        = 0;
         station_t* h = station_list.begin;
 
         while (h) {
-            station_print(h);
+            debug(strh::right(3, String(i)));
+            debug(' ');
+            debug(strh::mac(h->mac));
+            debug(' ');
+
+            if (h->ap>=0) {
+                debug(strh::left(34, '"' + WiFi.SSID(h->ap) + '"'));
+            } else {
+                debug(strh::left(34, "*Unassociated*"));
+            }
+
+            debug(' ');
+            debug(strh::right(4, String(h->pkts)));
+            debug(' ');
+            debug(strh::left(8, "EXAMPLE3"));
+            debugln();
+
             h = h->next;
+            ++i;
         }
+
+        debugln("======================================================================");
+        debugln("Pkts = Recorded Packets");
+        debugln("======================================================================");
     }
 }
