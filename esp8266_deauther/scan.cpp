@@ -256,7 +256,10 @@ namespace scan {
         }
     }
 
-    void searchSTs() {
+    void searchSTs(unsigned long time) {
+        if (time < 1000) time = 1000;
+        unsigned long channel_time = time/14;
+
         station_list_clear(&station_list);
 
         wifi_set_promiscuous_rx_cb(station_sniffer);
@@ -271,7 +274,7 @@ namespace scan {
             wifi_set_channel(i);
             unsigned long start_time = millis();
 
-            while (millis() - start_time < 3000) {
+            while (millis() - start_time < channel_time) {
                 delay(1);
             }
         }

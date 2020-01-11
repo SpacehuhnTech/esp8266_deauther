@@ -34,10 +34,18 @@ namespace cli {
             debugln(cli.toString());
         });
 
-        cli.addCommand("scan", [](cmd* c) {
+        Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
+            Command cmd(c);
+
+            int scan_time = cmd.getArg("t").getValue().toInt();
+            if (scan_time < 0) scan_time = -scan_time;
+
+            scan_time *= 1000;
+
             scan::searchAPs();
-            scan::searchSTs();
+            scan::searchSTs(scan_time);
         });
+        cmd_scan.addArg("t", "14");
     }
 
     void parse(const char* input) {
