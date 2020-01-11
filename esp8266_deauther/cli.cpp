@@ -36,6 +36,7 @@ namespace cli {
 
         cli.addCommand("scan", [](cmd* c) {
             scan::searchAPs();
+            scan::searchSTs();
         });
     }
 

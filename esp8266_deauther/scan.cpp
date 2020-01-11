@@ -10,6 +10,10 @@
 
 #include "ESP8266WiFi.h"
 
+extern "C" {
+#include "user_interface.h"
+}
+
 namespace scan {
     // ===== PRIVATE ===== //
     String encstr(int enc) {
@@ -29,7 +33,69 @@ namespace scan {
         }
     }
 
+    bool is_valid(uint8_t* mac) {
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (mac[i] != 0x00) return true;
+        }
+
+        return false;
+    }
+
+    bool is_multicast(uint8_t* mac) {
+        return (mac[0] & 0x01) == 1;
+    }
+
+    bool is_broadcast(uint8_t* mac) {
+        if (!is_multicast(mac)) return false;
+
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (mac[i] != 0xFF) return false;
+        }
+
+        return true;
+    }
+
+    void sniffer(uint8_t* buf, uint16_t len) {
+        // drop frames that are too short to have a valid MAC header
+        if (len < 28) return;
+
+        // drop deauthentication and disassociation frames
+        if ((buf[12] == 0xc0) || (buf[12] == 0xa0)) return;
+
+        // drop beacon and probe response frames
+        if ((buf[12] == 0x80) || (buf[12] == 0x50)) return;
+
+        // only allow data frames
+        // if(buf[12] != 0x08 && buf[12] != 0x88) return;
+
+        uint8_t* macA = &buf[16]; // To (Receiver)
+        uint8_t* macB = &buf[22]; // From (Transmitter)
+
+        // drop frames with corrupted MAC addresses
+        if (!is_valid(macA) || !is_valid(macB)) return;
+
+        // drop frames containing mulicast addresses
+        if (is_multicast(macA) || is_multicast(macB)) return;
+
+        // probe request to broadcast = unassociated station
+        if ((buf[12] == 0x40) && is_broadcast(macA)) {
+            debug("Unassociated ");
+            debugln(strh::mac(macB));
+        }
+        // no broadcast address = associated station
+        else if (!is_broadcast(macA) && !is_broadcast(macB)) {
+            debug("Associated ");
+            debug(strh::mac(macA));
+            debug(" ");
+            debugln(strh::mac(macB));
+        }
+    }
+
     // ===== PUBLIC ===== //
+    void begin() {
+        wifi_set_promiscuous_rx_cb(sniffer);
+    }
+
     void searchAPs() {
         debug("Scanning for access points");
 
@@ -104,5 +170,29 @@ namespace scan {
             debugln("WPA* = WPA & WPA2 auto mode");
             debugln("===============================================================================");
         }
+    }
+
+    void searchSTs() {
+        wifi_promiscuous_enable(true);
+
+        debugln("Scanning for stations...");
+
+        for (uint8_t i = 1; i<=14; ++i) {
+            debug("On channel ");
+            debug(i);
+            debugln(":");
+
+            wifi_set_channel(i);
+            unsigned long start_time = millis();
+
+            while (millis() - start_time < 3000) {
+                delay(1);
+            }
+            debugln();
+        }
+
+        debugln("FINISHED!");
+
+        wifi_promiscuous_enable(false);
     }
 }

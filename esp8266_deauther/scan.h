@@ -7,5 +7,8 @@
 #pragma once
 
 namespace scan {
+    void begin();
+
     void searchAPs();
+    void searchSTs();
 }

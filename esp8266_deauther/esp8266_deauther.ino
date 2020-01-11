@@ -6,9 +6,11 @@
 
 #include "debug.h"
 #include "cli.h"
+#include "scan.h"
 
 void setup() {
     debug_init();
+    scan::begin();
     cli::begin();
 }
 
