@@ -35,7 +35,7 @@ namespace cli {
             debugln(res);
         });
 
-        cli.addCommand("help", [](cmd* c) {
+        Command cmd_help = cli.addCommand("help", [](cmd* c) {
             debugln(cli.toString());
         });
 
@@ -68,7 +68,13 @@ namespace cli {
             scan::searchAPs();
             scan::searchSTs(scan_time);
         });
-        cmd_scan.addArg("t", "14");
+        cmd_scan.addArg("t/ime", "14");
+        cmd_scan.setDescription("-t or -time: station scan time in seconds (min=1,default=14)");
+
+        Command cmd_results = cli.addCommand("results", [](cmd* c) {
+            scan::printResults();
+        });
+        cmd_results.setDescription("Prints list of scan results [access points (networks) and stations (clients)]");
     }
 
     void parse(const char* input) {

@@ -193,20 +193,24 @@ namespace scan {
 
         WiFi.scanNetworks(true, true);
 
-        int n = ap_scan_results = WiFi.scanComplete();
+        ap_scan_results = WiFi.scanComplete();
 
-        for (int i = 0; i<100 && n < 0; ++i) {
-            n = ap_scan_results = WiFi.scanComplete();
+        for (int i = 0; i<100 && ap_scan_results < 0; ++i) {
+            ap_scan_results = WiFi.scanComplete();
             debug(".");
             delay(200);
         }
 
-        if (n == 0) {
+        printAPs();
+    }
+
+    void printAPs() {
+        if (ap_scan_results == 0) {
             debugln("No networks found");
         } else {
             debug("Found ");
-            debug(n);
-            debugln(" networks");
+            debug(ap_scan_results);
+            debugln(" access points (networks):");
 
             debug(strh::right(3, "ID"));
             debug(' ');
@@ -225,7 +229,7 @@ namespace scan {
 
             debugln("==============================================================================");
 
-            for (int i = 0; i < n; ++i) {
+            for (int i = 0; i < ap_scan_results; ++i) {
                 debug(strh::right(3, String(i)));
                 debug(' ');
 
@@ -281,9 +285,13 @@ namespace scan {
 
         wifi_promiscuous_enable(false);
 
+        printStations();
+    }
+
+    void printStations() {
         debug("Found ");
         debug(station_list.size);
-        debugln(" stations:");
+        debugln(" stations (clients):");
 
         debug(strh::right(3, "ID"));
         debug(' ');
@@ -326,5 +334,10 @@ namespace scan {
         debugln("======================================================================");
         debugln("Pkts = Recorded Packets");
         debugln("======================================================================");
+    }
+
+    void printResults() {
+        printAPs();
+        printStations();
     }
 }

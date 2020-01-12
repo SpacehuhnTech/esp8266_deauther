@@ -11,4 +11,8 @@ namespace scan {
 
     void searchAPs();
     void searchSTs(unsigned long time);
+
+    void printAPs();
+    void printStations();
+    void printResults();
 }
