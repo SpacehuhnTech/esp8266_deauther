@@ -12,7 +12,7 @@ namespace scan {
     void begin();
 
     void searchAPs();
-    void searchSTs(unsigned long time, uint8_t channel);
+    void searchSTs(unsigned long time, uint16_t channels);
 
     void printAPs();
     void printSTs();

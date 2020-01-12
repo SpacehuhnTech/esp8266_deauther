@@ -69,34 +69,49 @@ namespace cli {
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
-            String mode = cmd.getArg("m").getValue();
-
+            // Parse scan time
             int scan_time = cmd.getArg("t").getValue().toInt();
             if (scan_time < 0) scan_time = -scan_time;
-
-            int channel = cmd.getArg("ch").getValue().toInt();
-
             scan_time *= 1000;
 
+            // Parse channels
+            String channels      = cmd.getArg("ch").getValue();
+            uint16_t channel_reg = 0;
+            String tmp_ch;
+
+            for (int i = 0; i<=channels.length(); ++i) {
+                if ((i == channels.length()) || (channels.charAt(i) == ',')) {
+                    int channel_num = tmp_ch.toInt();
+                    if ((channel_num >= 1) && (channel_num <= 14)) {
+                        channel_reg |= 1 << (channel_num-1);
+                        tmp_ch       = String();
+                    }
+                } else {
+                    tmp_ch += channels.charAt(i);
+                }
+            }
+
+            // Parse mode
+            String mode = cmd.getArg("m").getValue();
             if (mode == "ap") {
                 scan::searchAPs();
             } else if (mode == "st") {
-                scan::searchSTs(scan_time, (uint8_t)channel);
+                scan::searchSTs(scan_time, channel_reg);
             } else if (mode == "ap+st") {
                 scan::searchAPs();
-                scan::searchSTs(scan_time, (uint8_t)channel);
+                scan::searchSTs(scan_time, channel_reg);
             } else {
                 debugln("ERROR: Invalid scan mode");
             }
         });
         cmd_scan.addArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
-        cmd_scan.addArg("ch/annel", "0");
+        cmd_scan.addArg("ch/annel", "1,2,3,4,5,6,7,8,9,10,11,12,13,14");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
             "  -m or -mode: scan mode [ap,st,ap+st] (default=ap+st)\n"
             "  -t or -time: station scan time in seconds [>1] (default=14)\n"
-            "  -ch or -channel: 2.4 GHz channel [0-14] (0=all channels) (default=0)"
+            "  -ch or -channel: 2.4 GHz channels for station scan [1-14] (default=all)"
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {

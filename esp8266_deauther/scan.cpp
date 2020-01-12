@@ -204,33 +204,36 @@ namespace scan {
         printAPs();
     }
 
-    void searchSTs(unsigned long time, uint8_t channel) {
+    void searchSTs(unsigned long time, uint16_t channels) {
+        uint8_t num_of_channels = 0;
+
+        for (uint8_t i = 0; i<14; ++i) {
+            num_of_channels += ((channels >> i) & 0x01);
+        }
+
+        if (num_of_channels == 0) return;
+
         station_list_clear(&station_list);
 
         wifi_set_promiscuous_rx_cb(station_sniffer);
         wifi_promiscuous_enable(true);
 
-        debugln("Scanning for stations (WiFi client devices)");
+        if (time < 1000) time = 1000;
+        unsigned long channel_time = time/num_of_channels;
 
-        if ((channel >= 1) && (channel <= 14)) {
-            debug("Channel ");
-            debugln(channel);
+        debug("Scanning for stations (WiFi client devices) on ");
+        debug(num_of_channels);
+        debug(" different channels");
+        debug(" in ");
+        debug(time/1000);
+        debugln(" seconds");
 
-            wifi_set_channel(channel);
-            unsigned long start_time = millis();
-
-            while (millis() - start_time < time) {
-                delay(1);
-            }
-        } else {
-            if (time < 1000) time = 1000;
-            unsigned long channel_time = time/14;
-
-            for (uint8_t i = 1; i<=14; ++i) {
+        for (uint8_t i = 0; i<14; ++i) {
+            if ((channels >> i) & 0x01) {
                 debug("Channel ");
-                debugln(i);
+                debugln(i+1);
 
-                wifi_set_channel(i);
+                wifi_set_channel(i+1);
                 unsigned long start_time = millis();
 
                 while (millis() - start_time < channel_time) {
