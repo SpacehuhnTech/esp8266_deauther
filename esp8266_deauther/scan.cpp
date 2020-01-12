@@ -204,9 +204,37 @@ namespace scan {
         printAPs();
     }
 
+    void searchSTs(unsigned long time) {
+        if (time < 1000) time = 1000;
+        unsigned long channel_time = time/14;
+
+        station_list_clear(&station_list);
+
+        wifi_set_promiscuous_rx_cb(station_sniffer);
+        wifi_promiscuous_enable(true);
+
+        debugln("Scanning for stations (WiFi client devices)");
+
+        for (uint8_t i = 1; i<=14; ++i) {
+            debug("Channel ");
+            debugln(i);
+
+            wifi_set_channel(i);
+            unsigned long start_time = millis();
+
+            while (millis() - start_time < channel_time) {
+                delay(1);
+            }
+        }
+
+        wifi_promiscuous_enable(false);
+
+        printStations();
+    }
+
     void printAPs() {
         if (ap_scan_results == 0) {
-            debugln("No networks found");
+            debugln("No access points (networks) found");
         } else {
             debug("Found ");
             debug(ap_scan_results);
@@ -260,80 +288,56 @@ namespace scan {
         }
     }
 
-    void searchSTs(unsigned long time) {
-        if (time < 1000) time = 1000;
-        unsigned long channel_time = time/14;
-
-        station_list_clear(&station_list);
-
-        wifi_set_promiscuous_rx_cb(station_sniffer);
-        wifi_promiscuous_enable(true);
-
-        debugln("Scanning for stations (WiFi client devices)");
-
-        for (uint8_t i = 1; i<=14; ++i) {
-            debug("Channel ");
-            debugln(i);
-
-            wifi_set_channel(i);
-            unsigned long start_time = millis();
-
-            while (millis() - start_time < channel_time) {
-                delay(1);
-            }
-        }
-
-        wifi_promiscuous_enable(false);
-
-        printStations();
-    }
-
     void printStations() {
-        debug("Found ");
-        debug(station_list.size);
-        debugln(" stations (clients):");
+        if (station_list.size == 0) {
+            debugln("No stations (clients) found");
+        } else {
+            debug("Found ");
+            debug(station_list.size);
+            debugln(" stations (clients):");
 
-        debug(strh::right(3, "ID"));
-        debug(' ');
-        debug(strh::left(17, "MAC-Address"));
-        debug(' ');
-        debug(strh::left(34, "Connected to"));
-        debug(' ');
-        debug(strh::right(4, "Pkts"));
-        debug(' ');
-        debug(strh::left(8, "Vendor"));
-        debugln();
-
-        debugln("======================================================================");
-
-        int i        = 0;
-        station_t* h = station_list.begin;
-
-        while (h) {
-            debug(strh::right(3, String(i)));
+            debug(strh::right(3, "ID"));
             debug(' ');
-            debug(strh::mac(h->mac));
+            debug(strh::left(17, "MAC-Address"));
             debug(' ');
-
-            if (h->ap>=0) {
-                debug(strh::left(34, '"' + WiFi.SSID(h->ap) + '"'));
-            } else {
-                debug(strh::left(34, "*Unassociated*"));
-            }
-
+            debug(strh::left(34, "Connected to"));
             debug(' ');
-            debug(strh::right(4, String(h->pkts)));
+            debug(strh::right(4, "Pkts"));
             debug(' ');
-            debug(strh::left(8, "EXAMPLE3"));
+            debug(strh::left(8, "Vendor"));
             debugln();
 
-            h = h->next;
-            ++i;
-        }
+            debugln("======================================================================");
 
-        debugln("======================================================================");
-        debugln("Pkts = Recorded Packets");
-        debugln("======================================================================");
+            int i        = 0;
+            station_t* h = station_list.begin;
+
+            while (h) {
+                debug(strh::right(3, String(i)));
+                debug(' ');
+                debug(strh::mac(h->mac));
+                debug(' ');
+
+                if (h->ap>=0) {
+                    debug(strh::left(34, '"' + WiFi.SSID(h->ap) + '"'));
+                } else {
+                    debug(strh::left(34, "*Unassociated*"));
+                }
+
+                debug(' ');
+                debug(strh::right(4, String(h->pkts)));
+                debug(' ');
+                debug(strh::left(8, "EXAMPLE3"));
+                debugln();
+
+                h = h->next;
+                ++i;
+            }
+
+            debugln("======================================================================");
+            debugln("Pkts = Recorded Packets");
+            debugln("======================================================================");
+        }
     }
 
     void printResults() {
