@@ -204,10 +204,7 @@ namespace scan {
         printAPs();
     }
 
-    void searchSTs(unsigned long time) {
-        if (time < 1000) time = 1000;
-        unsigned long channel_time = time/14;
-
+    void searchSTs(unsigned long time, uint8_t channel) {
         station_list_clear(&station_list);
 
         wifi_set_promiscuous_rx_cb(station_sniffer);
@@ -215,21 +212,36 @@ namespace scan {
 
         debugln("Scanning for stations (WiFi client devices)");
 
-        for (uint8_t i = 1; i<=14; ++i) {
+        if ((channel >= 1) && (channel <= 14)) {
             debug("Channel ");
-            debugln(i);
+            debugln(channel);
 
-            wifi_set_channel(i);
+            wifi_set_channel(channel);
             unsigned long start_time = millis();
 
-            while (millis() - start_time < channel_time) {
+            while (millis() - start_time < time) {
                 delay(1);
+            }
+        } else {
+            if (time < 1000) time = 1000;
+            unsigned long channel_time = time/14;
+
+            for (uint8_t i = 1; i<=14; ++i) {
+                debug("Channel ");
+                debugln(i);
+
+                wifi_set_channel(i);
+                unsigned long start_time = millis();
+
+                while (millis() - start_time < channel_time) {
+                    delay(1);
+                }
             }
         }
 
         wifi_promiscuous_enable(false);
 
-        printStations();
+        printSTs();
     }
 
     void printAPs() {
@@ -288,7 +300,7 @@ namespace scan {
         }
     }
 
-    void printStations() {
+    void printSTs() {
         if (station_list.size == 0) {
             debugln("No stations (clients) found");
         } else {
@@ -342,6 +354,6 @@ namespace scan {
 
     void printResults() {
         printAPs();
-        printStations();
+        printSTs();
     }
 }

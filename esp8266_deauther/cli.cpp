@@ -72,15 +72,19 @@ namespace cli {
             int scan_time = cmd.getArg("t").getValue().toInt();
             if (scan_time < 0) scan_time = -scan_time;
 
+            int channel = cmd.getArg("ch").getValue().toInt();
+
             scan_time *= 1000;
 
             scan::searchAPs();
-            scan::searchSTs(scan_time);
+            scan::searchSTs(scan_time, (uint8_t)channel);
         });
         cmd_scan.addArg("t/ime", "14");
+        cmd_scan.addArg("ch/annel", "0");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
-            "  -t or -time: station (client) scan time in seconds (min=1,default=14)"
+            "  -t or -time: station (client) scan time in seconds (min=1,default=14)\n"
+            "  -ch or -channel: 2.4 GHz channel (1-14,default=0) (0=hop through all channels)"
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {

@@ -6,13 +6,15 @@
 
 #pragma once
 
+#include <stdint.h>
+
 namespace scan {
     void begin();
 
     void searchAPs();
-    void searchSTs(unsigned long time);
+    void searchSTs(unsigned long time, uint8_t channel);
 
     void printAPs();
-    void printStations();
+    void printSTs();
     void printResults();
 }
