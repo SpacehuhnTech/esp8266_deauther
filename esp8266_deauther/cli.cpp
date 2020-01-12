@@ -10,6 +10,11 @@
 #include "debug.h"     // debug(), debugln(), debugf()
 #include "scan.h"
 
+// ram usage
+extern "C" {
+  #include "user_interface.h"
+}
+
 namespace cli {
     // ===== PRIVATE ===== //
     SimpleCLI cli; // !< Instance of SimpleCLI library
@@ -32,6 +37,24 @@ namespace cli {
 
         cli.addCommand("help", [](cmd* c) {
             debugln(cli.toString());
+        });
+
+        Command cmd_ram = cli.addCommand("ram", [](cmd* c) {
+            debug("Size: ");
+            debug(81920);
+            debugln(" byte");
+
+            debug("Used: ");
+            debug(81920 - system_get_free_heap_size());
+            debug(" byte (");
+            debug(100 - (system_get_free_heap_size() / (81920 / 100)));
+            debugln("%)");
+
+            debug("Free: ");
+            debug(system_get_free_heap_size());
+            debug(" byte (");
+            debug(system_get_free_heap_size() / (81920 / 100));
+            debugln("%)");
         });
 
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
