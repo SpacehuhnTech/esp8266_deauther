@@ -69,6 +69,8 @@ namespace cli {
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
+            String mode = cmd.getArg("m").getValue();
+
             int scan_time = cmd.getArg("t").getValue().toInt();
             if (scan_time < 0) scan_time = -scan_time;
 
@@ -76,15 +78,25 @@ namespace cli {
 
             scan_time *= 1000;
 
-            scan::searchAPs();
-            scan::searchSTs(scan_time, (uint8_t)channel);
+            if (mode == "ap") {
+                scan::searchAPs();
+            } else if (mode == "st") {
+                scan::searchSTs(scan_time, (uint8_t)channel);
+            } else if (mode == "ap+st") {
+                scan::searchAPs();
+                scan::searchSTs(scan_time, (uint8_t)channel);
+            } else {
+                debugln("ERROR: Invalid scan mode");
+            }
         });
+        cmd_scan.addArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
         cmd_scan.addArg("ch/annel", "0");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
-            "  -t or -time: station (client) scan time in seconds (min=1,default=14)\n"
-            "  -ch or -channel: 2.4 GHz channel (1-14,default=0) (0=hop through all channels)"
+            "  -m or -mode: scan mode [ap,st,ap+st] (default=ap+st)\n"
+            "  -t or -time: station scan time in seconds [>1] (default=14)\n"
+            "  -ch or -channel: 2.4 GHz channel [0-14] (0=all channels) (default=0)"
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
