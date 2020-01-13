@@ -230,8 +230,17 @@ namespace scan {
 
         for (uint8_t i = 0; i<14; ++i) {
             if ((channels >> i) & 0x01) {
-                debug("Channel ");
-                debugln(i+1);
+                debug("Sniffing on channel ");
+                debug(i+1);
+                debug(" for ");
+
+                if (channel_time < 1000) {
+                    debug(channel_time);
+                    debugln(" milliseconds");
+                } else {
+                    debug(channel_time/1000);
+                    debugln(" seconds");
+                }
 
                 wifi_set_channel(i+1);
                 unsigned long start_time = millis();
