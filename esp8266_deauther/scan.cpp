@@ -7,6 +7,7 @@
 #include "scan.h"
 #include "debug.h"
 #include "strh.h"
+#include "vendor.h"
 
 #include "ESP8266WiFi.h"
 
@@ -242,7 +243,7 @@ namespace scan {
                 debug(' ');
                 debug(strh::left(17, strh::mac(h->bssid)));
                 debug(' ');
-                debug(strh::left(8, "EXAMPLE3"));
+                debug(strh::left(8, vendor::find(h->bssid)));
                 debugln();
 
                 h = h->next;
@@ -295,7 +296,7 @@ namespace scan {
                 debug(' ');
                 debug(strh::right(4, String(h->pkts)));
                 debug(' ');
-                debug(strh::left(8, "EXAMPLE3"));
+                debug(strh::left(8, vendor::find(h->mac)));
                 debugln();
 
                 h = h->next;
