@@ -28,6 +28,14 @@
         cli::parse(input.c_str());\
     }
 
+static inline bool debug_busy_wait() {
+    if (DEBUG_PORT.available()) {
+        String input = DEBUG_PORT.readStringUntil('\n');
+        return input == "stop" || input == "exit";
+    }
+    return false;
+}
+
 #else /* ifdef ENABLE_DEBUG */
 
 #define debug_init() 0
@@ -37,5 +45,9 @@
 #define debugf(...) 0
 
 #define debug_update() 0
+
+static inline bool debug_busy_wait() {
+    return false;
+}
 
 #endif /* ifdef ENABLE_DEBUG */

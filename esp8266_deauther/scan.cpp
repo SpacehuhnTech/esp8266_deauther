@@ -169,7 +169,9 @@ namespace scan {
         debug(time/1000);
         debugln(" seconds");
 
-        for (uint8_t i = 0; i<14; ++i) {
+        bool stop = false;
+
+        for (uint8_t i = 0; i<14 && !stop; ++i) {
             if ((channels >> i) & 0x01) {
                 debug("Sniffing on channel ");
                 debug(i+1);
@@ -186,8 +188,9 @@ namespace scan {
                 wifi_set_channel(i+1);
                 unsigned long start_time = millis();
 
-                while (millis() - start_time < channel_time) {
+                while (!stop && millis() - start_time < channel_time) {
                     delay(1);
+                    stop = debug_busy_wait();
                 }
             }
         }
