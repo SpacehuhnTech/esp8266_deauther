@@ -12,86 +12,15 @@
 
 extern "C" {
 #include "user_interface.h"
+#include "scan_types.h"
 }
 
 namespace scan {
     // ===== PRIVATE ===== //
-    typedef struct station_t {
-        uint8_t    mac[6];
-        int8_t     ap;
-        uint32_t   pkts;
-        station_t* next;
-    } station_t;
-
-    typedef struct station_list_t {
-        station_t* begin;
-        station_t* end;
-        uint8_t    size;
-    } station_list_t;
-
     int ap_scan_results = 0;
-    station_list_t station_list { NULL, NULL };
 
-    station_t* station_create(uint8_t* mac, int8_t ap_id) {
-        station_t* s = (station_t*)malloc(sizeof(station_t));
-
-        memcpy(s->mac, mac, 6);
-        s->ap   = ap_id;
-        s->pkts = 1;
-        s->next = NULL;
-
-        return s;
-    }
-
-    void station_list_push(station_list_t* list, station_t* s) {
-        if (list->size < 255) {
-            if (!list->begin) {
-                list->begin = s;
-                list->end   = s;
-            } else {
-                list->end->next = s;
-                list->end       = s;
-            }
-            ++(list->size);
-        }
-    }
-
-    bool station_list_search(station_list_t* list, uint8_t* mac, int8_t ap) {
-        station_t* h = list->begin;
-
-        while (h) {
-            if (memcmp(h->mac, mac, 6) == 0) {
-                if ((ap >= 0) && (h->ap < 0)) h->ap = ap;
-                ++(h->pkts);
-                return true;
-            }
-            h = h->next;
-        }
-        return false;
-    }
-
-    void station_list_clear(station_list_t* list) {
-        station_t* h = list->begin;
-
-        while (h) {
-            station_t* to_delete = h;
-            h = h->next;
-            free(to_delete);
-        }
-
-        list->begin = NULL;
-        list->end   = NULL;
-        list->size  = 0;
-    }
-
-    int8_t ap_search(uint8_t* mac) {
-        for (int8_t i = 0; i<ap_scan_results && i < 127; ++i) {
-            if (memcmp(WiFi.BSSID(i), mac, 6) == 0) {
-                return i;
-            }
-        }
-        return -1;
-    }
+    ap_list_t ap_list { NULL, NULL, 0 };
+    station_list_t station_list { NULL, NULL, 0 };
 
     String encstr(int enc) {
         switch (enc) {
@@ -153,15 +82,15 @@ namespace scan {
 
         // frame from AP to station
         if (!is_multicast(mac_a)) {
-            int8_t ap_id = ap_search(mac_b);
-            if (ap_id >= 0) {
-                if (!station_list_search(&station_list, mac_a, ap_id)) {
-                    station_t* s = station_create(mac_a, ap_id);
+            ap_t* ap = ap_list_search(&ap_list, mac_b);
+            if (ap) {
+                if (!station_list_search(&station_list, mac_a, ap)) {
+                    station_t* s = station_create(mac_a, ap);
 
                     debug("Found ");
                     debug(strh::mac(s->mac));
                     debug(" connected to \"");
-                    debug(WiFi.SSID(s->ap));
+                    debug(ap->ssid);
                     debugln('"');
 
                     station_list_push(&station_list, s);
@@ -170,8 +99,8 @@ namespace scan {
         }
         // broadcast probe request from unassociated station
         else if (buf[12] == 0x40) {
-            if (!station_list_search(&station_list, mac_b, -1)) {
-                station_t* s = station_create(mac_b, -1);
+            if (!station_list_search(&station_list, mac_b, NULL)) {
+                station_t* s = station_create(mac_b, NULL);
 
                 debug("Found ");
                 debug(strh::mac(s->mac));
@@ -186,10 +115,13 @@ namespace scan {
     void begin() {}
 
     void searchAPs() {
-        debug("Scanning for access points (WiFi networks)");
+        debugln("Scanning for access points (WiFi networks)");
 
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
+
+        station_list_clear(&station_list);
+        ap_list_clear(&ap_list);
 
         WiFi.scanNetworks(true, true);
 
@@ -197,9 +129,15 @@ namespace scan {
 
         for (int i = 0; i<100 && ap_scan_results < 0; ++i) {
             ap_scan_results = WiFi.scanComplete();
-            debug(".");
-            delay(200);
+            delay(100);
         }
+
+        for (int i = 0; i < ap_scan_results; ++i) {
+            ap_t* ap = ap_create(WiFi.SSID(i).c_str(), WiFi.BSSID(i), WiFi.RSSI(i), WiFi.encryptionType(i), WiFi.channel(i));
+            ap_list_push(&ap_list, ap);
+        }
+
+        WiFi.scanDelete();
 
         printAPs();
     }
@@ -281,27 +219,31 @@ namespace scan {
 
             debugln("==============================================================================");
 
-            for (int i = 0; i < ap_scan_results; ++i) {
+            ap_t* h = ap_list.begin;
+
+            for (int i = 0; i<ap_list.size && h; ++i) {
                 debug(strh::right(3, String(i)));
                 debug(' ');
 
-                if (WiFi.isHidden(i)) {
-                    debug(strh::left(34, "*HIDDEN-NETWORK*"));
+                if (strlen(h->ssid) > 0) {
+                    debug(strh::left(34, '"' + String(h->ssid) + '"'));
                 } else {
-                    debug(strh::left(34, '"' + WiFi.SSID(i) + '"'));
+                    debug(strh::left(34, "*HIDDEN-NETWORK*"));
                 }
 
                 debug(' ');
-                debug(strh::right(4, String(WiFi.RSSI(i))));
+                debug(strh::right(4, String(h->rssi)));
                 debug(' ');
-                debug(strh::left(4, encstr(WiFi.encryptionType(i))));
+                debug(strh::left(4, encstr(h->enc)));
                 debug(' ');
-                debug(strh::right(2, String(WiFi.channel(i))));
+                debug(strh::right(2, String(h->ch)));
                 debug(' ');
-                debug(strh::left(17, strh::mac(WiFi.BSSID(i))));
+                debug(strh::left(17, strh::mac(h->bssid)));
                 debug(' ');
                 debug(strh::left(8, "EXAMPLE3"));
                 debugln();
+
+                h = h->next;
             }
 
             debugln("================================================================================");
@@ -342,8 +284,8 @@ namespace scan {
                 debug(strh::mac(h->mac));
                 debug(' ');
 
-                if (h->ap>=0) {
-                    debug(strh::left(34, '"' + WiFi.SSID(h->ap) + '"'));
+                if (h->ap) {
+                    debug(strh::left(34, '"' + String(h->ap->ssid) + '"'));
                 } else {
                     debug(strh::left(34, "*Unassociated*"));
                 }
