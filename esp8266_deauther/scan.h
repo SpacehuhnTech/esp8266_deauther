@@ -9,7 +9,8 @@
 #include <stdint.h>
 
 namespace scan {
-    void begin();
+    void clearAPresults();
+    void clearSTresults();
 
     void searchAPs();
     void searchSTs(unsigned long time, uint16_t channels);

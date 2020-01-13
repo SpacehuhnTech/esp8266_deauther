@@ -17,8 +17,6 @@ extern "C" {
 
 namespace scan {
     // ===== PRIVATE ===== //
-    int ap_scan_results = 0;
-
     ap_list_t ap_list { NULL, NULL, 0 };
     station_list_t station_list { NULL, NULL, 0 };
 
@@ -112,7 +110,14 @@ namespace scan {
     }
 
     // ===== PUBLIC ===== //
-    void begin() {}
+    void clearAPresults() {
+        station_list_clear(&station_list);
+        ap_list_clear(&ap_list);
+    }
+
+    void clearSTresults() {
+        station_list_clear(&station_list);
+    }
 
     void searchAPs() {
         debugln("Scanning for access points (WiFi networks)");
@@ -120,21 +125,20 @@ namespace scan {
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
 
-        station_list_clear(&station_list);
-        ap_list_clear(&ap_list);
-
         WiFi.scanNetworks(true, true);
 
-        ap_scan_results = WiFi.scanComplete();
+        int n = WiFi.scanComplete();
 
-        for (int i = 0; i<100 && ap_scan_results < 0; ++i) {
-            ap_scan_results = WiFi.scanComplete();
+        for (int i = 0; i<100 && n < 0; ++i) {
+            n = WiFi.scanComplete();
             delay(100);
         }
 
-        for (int i = 0; i < ap_scan_results; ++i) {
-            ap_t* ap = ap_create(WiFi.SSID(i).c_str(), WiFi.BSSID(i), WiFi.RSSI(i), WiFi.encryptionType(i), WiFi.channel(i));
-            ap_list_push(&ap_list, ap);
+        for (int i = 0; i < n; ++i) {
+            if (!ap_list_search(&ap_list, WiFi.BSSID(i))) {
+                ap_t* ap = ap_create(WiFi.SSID(i).c_str(), WiFi.BSSID(i), WiFi.RSSI(i), WiFi.encryptionType(i), WiFi.channel(i));
+                ap_list_push(&ap_list, ap);
+            }
         }
 
         WiFi.scanDelete();
@@ -150,8 +154,6 @@ namespace scan {
         }
 
         if (num_of_channels == 0) return;
-
-        station_list_clear(&station_list);
 
         wifi_set_promiscuous_rx_cb(station_sniffer);
         wifi_promiscuous_enable(true);
@@ -195,11 +197,11 @@ namespace scan {
     }
 
     void printAPs() {
-        if (ap_scan_results == 0) {
+        if (ap_list.size == 0) {
             debugln("No access points (networks) found");
         } else {
             debug("Found ");
-            debug(ap_scan_results);
+            debug(ap_list.size);
             debugln(" access points (networks):");
 
             debug(strh::right(3, "ID"));

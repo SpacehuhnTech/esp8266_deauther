@@ -91,13 +91,26 @@ namespace cli {
                 }
             }
 
+            // Parse retain flag
+            bool retain = cmd.getArg("r").isSet();
+
             // Parse mode
             String mode = cmd.getArg("m").getValue();
             if (mode == "ap") {
+                if (!retain) {
+                    scan::clearAPresults();
+                }
                 scan::searchAPs();
             } else if (mode == "st") {
+                if (!retain) {
+                    scan::clearSTresults();
+                }
                 scan::searchSTs(scan_time, channel_reg);
             } else if (mode == "ap+st") {
+                if (!retain) {
+                    scan::clearAPresults();
+                    scan::clearSTresults();
+                }
                 scan::searchAPs();
                 scan::searchSTs(scan_time, channel_reg);
             } else {
@@ -107,11 +120,13 @@ namespace cli {
         cmd_scan.addArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
         cmd_scan.addArg("ch/annel", "1,2,3,4,5,6,7,8,9,10,11,12,13,14");
+        cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
             "  -m or -mode: scan mode [ap,st,ap+st] (default=ap+st)\n"
             "  -t or -time: station scan time in seconds [>1] (default=14)\n"
-            "  -ch or -channel: 2.4 GHz channels for station scan [1-14] (default=all)"
+            "  -ch or -channel: 2.4 GHz channels for station scan [1-14] (default=all)\n"
+            "  -r or -retain: Keep previous scan results"
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {

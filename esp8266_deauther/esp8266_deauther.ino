@@ -10,7 +10,6 @@
 
 void setup() {
     debug_init();
-    scan::begin();
     cli::begin();
 }
 
