@@ -21,6 +21,8 @@ namespace cli {
 
     // ===== PUBLIC ===== //
     void begin() {
+        debug_init();
+
         cli.setOnError([](cmd_error* e) {
             CommandError cmdError(e); // Create wrapper object
 
@@ -39,6 +41,93 @@ namespace cli {
             debugln(cli.toString());
         });
         cmd_help.setDescription("  Prints the list of commands that you see right now");
+
+        Command cmd_start = cli.addCommand("start", [](cmd* c) {
+            String res;
+            String cmd;
+
+            debugln("Good morning friend.");
+
+            // Command
+            while (!(res == "scan")) {
+                debugln("What can I do for you today?\n"
+                        "Remember that you can always ecape by typing 'exit'\n"
+                        "  scan: Search for WiFi networks and clients");
+                res = read_and_wait();
+                if (res == "exit") {
+                    debugln("Ok byeee");
+                    return;
+                }
+            };
+
+            if (res == "scan") {
+                // Scan mode
+                while (!(res == "ap" || res == "st" || res == "ap+st")) {
+                    debugln("Scan mode\n"
+                            "  ap: Access Points (WiFi networks)\n"
+                            "  st: Stations (WiFi clients)\n"
+                            "  ap+st: Access Points and Stations");
+                    res = read_and_wait();
+                    if (res == "exit") {
+                        debugln("Ok byeee");
+                        return;
+                    }
+                };
+
+                cmd += "scan -m " + res;
+
+                // Scan time and channel(s)
+                if (res != "ap") {
+// Scan time
+                    while (!(res.toInt() > 0)) {
+                        debugln("Scan time\n"
+                                "  >1: Station scan time in seconds");
+                        res = read_and_wait();
+                        if (res == "exit") {
+                            debugln("Ok byeee");
+                            return;
+                        }
+                    };
+                    cmd += " -t " + res;
+
+// Scan on channel(s)
+                    debugln("Scan on channel(s)\n"
+                            "  1-14: WiFi channel(s) to search on (for example: 1,6,11)");
+
+                    res = read_and_wait();
+                    if (res == "exit") {
+                        debugln("Ok byeee");
+                        return;
+                    }
+
+                    cmd += " -ch " + res;
+                }
+
+                // Retain scan results
+                while (!(res == String('y') || res == String('n'))) {
+                    debugln("Retain previous scan results\n"
+                            "  y: Yes\n"
+                            "  n: No");
+                    res = read_and_wait();
+                    if (res == "exit") {
+                        debugln("Ok byeee");
+                        return;
+                    }
+                };
+
+                if (res == String('y')) {
+                    cmd += " -r";
+                }
+            }
+
+            // Result
+            for (int i = 0; i<cmd.length()+2; ++i) debug('#');
+            debugln();
+            debugln("Result:");
+
+            cli::parse(cmd.c_str());
+        });
+        cmd_start.setDescription("  Start a guided tour through the functions of this device");
 
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
             for (uint8_t i = 0; i<100; ++i) {
@@ -141,5 +230,38 @@ namespace cli {
         debugln();
 
         cli.parse(input);
+    }
+
+    bool available() {
+        return debug_available();
+    }
+
+    String read() {
+        String input = debug_read();
+
+        debug("# ");
+        debugln(input);
+
+        return input;
+    }
+
+    String read_and_wait() {
+        while (!debug_available()) delay(1);
+        return read();
+    }
+
+    bool read_exit() {
+        if (debug_available()) {
+            String input = read();
+            return input == "stop" || input == "exit";
+        }
+        return false;
+    }
+
+    void update() {
+        if (debug_available()) {
+            String input = debug_read();
+            cli::parse(input.c_str());
+        }
     }
 }

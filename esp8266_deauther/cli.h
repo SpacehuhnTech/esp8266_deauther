@@ -6,7 +6,16 @@
 
 #pragma once
 
+#include <Arduino.h> // String
+
 namespace cli {
     void begin();
     void parse(const char* input);
+
+    bool available();
+    String read();
+    String read_and_wait();
+    bool read_exit();
+
+    void update();
 }

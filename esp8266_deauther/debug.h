@@ -22,19 +22,8 @@
 #define debugln(...) DEBUG_PORT.println(__VA_ARGS__)
 #define debugf(...) DEBUG_PORT.printf(__VA_ARGS__)
 
-#define debug_update()\
-    if (DEBUG_PORT.available()) {\
-        String input = DEBUG_PORT.readStringUntil('\n');\
-        cli::parse(input.c_str());\
-    }
-
-static inline bool debug_busy_wait() {
-    if (DEBUG_PORT.available()) {
-        String input = DEBUG_PORT.readStringUntil('\n');
-        return input == "stop" || input == "exit";
-    }
-    return false;
-}
+#define debug_available() DEBUG_PORT.available()
+#define debug_read() DEBUG_PORT.readStringUntil('\n')
 
 #else /* ifdef ENABLE_DEBUG */
 
@@ -44,10 +33,7 @@ static inline bool debug_busy_wait() {
 #define debugln(...) 0
 #define debugf(...) 0
 
-#define debug_update() 0
-
-static inline bool debug_busy_wait() {
-    return false;
-}
+#define debug_available() 0
+#define debug_read() ""
 
 #endif /* ifdef ENABLE_DEBUG */

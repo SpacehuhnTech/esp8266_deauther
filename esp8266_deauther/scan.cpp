@@ -8,6 +8,7 @@
 #include "debug.h"
 #include "strh.h"
 #include "vendor.h"
+#include "cli.h"
 
 #include "ESP8266WiFi.h"
 
@@ -190,7 +191,7 @@ namespace scan {
 
                 while (!stop && millis() - start_time < channel_time) {
                     delay(1);
-                    stop = debug_busy_wait();
+                    stop = cli::read_exit();
                 }
             }
         }

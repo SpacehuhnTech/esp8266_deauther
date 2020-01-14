@@ -9,10 +9,9 @@
 #include "scan.h"
 
 void setup() {
-    debug_init();
     cli::begin();
 }
 
 void loop() {
-    debug_update();
+    cli::update();
 }
