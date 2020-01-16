@@ -8,6 +8,10 @@
 
 #include <stdint.h>
 
+extern "C" {
+  #include "scan_types.h"
+}
+
 namespace scan {
     void clearAPresults();
     void clearSTresults();
@@ -18,4 +22,7 @@ namespace scan {
     void printAPs();
     void printSTs();
     void printResults();
+
+    ap_t* getAP(int id);
+    station_t* getStation(int id);
 }

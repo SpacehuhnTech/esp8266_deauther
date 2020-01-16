@@ -4,8 +4,7 @@
    Source: github.com/spacehuhn/esp8266_deauther
  */
 
-#ifndef scan_types_h
-#define scan_types_h
+#pragma once
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -55,5 +54,3 @@ station_t* station_create(uint8_t* mac, ap_t* ap);
 void station_list_push(station_list_t* list, station_t* s);
 bool station_list_search(station_list_t* list, uint8_t* mac, ap_t* ap);
 void station_list_clear(station_list_t* list);
-
-#endif /* ifndef scan_types_h */

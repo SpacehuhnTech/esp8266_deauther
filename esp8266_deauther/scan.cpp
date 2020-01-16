@@ -9,12 +9,12 @@
 #include "strh.h"
 #include "vendor.h"
 #include "cli.h"
+#include "mac.h"
 
-#include "ESP8266WiFi.h"
+#include <ESP8266WiFi.h>
 
 extern "C" {
-#include "user_interface.h"
-#include "scan_types.h"
+  #include "user_interface.h"
 }
 
 namespace scan {
@@ -39,28 +39,6 @@ namespace scan {
         }
     }
 
-    bool is_valid(uint8_t* mac) {
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (mac[i] != 0x00) return true;
-        }
-
-        return false;
-    }
-
-    bool is_multicast(uint8_t* mac) {
-        return (mac[0] & 0x01) == 1;
-    }
-
-    bool is_broadcast(uint8_t* mac) {
-        if (!is_multicast(mac)) return false;
-
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (mac[i] != 0xFF) return false;
-        }
-
-        return true;
-    }
-
     void station_sniffer(uint8_t* buf, uint16_t len) {
         // drop frames that are too short to have a valid MAC header
         if (len < 28) return;
@@ -78,10 +56,10 @@ namespace scan {
         uint8_t* mac_b = &buf[22]; // From (Transmitter)
 
         // drop frames with corrupted MAC addresses
-        if (!is_valid(mac_a) || !is_valid(mac_b)) return;
+        if (!mac::valid(mac_a) || !mac::valid(mac_b)) return;
 
         // frame from AP to station
-        if (!is_multicast(mac_a)) {
+        if (!mac::multicast(mac_a)) {
             ap_t* ap = ap_list_search(&ap_list, mac_b);
             if (ap) {
                 if (!station_list_search(&station_list, mac_a, ap)) {
@@ -316,5 +294,29 @@ namespace scan {
     void printResults() {
         printAPs();
         printSTs();
+    }
+
+    ap_t* getAP(int id) {
+        int   i = 0;
+        ap_t* h = ap_list.begin;
+
+        while (h && i<id) {
+            h = h->next;
+            ++i;
+        }
+
+        return h;
+    }
+
+    station_t* getStation(int id) {
+        int i        = 0;
+        station_t* h = station_list.begin;
+
+        while (h && i<id) {
+            h = h->next;
+            ++i;
+        }
+
+        return h;
     }
 }
