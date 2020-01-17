@@ -13,5 +13,4 @@ namespace strh {
     String right(int len, String str);
     String center(int len, String str);
     String mac(const uint8_t* b);
-    String bytes(int size, const uint8_t* b);
 }

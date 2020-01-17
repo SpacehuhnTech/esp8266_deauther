@@ -46,17 +46,13 @@ namespace strh {
     }
 
     String mac(const uint8_t* b) {
-        return bytes(6, b);
-    }
-
-    String bytes(int size, const uint8_t* b) {
         String str;
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < 6; i++) {
             if (b[i] < 0x10) str += '0';
             str += String(b[i], HEX);
 
-            if (i < size - 1) str += ':';
+            if (i < 5) str += ':';
         }
 
         return str;
