@@ -55,42 +55,4 @@ namespace mac {
             mac[i] = hex_to_int(&str[i*3], 2);
         }
     }
-
-    list_t createList() {
-        list_t l = { NULL, NULL, 0 };
-
-        return l;
-    }
-
-    void push(list_t* list, const uint8_t* mac) {
-        item_t* i = (item_t*)malloc(sizeof(item_t));
-
-        memcpy(i->data, mac, 6);
-        i->next = NULL;
-
-        if (list) {
-            if (!list->begin) {
-                list->begin = i;
-                list->end   = i;
-            } else {
-                list->end->next = i;
-                list->end       = i;
-            }
-            ++(list->size);
-        }
-    }
-
-    void clear(list_t* list) {
-        item_t* h = list->begin;
-
-        while (h) {
-            item_t* to_delete = h;
-            h = h->next;
-            free(to_delete);
-        }
-
-        list->begin = NULL;
-        list->end   = NULL;
-        list->size  = 0;
-    }
 }
