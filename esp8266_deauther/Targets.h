@@ -40,7 +40,10 @@ class Target {
 
     public:
         Target(target_t* ptr);
-        uint8_t* from();
-        uint8_t* to();
-        uint8_t ch();
+
+        uint8_t* from() const;
+        uint8_t* to() const;
+        uint8_t ch() const;
+
+        bool operator==(const Target& t) const;
 };

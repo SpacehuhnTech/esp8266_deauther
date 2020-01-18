@@ -16,25 +16,6 @@ typedef struct target_t {
     target_t* next;
 } target_t;
 
-Target::Target(target_t* ptr) {
-    this->ptr = ptr;
-}
-
-uint8_t* Target::from() {
-    if (ptr) return ptr->from;
-    else return NULL;
-}
-
-uint8_t* Target::to() {
-    if (ptr) return ptr->to;
-    else return NULL;
-}
-
-uint8_t Target::ch() {
-    if (ptr) return ptr->ch;
-    else return 0;
-}
-
 TargetList::~TargetList() {
     h = list_begin;
 
@@ -52,21 +33,37 @@ TargetList::~TargetList() {
 }
 
 void TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
-    target_t* i = (target_t*)malloc(sizeof(target_t));
+    // Create new target
+    target_t* new_target = (target_t*)malloc(sizeof(target_t));
 
-    memcpy(i->from, from, 6);
-    memcpy(i->to, to, 6);
-    i->ch   = ch;
-    i->next = NULL;
+    memcpy(new_target->from, from, 6);
+    memcpy(new_target->to, to, 6);
+    new_target->ch   = ch;
+    new_target->next = NULL;
 
+    // Check if already in list
+    Target t(new_target);
+
+    target_t* h = list_begin;
+
+    while (h) {
+        if (Target(h) == t) {
+            free(new_target);
+            return;
+        }
+        h = h->next;
+    }
+
+    // Push to list
     if (!list_begin) {
-        list_begin = i;
-        list_end   = i;
+        list_begin = new_target;
+        list_end   = new_target;
         h          = list_begin;
     } else {
-        list_end->next = i;
-        list_end       = i;
+        list_end->next = new_target;
+        list_end       = new_target;
     }
+
     ++(list_size);
 }
 
@@ -98,4 +95,32 @@ bool TargetList::available() {
 
 int TargetList::size() {
     return list_size;
+}
+
+Target::Target(target_t* ptr) {
+    this->ptr = ptr;
+}
+
+uint8_t* Target::from() const {
+    if (ptr) return ptr->from;
+    else return NULL;
+}
+
+uint8_t* Target::to() const {
+    if (ptr) return ptr->to;
+    else return NULL;
+}
+
+uint8_t Target::ch() const {
+    if (ptr) return ptr->ch;
+    else return 0;
+}
+
+bool Target::operator==(const Target& t) const {
+    if (ptr == t.ptr) return true;
+    if (!ptr) return false;
+
+    return memcmp(from(), t.from(), 6) == 0 &&
+           memcmp(to(), t.to(), 6) == 0 &&
+           ch() == t.ch();
 }
