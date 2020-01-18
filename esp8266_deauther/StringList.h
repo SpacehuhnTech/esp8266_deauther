@@ -16,9 +16,9 @@ class StringList {
             item_t    * next;
         } item_t;
 
-        item_t* begin = NULL;
-        item_t* end   = NULL;
-        int     size  = 0;
+        item_t* list_begin = NULL;
+        item_t* list_end   = NULL;
+        int list_size      = 0;
 
         item_t* h = NULL;
 
@@ -30,4 +30,5 @@ class StringList {
         String next();
 
         bool available();
+        int size();
 };

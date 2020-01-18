@@ -13,7 +13,7 @@ StringList::StringList(const String& input, String delimiter) {
     const char* ptr   = input.c_str();
 
     for (int i = 0; i <= len; ++i) {
-        if ((i-j > 0) && ((i == len) || ((i+delimiter_len < len) && (input.substring(i, i+delimiter_len) == delimiter)))) {
+        if ((i-j > 0) && ((i == len) || (input.substring(i, i+delimiter_len) == delimiter))) {
             item_t* item = (item_t*)malloc(sizeof(item_t));
             item->ptr  = &ptr[j];
             item->len  = i-j;
@@ -21,23 +21,23 @@ StringList::StringList(const String& input, String delimiter) {
 
             j = i+delimiter_len;
 
-            if (!begin) {
-                begin = item;
-                end   = item;
+            if (!list_begin) {
+                list_begin = item;
+                list_end   = item;
             } else {
-                end->next = item;
-                end       = item;
+                list_end->next = item;
+                list_end       = item;
             }
 
-            ++size;
+            ++list_size;
         }
     }
 
-    h = begin;
+    h = list_begin;
 }
 
 StringList::~StringList() {
-    h = begin;
+    h = list_begin;
 
     while (h) {
         item_t* to_delete = h;
@@ -45,15 +45,15 @@ StringList::~StringList() {
         free(to_delete);
     }
 
-    begin = NULL;
-    end   = NULL;
-    size  = 0;
+    list_begin = NULL;
+    list_end   = NULL;
+    list_size  = 0;
 
     h = NULL;
 }
 
 String StringList::get(int i) {
-    h = begin;
+    h = list_begin;
     int j = 0;
 
     while (h && i<j) {
@@ -87,4 +87,8 @@ String StringList::next() {
 
 bool StringList::available() {
     return h;
+}
+
+int StringList::size() {
+    return list_size;
 }
