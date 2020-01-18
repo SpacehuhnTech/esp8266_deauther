@@ -79,7 +79,11 @@ Target TargetList::get(int i) {
     return Target(h);
 }
 
-Target TargetList::next() {
+void TargetList::begin() {
+    h = list_begin;
+}
+
+Target TargetList::iterate() {
     Target t(h);
 
     if (h) {

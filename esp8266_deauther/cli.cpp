@@ -7,8 +7,11 @@
 #include "cli.h"
 
 #include <SimpleCLI.h> // SimpleCLI library
+
 #include "debug.h"     // debug(), debugln(), debugf()
 #include "scan.h"
+#include "strh.h"
+#include "StringList.h"
 
 // ram usage
 extern "C" {
@@ -166,17 +169,14 @@ namespace cli {
             // Parse channels
             String channels      = cmd.getArg("ch").getValue();
             uint16_t channel_reg = 0;
-            String tmp_ch;
 
-            for (int i = 0; i<=channels.length(); ++i) {
-                if ((i == channels.length()) || (channels.charAt(i) == ',')) {
-                    int channel_num = tmp_ch.toInt();
-                    if ((channel_num >= 1) && (channel_num <= 14)) {
-                        channel_reg |= 1 << (channel_num-1);
-                        tmp_ch       = String();
-                    }
-                } else {
-                    tmp_ch += channels.charAt(i);
+            StringList list(channels, ",");
+
+            while (list.available()) {
+                int channel_num = list.iterate().toInt();
+
+                if ((channel_num >= 1) && (channel_num <= 14)) {
+                    channel_reg |= 1 << (channel_num-1);
                 }
             }
 

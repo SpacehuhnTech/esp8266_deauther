@@ -72,7 +72,11 @@ String StringList::get(int i) {
     return res;
 }
 
-String StringList::next() {
+void StringList::begin() {
+    h = list_begin;
+}
+
+String StringList::iterate() {
     String res;
 
     if (h) {

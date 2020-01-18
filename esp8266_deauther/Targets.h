@@ -28,7 +28,9 @@ class TargetList {
         void push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
 
         Target get(int i);
-        Target next();
+
+        void begin();
+        Target iterate();
 
         bool available();
         int size();

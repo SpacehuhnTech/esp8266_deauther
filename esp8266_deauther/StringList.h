@@ -27,7 +27,9 @@ class StringList {
         ~StringList();
 
         String get(int i);
-        String next();
+
+        void begin();
+        String iterate();
 
         bool available();
         int size();
