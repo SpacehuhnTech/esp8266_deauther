@@ -128,14 +128,14 @@ namespace cli {
             bool disassoc = false;
 
             if (mode == "deauth+disassoc") {
-                debugln("Deauthing and disassociating target(s)");
+                debug("Deauthing and disassociating ");
                 deauth   = true;
                 disassoc = true;
             } else if (mode == "deauth") {
-                debugln("Deauthing target(s)");
+                debug("Deauthing ");
                 deauth = true;
             } else if (mode == "disassoc") {
-                debugln("Disassociating target(s)");
+                debug("Disassociating ");
                 disassoc = true;
             } else {
                 debugln("ERROR: Invalid mode");
@@ -150,7 +150,27 @@ namespace cli {
             unsigned long pkt_time        = 0;
             unsigned long pkt_interval    = (1000/pkt_rate) * (deauth+disassoc);
 
-            { // DEBUG
+            { // Output
+                debug(targets.size());
+                debugln(" targets:");
+
+                // Print MACs
+                targets.begin();
+
+                while (targets.available()) {
+                    Target t = targets.iterate();
+                    debug("- From ");
+                    debug(strh::mac(t.from()));
+                    debug(" to ");
+                    debug(strh::mac(t.to()));
+                    debug(" on channel ");
+                    debugln(t.ch());
+                }
+
+                debug("With ");
+                debug(pkt_rate);
+                debugln(" packets per second");
+
                 if (attack_timeout > 0) {
                     debug("Stop after ");
                     debug(timeout_str);
@@ -158,25 +178,12 @@ namespace cli {
                 }
 
                 if (max_pkts > 0) {
-                    debug("Send ");
+                    debug("Stop after ");
                     debug(max_pkts);
                     debugln(" packets");
                 }
 
-                debug("Targets ");
-                debugln(targets.size());
-
-                // Print MACs
-                targets.begin();
-
-                while (targets.available()) {
-                    Target t = targets.iterate();
-                    debug(strh::mac(t.from()));
-                    debug(" ");
-                    debug(strh::mac(t.to()));
-                    debug(" ");
-                    debugln(t.ch());
-                }
+                debugln("Type 'stop' or 'exit' to stop the attack");
             }
 
             bool running = true;
@@ -196,12 +203,10 @@ namespace cli {
                     if (millis() - output_time >= 1000) {
                         pkts_sent += pkts_per_second;
 
-                        debug(pkts_sent);
-                        debug(" packets sent - ");
                         debug(pkts_per_second);
-                        debug("/");
-                        debug(pkt_rate);
-                        debugln(" pkts/s");
+                        debug(" pkts/s, ");
+                        debug(pkts_sent);
+                        debugln(" sent");
 
                         output_time = millis();
 
