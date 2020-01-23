@@ -299,6 +299,9 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
         server.on(String(F("/lang/tlh.lang")).c_str(), HTTP_GET, []() {
             sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
         });
+        server.on(String(F("/lang/uk.lang")).c_str(), HTTP_GET, []() {
+            sendProgmem(uklang, sizeof(uklang), W_JSON);
+        });
     }
     server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, []() {
         if (!settings.getWebSpiffs()) {
@@ -312,6 +315,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
             else if (settings.getLang() == String(F("it"))) sendProgmem(itlang, sizeof(itlang), W_JSON);
             else if (settings.getLang() == String(F("ru"))) sendProgmem(rulang, sizeof(rulang), W_JSON);
             else if (settings.getLang() == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
+            else if (settings.getLang() == String(F("uk"))) sendProgmem(uklang, sizeof(uklang), W_JSON);
 
             else handleFileRead(String(F("/web/lang/")) + settings.getLang() + String(F(".lang")));
         } else {
