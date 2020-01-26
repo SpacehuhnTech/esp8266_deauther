@@ -32,12 +32,13 @@ uint8_t deauth_data[] = {
 
 // ========== BEACON ========== //
 uint8_t beacon_data[] = {
+    // [22]
     /*  0 - 3  */ 0x80, 0x00, 0x00, 0x00,                         // Type/Subtype: managment beacon frame
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,             // Destination MAC
     /* 10 - 15 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,             // Source MAC
     /* 16 - 21 */ 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,             // Source MAC
 
-    // Fixed parameters
+    // Fixed parameters [14]
     /* 22 - 23 */ 0x00, 0x00,                                     // Fragment & sequence number (handled by the SDK)
     /* 24 - 31 */ 0x83, 0x51, 0xf7, 0x8f, 0x0f, 0x00, 0x00, 0x00, // Timestamp
     /* 32 - 33 */ 0xe8, 0x03,                                     // Interval: [0x64, 0x00] => 100ms, [0xe8, 0x03] => 1s
@@ -45,7 +46,7 @@ uint8_t beacon_data[] = {
 
     // Tagged parameters
 
-    // SSID parameters
+    // SSID parameters [2+ssid]
     /* 36 - 37 */ 0x00, 0x20,             // Tag: Set SSID length, Tag length: 32
     /* 38 -    */ 0x00, 0x00, 0x00, 0x00, // SSID
     /*         */ 0x00, 0x00, 0x00, 0x00, // SSID
@@ -56,7 +57,7 @@ uint8_t beacon_data[] = {
     /*         */ 0x00, 0x00, 0x00, 0x00, // SSID
     /*    - 69 */ 0x00, 0x00, 0x00, 0x00, // SSID
 
-    // Supported Rates
+    // Supported Rates [10]
     /* 70 - 71 */ 0x01, 0x08,             // Tag: Supported Rates, Tag length: 8
     /*    72   */ 0x82,                   // 1(B)
     /*    73   */ 0x84,                   // 2(B)
@@ -67,7 +68,7 @@ uint8_t beacon_data[] = {
     /*    78   */ 0x48,                   // 36
     /*    79   */ 0x6c,                   // 54
 
-    // Current Channel
+    // Current Channel [3]
     /* 80 - 81 */ 0x03, 0x01,             // Channel set, length
     /*    82   */ 0x01,                   // Current Channel
 
@@ -132,18 +133,49 @@ namespace packetinjector {
     }
 
     bool beacon(uint8_t ch, uint8_t* from, const char* ssid, bool wpa2) {
-        memcpy(&beacon_data[10], from, 6);
-        // beacon_data[37] = strlen(ssid);
-        memset(&beacon_data[38], 0, 32);
-        strncpy((char*)&beacon_data[38], ssid, 32);
-        beacon_data[82] = ch;
+        size_t ssid_len = strlen(ssid);
 
+        if (ssid_len > 32) ssid_len = 32;
+        uint16_t pkt_len = 0;
+
+        uint8_t frame[109];
+
+        // MAC header
+        memcpy(&frame[0], &beacon_data[0], 10);
+        memcpy(&frame[10], from, 6);
+        memcpy(&frame[16], from, 6);
+        pkt_len += 10 + 6 + 6;
+
+        // Fixed parameters
+        memcpy(&frame[22], &beacon_data[22], 14);
+        pkt_len += 14;
+
+        // SSID
+        frame[pkt_len]   = 0x00;
+        frame[pkt_len+1] = ssid_len;
+        memcpy(&frame[pkt_len+2], ssid, ssid_len);
+        pkt_len += 2 + ssid_len;
+
+        // Supported Rates
+        memcpy(&frame[pkt_len], &beacon_data[70], 10);
+        pkt_len += 10;
+
+        // Channel
+        memcpy(&frame[pkt_len], &beacon_data[80], 2);
+        frame[pkt_len] = ch;
+        pkt_len       += 2 + 1;
+
+        // RSN
         if (wpa2) {
-            beacon_data[34] = 0x31;
-            return send(ch, beacon_data, sizeof(beacon_data));
+            frame[34] = 0x31;
+
+            memcpy(&frame[pkt_len], &beacon_data[83], 26);
+            pkt_len += 26;
+
+            return send(ch, frame, pkt_len);
         } else {
-            beacon_data[34] = 0x21;
-            return send(ch, beacon_data, sizeof(beacon_data)-26);
+            frame[34] = 0x21;
+            return send(ch, frame, pkt_len);
         }
     }
 

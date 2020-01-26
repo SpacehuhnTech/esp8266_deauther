@@ -223,33 +223,74 @@ namespace cli {
         cmd_deauth.addArg("st/ation", "");
         cmd_deauth.addArg("mac", "");
         cmd_deauth.addArg("t/ime/out", "300");
-        cmd_deauth.addArg("n/umber", "0");
+        cmd_deauth.addArg("n/um/ber", "0");
         cmd_deauth.addArg("r/ate", "20");
-        cmd_deauth.setDescription("");
-        // -ap <...>: Select AP(s) to attack
-        // -st/ation <...>: Select Station(s) to attack
-        // -mac <...>: 00:11:22:33:44:55-ff:ff:ff:ff:ff:ff,...
-        // -t/ime <seconds>: Max time until attack ends (default: 5min)
-        // -n/umber <number of frames>: Max packets until attack ends (0=no limit, default: 0)
-        // -r/ate <packet rate>: packets per second
-        // -m/ode <deauth,disassoc,deauth+disassoc>
+        cmd_deauth.setDescription(
+            "  -m or -mode: packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\n"
+            "  -ap:         access point IDs to attack\n"
+            "  -st:         station IDs to attack\n"
+            "  -mac:        manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\n"
+            "  -t or -time: attack timeout in seconds (default=300)\n"
+            "  -n or -num:  packet limit [>1] (default=0)\n"
+            "  -r or -rate: packets per second (default=20)"
+            );
 
-        /*
-           cli.addCommand("beacon", [](cmd* c) {
-            uint8_t from[]   = { 0xc8, 0x00, 0x84, 0x2e, 0x11, 0x39 }; // Cisco
-            const char* ssid = "Hello World!";
-            uint8_t ch       = 11;
+        Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
+            Command cmd(c);
 
-            for (int j = 0; j<10; j++) {
-                for (int i = 0; i<10; i++) {
-                    packetinjector::beacon(ch, from, ssid, false);
-                    delay(100);
-                    debug('.');
+            // SSIDs
+            String ssids = cmd.getArg("ssid").getValue();
+            StringList list(ssids, ",");
+
+            // MAC
+            String macstr = cmd.getArg("mac").getValue();
+            uint8_t from[6];
+            uint8_t last_byte = from[5];
+            mac::fromStr(macstr.c_str(), from);
+
+            // Encryption
+            String enc = cmd.getArg("enc").getValue();
+            bool wpa2  = (enc=="wpa2");
+
+            // Channel
+            uint8_t ch = cmd.getArg("ch").getValue().toInt();
+
+            // Time
+            unsigned long start_time = millis();
+            unsigned long run_time   = cmd.getArg("t").getValue().toInt() * 1000;
+            unsigned long pkt_time   = 0;
+
+            bool running = true;
+
+            while (running) {
+                if (millis() - pkt_time >= 100) {
+                    pkt_time = millis();
+                    list.begin();
+
+                    for (int i = 0; i<list.size(); ++i) {
+                        from[5] = last_byte + i;
+
+                        String ssid = list.iterate();
+
+                        debug(ssid);
+                        debug(' ');
+                        debug(strh::mac(from));
+                        debug(' ');
+
+                        debugln(packetinjector::beacon(ch, from, ssid.c_str(), wpa2));
+                        delay(1);
+                    }
                 }
-                debugln();
+                running = (millis() - start_time <= run_time) && !read_exit();
             }
-           });
-         */
+            debugln("Finished");
+        });
+        cmd_beacon.addArg("s/sid/s");
+        cmd_beacon.addArg("mac", "00:11:22:33:44:55");
+        cmd_beacon.addArg("enc", "open");
+        cmd_beacon.addArg("ch", "1");
+        cmd_beacon.addArg("t/ime", "300");
+
         Command cmd_start = cli.addCommand("start", [](cmd* c) {
             String res;
             String cmd;
@@ -417,10 +458,10 @@ namespace cli {
         cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
-            "  -m or -mode: scan mode [ap,st,ap+st] (default=ap+st)\n"
-            "  -t or -time: station scan time in seconds [>1] (default=14)\n"
+            "  -m or -mode:     scan mode [ap,st,ap+st] (default=ap+st)\n"
+            "  -t or -time:     station scan time in seconds [>1] (default=14)\n"
             "  -ch or -channel: 2.4 GHz channels for station scan [1-14] (default=all)\n"
-            "  -r or -retain: Keep previous scan results"
+            "  -r or -retain:   Keep previous scan results"
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
