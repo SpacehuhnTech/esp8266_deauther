@@ -485,6 +485,8 @@ namespace cli {
     String read() {
         String input = debug_read();
 
+        if (input.charAt(input.length()-1) == '\r') input.remove(input.length()-1);
+
         debug("# ");
         debugln(input);
 
