@@ -132,7 +132,7 @@ namespace packetinjector {
         return send(ch, deauth_data, sizeof(deauth_data));
     }
 
-    bool beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, bool wpa2) {
+    bool beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, Encryption enc) {
         size_t ssid_len = strlen(ssid);
 
         if (ssid_len > 32) ssid_len = 32;
@@ -167,7 +167,7 @@ namespace packetinjector {
         pkt_len       += 2 + 1;
 
         // RSN
-        if (wpa2) {
+        if (enc == Encryption::WPA2) {
             frame[34] = 0x31;
 
             memcpy(&frame[pkt_len], &beacon_data[83], 26);

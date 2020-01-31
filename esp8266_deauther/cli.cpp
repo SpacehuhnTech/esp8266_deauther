@@ -10,12 +10,12 @@
 
 #include "debug.h"     // debug(), debugln(), debugf()
 #include "scan.h"
-#include "packetinjector.h"
 #include "strh.h"
 #include "StringList.h"
 #include "mac.h"
 #include "Targets.h"
 #include "vendor.h"
+#include "attack.h"
 
 // ram usage
 extern "C" {
@@ -242,7 +242,7 @@ namespace cli {
 
             // SSIDs
             String ssids = cmd.getArg("ssid").getValue();
-            StringList list(ssids, ",");
+            StringList ssid_list(ssids, ",");
 
             // MAC from
             String from_str = cmd.getArg("from").getValue();
@@ -254,11 +254,6 @@ namespace cli {
                 mac::fromStr(from_str.c_str(), from);
             }
 
-            uint8_t last_byte = from[5];
-
-            debug("Sending beacons from ");
-            debug(strh::mac(from));
-
             // MAC to
             String to_str = cmd.getArg("to").getValue();
             uint8_t to[6];
@@ -269,70 +264,17 @@ namespace cli {
                 mac::fromStr(to_str.c_str(), to);
             }
 
-            debug(" to ");
-            debugln(strh::mac(to));
-
             // Encryption
             String enc = cmd.getArg("enc").getValue();
-            bool wpa2  = (enc=="wpa2");
 
             // Channel
             uint8_t ch = cmd.getArg("ch").getValue().toInt();
 
             // Time
-            long seconds                 = cmd.getArg("t").getValue().toInt();
-            unsigned long attack_timeout = (seconds > 0) ? seconds*1000 : 0;
+            long seconds          = cmd.getArg("t").getValue().toInt();
+            unsigned long timeout = (seconds > 0) ? seconds*1000 : 0;
 
-            if (attack_timeout > 0) {
-                debug("Stop after ");
-                debug(seconds);
-                debugln(" seconds");
-            }
-
-            debugln("Type 'stop' or 'exit' to stop the attack");
-
-            unsigned long start_time  = millis();
-            unsigned long output_time = millis();
-
-            unsigned long pkts_sent       = 0;
-            unsigned long pkts_per_second = 0;
-
-            unsigned long pkt_time     = millis();
-            unsigned long pkt_interval = 100;
-
-            bool running = true;
-
-            while (running) {
-                if (millis() - pkt_time >= pkt_interval) {
-                    pkt_time = millis();
-                    list.begin();
-
-                    for (int i = 0; running && i<list.size(); ++i) {
-                        from[5] = last_byte + i;
-
-                        String ssid = list.iterate();
-
-                        pkts_per_second += packetinjector::beacon(ch, from, to, ssid.c_str(), wpa2);
-                        delay(1);
-
-                        running = !(read_exit() || (attack_timeout > 0 && millis() - start_time > attack_timeout));
-                    }
-                }
-
-                if (millis() - output_time >= 1000) {
-                    pkts_sent += pkts_per_second;
-
-                    debug(pkts_per_second);
-                    debug(" pkts/s, ");
-                    debug(pkts_sent);
-                    debugln(" sent");
-
-                    output_time = millis();
-
-                    pkts_per_second = 0;
-                }
-            }
-            debugln("Finished");
+            attack::beacon(ssid_list, from, to, enc=="wpa2" ? Encryption::WPA2 : Encryption::OPEN, ch, timeout);
         });
         cmd_beacon.addArg("s/sid/s");
         cmd_beacon.addArg("from,mac/from", "random");
