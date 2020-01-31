@@ -6,7 +6,29 @@
 
 #include "StringList.h"
 
+StringList::StringList() {}
+
 StringList::StringList(const String& input, String delimiter) {
+    parse(input, delimiter);
+}
+
+StringList::~StringList() {
+    h = list_begin;
+
+    while (h) {
+        item_t* to_delete = h;
+        h = h->next;
+        free(to_delete);
+    }
+
+    list_begin = NULL;
+    list_end   = NULL;
+    list_size  = 0;
+
+    h = NULL;
+}
+
+void StringList::parse(const String& input, String delimiter) {
     int len           = input.length();
     int delimiter_len = delimiter.length();
     int j             = 0;
@@ -34,22 +56,6 @@ StringList::StringList(const String& input, String delimiter) {
     }
 
     h = list_begin;
-}
-
-StringList::~StringList() {
-    h = list_begin;
-
-    while (h) {
-        item_t* to_delete = h;
-        h = h->next;
-        free(to_delete);
-    }
-
-    list_begin = NULL;
-    list_end   = NULL;
-    list_size  = 0;
-
-    h = NULL;
 }
 
 String StringList::get(int i) {

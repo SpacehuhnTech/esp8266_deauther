@@ -13,7 +13,6 @@
 #include "strh.h"
 #include "StringList.h"
 #include "mac.h"
-#include "Targets.h"
 #include "vendor.h"
 #include "attack.h"
 
@@ -54,6 +53,14 @@ namespace cli {
             Command cmd(c);
 
             TargetList targets;
+
+            unsigned long timeout = 0;
+
+            unsigned long max_pkts;
+            unsigned long pkt_rate;
+
+            bool deauth   = false;
+            bool disassoc = false;
 
             { // Read Access Point MACs
                 String ap_str = cmd.getArg("ap").getValue();
@@ -106,118 +113,43 @@ namespace cli {
                 }
             }
 
-            // Check MAC list
-            if (targets.size() == 0) {
-                debugln("ERROR: No targets selected");
-                return;
-            }
-
-            // Time
-            long seconds                 = cmd.getArg("t").getValue().toInt();
-            unsigned long attack_timeout = (seconds > 0) ? seconds*1000 : 0;
-
-            // Number
-            unsigned long max_pkts = cmd.getArg("n").getValue().toInt();
-
-            // Rate
-            unsigned long pkt_rate = cmd.getArg("r").getValue().toInt();
-
-            // Mode
-            String mode = cmd.getArg("m").getValue();
-
-            bool deauth   = false;
-            bool disassoc = false;
-
-            if (mode == "deauth+disassoc") {
-                debug("Deauthing and disassociating ");
-                deauth   = true;
-                disassoc = true;
-            } else if (mode == "deauth") {
-                debug("Deauthing ");
-                deauth = true;
-            } else if (mode == "disassoc") {
-                debug("Disassociating ");
-                disassoc = true;
-            } else {
-                debugln("ERROR: Invalid mode");
-                return;
-            }
-
-            unsigned long start_time  = millis();
-            unsigned long output_time = millis();
-
-            unsigned long pkts_sent       = 0;
-            unsigned long pkts_per_second = 0;
-            unsigned long pkt_time        = 0;
-            unsigned long pkt_interval    = (1000/pkt_rate) * (deauth+disassoc);
-
-            { // Output
-                debug(targets.size());
-                debugln(" targets:");
-
-                // Print MACs
-                targets.begin();
-
-                while (targets.available()) {
-                    Target t = targets.iterate();
-                    debug("- From ");
-                    debug(strh::mac(t.from()));
-                    debug(" to ");
-                    debug(strh::mac(t.to()));
-                    debug(" on channel ");
-                    debugln(t.ch());
-                }
-
-                debug("With ");
-                debug(pkt_rate);
-                debugln(" packets per second");
-
-                if (attack_timeout > 0) {
-                    debug("Stop after ");
-                    debug(seconds);
-                    debugln(" seconds");
-                }
-
-                if (max_pkts > 0) {
-                    debug("Stop after ");
-                    debug(max_pkts);
-                    debugln(" packets");
-                }
-
-                debugln("Type 'stop' or 'exit' to stop the attack");
-            }
-
-            bool running = true;
-
-            while (running) {
-                targets.begin();
-
-                while (running && targets.available()) {
-                    if (millis() - pkt_time >= pkt_interval) {
-                        Target t = targets.iterate();
-
-                        if (deauth) pkts_per_second += packetinjector::deauth(t.ch(), t.from(), t.to());
-                        if (disassoc) pkts_per_second += packetinjector::disassoc(t.ch(), t.from(), t.to());
-
-                        pkt_time = millis();
-                    }
-                    if (millis() - output_time >= 1000) {
-                        pkts_sent += pkts_per_second;
-
-                        debug(pkts_per_second);
-                        debug(" pkts/s, ");
-                        debug(pkts_sent);
-                        debugln(" sent");
-
-                        output_time = millis();
-
-                        pkts_per_second = 0;
-                    }
-                    running = !(read_exit()
-                                || (attack_timeout > 0 && millis() - start_time > attack_timeout)
-                                || (max_pkts > 0 && pkts_sent > max_pkts));
+            { // Check MAC list
+                if (targets.size() == 0) {
+                    debugln("ERROR: No targets selected");
+                    return;
                 }
             }
+
+            { // Time
+                long seconds = cmd.getArg("t").getValue().toInt();
+                if (seconds > 0) timeout = seconds*1000;
+            }
+
+            { // Number
+                max_pkts = cmd.getArg("n").getValue().toInt();
+            }
+
+            { // Rate
+                pkt_rate = cmd.getArg("r").getValue().toInt();
+            }
+
+            { // Mode
+                String mode = cmd.getArg("m").getValue();
+
+                if (mode == "deauth+disassoc") {
+                    deauth   = true;
+                    disassoc = true;
+                } else if (mode == "deauth") {
+                    deauth = true;
+                } else if (mode == "disassoc") {
+                    disassoc = true;
+                } else {
+                    debugln("ERROR: Invalid mode");
+                    return;
+                }
+            }
+
+            attack::deauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts);
         });
         cmd_deauth.addArg("m/ode", "deauth+disassoc");
         cmd_deauth.addArg("ap", "");
@@ -240,41 +172,58 @@ namespace cli {
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
 
-            // SSIDs
-            String ssids = cmd.getArg("ssid").getValue();
-            StringList ssid_list(ssids, ",");
+            StringList ssid_list;
 
-            // MAC from
-            String from_str = cmd.getArg("from").getValue();
             uint8_t from[6];
-
-            if (from_str.length() != 17) {
-                vendor::randomize(from);
-            } else {
-                mac::fromStr(from_str.c_str(), from);
-            }
-
-            // MAC to
-            String to_str = cmd.getArg("to").getValue();
             uint8_t to[6];
 
-            if (to_str.length() != 17) {
-                memcpy(to, mac::BROADCAST, 6);
-            } else {
-                mac::fromStr(to_str.c_str(), to);
+            Encryption enc;
+
+            uint8_t ch;
+
+            unsigned long timeout = 0;
+
+            { // SSIDs
+                String ssids = cmd.getArg("ssid").getValue();
+                ssid_list.parse(ssids, ",");
             }
 
-            // Encryption
-            String enc = cmd.getArg("enc").getValue();
+            { // MAC from
+                String from_str = cmd.getArg("from").getValue();
 
-            // Channel
-            uint8_t ch = cmd.getArg("ch").getValue().toInt();
+                if (from_str.length() != 17) {
+                    vendor::randomize(from);
+                } else {
+                    mac::fromStr(from_str.c_str(), from);
+                }
+            }
 
-            // Time
-            long seconds          = cmd.getArg("t").getValue().toInt();
-            unsigned long timeout = (seconds > 0) ? seconds*1000 : 0;
+            { // MAC to
+                String to_str = cmd.getArg("to").getValue();
 
-            attack::beacon(ssid_list, from, to, enc=="wpa2" ? Encryption::WPA2 : Encryption::OPEN, ch, timeout);
+                if (to_str.length() != 17) {
+                    memcpy(to, mac::BROADCAST, 6);
+                } else {
+                    mac::fromStr(to_str.c_str(), to);
+                }
+            }
+
+            { // Encryption
+                String enc_str = cmd.getArg("enc").getValue();
+                if (enc_str == "wpa2") enc = Encryption::WPA2;
+                else enc = Encryption::OPEN;
+            }
+
+            { // Channel
+                ch = cmd.getArg("ch").getValue().toInt();
+            }
+
+            { // Time
+                long seconds = cmd.getArg("t").getValue().toInt();
+                if (seconds > 0) timeout = seconds*1000;
+            }
+
+            attack::beacon(ssid_list, from, to, enc, ch, timeout);
         });
         cmd_beacon.addArg("s/sid/s");
         cmd_beacon.addArg("from,mac/from", "random");

@@ -23,8 +23,11 @@ class StringList {
         item_t* h = NULL;
 
     public:
+        StringList();
         StringList(const String& input, String delimiter);
         ~StringList();
+
+        void parse(const String& input, String delimiter);
 
         String get(int i);
 

