@@ -11,9 +11,8 @@
 class StringList {
     private:
         typedef struct item_t {
-            const char* ptr;
-            int         len;
-            item_t    * next;
+            char  * ptr;
+            item_t* next;
         } item_t;
 
         item_t* list_begin = NULL;
@@ -21,6 +20,8 @@ class StringList {
         int list_size      = 0;
 
         item_t* h = NULL;
+
+        char* stringCopy(const char* str, long len);
 
     public:
         StringList();

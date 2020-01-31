@@ -6,6 +6,15 @@
 
 #include "StringList.h"
 
+char* StringList::stringCopy(const char* str, long len) {
+    char* newstr = (char*)malloc(len+1);
+
+    memcpy(newstr, str, len);
+    newstr[len] = '\0';
+
+    return newstr;
+}
+
 StringList::StringList() {}
 
 StringList::StringList(const String& input, String delimiter) {
@@ -18,6 +27,7 @@ StringList::~StringList() {
     while (h) {
         item_t* to_delete = h;
         h = h->next;
+        free(to_delete->ptr);
         free(to_delete);
     }
 
@@ -37,8 +47,7 @@ void StringList::parse(const String& input, String delimiter) {
     for (int i = 0; i <= len; ++i) {
         if ((i-j > 0) && ((i == len) || (input.substring(i, i+delimiter_len) == delimiter))) {
             item_t* item = (item_t*)malloc(sizeof(item_t));
-            item->ptr  = &ptr[j];
-            item->len  = i-j;
+            item->ptr  = stringCopy(&ptr[j], i-j);
             item->next = NULL;
 
             j = i+delimiter_len;
@@ -46,6 +55,7 @@ void StringList::parse(const String& input, String delimiter) {
             if (!list_begin) {
                 list_begin = item;
                 list_end   = item;
+                h          = list_begin;
             } else {
                 list_end->next = item;
                 list_end       = item;
@@ -54,8 +64,6 @@ void StringList::parse(const String& input, String delimiter) {
             ++list_size;
         }
     }
-
-    h = list_begin;
 }
 
 String StringList::get(int i) {
@@ -67,15 +75,7 @@ String StringList::get(int i) {
         ++j;
     }
 
-    String res;
-
-    if (h) {
-        for (int j = 0; j<h->len; ++j) {
-            res += char(h->ptr[j]);
-        }
-    }
-
-    return res;
+    return String(h ? h->ptr : "");
 }
 
 void StringList::begin() {
@@ -83,14 +83,9 @@ void StringList::begin() {
 }
 
 String StringList::iterate() {
-    String res;
+    String res(h ? h->ptr : "");
 
-    if (h) {
-        for (int i = 0; i<h->len; ++i) {
-            res += char(h->ptr[i]);
-        }
-        h = h->next;
-    }
+    h = h->next;
 
     return res;
 }
