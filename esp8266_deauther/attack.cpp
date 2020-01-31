@@ -11,11 +11,134 @@
 #include "strh.h"
 
 namespace attack {
-    void beacon(StringList& ssid_list, uint8_t* mac_from, uint8_t* mac_to, Encryption enc, uint8_t ch, unsigned long timeout) {
+    typedef struct target_t {
+        uint8_t   from[6];
+        uint8_t   to[6];
+        uint8_t   ch;
+        target_t* next;
+    } target_t;
+
+    TargetList::~TargetList() {
+        h = list_begin;
+
+        while (h) {
+            target_t* to_delete = h;
+            h = h->next;
+            free(to_delete);
+        }
+
+        list_begin = NULL;
+        list_end   = NULL;
+        list_size  = 0;
+
+        h = NULL;
+    }
+
+    void TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
+        // Create new target
+        target_t* new_target = (target_t*)malloc(sizeof(target_t));
+
+        memcpy(new_target->from, from, 6);
+        memcpy(new_target->to, to, 6);
+        new_target->ch   = ch;
+        new_target->next = NULL;
+
+        // Check if already in list
+        Target t(new_target);
+
+        target_t* h = list_begin;
+
+        while (h) {
+            if (Target(h) == t) {
+                free(new_target);
+                return;
+            }
+            h = h->next;
+        }
+
+        // Push to list
+        if (!list_begin) {
+            list_begin = new_target;
+            list_end   = new_target;
+            h          = list_begin;
+        } else {
+            list_end->next = new_target;
+            list_end       = new_target;
+        }
+
+        ++(list_size);
+    }
+
+    Target TargetList::get(int i) {
+        h = list_begin;
+        int j = 0;
+
+        while (h && i<j) {
+            h = h->next;
+            ++j;
+        }
+
+        return Target(h);
+    }
+
+    void TargetList::begin() {
+        h = list_begin;
+    }
+
+    Target TargetList::iterate() {
+        Target t(h);
+
+        if (h) {
+            h = h->next;
+        }
+
+        return t;
+    }
+
+    bool TargetList::available() {
+        return h;
+    }
+
+    int TargetList::size() {
+        return list_size;
+    }
+
+    Target::Target(target_t* ptr) {
+        this->ptr = ptr;
+    }
+
+    uint8_t* Target::from() const {
+        if (ptr) return ptr->from;
+        else return NULL;
+    }
+
+    uint8_t* Target::to() const {
+        if (ptr) return ptr->to;
+        else return NULL;
+    }
+
+    uint8_t Target::ch() const {
+        if (ptr) return ptr->ch;
+        else return 0;
+    }
+
+    bool Target::operator==(const Target& t) const {
+        if (ptr == t.ptr) return true;
+        if (!ptr) return false;
+
+        return memcmp(from(), t.from(), 6) == 0 &&
+               memcmp(to(), t.to(), 6) == 0 &&
+               ch() == t.ch();
+    }
+
+    void beacon(StringList& ssid_list, uint8_t* from, uint8_t* to, Encryption enc, uint8_t ch, unsigned long timeout) {
+        // print SSIDs
+        // print enc
+
         debug("Sending beacons from ");
-        debug(strh::mac(mac_from));
+        debug(strh::mac(from));
         debug(" to ");
-        debug(strh::mac(mac_to));
+        debug(strh::mac(to));
         debug(" on channel ");
         debugln(ch);
 
@@ -27,7 +150,7 @@ namespace attack {
 
         debugln("Type 'stop' or 'exit' to stop the attack");
 
-        uint8_t last_byte = mac_from[5];
+        uint8_t last_byte = from[5];
 
         unsigned long start_time  = millis();
         unsigned long output_time = millis();
@@ -46,11 +169,11 @@ namespace attack {
                 ssid_list.begin();
 
                 for (int i = 0; running && i<ssid_list.size(); ++i) {
-                    mac_from[5] = last_byte + i;
+                    from[5] = last_byte + i;
 
                     String ssid = ssid_list.iterate();
 
-                    pkts_per_second += packetinjector::beacon(ch, mac_from, mac_to, ssid.c_str(), enc);
+                    pkts_per_second += packetinjector::beacon(ch, from, to, ssid.c_str(), enc);
                     delay(1);
 
                     running = !(cli::read_exit() || (timeout > 0 && millis() - start_time > timeout));

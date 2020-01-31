@@ -52,7 +52,7 @@ namespace cli {
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
             Command cmd(c);
 
-            TargetList targets;
+            attack::TargetList targets;
 
             unsigned long timeout = 0;
 
