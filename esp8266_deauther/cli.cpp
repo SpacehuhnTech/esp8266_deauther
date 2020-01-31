@@ -15,6 +15,7 @@
 #include "StringList.h"
 #include "mac.h"
 #include "Targets.h"
+#include "vendor.h"
 
 // ram usage
 extern "C" {
@@ -245,8 +246,17 @@ namespace cli {
             // MAC
             String macstr = cmd.getArg("mac").getValue();
             uint8_t from[6];
+
+            if (macstr.length() != 17) {
+                vendor::randomize(from);
+            } else {
+                mac::fromStr(macstr.c_str(), from);
+            }
+
+            debug("Using MAC ");
+            debugln(strh::mac(from));
+
             uint8_t last_byte = from[5];
-            mac::fromStr(macstr.c_str(), from);
 
             // Encryption
             String enc = cmd.getArg("enc").getValue();
@@ -301,7 +311,7 @@ namespace cli {
             debugln("Finished");
         });
         cmd_beacon.addArg("s/sid/s");
-        cmd_beacon.addArg("mac", "00:11:22:33:44:55");
+        cmd_beacon.addArg("mac", "");
         cmd_beacon.addArg("enc", "open");
         cmd_beacon.addArg("ch", "1");
         cmd_beacon.addArg("t/ime", "300");

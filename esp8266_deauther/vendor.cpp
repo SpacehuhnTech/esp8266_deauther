@@ -55,7 +55,7 @@ namespace vendor {
         return name;
     }
 
-    void randomizeMAC(uint8_t* mac) {
+    void randomize(uint8_t* mac) {
         randomSeed(os_random());
 
         int num = random(sizeof(vendor_names) / 11 - 1);
