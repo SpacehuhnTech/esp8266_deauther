@@ -12,6 +12,6 @@ namespace packetinjector {
     bool send(uint8_t ch, uint8_t* buf, uint16_t len);
     bool deauth(uint8_t ch, uint8_t* from, uint8_t* to);
     bool disassoc(uint8_t ch, uint8_t* from, uint8_t* to);
-    bool beacon(uint8_t ch, uint8_t* from, const char* ssid, bool wpa2);
+    bool beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, bool wpa2);
     bool probe(uint8_t ch, uint8_t* from, const char* ssid);
 }

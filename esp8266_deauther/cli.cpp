@@ -243,20 +243,33 @@ namespace cli {
             String ssids = cmd.getArg("ssid").getValue();
             StringList list(ssids, ",");
 
-            // MAC
-            String macstr = cmd.getArg("mac").getValue();
+            // MAC from
+            String from_str = cmd.getArg("macfrom").getValue();
             uint8_t from[6];
 
-            if (macstr.length() != 17) {
+            if (from_str.length() != 17) {
                 vendor::randomize(from);
             } else {
-                mac::fromStr(macstr.c_str(), from);
+                mac::fromStr(from_str.c_str(), from);
             }
 
-            debug("Using MAC ");
-            debugln(strh::mac(from));
-
             uint8_t last_byte = from[5];
+
+            debug("Sending from ");
+            debug(strh::mac(from));
+
+            // MAC to
+            String to_str = cmd.getArg("macto").getValue();
+            uint8_t to[6];
+
+            if (to_str.length() != 17) {
+                memcpy(to, mac::BROADCAST, 6);
+            } else {
+                mac::fromStr(to_str.c_str(), to);
+            }
+
+            debug(" to ");
+            debugln(strh::mac(to));
 
             // Encryption
             String enc = cmd.getArg("enc").getValue();
@@ -288,7 +301,7 @@ namespace cli {
 
                         String ssid = list.iterate();
 
-                        pkts_per_second += packetinjector::beacon(ch, from, ssid.c_str(), wpa2);
+                        pkts_per_second += packetinjector::beacon(ch, from, to, ssid.c_str(), wpa2);
                         delay(1);
 
                         running = !(read_exit() || (millis() - start_time > run_time));
@@ -311,7 +324,8 @@ namespace cli {
             debugln("Finished");
         });
         cmd_beacon.addArg("s/sid/s");
-        cmd_beacon.addArg("mac", "");
+        cmd_beacon.addArg("mac/from", "random");
+        cmd_beacon.addArg("macto", "FF:FF:FF:FF:FF:FF");
         cmd_beacon.addArg("enc", "open");
         cmd_beacon.addArg("ch", "1");
         cmd_beacon.addArg("t/ime", "300");

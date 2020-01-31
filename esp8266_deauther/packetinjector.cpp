@@ -132,7 +132,7 @@ namespace packetinjector {
         return send(ch, deauth_data, sizeof(deauth_data));
     }
 
-    bool beacon(uint8_t ch, uint8_t* from, const char* ssid, bool wpa2) {
+    bool beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, bool wpa2) {
         size_t ssid_len = strlen(ssid);
 
         if (ssid_len > 32) ssid_len = 32;
@@ -141,10 +141,11 @@ namespace packetinjector {
         uint8_t frame[109];
 
         // MAC header
-        memcpy(&frame[0], &beacon_data[0], 10);
+        memcpy(&frame[0], &beacon_data[0], 4);
+        memcpy(&frame[4], to, 6);
         memcpy(&frame[10], from, 6);
         memcpy(&frame[16], from, 6);
-        pkt_len += 10 + 6 + 6;
+        pkt_len += 4 + 6 + 6 + 6;
 
         // Fixed parameters
         memcpy(&frame[22], &beacon_data[22], 14);
