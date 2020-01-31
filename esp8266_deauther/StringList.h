@@ -31,6 +31,6 @@ class StringList {
         void begin();
         String iterate();
 
-        bool available();
-        int size();
+        bool available() const;
+        int size() const;
 };

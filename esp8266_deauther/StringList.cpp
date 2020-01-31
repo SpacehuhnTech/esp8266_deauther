@@ -89,10 +89,10 @@ String StringList::iterate() {
     return res;
 }
 
-bool StringList::available() {
+bool StringList::available() const {
     return h;
 }
 
-int StringList::size() {
+int StringList::size() const {
     return list_size;
 }
