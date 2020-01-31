@@ -256,32 +256,47 @@ namespace cli {
             uint8_t ch = cmd.getArg("ch").getValue().toInt();
 
             // Time
-            unsigned long start_time = millis();
-            unsigned long run_time   = cmd.getArg("t").getValue().toInt() * 1000;
-            unsigned long pkt_time   = 0;
+            unsigned long start_time  = millis();
+            unsigned long run_time    = cmd.getArg("t").getValue().toInt() * 1000;
+            unsigned long output_time = millis();
+
+            unsigned long pkts_sent       = 0;
+            unsigned long pkts_per_second = 0;
+
+            unsigned long pkt_time     = millis();
+            unsigned long pkt_interval = 100;
 
             bool running = true;
 
             while (running) {
-                if (millis() - pkt_time >= 100) {
+                if (millis() - pkt_time >= pkt_interval) {
                     pkt_time = millis();
                     list.begin();
 
-                    for (int i = 0; i<list.size(); ++i) {
+                    for (int i = 0; running && i<list.size(); ++i) {
                         from[5] = last_byte + i;
 
                         String ssid = list.iterate();
 
-                        debug(ssid);
-                        debug(' ');
-                        debug(strh::mac(from));
-                        debug(' ');
-
-                        debugln(packetinjector::beacon(ch, from, ssid.c_str(), wpa2));
+                        pkts_per_second += packetinjector::beacon(ch, from, ssid.c_str(), wpa2);
                         delay(1);
+
+                        running = !(read_exit() || (millis() - start_time > run_time));
                     }
                 }
-                running = (millis() - start_time <= run_time) && !read_exit();
+
+                if (millis() - output_time >= 1000) {
+                    pkts_sent += pkts_per_second;
+
+                    debug(pkts_per_second);
+                    debug(" pkts/s, ");
+                    debug(pkts_sent);
+                    debugln(" sent");
+
+                    output_time = millis();
+
+                    pkts_per_second = 0;
+                }
             }
             debugln("Finished");
         });
