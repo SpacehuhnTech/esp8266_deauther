@@ -113,8 +113,8 @@ namespace cli {
             }
 
             // Time
-            String timeout_str           = cmd.getArg("t").getValue();
-            unsigned long attack_timeout = timeout_str.toInt() * 1000;
+            long seconds                 = cmd.getArg("t").getValue().toInt();
+            unsigned long attack_timeout = (seconds > 0) ? seconds*1000 : 0;
 
             // Number
             unsigned long max_pkts = cmd.getArg("n").getValue().toInt();
@@ -174,7 +174,7 @@ namespace cli {
 
                 if (attack_timeout > 0) {
                     debug("Stop after ");
-                    debug(timeout_str);
+                    debug(seconds);
                     debugln(" seconds");
                 }
 
@@ -227,13 +227,14 @@ namespace cli {
         cmd_deauth.addArg("n/um/ber", "0");
         cmd_deauth.addArg("r/ate", "20");
         cmd_deauth.setDescription(
-            "  -m or -mode: packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\n"
-            "  -ap:         access point IDs to attack\n"
-            "  -st:         station IDs to attack\n"
-            "  -mac:        manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\n"
-            "  -t or -time: attack timeout in seconds (default=300)\n"
-            "  -n or -num:  packet limit [>1] (default=0)\n"
-            "  -r or -rate: packets per second (default=20)"
+            "  Deauthenticate (disconnect) selected WiFi connections\n"
+            "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\n"
+            "  -ap:  access point IDs to attack\n"
+            "  -st:  station IDs to attack\n"
+            "  -mac: manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\n"
+            "  -t:   attack timeout in seconds (default=300)\n"
+            "  -n:   packet limit [>1] (default=0)\n"
+            "  -r:   packets per second (default=20)"
             );
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
@@ -244,7 +245,7 @@ namespace cli {
             StringList list(ssids, ",");
 
             // MAC from
-            String from_str = cmd.getArg("macfrom").getValue();
+            String from_str = cmd.getArg("from").getValue();
             uint8_t from[6];
 
             if (from_str.length() != 17) {
@@ -255,11 +256,11 @@ namespace cli {
 
             uint8_t last_byte = from[5];
 
-            debug("Sending from ");
+            debug("Sending beacons from ");
             debug(strh::mac(from));
 
             // MAC to
-            String to_str = cmd.getArg("macto").getValue();
+            String to_str = cmd.getArg("to").getValue();
             uint8_t to[6];
 
             if (to_str.length() != 17) {
@@ -279,8 +280,18 @@ namespace cli {
             uint8_t ch = cmd.getArg("ch").getValue().toInt();
 
             // Time
+            long seconds                 = cmd.getArg("t").getValue().toInt();
+            unsigned long attack_timeout = (seconds > 0) ? seconds*1000 : 0;
+
+            if (attack_timeout > 0) {
+                debug("Stop after ");
+                debug(seconds);
+                debugln(" seconds");
+            }
+
+            debugln("Type 'stop' or 'exit' to stop the attack");
+
             unsigned long start_time  = millis();
-            unsigned long run_time    = cmd.getArg("t").getValue().toInt() * 1000;
             unsigned long output_time = millis();
 
             unsigned long pkts_sent       = 0;
@@ -304,7 +315,7 @@ namespace cli {
                         pkts_per_second += packetinjector::beacon(ch, from, to, ssid.c_str(), wpa2);
                         delay(1);
 
-                        running = !(read_exit() || (millis() - start_time > run_time));
+                        running = !(read_exit() || (attack_timeout > 0 && millis() - start_time > attack_timeout));
                     }
                 }
 
@@ -324,11 +335,20 @@ namespace cli {
             debugln("Finished");
         });
         cmd_beacon.addArg("s/sid/s");
-        cmd_beacon.addArg("mac/from", "random");
-        cmd_beacon.addArg("macto", "FF:FF:FF:FF:FF:FF");
-        cmd_beacon.addArg("enc", "open");
-        cmd_beacon.addArg("ch", "1");
+        cmd_beacon.addArg("from,mac/from", "random");
+        cmd_beacon.addArg("to,macto", "FF:FF:FF:FF:FF:FF");
+        cmd_beacon.addArg("enc/ryption", "open");
+        cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("t/ime", "300");
+        cmd_beacon.setDescription(
+            "  Send WiFi network advertisement beacons\n"
+            "  -s:    network names (SSIDs) for example: \"test A\",\"test B\"\n"
+            "  -from: sender MAC address (default=random)\n"
+            "  -to:   receiver MAC address (default=broadcast)\n"
+            "  -enc:  encryption [open,wpa2] (default=open)\n"
+            "  -ch:   channel (default=1)\n"
+            "  -t:    attack timeout in seconds (default=300)"
+            );
 
         Command cmd_start = cli.addCommand("start", [](cmd* c) {
             String res;
@@ -497,10 +517,10 @@ namespace cli {
         cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
-            "  -m or -mode:     scan mode [ap,st,ap+st] (default=ap+st)\n"
-            "  -t or -time:     station scan time in seconds [>1] (default=14)\n"
-            "  -ch or -channel: 2.4 GHz channels for station scan [1-14] (default=all)\n"
-            "  -r or -retain:   Keep previous scan results"
+            "  -m:  scan mode [ap,st,ap+st] (default=ap+st)\n"
+            "  -t:  station scan time in seconds [>1] (default=14)\n"
+            "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\n"
+            "  -r:  Keep previous scan results"
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
