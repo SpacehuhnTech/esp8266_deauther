@@ -99,6 +99,33 @@ namespace scan {
         station_list_clear(&station_list);
     }
 
+    void search(bool ap, bool st, unsigned long time, uint16_t channels, bool retain) {
+        { // Error check
+            if (!ap && !st) {
+                debugln("ERROR: Invalid scan mode");
+                return;
+            }
+
+            if (st && (time <= 0)) {
+                debugln("ERROR: Station scan time equals 0");
+                return;
+            }
+
+            if (st && (channels == 0)) {
+                debugln("ERROR: No channels specified");
+                return;
+            }
+        }
+
+        if (!retain) {
+            if (ap) clearAPresults();
+            if (st) clearSTresults();
+        }
+
+        if (ap) searchAPs();
+        if (st) searchSTs(time, channels);
+    }
+
     void searchAPs() {
         debugln("Scanning for access points (WiFi networks)");
 
@@ -148,9 +175,9 @@ namespace scan {
         debug(time/1000);
         debugln(" seconds");
 
-        bool stop = false;
+        bool running = true;
 
-        for (uint8_t i = 0; i<14 && !stop; ++i) {
+        for (uint8_t i = 0; i<14 && running; ++i) {
             if ((channels >> i) & 0x01) {
                 debug("Sniffing on channel ");
                 debug(i+1);
@@ -167,9 +194,9 @@ namespace scan {
                 wifi_set_channel(i+1);
                 unsigned long start_time = millis();
 
-                while (!stop && millis() - start_time < channel_time) {
+                while (running && millis() - start_time < channel_time) {
                     delay(1);
-                    stop = cli::read_exit();
+                    running = !cli::read_exit();
                 }
             }
         }

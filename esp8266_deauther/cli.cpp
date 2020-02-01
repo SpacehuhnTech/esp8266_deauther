@@ -139,50 +139,48 @@ namespace cli {
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
-            // Parse scan time
-            int scan_time = cmd.getArg("t").getValue().toInt();
-            if (scan_time < 0) scan_time = -scan_time;
-            scan_time *= 1000;
+            unsigned long time = 0;
+            uint16_t channels  = 0;
 
-            // Parse channels
-            String channels      = cmd.getArg("ch").getValue();
-            uint16_t channel_reg = 0;
+            bool retain;
+            bool ap = false;
+            bool st = false;
 
-            StringList list(channels, ",");
+            { // Scan time
+                long seconds = cmd.getArg("t").getValue().toInt();
+                if (seconds > 0) time = seconds*1000;
+            }
 
-            while (list.available()) {
-                int channel_num = list.iterate().toInt();
+            { // Channels
+                String ch_str = cmd.getArg("ch").getValue();
+                StringList ch_list(ch_str, ",");
 
-                if ((channel_num >= 1) && (channel_num <= 14)) {
-                    channel_reg |= 1 << (channel_num-1);
+                while (ch_list.available()) {
+                    int ch = ch_list.iterate().toInt();
+
+                    if ((ch >= 1) && (ch <= 14)) {
+                        channels |= 1 << (ch-1);
+                    }
                 }
             }
 
-            // Parse retain flag
-            bool retain = cmd.getArg("r").isSet();
-
-            // Parse mode
-            String mode = cmd.getArg("m").getValue();
-            if (mode == "ap") {
-                if (!retain) {
-                    scan::clearAPresults();
-                }
-                scan::searchAPs();
-            } else if (mode == "st") {
-                if (!retain) {
-                    scan::clearSTresults();
-                }
-                scan::searchSTs(scan_time, channel_reg);
-            } else if (mode == "ap+st") {
-                if (!retain) {
-                    scan::clearAPresults();
-                    scan::clearSTresults();
-                }
-                scan::searchAPs();
-                scan::searchSTs(scan_time, channel_reg);
-            } else {
-                debugln("ERROR: Invalid scan mode");
+            { // Retain results
+                retain = cmd.getArg("r").isSet();
             }
+
+            { // Mode
+                String mode = cmd.getArg("m").getValue();
+                if (mode == "ap") {
+                    ap = true;
+                } else if (mode == "st") {
+                    st = true;
+                } else if (mode == "ap+st") {
+                    ap = true;
+                    st = true;
+                }
+            }
+
+            scan::search(ap, st, time, channels, retain);
         });
         cmd_scan.addArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
