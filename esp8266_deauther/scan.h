@@ -25,5 +25,8 @@ namespace scan {
     void printResults();
 
     ap_t* getAP(int id);
-    station_t* getStation(int id);
+    station_t* getST(int id);
+
+    int apResults();
+    int stResults();
 }

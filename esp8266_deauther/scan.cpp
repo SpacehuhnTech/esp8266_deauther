@@ -335,7 +335,7 @@ namespace scan {
         return h;
     }
 
-    station_t* getStation(int id) {
+    station_t* getST(int id) {
         int i        = 0;
         station_t* h = station_list.begin;
 
@@ -345,5 +345,13 @@ namespace scan {
         }
 
         return h;
+    }
+
+    int apResults() {
+        return ap_list.size;
+    }
+
+    int stResults() {
+        return station_list.size;
     }
 }
