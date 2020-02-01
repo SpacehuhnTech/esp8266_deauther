@@ -7,13 +7,33 @@
 #pragma once
 
 #include "StringList.h"
-#include "packetinjector.h"
+
+#define ENCRYPTION_OPEN 0
+// #define ENCRYPTION_WEP 1
+// #define ENCRYPTION_WPA 2
+#define ENCRYPTION_WPA2 3
+// #define ENCRYPTION_WPA_AUTO 4
+// #define ENCRYPTION_WPA3 5
 
 namespace attack {
     class TargetList;
     class Target;
 
     typedef struct target_t target_t;
+
+    class Target {
+        private:
+            target_t* ptr;
+
+        public:
+            Target(target_t* ptr);
+
+            uint8_t* from() const;
+            uint8_t* to() const;
+            uint8_t ch() const;
+
+            bool operator==(const Target& t) const;
+    };
 
     class TargetList {
         private:
@@ -37,20 +57,6 @@ namespace attack {
             int size();
     };
 
-    class Target {
-        private:
-            target_t* ptr;
-
-        public:
-            Target(target_t* ptr);
-
-            uint8_t* from() const;
-            uint8_t* to() const;
-            uint8_t ch() const;
-
-            bool operator==(const Target& t) const;
-    };
-
-    void beacon(StringList& ssid_list, uint8_t* from, uint8_t* to, Encryption enc, uint8_t ch, unsigned long timeout);
+    void beacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout);
     void deauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts);
 }

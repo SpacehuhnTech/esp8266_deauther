@@ -49,198 +49,6 @@ namespace cli {
         });
         cmd_help.setDescription("  Print the list of commands that you see right now");
 
-        Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
-            Command cmd(c);
-
-            attack::TargetList targets;
-
-            unsigned long timeout = 0;
-
-            unsigned long max_pkts;
-            unsigned long pkt_rate;
-
-            bool deauth   = false;
-            bool disassoc = false;
-
-            { // Read Access Point MACs
-                String ap_str = cmd.getArg("ap").getValue();
-                StringList list(ap_str, ",");
-
-                while (list.available()) {
-                    ap_t* ap = scan::getAP(list.iterate().toInt());
-                    if (ap) {
-                        targets.push(ap->bssid, mac::BROADCAST, ap->ch);
-                    }
-                }
-            }
-
-            { // Read Station MACs
-                String st_str = cmd.getArg("st").getValue();
-                StringList list(st_str, ",");
-
-                while (list.available()) {
-                    station_t* st = scan::getStation(list.iterate().toInt());
-                    if (st && st->ap) {
-                        targets.push(st->ap->bssid, st->mac, st->ap->ch);
-                    }
-                }
-            }
-
-            { // Read custom MACs
-                String mac_str = cmd.getArg("mac").getValue();
-
-                StringList target_list(mac_str, ",");
-
-                while (target_list.available()) {
-                    String target = target_list.iterate();
-                    StringList target_data(target, "-");
-
-                    if (target_data.size() != 3) continue;
-
-                    String mac_from_str = target_data.iterate();
-                    String mac_to_str   = target_data.iterate();
-                    String ch_str       = target_data.iterate();
-
-                    uint8_t mac_from[6];
-                    uint8_t mac_to[6];
-                    uint8_t ch;
-
-                    mac::fromStr(mac_from_str.c_str(), mac_from);
-                    mac::fromStr(mac_to_str.c_str(), mac_to);
-                    ch = ch_str.toInt();
-
-                    targets.push(mac_from, mac_to, ch);
-                }
-            }
-
-            { // Check MAC list
-                if (targets.size() == 0) {
-                    debugln("ERROR: No targets selected");
-                    return;
-                }
-            }
-
-            { // Time
-                long seconds = cmd.getArg("t").getValue().toInt();
-                if (seconds > 0) timeout = seconds*1000;
-            }
-
-            { // Number
-                max_pkts = cmd.getArg("n").getValue().toInt();
-            }
-
-            { // Rate
-                pkt_rate = cmd.getArg("r").getValue().toInt();
-            }
-
-            { // Mode
-                String mode = cmd.getArg("m").getValue();
-
-                if (mode == "deauth+disassoc") {
-                    deauth   = true;
-                    disassoc = true;
-                } else if (mode == "deauth") {
-                    deauth = true;
-                } else if (mode == "disassoc") {
-                    disassoc = true;
-                } else {
-                    debugln("ERROR: Invalid mode");
-                    return;
-                }
-            }
-
-            attack::deauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts);
-        });
-        cmd_deauth.addArg("m/ode", "deauth+disassoc");
-        cmd_deauth.addArg("ap", "");
-        cmd_deauth.addArg("st/ation", "");
-        cmd_deauth.addArg("mac", "");
-        cmd_deauth.addArg("t/ime/out", "300");
-        cmd_deauth.addArg("n/um/ber", "0");
-        cmd_deauth.addArg("r/ate", "20");
-        cmd_deauth.setDescription(
-            "  Deauthenticate (disconnect) selected WiFi connections\n"
-            "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\n"
-            "  -ap:  access point IDs to attack\n"
-            "  -st:  station IDs to attack\n"
-            "  -mac: manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\n"
-            "  -t:   attack timeout in seconds (default=300)\n"
-            "  -n:   packet limit [>1] (default=0)\n"
-            "  -r:   packets per second (default=20)"
-            );
-
-        Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
-            Command cmd(c);
-
-            StringList ssid_list;
-
-            uint8_t from[6];
-            uint8_t to[6];
-
-            Encryption enc;
-
-            uint8_t ch;
-
-            unsigned long timeout = 0;
-
-            { // SSIDs
-                String ssids = cmd.getArg("ssid").getValue();
-                ssid_list.parse(ssids, ",");
-            }
-
-            { // MAC from
-                String from_str = cmd.getArg("from").getValue();
-
-                if (from_str.length() != 17) {
-                    vendor::randomize(from);
-                } else {
-                    mac::fromStr(from_str.c_str(), from);
-                }
-            }
-
-            { // MAC to
-                String to_str = cmd.getArg("to").getValue();
-
-                if (to_str.length() != 17) {
-                    memcpy(to, mac::BROADCAST, 6);
-                } else {
-                    mac::fromStr(to_str.c_str(), to);
-                }
-            }
-
-            { // Encryption
-                String enc_str = cmd.getArg("enc").getValue();
-                if (enc_str == "wpa2") enc = Encryption::WPA2;
-                else enc = Encryption::OPEN;
-            }
-
-            { // Channel
-                ch = cmd.getArg("ch").getValue().toInt();
-            }
-
-            { // Time
-                long seconds = cmd.getArg("t").getValue().toInt();
-                if (seconds > 0) timeout = seconds*1000;
-            }
-
-            attack::beacon(ssid_list, from, to, enc, ch, timeout);
-        });
-        cmd_beacon.addArg("s/sid/s");
-        cmd_beacon.addArg("from,mac/from", "random");
-        cmd_beacon.addArg("to,macto", "FF:FF:FF:FF:FF:FF");
-        cmd_beacon.addArg("enc/ryption", "open");
-        cmd_beacon.addArg("ch/annel", "1");
-        cmd_beacon.addArg("t/ime", "300");
-        cmd_beacon.setDescription(
-            "  Send WiFi network advertisement beacons\n"
-            "  -s:    network names (SSIDs) for example: \"test A\",\"test B\"\n"
-            "  -from: sender MAC address (default=random)\n"
-            "  -to:   receiver MAC address (default=broadcast)\n"
-            "  -enc:  encryption [open,wpa2] (default=open)\n"
-            "  -ch:   channel (default=1)\n"
-            "  -t:    attack timeout in seconds (default=300)"
-            );
-
         Command cmd_start = cli.addCommand("start", [](cmd* c) {
             String res;
             String cmd;
@@ -328,32 +136,6 @@ namespace cli {
         });
         cmd_start.setDescription("  Start a guided tour through the functions of this device");
 
-        Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
-            for (uint8_t i = 0; i<100; ++i) {
-                debugln();
-            }
-        });
-        cmd_clear.setDescription("  Clear serial output (by spamming line breaks :P)");
-
-        Command cmd_ram = cli.addCommand("ram", [](cmd* c) {
-            debug("Size: ");
-            debug(81920);
-            debugln(" byte");
-
-            debug("Used: ");
-            debug(81920 - system_get_free_heap_size());
-            debug(" byte (");
-            debug(100 - (system_get_free_heap_size() / (81920 / 100)));
-            debugln("%)");
-
-            debug("Free: ");
-            debug(system_get_free_heap_size());
-            debug(" byte (");
-            debug(system_get_free_heap_size() / (81920 / 100));
-            debugln("%)");
-        });
-        cmd_ram.setDescription("  Print memory usage");
-
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
@@ -418,6 +200,213 @@ namespace cli {
             scan::printResults();
         });
         cmd_results.setDescription("  Print list of scan results [access points (networks) and stations (clients)]");
+
+        Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
+            Command cmd(c);
+
+            StringList ssid_list;
+
+            uint8_t from[6];
+            uint8_t to[6];
+
+            int enc = ENCRYPTION_OPEN;
+
+            uint8_t ch;
+
+            unsigned long timeout = 0;
+
+            { // SSIDs
+                String ssids = cmd.getArg("ssid").getValue();
+                ssid_list.parse(ssids, ",");
+            }
+
+            { // MAC from
+                String from_str = cmd.getArg("from").getValue();
+
+                if (from_str.length() != 17) {
+                    vendor::randomize(from);
+                } else {
+                    mac::fromStr(from_str.c_str(), from);
+                }
+            }
+
+            { // MAC to
+                String to_str = cmd.getArg("to").getValue();
+
+                if (to_str.length() != 17) {
+                    memcpy(to, mac::BROADCAST, 6);
+                } else {
+                    mac::fromStr(to_str.c_str(), to);
+                }
+            }
+
+            { // Encryption
+                String enc_str = cmd.getArg("enc").getValue();
+                if (enc_str == "wpa2") enc = ENCRYPTION_WPA2;
+            }
+
+            { // Channel
+                ch = cmd.getArg("ch").getValue().toInt();
+            }
+
+            { // Time
+                long seconds = cmd.getArg("t").getValue().toInt();
+                if (seconds > 0) timeout = seconds*1000;
+            }
+
+            attack::beacon(ssid_list, from, to, enc, ch, timeout);
+        });
+        cmd_beacon.addArg("s/sid/s");
+        cmd_beacon.addArg("from,mac/from", "random");
+        cmd_beacon.addArg("to,macto", "FF:FF:FF:FF:FF:FF");
+        cmd_beacon.addArg("enc/ryption", "open");
+        cmd_beacon.addArg("ch/annel", "1");
+        cmd_beacon.addArg("t/ime", "300");
+        cmd_beacon.setDescription(
+            "  Send WiFi network advertisement beacons\n"
+            "  -s:    network names (SSIDs) for example: \"test A\",\"test B\"\n"
+            "  -from: sender MAC address (default=random)\n"
+            "  -to:   receiver MAC address (default=broadcast)\n"
+            "  -enc:  encryption [open,wpa2] (default=open)\n"
+            "  -ch:   channel (default=1)\n"
+            "  -t:    attack timeout in seconds (default=300)"
+            );
+
+        Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
+            Command cmd(c);
+
+            attack::TargetList targets;
+
+            unsigned long timeout = 0;
+
+            unsigned long max_pkts;
+            unsigned long pkt_rate;
+
+            bool deauth   = false;
+            bool disassoc = false;
+
+            { // Read Access Point MACs
+                String ap_str = cmd.getArg("ap").getValue();
+                StringList list(ap_str, ",");
+
+                while (list.available()) {
+                    ap_t* ap = scan::getAP(list.iterate().toInt());
+                    if (ap) {
+                        targets.push(ap->bssid, mac::BROADCAST, ap->ch);
+                    }
+                }
+            }
+
+            { // Read Station MACs
+                String st_str = cmd.getArg("st").getValue();
+                StringList list(st_str, ",");
+
+                while (list.available()) {
+                    station_t* st = scan::getStation(list.iterate().toInt());
+                    if (st && st->ap) {
+                        targets.push(st->ap->bssid, st->mac, st->ap->ch);
+                    }
+                }
+            }
+
+            { // Read custom MACs
+                String mac_str = cmd.getArg("mac").getValue();
+
+                StringList target_list(mac_str, ",");
+
+                while (target_list.available()) {
+                    String target = target_list.iterate();
+                    StringList target_data(target, "-");
+
+                    if (target_data.size() != 3) continue;
+
+                    String mac_from_str = target_data.iterate();
+                    String mac_to_str   = target_data.iterate();
+                    String ch_str       = target_data.iterate();
+
+                    uint8_t mac_from[6];
+                    uint8_t mac_to[6];
+                    uint8_t ch;
+
+                    mac::fromStr(mac_from_str.c_str(), mac_from);
+                    mac::fromStr(mac_to_str.c_str(), mac_to);
+                    ch = ch_str.toInt();
+
+                    targets.push(mac_from, mac_to, ch);
+                }
+            }
+
+            { // Time
+                long seconds = cmd.getArg("t").getValue().toInt();
+                if (seconds > 0) timeout = seconds*1000;
+            }
+
+            { // Number
+                max_pkts = cmd.getArg("n").getValue().toInt();
+            }
+
+            { // Rate
+                pkt_rate = cmd.getArg("r").getValue().toInt();
+            }
+
+            { // Mode
+                String mode = cmd.getArg("m").getValue();
+
+                if (mode == "deauth+disassoc") {
+                    deauth   = true;
+                    disassoc = true;
+                } else if (mode == "deauth") {
+                    deauth = true;
+                } else if (mode == "disassoc") {
+                    disassoc = true;
+                }
+            }
+
+            attack::deauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts);
+        });
+        cmd_deauth.addArg("m/ode", "deauth+disassoc");
+        cmd_deauth.addArg("ap", "");
+        cmd_deauth.addArg("st/ation", "");
+        cmd_deauth.addArg("mac", "");
+        cmd_deauth.addArg("t/ime/out", "300");
+        cmd_deauth.addArg("n/um/ber", "0");
+        cmd_deauth.addArg("r/ate", "20");
+        cmd_deauth.setDescription(
+            "  Deauthenticate (disconnect) selected WiFi connections\n"
+            "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\n"
+            "  -ap:  access point IDs to attack\n"
+            "  -st:  station IDs to attack\n"
+            "  -mac: manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\n"
+            "  -t:   attack timeout in seconds (default=300)\n"
+            "  -n:   packet limit [>1] (default=0)\n"
+            "  -r:   packets per second (default=20)"
+            );
+
+        Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
+            for (uint8_t i = 0; i<100; ++i) {
+                debugln();
+            }
+        });
+        cmd_clear.setDescription("  Clear serial output (by spamming line breaks :P)");
+
+        Command cmd_ram = cli.addCommand("ram", [](cmd* c) {
+            debug("Size: ");
+            debug(81920);
+            debugln(" byte");
+
+            debug("Used: ");
+            debug(81920 - system_get_free_heap_size());
+            debug(" byte (");
+            debug(100 - (system_get_free_heap_size() / (81920 / 100)));
+            debugln("%)");
+
+            debug("Free: ");
+            debug(system_get_free_heap_size());
+            debug(" byte (");
+            debug(system_get_free_heap_size() / (81920 / 100));
+            debugln("%)");
+        });
+        cmd_ram.setDescription("  Print memory usage");
     }
 
     void parse(const char* input) {
@@ -435,7 +424,9 @@ namespace cli {
     String read() {
         String input = debug_read();
 
-        if (input.charAt(input.length()-1) == '\r') input.remove(input.length()-1);
+        if (input.charAt(input.length()-1) == '\r') {
+            input.remove(input.length()-1);
+        }
 
         debug("# ");
         debugln(input);
