@@ -506,8 +506,10 @@ namespace attack {
                 }
                 running = !(cli::read_exit()
                             || (timeout > 0 && millis() - start_time > timeout)
-                            || (pkts > 0 && pkts_sent > pkts));
+                            || (pkts > 0 && pkts_sent >= pkts));
             }
         }
+
+        debugln("Deauth attack stopped");
     }
 }

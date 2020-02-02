@@ -69,107 +69,218 @@ namespace cli {
 
             debugln("Good morning friend.");
 
-            // Command
-            do {
-                debugln("What can I do for you today?\n"
-                        "Remember that you can always escape by typing 'exit'\n"
-                        "  scan: Search for WiFi networks and clients\n"
-                        "  beacon: Send WiFi network advertisement beacons\n"
-                        "  deauth: Disrupt WiFi connections"
-                        );
-                CLI_READ_RES();
-            } while (!(res == "scan" || res == "beacon" || res == "deauth"));
+            { // Command
+                do {
+                    debugln("What can I do for you today?\n"
+                            "Remember that you can always escape by typing 'exit'\n"
+                            "  scan:   Search for WiFi networks and clients\n"
+                            "  beacon: Send WiFi network advertisement beacons\n"
+                            "  deauth: Disrupt WiFi connections"
+                            );
+                    CLI_READ_RES();
+                } while (!(res == "scan" || res == "beacon" || res == "deauth"));
+
+                cmd += res;
+            }
 
             if (res == "scan") {
-                // Scan mode
-                do {
-                    debugln("Scan mode\n"
-                            "  ap: Access Points (WiFi networks)\n"
-                            "  st: Stations (WiFi clients)\n"
-                            "  ap+st: Access Points and Stations");
-                    CLI_READ_RES();
-                } while (!(res == "ap" || res == "st" || res == "ap+st"));
-
-                cmd += "scan -m " + res;
+                { // Scan mode
+                    do {
+                        debugln("Waht do you wish to scan for? [default=ap+st]\n"
+                                "  ap:    Access points (WiFi networks)\n"
+                                "  st:    Stations (WiFi client devices)\n"
+                                "  ap+st: Access points and stations");
+                        CLI_READ_RES();
+                    } while (!(res == "ap" || res == "st" || res == "ap+st"));
+                    if (res != "ap+st") cmd += " -m " + res;
+                }
 
                 // Scan time and channel(s)
                 if (res != "ap") {
-// Scan time
-                    do {
-                        debugln("Scan time\n"
-                                "  >1: Station scan time in seconds");
-                        CLI_READ_RES();
-                    } while (!(res.toInt() > 0));
-                    cmd += " -t " + res;
+                    { // Scan time
+                        do {
+                            debugln("Scan for how long? [default=14]\n"
+                                    "  >1: Station scan time in seconds");
+                            CLI_READ_RES();
+                        } while (!(res.toInt() > 0));
+                        if (res != "14") cmd += " -t " + res;
+                    }
 
-// Scan on channel(s)
-                    debugln("Scan on channel(s)\n"
-                            "  1-14: WiFi channel(s) to search on (for example: 1,6,11)");
-                    CLI_READ_RES();
-                    cmd += " -ch " + res;
+                    { // Scan on channel(s)
+                        debugln("Scan on wich channel(s)? [default=all]\n"
+                                "  1-14: WiFi channel(s) to search on (for example: 1,6,11)");
+                        CLI_READ_RES();
+                        if (res != "all") cmd += " -ch " + res;
+                    }
                 }
 
-                // Retain scan results
-                do {
-                    debugln("Retain previous scan results\n"
-                            "  y: Yes\n"
-                            "  n: No");
-                    CLI_READ_RES();
-                } while (!(res == String('y') || res == String('n')));
+                { // Retain scan results
+                    do {
+                        debugln("Keep previous scan results? [default=n]\n"
+                                "  y: Yes\n"
+                                "  n: No");
+                        CLI_READ_RES();
+                    } while (!(res == String('y') || res == String('n')));
 
-                if (res == String('y')) {
-                    cmd += " -r";
+                    if (res == String('y')) cmd += " -r";
                 }
             } else if (res == "beacon") {
-                // SSIDs
-                debugln("SSIDs (network names) for example \"network A\",\"network B\"\n");
-                CLI_READ_RES();
-                cmd += "beacon -s " + res;
-
-                // From
-                do {
-                    debugln("Transmitter and sender MAC address\n"
-                            "  for example '00:20:91:aa:bb:5cc\n"
-                            "  random: generate random MAC address");
+                { // SSIDs
+                    debugln("Which network names do you wish to advertise?\n"
+                            "  for example: \"network A\",\"network B\")");
                     CLI_READ_RES();
-                } while (!(res.length() == 17 || res == "random"));
-                cmd += " -from " + res;
+                    cmd += " -s " + res;
+                }
 
-                // To
-                do {
-                    debugln("Receiver MAC address\n"
-                            "  for example '00:20:91:aa:bb:5cc\n"
-                            "  broadcast: visible to all devices");
-                    CLI_READ_RES();
-                } while (!(res.length() == 17 || res == "broadcast"));
-                cmd += " -to " + res;
+                { // From
+                    do {
+                        debugln("Who is the transmitter/sender? [default=random]\n"
+                                "  MAC address: for example '00:20:91:aa:bb:5c\n"
+                                "  random:      generate random MAC address");
+                        CLI_READ_RES();
+                    } while (!(res.length() == 17 || res == "random"));
+                    if (res != "random") cmd += " -from " + res;
+                }
 
-                // Encryption
-                do {
-                    debugln("Network encryption\n"
-                            "  open: Open network (no password)\n"
-                            "  wpa2: WPA2 protected network");
-                    CLI_READ_RES();
-                } while (!(res == "open" || res == "wpa2"));
-                cmd += " -enc " + res;
+                { // To
+                    do {
+                        debugln("Who is the receiver? [default=broadcast]\n"
+                                "  MAC address: for example 00:20:91:aa:bb:5cc\n"
+                                "  broadcast:   send to everyone");
+                        CLI_READ_RES();
+                    } while (!(res.length() == 17 || res == "broadcast"));
+                    if (res != "broadcast") cmd += " -to " + res;
+                }
 
-                // Channel
-                do {
-                    debugln("Send on channel\n"
-                            "  1-14: WiFi channel to send packets on");
-                    CLI_READ_RES();
-                } while (!(res.toInt() >= 1 && res.toInt() <= 14));
-                cmd += " -ch " + res;
+                { // Encryption
+                    do {
+                        debugln("What encryption should it use? [default=open]\n"
+                                "  open: no encryption, an open network without a password\n"
+                                "  wpa2: WPA2 protected network");
+                        CLI_READ_RES();
+                    } while (!(res == "open" || res == "wpa2"));
+                    cmd += " -enc " + res;
+                }
 
-                // Time
-                do {
-                    debugln("Stop attack\n"
-                            "   0: Never\n"
-                            "  >0: After x seconds");
-                    CLI_READ_RES();
-                } while (!(res.toInt() >= 0));
-                cmd += " -t " + res;
-            } else if (res == "deauth") {}
+                { // Channel
+                    do {
+                        debugln("Which channel should be used? [default=1]\n"
+                                "  1-14: WiFi channel to send packets on");
+                        CLI_READ_RES();
+                    } while (!(res.toInt() >= 1 && res.toInt() <= 14));
+                    if (res != "1") cmd += " -ch " + res;
+                }
+
+                { // Time
+                    do {
+                        debugln("How long should the attack last? [default=300]\n"
+                                "   0: Infinite\n"
+                                "  >0: Stop after x seconds");
+                        CLI_READ_RES();
+                    } while (!(res.toInt() >= 0));
+                    if (res != "300") cmd += " -t " + res;
+                }
+            } else if (res == "deauth") {
+                { // Target
+                    do {
+                        debugln("What do you want to deauthenticate?\n"
+                                "  ap:  a network\n"
+                                "  st:  a client device\n"
+                                "  mac: enter MAC addresses manually");
+                        CLI_READ_RES();
+                    } while (!(res == "ap" || res == "st" || res == "mac"));
+                    cmd += " -"+res;
+
+                    if (res == "ap") {
+                        if (scan::apResults() == 0) {
+                            debugln("ERROR: No access points in scan results.\n"
+                                    "Type 'scan -m ap' to search for access points");
+                            return;
+                        }
+                        scan::printAPs();
+
+                        debugln("Select access point(s) to attack\n"
+                                "  >=0: ID(s) to select for the attack");
+                        CLI_READ_RES();
+
+                        cmd += " "+res;
+                    } else if (res == "st") {
+                        if (scan::stResults() == 0) {
+                            debugln("ERROR: No stations in scan results.\n"
+                                    "Type 'scan -m st' to search for stations");
+                            return;
+                        }
+                        scan::printSTs();
+
+                        debugln("Select station(s) to attack\n"
+                                "  >=0: ID(s) to select for the attack");
+                        CLI_READ_RES();
+
+                        cmd += " "+res;
+                    } else if (res == "mac") {
+                        debugln("Target(s) to attack\n"
+                                "  MacFrom-MacTo-Channel for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'");
+                        CLI_READ_RES();
+
+                        cmd += " "+res;
+                    }
+                }
+
+                { // Noob filer
+                    do {
+                        debugln("Do you own or have permission to attack the selected devices?\n"
+                                "  yes\n"
+                                "  no");
+                        CLI_READ_RES();
+                    } while (!(res == "yes" || res == "no"));
+                    if (res == "no") {
+                        debugln("Then you should not attack them.\n"
+                                "It could get you in serious trouble.\n"
+                                "Please use this tool respectfully!");
+                        return;
+                    }
+                }
+
+                { // Time
+                    do {
+                        debugln("How long should the attack last? [default=300]\n"
+                                "   0: Infinite\n"
+                                "  >0: Stop after x seconds");
+                        CLI_READ_RES();
+                    } while (!(res.toInt() >= 0));
+                    if (res != "300") cmd += " -t " + res;
+                }
+
+                { // Number of packets
+                    do {
+                        debugln("How many packets shall be sent? [default=0]\n"
+                                "   0: Infinite\n"
+                                "  >0: Send x packets");
+                        CLI_READ_RES();
+                    } while (!(res.toInt() >= 0));
+                    if (res != "0") cmd += " -n " + res;
+                }
+
+                { // Packet rate
+                    do {
+                        debugln("At which speed/rate? [default=20]\n"
+                                "  >0 : Packets per second");
+                        CLI_READ_RES();
+                    } while (!(res.toInt() > 0));
+                    if (res != "20") cmd += " -r " + res;
+                }
+
+                { // Mode
+                    do {
+                        debugln("What kind of packets shall be sent? [default=deauth+disassoc]\n"
+                                "deauth:          Deauthentication\n"
+                                "disassoc:        Disassociation\n"
+                                "deauth+disassoc: Both");
+                        CLI_READ_RES();
+                    } while (!(res == "deauth" || res == "disassoc" || res == "deauth+disassoc"));
+                    if (res != "deauth+disassoc") cmd += " -m " + res;
+                }
+            }
 
             // Result
             for (int i = 0; i<cmd.length()+2; ++i) debug('#');
@@ -344,7 +455,7 @@ namespace cli {
                 StringList list(st_str, ",");
 
                 while (list.available()) {
-                    station_t* st = scan::getStation(list.iterate().toInt());
+                    station_t* st = scan::getST(list.iterate().toInt());
                     if (st && st->ap) {
                         targets.push(st->ap->bssid, st->mac, st->ap->ch);
                     }
