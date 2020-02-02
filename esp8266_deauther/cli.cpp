@@ -36,6 +36,13 @@ namespace cli {
     void begin() {
         debug_init();
 
+        debugln("This is a tool.\n"
+                "It's neither good nor bad.\n"
+                "Use it to study and test.\n"
+                "Never use it to create harm or damage!\n"
+                "\n"
+                "The continuation of this project counts on you!\n");
+
         cli.setOnError([](cmd_error* e) {
             CommandError cmdError(e); // Create wrapper object
 
