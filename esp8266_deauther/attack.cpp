@@ -246,6 +246,31 @@ namespace attack {
         h = NULL;
     }
 
+    void TargetList::move(TargetList& t) {
+        target_t* th = t.list_begin;
+
+        while (th) {
+            // Push to list
+            if (!list_begin) {
+                list_begin = th;
+                list_end   = th;
+                h          = list_begin;
+            } else {
+                list_end->next = th;
+                list_end       = th;
+            }
+
+            ++(list_size);
+
+            th = th->next;
+        }
+
+        t.list_begin = NULL;
+        t.list_end   = NULL;
+        t.list_size  = 0;
+        t.h          = NULL;
+    }
+
     void TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
         // Create new target
         target_t* new_target = (target_t*)malloc(sizeof(target_t));

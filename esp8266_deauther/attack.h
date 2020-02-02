@@ -39,12 +39,15 @@ namespace attack {
         private:
             target_t* list_begin = NULL;
             target_t* list_end   = NULL;
-            int list_size        = 0;
+
+            int list_size = 0;
 
             target_t* h = NULL;
 
         public:
             ~TargetList();
+
+            void move(TargetList& t);
 
             void push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
 
