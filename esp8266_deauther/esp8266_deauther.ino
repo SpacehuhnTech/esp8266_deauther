@@ -7,6 +7,7 @@
 #include "debug.h"
 #include "cli.h"
 #include "scan.h"
+#include "attack.h"
 
 void setup() {
     cli::begin();
@@ -14,4 +15,5 @@ void setup() {
 
 void loop() {
     cli::update();
+    attack::update();
 }

