@@ -51,6 +51,11 @@ namespace attack {
     #include "attack_deauth.h"
     #include "attack_beacon.h"
 
+    void stop() {
+        stopBeacon();
+        stopDeauth();
+    }
+
     void update() {
         updateBeacon();
         updateDeauth();

@@ -21,6 +21,11 @@ namespace attack {
     void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout);
     void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts);
 
+    void stopBeacon();
+    void stopDeauth();
+
+    void stop();
+
     void updateBeacon();
     void updateDeauth();
 

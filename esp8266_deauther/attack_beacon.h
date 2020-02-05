@@ -198,13 +198,19 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
     beacon_data.pkt_interval    = 100;
 }
 
+void stopBeacon() {
+    if (b.ssids.size() > 0) {
+        beacon_data.ssids.clear();
+        debugln("Beacon attack stopped");
+    }
+}
+
 void updateBeacon() {
     beacon_attack_data_t& b = beacon_data;
 
     if (b.ssids.size() > 0) {
         if (/*cli::read_exit() || */ ((b.timeout > 0) && (millis() - b.start_time > b.timeout))) {
-            b.ssids.clear();
-            debugln("Beacon attack stopped");
+            stopBeacon();
             return;
         }
 
@@ -230,6 +236,7 @@ void updateBeacon() {
         if (millis() - b.output_time >= 1000) {
             b.pkts_sent += b.pkts_per_second;
 
+            debug("Beacon: ");
             debug(b.pkts_per_second);
             debug(" pkts/s, ");
             debug(b.pkts_sent);

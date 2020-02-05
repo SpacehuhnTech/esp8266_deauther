@@ -560,6 +560,11 @@ namespace cli {
             debugln("%)");
         });
         cmd_ram.setDescription("  Print memory usage");
+
+        Command cmd_stop = cli.addCommand("stop", [](cmd* c) {
+            attack::stop();
+        });
+        cmd_stop.setDescription("  Stop all attacks");
     }
 
     void parse(const char* input) {

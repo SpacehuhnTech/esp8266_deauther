@@ -126,6 +126,13 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
     deauth_data.pkt_interval    = (1000/rate) * (deauth+disassoc);
 }
 
+void stopDeauth() {
+    if (b.ssids.size() > 0) {
+        deauth_data.targets.clear();
+        debugln("Deauth attack stopped");
+    }
+}
+
 void updateDeauth() {
     deauth_attack_data_t& d = deauth_data;
 
@@ -134,14 +141,14 @@ void updateDeauth() {
              || */
             ((d.timeout > 0) && (millis() - d.start_time > d.timeout))
             || ((d.pkts > 0) && (d.pkts_sent >= d.pkts))) {
-            d.targets.clear();
-            debugln("Deauth attack stopped");
+            stopDeauth();
             return;
         }
 
         if (millis() - d.output_time >= 1000) {
             d.pkts_sent += d.pkts_per_second;
 
+            debug("Deauth: ");
             debug(d.pkts_per_second);
             debug(" pkts/s, ");
             debug(d.pkts_sent);
