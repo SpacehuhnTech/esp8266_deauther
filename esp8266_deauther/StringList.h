@@ -28,6 +28,8 @@ class StringList {
         StringList(const String& input, String delimiter);
         ~StringList();
 
+        void moveFrom(StringList& sl);
+
         void parse(const String& input, String delimiter);
 
         String get(int i);
@@ -37,4 +39,6 @@ class StringList {
 
         bool available() const;
         int size() const;
+
+        void clear();
 };

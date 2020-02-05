@@ -22,20 +22,32 @@ StringList::StringList(const String& input, String delimiter) {
 }
 
 StringList::~StringList() {
-    h = list_begin;
+    clear();
+}
 
-    while (h) {
-        item_t* to_delete = h;
-        h = h->next;
-        free(to_delete->ptr);
-        free(to_delete);
+void StringList::moveFrom(StringList& sl) {
+    item_t* ih = sl.list_begin;
+
+    while (ih) {
+        // Push to list
+        if (!list_begin) {
+            list_begin = ih;
+            list_end   = ih;
+            h          = list_begin;
+        } else {
+            list_end->next = ih;
+            list_end       = ih;
+        }
+
+        ++(list_size);
+
+        ih = ih->next;
     }
 
-    list_begin = NULL;
-    list_end   = NULL;
-    list_size  = 0;
-
-    h = NULL;
+    sl.list_begin = NULL;
+    sl.list_end   = NULL;
+    sl.list_size  = 0;
+    sl.h          = NULL;
 }
 
 void StringList::parse(const String& input, String delimiter) {
@@ -96,4 +108,21 @@ bool StringList::available() const {
 
 int StringList::size() const {
     return list_size;
+}
+
+void StringList::clear() {
+    h = list_begin;
+
+    while (h) {
+        item_t* to_delete = h;
+        h = h->next;
+        free(to_delete->ptr);
+        free(to_delete);
+    }
+
+    list_begin = NULL;
+    list_end   = NULL;
+    list_size  = 0;
+
+    h = NULL;
 }
