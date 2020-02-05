@@ -47,22 +47,10 @@ bool Target::operator==(const Target& t) const {
 
 // ========== TargetList =========== //
 TargetList::~TargetList() {
-    h = list_begin;
-
-    while (h) {
-        target_t* to_delete = h;
-        h = h->next;
-        free(to_delete);
-    }
-
-    list_begin = NULL;
-    list_end   = NULL;
-    list_size  = 0;
-
-    h = NULL;
+    clear();
 }
 
-void TargetList::move(TargetList& t) {
+void TargetList::moveFrom(TargetList& t) {
     target_t* th = t.list_begin;
 
     while (th) {
@@ -154,4 +142,20 @@ bool TargetList::available() {
 
 int TargetList::size() {
     return list_size;
+}
+
+void TargetList::clear() {
+    h = list_begin;
+
+    while (h) {
+        target_t* to_delete = h;
+        h = h->next;
+        free(to_delete);
+    }
+
+    list_begin = NULL;
+    list_end   = NULL;
+    list_size  = 0;
+
+    h = NULL;
 }

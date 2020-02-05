@@ -40,7 +40,7 @@ class TargetList {
     public:
         ~TargetList();
 
-        void move(TargetList& t);
+        void moveFrom(TargetList& t);
 
         void push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
 
@@ -51,4 +51,6 @@ class TargetList {
 
         bool available();
         int size();
+
+        void clear();
 };
