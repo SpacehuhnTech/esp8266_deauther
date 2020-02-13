@@ -16,5 +16,5 @@ namespace mac {
     bool multicast(const uint8_t* mac);
     bool equals(const uint8_t* macA, const uint8_t* macB);
 
-    void fromStr(const char* str, uint8_t* mac);
+    void fromStr(uint8_t* mac, const char* str);
 }

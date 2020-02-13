@@ -380,7 +380,7 @@ namespace cli {
                 if (from_str.length() != 17) {
                     vendor::randomize(from);
                 } else {
-                    mac::fromStr(from_str.c_str(), from);
+                    mac::fromStr(from, from_str.c_str());
                 }
             }
 
@@ -390,7 +390,7 @@ namespace cli {
                 if (to_str.length() != 17) {
                     memcpy(to, mac::BROADCAST, 6);
                 } else {
-                    mac::fromStr(to_str.c_str(), to);
+                    mac::fromStr(to, to_str.c_str());
                 }
             }
 
@@ -482,8 +482,8 @@ namespace cli {
                     uint8_t mac_to[6];
                     uint8_t ch;
 
-                    mac::fromStr(mac_from_str.c_str(), mac_from);
-                    mac::fromStr(mac_to_str.c_str(), mac_to);
+                    mac::fromStr(mac_from, mac_from_str.c_str());
+                    mac::fromStr(mac_to, mac_to_str.c_str());
                     ch = ch_str.toInt();
 
                     targets.push(mac_from, mac_to, ch);
