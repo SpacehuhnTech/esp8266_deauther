@@ -30,6 +30,9 @@ class StringList {
 
         void moveFrom(StringList& sl);
 
+        void push(String str);
+        String popFirst();
+
         void parse(const String& input, String delimiter);
 
         String get(int i);

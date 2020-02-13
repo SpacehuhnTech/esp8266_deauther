@@ -50,6 +50,43 @@ void StringList::moveFrom(StringList& sl) {
     sl.h          = NULL;
 }
 
+void StringList::push(String str) {
+    item_t* item = (item_t*)malloc(sizeof(item_t));
+
+    item->ptr  = stringCopy(str.c_str(), str.length());
+    item->next = NULL;
+
+    if (!list_begin) {
+        list_begin = item;
+        list_end   = item;
+        h          = list_begin;
+    } else {
+        list_end->next = item;
+        list_end       = item;
+    }
+
+    ++list_size;
+}
+
+String StringList::popFirst() {
+    String str(list_begin->ptr);
+
+    item_t* next = list_begin->next;
+
+    free(list_begin);
+
+    if (next) {
+        list_begin = next;
+        h          = list_begin;
+    } else {
+        list_begin = NULL;
+        list_end   = NULL;
+        h          = NULL;
+    }
+
+    return str;
+}
+
 void StringList::parse(const String& input, String delimiter) {
     int len           = input.length();
     int delimiter_len = delimiter.length();

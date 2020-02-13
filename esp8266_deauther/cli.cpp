@@ -30,7 +30,8 @@ extern "C" {
 
 namespace cli {
     // ===== PRIVATE ===== //
-    SimpleCLI cli; // !< Instance of SimpleCLI library
+    SimpleCLI  cli;     // !< Instance of SimpleCLI library
+    StringList history; // !< Command history
 
     // ===== PUBLIC ===== //
     void begin() {
@@ -565,6 +566,18 @@ namespace cli {
             attack::stop();
         });
         cmd_stop.setDescription("  Stop all attacks");
+
+        Command cmd_history = cli.addCommand("history", [](cmd* c) {
+            debugln("Command history:");
+
+            history.begin();
+
+            while (history.available()) {
+                debug("  ");
+                debugln(history.iterate());
+            }
+        });
+        cmd_history.setDescription("  Print previous 10 commands");
     }
 
     void parse(const char* input) {
@@ -608,7 +621,11 @@ namespace cli {
     void update() {
         if (debug_available()) {
             String input = debug_read();
+
             cli::parse(input.c_str());
+
+            history.push(input);
+            if (history.size() > 10) history.popFirst();
         }
     }
 }
