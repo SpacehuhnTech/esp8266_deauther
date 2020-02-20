@@ -109,7 +109,7 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
             debugln(" packets");
         }
 
-        debugln("Type 'stop' or 'exit' to stop the attack");
+        debugln("Type 'stop' to stop the attack");
     }
 
     deauth_data.targets.moveFrom(targets);

@@ -181,7 +181,7 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
             debug(timeout/1000);
             debugln(" seconds");
         }
-        debugln("Type 'stop' or 'exit' to stop the attack");
+        debugln("Type 'stop' to stop the attack");
     }
 
     beacon_data.ssids.moveFrom(ssid_list);

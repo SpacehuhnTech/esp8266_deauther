@@ -21,9 +21,9 @@ extern "C" {
   #include "user_interface.h"
 }
 
-#define CLI_READ_RES()\
-    res = read_and_wait();\
-    if (res == "exit") {\
+#define CLI_READ_RES(_DEFAULT)\
+    res = read_and_wait(_DEFAULT);\
+    if (res == "exit" || res == "stop") {\
         debugln("Ok byeee");\
         return;\
     }
@@ -68,118 +68,137 @@ namespace cli {
             String res;
             String cmd;
 
-            debugln("Good morning friend.");
+            debugln("Good morning friend!\n");
 
             { // Command
                 do {
                     debugln("What can I do for you today?\n"
-                            "Remember that you can always escape by typing 'exit'\n"
                             "  scan:   Search for WiFi networks and clients\n"
                             "  beacon: Send WiFi network advertisement beacons\n"
-                            "  deauth: Disrupt WiFi connections"
+                            "  deauth: Disrupt WiFi connections\n"
+                            "Remember that you can always escape by typing 'exit'"
                             );
                     CLI_READ_RES();
                 } while (!(res == "scan" || res == "beacon" || res == "deauth"));
-
                 cmd += res;
+                debugln();
             }
 
             if (res == "scan") {
                 { // Scan mode
                     do {
-                        debugln("Waht do you wish to scan for? [default=ap+st]\n"
+                        debugln("What do you wish to scan for?\n"
                                 "  ap:    Access points (WiFi networks)\n"
                                 "  st:    Stations (WiFi client devices)\n"
-                                "  ap+st: Access points and stations");
-                        CLI_READ_RES();
+                                "  ap+st: Access points and stations\n"
+                                " [default=ap+st]"
+                                );
+                        CLI_READ_RES("ap+st");
                     } while (!(res == "ap" || res == "st" || res == "ap+st"));
                     if (res != "ap+st") cmd += " -m " + res;
+                    debugln();
                 }
 
                 // Scan time and channel(s)
                 if (res != "ap") {
                     { // Scan time
                         do {
-                            debugln("Scan for how long? [default=14]\n"
-                                    "  >1: Station scan time in seconds");
-                            CLI_READ_RES();
+                            debugln("Scan for how long?\n"
+                                    "  >1: Station scan time in seconds\n"
+                                    " [default=14]");
+                            CLI_READ_RES("14");
                         } while (!(res.toInt() > 0));
                         if (res != "14") cmd += " -t " + res;
+                        debugln();
                     }
 
                     { // Scan on channel(s)
-                        debugln("Scan on wich channel(s)? [default=all]\n"
-                                "  1-14: WiFi channel(s) to search on (for example: 1,6,11)");
-                        CLI_READ_RES();
+                        debugln("Scan on wich channel(s)?\n"
+                                "  1-14: WiFi channel(s) to search on (for example: 1,6,11)\n"
+                                " [default=all]");
+                        CLI_READ_RES("all");
                         if (res != "all") cmd += " -ch " + res;
+                        debugln();
                     }
                 }
 
                 { // Retain scan results
                     do {
-                        debugln("Keep previous scan results? [default=n]\n"
+                        debugln("Keep previous scan results?\n"
                                 "  y: Yes\n"
-                                "  n: No");
-                        CLI_READ_RES();
+                                "  n: No\n"
+                                " [default=n]");
+                        CLI_READ_RES("n");
                     } while (!(res == String('y') || res == String('n')));
-
                     if (res == String('y')) cmd += " -r";
+                    debugln();
                 }
             } else if (res == "beacon") {
                 { // SSIDs
                     debugln("Which network names do you wish to advertise?\n"
-                            "  for example: \"network A\",\"network B\")");
+                            "  for example: \"network A\",\"network B\"");
                     CLI_READ_RES();
                     cmd += " -s " + res;
+                    debugln();
                 }
 
                 { // From
                     do {
-                        debugln("Who is the transmitter/sender? [default=random]\n"
+                        debugln("Who is the transmitter/sender?\n"
                                 "  MAC address: for example '00:20:91:aa:bb:5c\n"
-                                "  random:      generate random MAC address");
-                        CLI_READ_RES();
+                                "  random:      generate random MAC address\n"
+                                " [default=random]");
+                        CLI_READ_RES("random");
                     } while (!(res.length() == 17 || res == "random"));
                     if (res != "random") cmd += " -from " + res;
+                    debugln();
                 }
 
                 { // To
                     do {
-                        debugln("Who is the receiver? [default=broadcast]\n"
+                        debugln("Who is the receiver?\n"
                                 "  MAC address: for example 00:20:91:aa:bb:5cc\n"
-                                "  broadcast:   send to everyone");
-                        CLI_READ_RES();
+                                "  broadcast:   send to everyone\n"
+                                " [default=broadcast]");
+                        CLI_READ_RES("broadcast");
                     } while (!(res.length() == 17 || res == "broadcast"));
                     if (res != "broadcast") cmd += " -to " + res;
+                    debugln();
                 }
 
                 { // Encryption
                     do {
-                        debugln("What encryption should it use? [default=open]\n"
+                        debugln("What encryption should it use?\n"
                                 "  open: no encryption, an open network without a password\n"
-                                "  wpa2: WPA2 protected network");
-                        CLI_READ_RES();
+                                "  wpa2: WPA2 protected network\n"
+                                " [default=open]");
+                        CLI_READ_RES("open");
                     } while (!(res == "open" || res == "wpa2"));
                     cmd += " -enc " + res;
+                    debugln();
                 }
 
                 { // Channel
                     do {
-                        debugln("Which channel should be used? [default=1]\n"
-                                "  1-14: WiFi channel to send packets on");
-                        CLI_READ_RES();
+                        debugln("Which channel should be used?\n"
+                                "  1-14: WiFi channel to send packets on\n"
+                                " [default=1]");
+                        CLI_READ_RES("1");
                     } while (!(res.toInt() >= 1 && res.toInt() <= 14));
                     if (res != "1") cmd += " -ch " + res;
+                    debugln();
                 }
 
                 { // Time
                     do {
-                        debugln("How long should the attack last? [default=300]\n"
+                        debugln("How long should the attack last?\n"
                                 "   0: Infinite\n"
-                                "  >0: Stop after x seconds");
-                        CLI_READ_RES();
+                                "  >0: Stop after x seconds\n"
+                                " [default=300]");
+                        CLI_READ_RES("300");
                     } while (!(res.toInt() >= 0));
                     if (res != "300") cmd += " -t " + res;
+                    debugln();
                 }
             } else if (res == "deauth") {
                 { // Target
@@ -191,6 +210,7 @@ namespace cli {
                         CLI_READ_RES();
                     } while (!(res == "ap" || res == "st" || res == "mac"));
                     cmd += " -"+res;
+                    debugln();
 
                     if (res == "ap") {
                         if (scan::apResults() == 0) {
@@ -225,6 +245,7 @@ namespace cli {
 
                         cmd += " "+res;
                     }
+                    debugln();
                 }
 
                 { // Noob filer
@@ -234,6 +255,7 @@ namespace cli {
                                 "  no");
                         CLI_READ_RES();
                     } while (!(res == "yes" || res == "no"));
+                    debugln();
                     if (res == "no") {
                         debugln("Then you should not attack them.\n"
                                 "It could get you in serious trouble.\n"
@@ -244,49 +266,56 @@ namespace cli {
 
                 { // Time
                     do {
-                        debugln("How long should the attack last? [default=300]\n"
+                        debugln("How long should the attack last?\n"
                                 "   0: Infinite\n"
-                                "  >0: Stop after x seconds");
-                        CLI_READ_RES();
+                                "  >0: Stop after x seconds\n"
+                                " [default=300]");
+                        CLI_READ_RES("300");
                     } while (!(res.toInt() >= 0));
                     if (res != "300") cmd += " -t " + res;
+                    debugln();
                 }
 
                 { // Number of packets
                     do {
-                        debugln("How many packets shall be sent? [default=0]\n"
+                        debugln("How many packets shall be sent?\n"
                                 "   0: Infinite\n"
-                                "  >0: Send x packets");
-                        CLI_READ_RES();
+                                "  >0: Send x packets\n"
+                                " [default=0]");
+                        CLI_READ_RES("0");
                     } while (!(res.toInt() >= 0));
                     if (res != "0") cmd += " -n " + res;
+                    debugln();
                 }
 
                 { // Packet rate
                     do {
-                        debugln("At which speed/rate? [default=20]\n"
-                                "  >0 : Packets per second");
-                        CLI_READ_RES();
+                        debugln("At which speed/rate?\n"
+                                "  >0 : Packets per second\n"
+                                " [default=20]");
+                        CLI_READ_RES("20");
                     } while (!(res.toInt() > 0));
                     if (res != "20") cmd += " -r " + res;
+                    debugln();
                 }
 
                 { // Mode
                     do {
-                        debugln("What kind of packets shall be sent? [default=deauth+disassoc]\n"
+                        debugln("What kind of packets shall be sent?\n"
                                 "deauth:          Deauthentication\n"
                                 "disassoc:        Disassociation\n"
-                                "deauth+disassoc: Both");
-                        CLI_READ_RES();
+                                "deauth+disassoc: Both\n"
+                                " [default=deauth+disassoc]");
+                        CLI_READ_RES("deauth+disassoc");
                     } while (!(res == "deauth" || res == "disassoc" || res == "deauth+disassoc"));
                     if (res != "deauth+disassoc") cmd += " -m " + res;
+                    debugln();
                 }
             }
 
             // Result
             for (int i = 0; i<cmd.length()+2; ++i) debug('#');
             debugln();
-            debugln("Result:");
 
             cli::parse(cmd.c_str());
         });
@@ -584,6 +613,7 @@ namespace cli {
         debug("# ");
         debug(input);
         debugln();
+        debugln();
 
         cli.parse(input);
     }
@@ -592,11 +622,15 @@ namespace cli {
         return debug_available();
     }
 
-    String read() {
+    String read(String _default) {
         String input = debug_read();
 
         if (input.charAt(input.length()-1) == '\r') {
             input.remove(input.length()-1);
+        }
+
+        if (input.length() == 0) {
+            input = _default;
         }
 
         debug("# ");
@@ -605,9 +639,9 @@ namespace cli {
         return input;
     }
 
-    String read_and_wait() {
+    String read_and_wait(String _default) {
         while (!debug_available()) delay(1);
-        return read();
+        return read(_default);
     }
 
     bool read_exit() {

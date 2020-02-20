@@ -150,6 +150,7 @@ namespace scan {
 
         WiFi.scanDelete();
 
+        debugln();
         printAPs();
     }
 
@@ -203,6 +204,7 @@ namespace scan {
 
         wifi_promiscuous_enable(false);
 
+        debugln();
         printSTs();
     }
 
@@ -262,6 +264,7 @@ namespace scan {
             debugln("Ch   = 2.4 GHz Channel");
             debugln("RSSI = Signal strengh");
             debugln("WPA* = WPA & WPA2 auto mode");
+            debugln("WPA(2) Enterprise networks are recognized as Open");
             debugln("================================================================================");
         }
     }

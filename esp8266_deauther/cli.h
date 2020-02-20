@@ -13,8 +13,8 @@ namespace cli {
     void parse(const char* input);
 
     bool available();
-    String read();
-    String read_and_wait();
+    String read(String _default          = "");
+    String read_and_wait(String _default = "");
     bool read_exit();
 
     void update();
