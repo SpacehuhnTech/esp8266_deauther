@@ -48,11 +48,12 @@ struct probe_list_t {
     int      size;
 };
 
-probe_t* probe_create(char* str, long len);
+probe_t* probe_create(const char* str, uint8_t len);
 void probe_destroy(probe_t* probe);
 
 probe_list_t* probe_list_create();
 void probe_list_push(probe_list_t* list, probe_t* probe);
+bool probe_list_contains(probe_list_t* list, const char* ssid, uint8_t len);
 void probe_list_clear(probe_list_t* list);
 void probe_list_destroy(probe_list_t* list);
 
@@ -76,5 +77,6 @@ struct station_list_t {
 
 station_t* station_create(uint8_t* mac, ap_t* ap);
 void station_list_push(station_list_t* list, station_t* s);
+void station_list_push_probe(station_list_t* list, uint8_t* mac, const char* ssid, uint8_t len);
 bool station_list_contains(station_list_t* list, uint8_t* mac, ap_t* ap);
 void station_list_clear(station_list_t* list);

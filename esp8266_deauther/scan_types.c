@@ -65,7 +65,7 @@ void ap_list_clear(ap_list_t* list) {
 }
 
 // ===== Probes ===== //
-probe_t* probe_create(char* str, long len) {
+probe_t* probe_create(const char* str, uint8_t len) {
     probe_t* new_probe = (probe_t*)malloc(sizeof(probe_t));
 
     // Copy str
@@ -104,6 +104,16 @@ void probe_list_push(probe_list_t* list, probe_t* probe) {
         list->end       = probe;
     }
     ++(list->size);
+}
+
+bool probe_list_contains(probe_list_t* list, const char* ssid, uint8_t len) {
+    probe_t* h = list->begin;
+
+    while (h) {
+        if (memcmp(h->ssid, ssid, len) == 0) return true;
+        h = h->next;
+    }
+    return false;
 }
 
 void probe_list_clear(probe_list_t* list) {
@@ -148,6 +158,21 @@ void station_list_push(station_list_t* list, station_t* s) {
         list->end       = s;
     }
     ++(list->size);
+}
+
+void station_list_push_probe(station_list_t* list, uint8_t* mac, const char* ssid, uint8_t len) {
+    // find mac in list
+    station_t* h = list->begin;
+
+    while (h) {
+        if (memcmp(h->mac, mac, 6) == 0) {
+            // add ssid to list
+            if (!probe_list_contains(h->probes, ssid, len)) {
+                probe_list_push(h->probes, probe_create(ssid, len));
+            }
+        }
+        h = h->next;
+    }
 }
 
 bool station_list_contains(station_list_t* list, uint8_t* mac, ap_t* ap) {

@@ -73,9 +73,6 @@ namespace scan {
 
                     station_list_push(&station_list, s);
                 }
-                // if probe request
-                // find station
-                // push ssid
             }
         }
         // broadcast probe request from unassociated station
@@ -88,6 +85,16 @@ namespace scan {
                 debugln();
 
                 station_list_push(&station_list, s);
+            }
+
+            if (buf[12+25] > 0) {
+                station_list_push_probe(&station_list, mac_b, (const char*)&buf[12+26], buf[12+25]);
+                debug("\"");
+
+                for (uint8_t i = 0; i<buf[12+25]; ++i) {
+                    debug(char(buf[12+26+i]));
+                }
+                debug("\"\n");
             }
         }
     }
@@ -319,11 +326,14 @@ namespace scan {
                 probe_t* ph = h->probes->begin;
 
                 while (ph) {
-                    debugln(/*strh::left(32, */ '"' + String(ph->ssid) + '"');
+                    if (ph != h->probes->begin) {
+                        debug("\n                                                                       ");
+                    }
+                    debug(/*strh::left(32, */ '"' + String(ph->ssid) + '"');
                     ph = ph->next;
                 }
 
-                // debugln();
+                debugln();
 
                 h = h->next;
                 ++i;
