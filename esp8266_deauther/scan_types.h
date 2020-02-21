@@ -33,15 +33,39 @@ void ap_list_push(ap_list_t* list, ap_t* ap);
 ap_t* ap_list_search(ap_list_t* list, uint8_t* bssid);
 void ap_list_clear(ap_list_t* list);
 
+// ===== Probes ===== //
+typedef struct probe_t      probe_t;
+typedef struct probe_list_t probe_list_t;
+
+struct probe_t {
+    char   * ssid;
+    probe_t* next;
+};
+
+struct probe_list_t {
+    probe_t* begin;
+    probe_t* end;
+    int      size;
+};
+
+probe_t* probe_create(char* str, long len);
+void probe_destroy(probe_t* probe);
+
+probe_list_t* probe_list_create();
+void probe_list_push(probe_list_t* list, probe_t* probe);
+void probe_list_clear(probe_list_t* list);
+void probe_list_destroy(probe_list_t* list);
+
 // ===== Stations ===== //
 typedef struct station_t      station_t;
 typedef struct station_list_t station_list_t;
 
 struct station_t {
-    uint8_t    mac[6];
-    ap_t     * ap;
-    uint32_t   pkts;
-    station_t* next;
+    uint8_t       mac[6];
+    ap_t        * ap;
+    uint32_t      pkts;
+    probe_list_t* probes;
+    station_t   * next;
 };
 
 struct station_list_t {
@@ -52,5 +76,5 @@ struct station_list_t {
 
 station_t* station_create(uint8_t* mac, ap_t* ap);
 void station_list_push(station_list_t* list, station_t* s);
-bool station_list_search(station_list_t* list, uint8_t* mac, ap_t* ap);
+bool station_list_contains(station_list_t* list, uint8_t* mac, ap_t* ap);
 void station_list_clear(station_list_t* list);

@@ -62,7 +62,7 @@ namespace scan {
         if (!mac::multicast(mac_a)) {
             ap_t* ap = ap_list_search(&ap_list, mac_b);
             if (ap) {
-                if (!station_list_search(&station_list, mac_a, ap)) {
+                if (!station_list_contains(&station_list, mac_a, ap)) {
                     station_t* s = station_create(mac_a, ap);
 
                     debug("Found ");
@@ -73,11 +73,14 @@ namespace scan {
 
                     station_list_push(&station_list, s);
                 }
+                // if probe request
+                // find station
+                // push ssid
             }
         }
         // broadcast probe request from unassociated station
         else if (buf[12] == 0x40) {
-            if (!station_list_search(&station_list, mac_b, NULL)) {
+            if (!station_list_contains(&station_list, mac_b, NULL)) {
                 station_t* s = station_create(mac_b, NULL);
 
                 debug("Found ");
@@ -286,9 +289,11 @@ namespace scan {
             debug(strh::right(4, "Pkts"));
             debug(' ');
             debug(strh::left(8, "Vendor"));
+            debug(' ');
+            debug(strh::left(34, "Probe Requests"));
             debugln();
 
-            debugln("======================================================================");
+            debugln("=========================================================================================================");
 
             int i        = 0;
             station_t* h = station_list.begin;
@@ -309,15 +314,24 @@ namespace scan {
                 debug(strh::right(4, String(h->pkts)));
                 debug(' ');
                 debug(strh::left(8, vendor::find(h->mac)));
-                debugln();
+                debug(' ');
+
+                probe_t* ph = h->probes->begin;
+
+                while (ph) {
+                    debugln(/*strh::left(32, */ '"' + String(ph->ssid) + '"');
+                    ph = ph->next;
+                }
+
+                // debugln();
 
                 h = h->next;
                 ++i;
             }
 
-            debugln("======================================================================");
+            debugln("=========================================================================================================");
             debugln("Pkts = Recorded Packets");
-            debugln("======================================================================");
+            debugln("=========================================================================================================");
         }
     }
 
