@@ -213,7 +213,7 @@ namespace cli {
                     debugln();
 
                     if (res == "ap") {
-                        if (scan::apResults() == 0) {
+                        if (scan::getAccessPoints().size() == 0) {
                             debugln("ERROR: No access points in scan results.\n"
                                     "Type 'scan -m ap' to search for access points");
                             return;
@@ -226,7 +226,7 @@ namespace cli {
 
                         cmd += " "+res;
                     } else if (res == "st") {
-                        if (scan::stResults() == 0) {
+                        if (scan::getStations().size() == 0) {
                             debugln("ERROR: No stations in scan results.\n"
                                     "Type 'scan -m st' to search for stations");
                             return;
@@ -473,9 +473,9 @@ namespace cli {
                 StringList list(ap_str, ",");
 
                 while (list.available()) {
-                    ap_t* ap = scan::getAP(list.iterate().toInt());
+                    AccessPoint* ap = scan::getAccessPoints().get(list.iterate().toInt());
                     if (ap) {
-                        targets.push(ap->bssid, mac::BROADCAST, ap->ch);
+                        targets.push(ap->getBSSID(), mac::BROADCAST, ap->getChannel());
                     }
                 }
             }
@@ -485,9 +485,9 @@ namespace cli {
                 StringList list(st_str, ",");
 
                 while (list.available()) {
-                    station_t* st = scan::getST(list.iterate().toInt());
-                    if (st && st->ap) {
-                        targets.push(st->ap->bssid, st->mac, st->ap->ch);
+                    Station* st = scan::getStations().get(list.iterate().toInt());
+                    if (st && st->getAccessPoint()) {
+                        targets.push(st->getAccessPoint()->getBSSID(), st->getMAC(), st->getAccessPoint()->getChannel());
                     }
                 }
             }

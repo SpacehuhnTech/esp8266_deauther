@@ -6,11 +6,8 @@
 
 #pragma once
 
-#include <stdint.h>
-
-extern "C" {
-  #include "scan_types.h"
-}
+#include "AccessPoint.h"
+#include "Station.h"
 
 namespace scan {
     void clearAPresults();
@@ -24,9 +21,6 @@ namespace scan {
     void printSTs();
     void printResults();
 
-    ap_t* getAP(int id);
-    station_t* getST(int id);
-
-    int apResults();
-    int stResults();
+    AccessPointList& getAccessPoints();
+    StationList    & getStations();
 }

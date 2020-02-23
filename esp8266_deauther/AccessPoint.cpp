@@ -10,13 +10,17 @@
 // ========== AccessPoint ========== //
 
 AccessPoint::AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
-    int ssidlen = strlen(ssid);
+    if (ssid) {
+        int ssidlen = strlen(ssid);
 
-    if (ssidlen > 32) ssidlen = 32;
+        if (ssidlen > 0) {
+            if (ssidlen > 32) ssidlen = 32;
 
-    this->ssid = (char*)malloc(ssidlen+1);
-    memcpy(this->ssid, ssid, ssidlen+1);
-    this->ssid[ssidlen] = '\0';
+            this->ssid = (char*)malloc(ssidlen+1);
+            memcpy(this->ssid, ssid, ssidlen+1);
+            this->ssid[ssidlen] = '\0';
+        }
+    }
 
     memcpy(this->bssid, bssid, 6);
     this->rssi = rssi;
@@ -25,8 +29,10 @@ AccessPoint::AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc
 }
 
 AccessPoint::~AccessPoint() {
-    free(this->ssid);
-    this->ssid = NULL;
+    if (ssid) {
+        free(ssid);
+        this->ssid = NULL;
+    }
 }
 
 const char* AccessPoint::getSSID() const {
@@ -38,7 +44,11 @@ const uint8_t* AccessPoint::getBSSID() const {
 }
 
 String AccessPoint::getSSIDString() const {
-    return String(ssid);
+    if (hidden()) {
+        return "*HIDDEN-NETWORK*";
+    } else {
+        return String(ssid);
+    }
 }
 
 String AccessPoint::getBSSIDString() const {
@@ -55,6 +65,10 @@ uint8_t AccessPoint::getEncryption() const {
 
 uint8_t AccessPoint::getChannel() const {
     return ch;
+}
+
+bool AccessPoint::hidden() const {
+    return !ssid;
 }
 
 AccessPoint* AccessPoint::getNext() {

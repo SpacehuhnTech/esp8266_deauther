@@ -50,8 +50,8 @@ class StationList {
         ~StationList();
 
         void push(uint8_t* mac, AccessPoint* ap);
-        void addProbe(uint8_t* mac, const char* ssid, uint8_t len);
-        void registerPacket(uint8_t* mac, AccessPoint* ap);
+        bool addProbe(uint8_t* mac, const char* ssid, uint8_t len);
+        bool registerPacket(uint8_t* mac, AccessPoint* ap);
         void clear();
 
         Station* search(uint8_t* mac);
@@ -62,4 +62,7 @@ class StationList {
 
         bool available() const;
         int size() const;
+
+        // getSSID
+        // getVendor
 };

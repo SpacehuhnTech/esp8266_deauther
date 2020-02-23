@@ -19,8 +19,8 @@ extern "C" {
 
 namespace scan {
     // ===== PRIVATE ===== //
-    ap_list_t ap_list { NULL, NULL, 0 };
-    station_list_t station_list { NULL, NULL, 0 };
+    AccessPointList ap_list;
+    StationList     station_list;
 
     String encstr(int enc) {
         switch (enc) {
@@ -60,53 +60,47 @@ namespace scan {
 
         // frame from AP to station
         if (!mac::multicast(mac_a)) {
-            ap_t* ap = ap_list_search(&ap_list, mac_b);
+            AccessPoint* ap = ap_list.search(mac_b);
             if (ap) {
-                if (!station_list_contains(&station_list, mac_a, ap)) {
-                    station_t* s = station_create(mac_a, ap);
-
-                    debug("Found ");
-                    debug(strh::mac(s->mac));
+                if (station_list.registerPacket(mac_a, ap)) {
+                    debug("Found station ");
+                    debug(strh::mac(mac_a));
                     debug(" connected to \"");
-                    debug(ap->ssid);
+                    debug(ap->getSSID());
                     debugln('"');
-
-                    station_list_push(&station_list, s);
                 }
             }
         }
         // broadcast probe request from unassociated station
         else if (buf[12] == 0x40) {
-            if (!station_list_contains(&station_list, mac_b, NULL)) {
-                station_t* s = station_create(mac_b, NULL);
-
+            if (station_list.registerPacket(mac_b, NULL)) {
                 debug("Found ");
-                debug(strh::mac(s->mac));
-                debugln();
-
-                station_list_push(&station_list, s);
+                debugln(strh::mac(mac_b));
             }
 
             if (buf[12+25] > 0) {
-                station_list_push_probe(&station_list, mac_b, (const char*)&buf[12+26], buf[12+25]);
-                debug("\"");
+                const char* ssid = (const char*)&buf[12+26];
+                uint8_t     len  = buf[12+25];
 
-                for (uint8_t i = 0; i<buf[12+25]; ++i) {
-                    debug(char(buf[12+26+i]));
+                if (station_list.addProbe(mac_b, ssid, len)) {
+                    debug("Found probe \"");
+
+                    for (uint8_t i = 0; i<len; ++i) {
+                        debug(char(ssid[i]));
+                    }
+                    debug("\"\n");
                 }
-                debug("\"\n");
             }
         }
     }
 
     // ===== PUBLIC ===== //
     void clearAPresults() {
-        station_list_clear(&station_list);
-        ap_list_clear(&ap_list);
+        ap_list.clear();
     }
 
     void clearSTresults() {
-        station_list_clear(&station_list);
+        station_list.clear();
     }
 
     void search(bool ap, bool st, unsigned long time, uint16_t channels, bool retain) {
@@ -152,9 +146,8 @@ namespace scan {
         }
 
         for (int i = 0; i < n; ++i) {
-            if (!ap_list_search(&ap_list, WiFi.BSSID(i))) {
-                ap_t* ap = ap_create(WiFi.SSID(i).c_str(), WiFi.BSSID(i), WiFi.RSSI(i), WiFi.encryptionType(i), WiFi.channel(i));
-                ap_list_push(&ap_list, ap);
+            if (!ap_list.search(WiFi.BSSID(i))) {
+                ap_list.push(WiFi.SSID(i).c_str(), WiFi.BSSID(i), WiFi.RSSI(i), WiFi.encryptionType(i), WiFi.channel(i));
             }
         }
 
@@ -219,11 +212,11 @@ namespace scan {
     }
 
     void printAPs() {
-        if (ap_list.size == 0) {
+        if (ap_list.size() == 0) {
             debugln("No access points (networks) found");
         } else {
             debug("Found ");
-            debug(ap_list.size);
+            debug(ap_list.size());
             debugln(" access points (networks):");
 
             debug(strh::right(3, "ID"));
@@ -243,31 +236,27 @@ namespace scan {
 
             debugln("==============================================================================");
 
-            ap_t* h = ap_list.begin;
+            ap_list.begin();
 
-            for (int i = 0; i<ap_list.size && h; ++i) {
+            for (int i = 0; i<ap_list.available(); ++i) {
+                AccessPoint* h = ap_list.iterate();
+
                 debug(strh::right(3, String(i)));
                 debug(' ');
 
-                if (strlen(h->ssid) > 0) {
-                    debug(strh::left(34, '"' + String(h->ssid) + '"'));
-                } else {
-                    debug(strh::left(34, "*HIDDEN-NETWORK*"));
-                }
+                debug(strh::left(34, '"' + h->getSSIDString() + '"'));
 
                 debug(' ');
-                debug(strh::right(4, String(h->rssi)));
+                debug(strh::right(4, String(h->getRSSI())));
                 debug(' ');
-                debug(strh::left(4, encstr(h->enc)));
+                debug(strh::left(4, encstr(h->getEncryption())));
                 debug(' ');
-                debug(strh::right(2, String(h->ch)));
+                debug(strh::right(2, String(h->getChannel())));
                 debug(' ');
-                debug(strh::left(17, strh::mac(h->bssid)));
+                debug(strh::left(17, h->getBSSIDString()));
                 debug(' ');
-                debug(strh::left(8, vendor::find(h->bssid)));
+                debug(strh::left(8, vendor::find(h->getBSSID())));
                 debugln();
-
-                h = h->next;
             }
 
             debugln("================================================================================");
@@ -280,11 +269,11 @@ namespace scan {
     }
 
     void printSTs() {
-        if (station_list.size == 0) {
+        if (station_list.size() == 0) {
             debugln("No stations (clients) found");
         } else {
             debug("Found ");
-            debug(station_list.size);
+            debug(station_list.size());
             debugln(" stations (clients):");
 
             debug(strh::right(3, "ID"));
@@ -302,40 +291,41 @@ namespace scan {
 
             debugln("=========================================================================================================");
 
-            int i        = 0;
-            station_t* h = station_list.begin;
+            int i = 0;
+            station_list.begin();
 
-            while (h) {
+            while (station_list.available()) {
+                Station* h = station_list.iterate();
+
                 debug(strh::right(3, String(i)));
                 debug(' ');
-                debug(strh::mac(h->mac));
+                debug(h->getMACString());
                 debug(' ');
 
-                if (h->ap) {
-                    debug(strh::left(34, '"' + String(h->ap->ssid) + '"'));
+                if (h->getAccessPoint()) {
+                    debug(strh::left(34, '"' + h->getAccessPoint()->getSSIDString() + '"'));
                 } else {
                     debug(strh::left(34, "*Unassociated*"));
                 }
 
                 debug(' ');
-                debug(strh::right(4, String(h->pkts)));
+                debug(strh::right(4, String(h->getPackets())));
                 debug(' ');
-                debug(strh::left(8, vendor::find(h->mac)));
+                debug(strh::left(8, vendor::find(h->getMAC())));
                 debug(' ');
 
-                probe_t* ph = h->probes->begin;
+                h->getProbes().begin();
+                bool first = true;
 
-                while (ph) {
-                    if (ph != h->probes->begin) {
+                while (h->getProbes().available()) {
+                    if (!first) {
                         debug("\n                                                                       ");
                     }
-                    debug(/*strh::left(32, */ '"' + String(ph->ssid) + '"');
-                    ph = ph->next;
+                    debug(/*strh::left(32, */ '"' + h->getProbes().iterate() + '"');
+                    first = false;
                 }
 
                 debugln();
-
-                h = h->next;
                 ++i;
             }
 
@@ -350,35 +340,11 @@ namespace scan {
         printSTs();
     }
 
-    ap_t* getAP(int id) {
-        int   i = 0;
-        ap_t* h = ap_list.begin;
-
-        while (h && i<id) {
-            h = h->next;
-            ++i;
-        }
-
-        return h;
+    AccessPointList& getAccessPoints() {
+        return ap_list;
     }
 
-    station_t* getST(int id) {
-        int i        = 0;
-        station_t* h = station_list.begin;
-
-        while (h && i<id) {
-            h = h->next;
-            ++i;
-        }
-
-        return h;
-    }
-
-    int apResults() {
-        return ap_list.size;
-    }
-
-    int stResults() {
-        return station_list.size;
+    StationList& getStations() {
+        return station_list;
     }
 }

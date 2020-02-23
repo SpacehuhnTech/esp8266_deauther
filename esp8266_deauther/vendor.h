@@ -10,5 +10,5 @@
 
 namespace vendor {
     void randomize(uint8_t* mac);
-    String find(uint8_t* mac);
+    String find(const uint8_t* mac);
 };

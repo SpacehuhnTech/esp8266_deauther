@@ -70,7 +70,7 @@ void StationList::push(uint8_t* mac, AccessPoint* ap) {
     ++list_size;
 }
 
-void StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
+bool StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
     // find mac in list
     Station* h = search(mac);
 
@@ -82,11 +82,13 @@ void StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
 
         if (!h->getProbes().contains(probe)) {
             h->getProbes().push(probe);
+            return true;
         }
     }
+    return false;
 }
 
-void StationList::registerPacket(uint8_t* mac, AccessPoint* ap) {
+bool StationList::registerPacket(uint8_t* mac, AccessPoint* ap) {
     Station* h = search(mac);
 
     if (h) {
@@ -94,8 +96,10 @@ void StationList::registerPacket(uint8_t* mac, AccessPoint* ap) {
             h->setAccessPoint(ap);
         }
         h->newPkt();
+        return false;
     } else {
         push(mac, ap);
+        return true;
     }
 }
 

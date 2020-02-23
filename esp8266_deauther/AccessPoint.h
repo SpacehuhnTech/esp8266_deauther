@@ -30,10 +30,14 @@ class AccessPoint {
         int getRSSI() const;
         uint8_t getEncryption() const;
         uint8_t getChannel() const;
+        bool hidden() const;
 
         AccessPoint* getNext();
 
         void setNext(AccessPoint* next);
+
+        // getVendor
+        // getEncryptionString
 };
 
 // ========== AccessPointList ========== //
