@@ -139,6 +139,15 @@ String StringList::iterate() {
     return res;
 }
 
+bool StringList::contains(const String& str) const {
+    item_t* h = list_begin;
+
+    while (h && strcmp(h->ptr, str.c_str()) != 0) {
+        h = h->next;
+    }
+    return h;
+}
+
 bool StringList::available() const {
     return h;
 }

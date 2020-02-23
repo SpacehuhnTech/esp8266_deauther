@@ -8,6 +8,8 @@
 
 #include <Arduino.h>
 
+// ========== AccessPoint ========== //
+
 class AccessPoint {
     private:
         char  * ssid;
@@ -33,6 +35,8 @@ class AccessPoint {
 
         void setNext(AccessPoint* next);
 };
+
+// ========== AccessPointList ========== //
 
 class AccessPointList {
     private:

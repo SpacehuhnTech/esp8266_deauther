@@ -7,6 +7,8 @@
 #include "AccessPoint.h"
 #include "strh.h"
 
+// ========== AccessPoint ========== //
+
 AccessPoint::AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
     int ssidlen = strlen(ssid);
 
@@ -62,6 +64,8 @@ AccessPoint* AccessPoint::getNext() {
 void AccessPoint::setNext(AccessPoint* next) {
     this->next = next;
 }
+
+// ========== AccessPointList ========== //
 
 AccessPointList::~AccessPointList() {
     clear();

@@ -40,6 +40,7 @@ class StringList {
         void begin();
         String iterate();
 
+        bool contains(const String& str) const;
         bool available() const;
         int size() const;
 
