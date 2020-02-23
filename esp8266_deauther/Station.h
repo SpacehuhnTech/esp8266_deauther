@@ -27,6 +27,9 @@ class Station {
         String getMACString() const;
         const AccessPoint* getAccessPoint() const;
         uint32_t getPackets() const;
+        String getSSIDString() const;
+        String getBSSIDString() const;
+        String getVendor() const;
 
         StringList& getProbes();
         Station* getNext();
@@ -62,7 +65,4 @@ class StationList {
 
         bool available() const;
         int size() const;
-
-        // getSSID
-        // getVendor
 };

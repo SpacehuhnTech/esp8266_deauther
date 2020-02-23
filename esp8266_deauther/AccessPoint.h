@@ -28,16 +28,14 @@ class AccessPoint {
         String getSSIDString() const;
         String getBSSIDString() const;
         int getRSSI() const;
-        uint8_t getEncryption() const;
+        String getEncryption() const;
         uint8_t getChannel() const;
         bool hidden() const;
+        String getVendor() const;
 
         AccessPoint* getNext();
 
         void setNext(AccessPoint* next);
-
-        // getVendor
-        // getEncryptionString
 };
 
 // ========== AccessPointList ========== //

@@ -6,6 +6,9 @@
 
 #include "AccessPoint.h"
 #include "strh.h"
+#include "vendor.h"
+
+#include <ESP8266WiFi.h>
 
 // ========== AccessPoint ========== //
 
@@ -47,7 +50,7 @@ String AccessPoint::getSSIDString() const {
     if (hidden()) {
         return "*HIDDEN-NETWORK*";
     } else {
-        return String(ssid);
+        return '"' + String(ssid) + '"';
     }
 }
 
@@ -59,8 +62,21 @@ int AccessPoint::getRSSI() const {
     return rssi;
 }
 
-uint8_t AccessPoint::getEncryption() const {
-    return enc;
+String AccessPoint::getEncryption() const {
+    switch (enc) {
+        case ENC_TYPE_NONE:
+            return "Open";
+        case ENC_TYPE_WEP:
+            return "WEP";
+        case ENC_TYPE_TKIP:
+            return "WPA";
+        case ENC_TYPE_CCMP:
+            return "WPA2";
+        case ENC_TYPE_AUTO:
+            return "WPA*";
+        default:
+            return "?";
+    }
 }
 
 uint8_t AccessPoint::getChannel() const {
@@ -69,6 +85,10 @@ uint8_t AccessPoint::getChannel() const {
 
 bool AccessPoint::hidden() const {
     return !ssid;
+}
+
+String AccessPoint::getVendor() const {
+    return vendor::search(bssid);
 }
 
 AccessPoint* AccessPoint::getNext() {

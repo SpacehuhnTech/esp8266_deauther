@@ -22,23 +22,6 @@ namespace scan {
     AccessPointList ap_list;
     StationList     station_list;
 
-    String encstr(int enc) {
-        switch (enc) {
-            case ENC_TYPE_NONE:
-                return "Open";
-            case ENC_TYPE_WEP:
-                return "WEP";
-            case ENC_TYPE_TKIP:
-                return "WPA";
-            case ENC_TYPE_CCMP:
-                return "WPA2";
-            case ENC_TYPE_AUTO:
-                return "WPA*";
-            default:
-                return "?";
-        }
-    }
-
     void station_sniffer(uint8_t* buf, uint16_t len) {
         // drop frames that are too short to have a valid MAC header
         if (len < 28) return;
@@ -74,7 +57,7 @@ namespace scan {
         // broadcast probe request from unassociated station
         else if (buf[12] == 0x40) {
             if (station_list.registerPacket(mac_b, NULL)) {
-                debug("Found ");
+                debug("Found station ");
                 debugln(strh::mac(mac_b));
             }
 
@@ -82,7 +65,7 @@ namespace scan {
                 const char* ssid = (const char*)&buf[12+26];
                 uint8_t     len  = buf[12+25];
 
-                if (station_list.addProbe(mac_b, ssid, len)) {
+                if ((ssid[0] != '\0') && station_list.addProbe(mac_b, ssid, len)) {
                     debug("Found probe \"");
 
                     for (uint8_t i = 0; i<len; ++i) {
@@ -237,26 +220,27 @@ namespace scan {
             debugln("==============================================================================");
 
             ap_list.begin();
+            int i = 0;
 
-            for (int i = 0; i<ap_list.available(); ++i) {
+            while (ap_list.available()) {
                 AccessPoint* h = ap_list.iterate();
 
                 debug(strh::right(3, String(i)));
                 debug(' ');
-
-                debug(strh::left(34, '"' + h->getSSIDString() + '"'));
-
+                debug(strh::left(34, h->getSSIDString()));
                 debug(' ');
                 debug(strh::right(4, String(h->getRSSI())));
                 debug(' ');
-                debug(strh::left(4, encstr(h->getEncryption())));
+                debug(strh::left(4, h->getEncryption()));
                 debug(' ');
                 debug(strh::right(2, String(h->getChannel())));
                 debug(' ');
                 debug(strh::left(17, h->getBSSIDString()));
                 debug(' ');
-                debug(strh::left(8, vendor::find(h->getBSSID())));
+                debug(strh::left(8, h->getVendor()));
                 debugln();
+
+                ++i;
             }
 
             debugln("================================================================================");
@@ -280,16 +264,18 @@ namespace scan {
             debug(' ');
             debug(strh::left(17, "MAC-Address"));
             debug(' ');
-            debug(strh::left(34, "Connected to"));
-            debug(' ');
             debug(strh::right(4, "Pkts"));
             debug(' ');
             debug(strh::left(8, "Vendor"));
             debug(' ');
+            debug(strh::left(34, "AccessPoint-SSID"));
+            debug(' ');
+            debug(strh::left(17, "AccessPoint-MAC"));
+            debug(' ');
             debug(strh::left(34, "Probe Requests"));
             debugln();
 
-            debugln("=========================================================================================================");
+            debugln("===========================================================================================================================");
 
             int i = 0;
             station_list.begin();
@@ -301,17 +287,13 @@ namespace scan {
                 debug(' ');
                 debug(h->getMACString());
                 debug(' ');
-
-                if (h->getAccessPoint()) {
-                    debug(strh::left(34, '"' + h->getAccessPoint()->getSSIDString() + '"'));
-                } else {
-                    debug(strh::left(34, "*Unassociated*"));
-                }
-
-                debug(' ');
                 debug(strh::right(4, String(h->getPackets())));
                 debug(' ');
-                debug(strh::left(8, vendor::find(h->getMAC())));
+                debug(strh::left(8, h->getVendor()));
+                debug(' ');
+                debug(strh::left(34, h->getSSIDString()));
+                debug(' ');
+                debug(strh::left(17, h->getBSSIDString()));
                 debug(' ');
 
                 h->getProbes().begin();
@@ -319,7 +301,7 @@ namespace scan {
 
                 while (h->getProbes().available()) {
                     if (!first) {
-                        debug("\n                                                                       ");
+                        debug("\n                                                                                         ");
                     }
                     debug(/*strh::left(32, */ '"' + h->getProbes().iterate() + '"');
                     first = false;
@@ -329,9 +311,9 @@ namespace scan {
                 ++i;
             }
 
-            debugln("=========================================================================================================");
+            debugln("===========================================================================================================================");
             debugln("Pkts = Recorded Packets");
-            debugln("=========================================================================================================");
+            debugln("===========================================================================================================================");
         }
     }
 

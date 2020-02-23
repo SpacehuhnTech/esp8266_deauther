@@ -6,6 +6,7 @@
 
 #include "Station.h"
 #include "strh.h"
+#include "vendor.h"
 
 // ========== Station ========== //
 
@@ -28,6 +29,25 @@ const AccessPoint* Station::getAccessPoint() const {
 
 uint32_t Station::getPackets() const {
     return pkts;
+}
+
+String Station::getSSIDString() const {
+    if (ap) {
+        return ap->getSSIDString();
+    } else {
+        return String();
+    }
+}
+
+String Station::getBSSIDString() const {
+    if (ap) {
+        return ap->getBSSIDString();
+    }
+    return String();
+}
+
+String Station::getVendor() const {
+    return vendor::search(mac);
 }
 
 StringList& Station::getProbes() {

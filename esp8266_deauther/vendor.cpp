@@ -36,7 +36,7 @@ namespace vendor {
     }
 
     // ===== Public ===== //
-    String find(const uint8_t* mac) {
+    String search(const uint8_t* mac) {
         String name;
         int    pos_mac  = bin_search(mac, 0, sizeof(vendor_macs) / 5 - 1);
         int    pos_name = pgm_read_byte_near(vendor_macs + pos_mac * 5 + 3) | pgm_read_byte_near(vendor_macs + pos_mac * 5 + 4) << 8;
