@@ -34,6 +34,7 @@ typedef struct deauth_attack_data_t {
     unsigned long pkts_per_second;
     unsigned long pkt_time;
     unsigned long pkt_interval;
+    bool          verbose;
 } deauth_attack_data_t;
 
 deauth_attack_data_t deauth_data;
@@ -56,7 +57,7 @@ bool send_disassoc(uint8_t ch, uint8_t* from, uint8_t* to) {
 }
 
 // ========== ATTACK FUNCTIONS ========== //
-void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts) {
+void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts, bool verbose) {
     { // Error checks
         if (targets.size() == 0) {
             debugln("ERROR: No targets specified");
@@ -124,6 +125,7 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
     deauth_data.pkts_per_second = 0;
     deauth_data.pkt_time        = 0;
     deauth_data.pkt_interval    = (1000/rate) * (deauth+disassoc);
+    deauth_data.verbose         = verbose;
 }
 
 void stopDeauth() {
@@ -143,7 +145,7 @@ void updateDeauth() {
             return;
         }
 
-        if (millis() - d.output_time >= 1000) {
+        if (d.verbose && (millis() - d.output_time >= 1000)) {
             d.pkts_sent += d.pkts_per_second;
 
             debug("Deauth attack: ");

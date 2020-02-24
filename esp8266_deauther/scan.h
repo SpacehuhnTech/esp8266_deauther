@@ -13,9 +13,9 @@ namespace scan {
     void clearAPresults();
     void clearSTresults();
 
-    void search(bool ap, bool st, unsigned long time, unsigned long ch_time, uint16_t channels, bool retain);
+    void search(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain);
     void searchAPs();
-    void searchSTs(unsigned long time, unsigned long ch_time, uint16_t channels);
+    void searchSTs(unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose);
 
     void printAPs();
     void printSTs();

@@ -86,7 +86,7 @@ namespace scan {
         station_list.clear();
     }
 
-    void search(bool ap, bool st, unsigned long time, unsigned long ch_time, uint16_t channels, bool retain) {
+    void search(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain) {
         { // Error check
             if (!ap && !st) {
                 debugln("ERROR: Invalid scan mode");
@@ -110,7 +110,7 @@ namespace scan {
         }
 
         if (ap) searchAPs();
-        if (st) searchSTs(time, ch_time, channels);
+        if (st) searchSTs(time, channels, ch_time, verbose);
     }
 
     void searchAPs() {
@@ -146,7 +146,7 @@ namespace scan {
         printAPs();
     }
 
-    void searchSTs(unsigned long time, unsigned long ch_time, uint16_t channels) {
+    void searchSTs(unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose) {
         uint8_t num_of_channels = 0;
 
         for (uint8_t i = 0; i<14; ++i) {
@@ -174,16 +174,18 @@ namespace scan {
         while (running) {
             for (uint8_t i = 0; i<14 && running; ++i) {
                 if ((channels >> i) & 0x01) {
-                    debug("Sniff channel ");
-                    debug(i+1);
-                    debug(" (");
+                    if (verbose) {
+                        debug("Sniff channel ");
+                        debug(i+1);
+                        debug(" (");
 
-                    if (ch_time < 1000) {
-                        debug(ch_time);
-                        debugln(" ms)");
-                    } else {
-                        debug(ch_time/1000);
-                        debugln(" ss)");
+                        if (ch_time < 1000) {
+                            debug(ch_time);
+                            debugln(" ms)");
+                        } else {
+                            debug(ch_time/1000);
+                            debugln(" s)");
+                        }
                     }
 
                     wifi_set_channel(i+1);
