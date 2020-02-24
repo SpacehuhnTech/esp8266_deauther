@@ -112,6 +112,17 @@ namespace cli {
                         debugln();
                     }
 
+                    { // Channel scan time
+                        do {
+                            debugln("Stay on each channel for how long?\n"
+                                    "  >1: Channel time in milliseconds\n"
+                                    " [default=auto]");
+                            CLI_READ_RES("auto");
+                        } while (!(res.toInt() > 0));
+                        if (res != "auto") cmd += " -ct " + res;
+                        debugln();
+                    }
+
                     { // Scan on channel(s)
                         debugln("Scan on wich channel(s)?\n"
                                 "  1-14: WiFi channel(s) to search on (for example: 1,6,11)\n"
@@ -324,16 +335,21 @@ namespace cli {
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
-            unsigned long time = 0;
-            uint16_t channels  = 0;
+            unsigned long time    = 0;
+            unsigned long ch_time = 0;
+            uint16_t channels     = 0;
 
             bool retain;
             bool ap = false;
             bool st = false;
 
-            { // Scan time
+            { // Station scan time
                 long seconds = cmd.getArg("t").getValue().toInt();
                 if (seconds > 0) time = seconds*1000;
+            }
+
+            { // Channel scan time
+                ch_time = cmd.getArg("ct").getValue().toInt();
             }
 
             { // Channels
@@ -365,16 +381,18 @@ namespace cli {
                 }
             }
 
-            scan::search(ap, st, time, channels, retain);
+            scan::search(ap, st, time, ch_time, channels, retain);
         });
         cmd_scan.addArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
+        cmd_scan.addArg("ct/ime", "auto");
         cmd_scan.addArg("ch/annel", "1,2,3,4,5,6,7,8,9,10,11,12,13,14");
         cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
             "  -m:  scan mode [ap,st,ap+st] (default=ap+st)\n"
             "  -t:  station scan time in seconds [>1] (default=14)\n"
+            "  -ct: channel scan time in milliseconds [>1] (default=auto)\n"
             "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\n"
             "  -r:  Keep previous scan results"
             );

@@ -46,9 +46,9 @@ namespace scan {
             AccessPoint* ap = ap_list.search(mac_b);
             if (ap) {
                 if (station_list.registerPacket(mac_a, ap)) {
-                    debug("Found station ");
+                    debug("Station ");
                     debug(strh::mac(mac_a));
-                    debug(" connected to \"");
+                    debug(" in \"");
                     debug(ap->getSSID());
                     debugln('"');
                 }
@@ -57,7 +57,7 @@ namespace scan {
         // broadcast probe request from unassociated station
         else if (buf[12] == 0x40) {
             if (station_list.registerPacket(mac_b, NULL)) {
-                debug("Found station ");
+                debug("Station ");
                 debugln(strh::mac(mac_b));
             }
 
@@ -66,7 +66,7 @@ namespace scan {
                 uint8_t     len  = buf[12+25];
 
                 if ((ssid[0] != '\0') && station_list.addProbe(mac_b, ssid, len)) {
-                    debug("Found probe \"");
+                    debug("Probe \"");
 
                     for (uint8_t i = 0; i<len; ++i) {
                         debug(char(ssid[i]));
@@ -86,7 +86,7 @@ namespace scan {
         station_list.clear();
     }
 
-    void search(bool ap, bool st, unsigned long time, uint16_t channels, bool retain) {
+    void search(bool ap, bool st, unsigned long time, unsigned long ch_time, uint16_t channels, bool retain) {
         { // Error check
             if (!ap && !st) {
                 debugln("ERROR: Invalid scan mode");
@@ -110,7 +110,7 @@ namespace scan {
         }
 
         if (ap) searchAPs();
-        if (st) searchSTs(time, channels);
+        if (st) searchSTs(time, ch_time, channels);
     }
 
     void searchAPs() {
@@ -146,7 +146,7 @@ namespace scan {
         printAPs();
     }
 
-    void searchSTs(unsigned long time, uint16_t channels) {
+    void searchSTs(unsigned long time, unsigned long ch_time, uint16_t channels) {
         uint8_t num_of_channels = 0;
 
         for (uint8_t i = 0; i<14; ++i) {
@@ -159,7 +159,7 @@ namespace scan {
         wifi_promiscuous_enable(true);
 
         if (time < 1000) time = 1000;
-        unsigned long channel_time = time/num_of_channels;
+        if (ch_time <= 0) ch_time = time/num_of_channels;
 
         debug("Scanning for stations (WiFi client devices) on ");
         debug(num_of_channels);
@@ -168,28 +168,31 @@ namespace scan {
         debug(time/1000);
         debugln(" seconds");
 
-        bool running = true;
+        bool running             = true;
+        unsigned long start_time = millis();
 
-        for (uint8_t i = 0; i<14 && running; ++i) {
-            if ((channels >> i) & 0x01) {
-                debug("Sniffing on channel ");
-                debug(i+1);
-                debug(" for ");
+        while (running) {
+            for (uint8_t i = 0; i<14 && running; ++i) {
+                if ((channels >> i) & 0x01) {
+                    debug("Sniff channel ");
+                    debug(i+1);
+                    debug(" (");
 
-                if (channel_time < 1000) {
-                    debug(channel_time);
-                    debugln(" milliseconds");
-                } else {
-                    debug(channel_time/1000);
-                    debugln(" seconds");
-                }
+                    if (ch_time < 1000) {
+                        debug(ch_time);
+                        debugln(" ms)");
+                    } else {
+                        debug(ch_time/1000);
+                        debugln(" ss)");
+                    }
 
-                wifi_set_channel(i+1);
-                unsigned long start_time = millis();
+                    wifi_set_channel(i+1);
+                    unsigned long ch_start_time = millis();
 
-                while (running && millis() - start_time < channel_time) {
-                    delay(1);
-                    running = !cli::read_exit();
+                    while (running && millis() - ch_start_time < ch_time) {
+                        delay(1);
+                        running = !cli::read_exit() && millis() - start_time <= time;
+                    }
                 }
             }
         }
