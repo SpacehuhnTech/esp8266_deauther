@@ -130,7 +130,13 @@ namespace scan {
 
         for (int i = 0; i < n; ++i) {
             if (!ap_list.search(WiFi.BSSID(i))) {
-                ap_list.push(WiFi.SSID(i).c_str(), WiFi.BSSID(i), WiFi.RSSI(i), WiFi.encryptionType(i), WiFi.channel(i));
+                ap_list.push(
+                    WiFi.SSID(i).c_str(),
+                    WiFi.BSSID(i),
+                    WiFi.RSSI(i),
+                    WiFi.encryptionType(i),
+                    WiFi.channel(i)
+                    );
             }
         }
 
@@ -212,7 +218,7 @@ namespace scan {
             debug(' ');
             debug(strh::right(2, "Ch"));
             debug(' ');
-            debug(strh::left(17, "MAC-Address"));
+            debug(strh::left(17, "BSSID (MAC Addr.)"));
             debug(' ');
             debug(strh::left(8, "Vendor"));
             debugln();
@@ -270,9 +276,9 @@ namespace scan {
             debug(' ');
             debug(strh::left(34, "AccessPoint-SSID"));
             debug(' ');
-            debug(strh::left(17, "AccessPoint-MAC"));
+            debug(strh::left(17, "AccessPoint-BSSID"));
             debug(' ');
-            debug(strh::left(34, "Probe Requests"));
+            debug(strh::left(34, "Probe-Requests"));
             debugln();
 
             debugln("===========================================================================================================================");

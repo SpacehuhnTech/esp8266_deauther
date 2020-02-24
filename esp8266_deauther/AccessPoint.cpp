@@ -108,26 +108,51 @@ AccessPointList::~AccessPointList() {
 void AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
     AccessPoint* ap = new AccessPoint(ssid, bssid, rssi, enc, ch);
 
+    // Empty list -> insert first element
     if (!list_begin) {
         list_begin = ap;
         list_end   = ap;
         h          = list_begin;
     } else {
-        list_end->setNext(ap);
-        list_end = ap;
+        // Insert at start
+        if (memcmp(list_begin->getBSSID(), bssid, 6) > 0) {
+            ap->setNext(list_begin);
+            list_begin = ap;
+        }
+        // Insert at end
+        else if (memcmp(list_end->getBSSID(), bssid, 6) < 0) {
+            list_end->setNext(ap);
+            list_end = ap;
+        }
+        // Insert somewhere in the middle (insertion sort)
+        else {
+            AccessPoint* tmp_c = list_begin;
+            AccessPoint* tmp_p = NULL;
+
+            while (tmp_c && memcmp(tmp_c->getBSSID(), bssid, 6) < 0) {
+                tmp_p = tmp_c;
+                tmp_c = tmp_c->getNext();
+            }
+
+            ap->setNext(tmp_c);
+            if (tmp_p) tmp_p->setNext(ap);
+        }
     }
     ++list_size;
 }
 
 AccessPoint* AccessPointList::search(uint8_t* bssid) {
-    AccessPoint* h = list_begin;
+    if (list_begin) {
+        AccessPoint* h = list_begin;
+        int res;
 
-    while (h) {
-        if (memcmp(h->getBSSID(), bssid, 6) == 0) {
-            return h;
-        }
-        h = h->getNext();
+        do {
+            res = memcmp(h->getBSSID(), bssid, 6);
+            if (res == 0) return h;
+            else h = h->getNext();
+        } while (h && res < 0);
     }
+
     return NULL;
 }
 
