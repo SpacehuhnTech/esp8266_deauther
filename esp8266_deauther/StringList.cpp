@@ -119,7 +119,7 @@ String StringList::get(int i) {
     h = list_begin;
     int j = 0;
 
-    while (h && i<j) {
+    while (h && j<i) {
         h = h->next;
         ++j;
     }
