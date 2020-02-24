@@ -79,13 +79,35 @@ StationList::~StationList() {
 void StationList::push(uint8_t* mac, AccessPoint* ap) {
     Station* st = new Station(mac, ap);
 
+    // Empty list -> insert first element
     if (!list_begin) {
         list_begin = st;
         list_end   = st;
         h          = list_begin;
     } else {
-        list_end->setNext(st);
-        list_end = st;
+        // Insert at start
+        if (memcmp(list_begin->getMAC(), mac, 6) > 0) {
+            st->setNext(list_begin);
+            list_begin = st;
+        }
+        // Insert at end
+        else if (memcmp(list_end->getMAC(), mac, 6) < 0) {
+            list_end->setNext(st);
+            list_end = st;
+        }
+        // Insert somewhere in the middle (insertion sort)
+        else {
+            Station* tmp_c = list_begin;
+            Station* tmp_p = NULL;
+
+            while (tmp_c && memcmp(tmp_c->getMAC(), mac, 6) < 0) {
+                tmp_p = tmp_c;
+                tmp_c = tmp_c->getNext();
+            }
+
+            st->setNext(tmp_c);
+            if (tmp_p) tmp_p->setNext(st);
+        }
     }
     ++list_size;
 }
@@ -138,12 +160,18 @@ void StationList::clear() {
 }
 
 Station* StationList::search(uint8_t* mac) {
-    Station* h = list_begin;
+    if (list_begin) {
+        Station* h = list_begin;
+        int res;
 
-    while (h && memcmp(h->getMAC(), mac, 6) != 0) {
-        h = h->getNext();
+        do {
+            res = memcmp(h->getMAC(), mac, 6);
+            if (res == 0) return h;
+            else h = h->getNext();
+        } while (h && res < 0);
     }
-    return h;
+
+    return NULL;
 }
 
 Station* StationList::get(int i) {
