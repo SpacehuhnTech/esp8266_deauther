@@ -9,7 +9,7 @@
 #include <Arduino.h> // String
 
 class StringList {
-    private:
+    protected:
         typedef struct item_t {
             char  * ptr;
             item_t* next;
@@ -30,7 +30,7 @@ class StringList {
 
         void moveFrom(StringList& sl);
 
-        void push(String str);
+        virtual void push(String str);
         String popFirst();
 
         void parse(const String& input, String delimiter);
@@ -40,9 +40,15 @@ class StringList {
         void begin();
         String iterate();
 
-        bool contains(const String& str) const;
+        virtual bool contains(const String& str) const;
         bool available() const;
         int size() const;
 
         void clear();
+};
+
+class SortedStringList : public StringList {
+    public:
+        void push(String str) override;
+        bool contains(const String& str) const override;
 };

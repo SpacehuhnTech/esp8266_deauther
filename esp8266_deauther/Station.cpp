@@ -50,7 +50,7 @@ String Station::getVendor() const {
     return vendor::search(mac);
 }
 
-StringList& Station::getProbes() {
+SortedStringList& Station::getProbes() {
     return probes;
 }
 

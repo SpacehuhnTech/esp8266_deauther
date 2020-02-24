@@ -16,9 +16,9 @@ class Station {
         uint8_t mac[6];
         AccessPoint* ap;
 
-        uint32_t   pkts = 1;
-        StringList probes;
-        Station  * next = NULL;
+        uint32_t pkts = 1;
+        SortedStringList probes;
+        Station* next = NULL;
 
     public:
         Station(uint8_t* mac, AccessPoint* ap);
@@ -31,7 +31,7 @@ class Station {
         String getBSSIDString() const;
         String getVendor() const;
 
-        StringList& getProbes();
+        SortedStringList& getProbes();
         Station* getNext();
 
         void setAccessPoint(AccessPoint* ap);

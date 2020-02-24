@@ -172,3 +172,58 @@ void StringList::clear() {
 
     h = NULL;
 }
+
+void SortedStringList::push(String str) {
+    item_t* item = (item_t*)malloc(sizeof(item_t));
+
+    item->ptr  = stringCopy(str.c_str(), str.length());
+    item->next = NULL;
+
+    // Empty list -> insert first element
+    if (!list_begin) {
+        list_begin = item;
+        list_end   = item;
+        h          = list_begin;
+    } else {
+        // Insert at start
+        if (strcmp(list_begin->ptr, item->ptr) > 0) {
+            item->next = list_begin;
+            list_begin = item;
+        }
+        // Insert at end
+        else if (strcmp(list_end->ptr, item->ptr) < 0) {
+            list_end->next = item;
+            list_end       = item;
+        }
+        // Insert somewhere in the middle (insertion sort)
+        else {
+            item_t* tmp_c = list_begin;
+            item_t* tmp_p = NULL;
+
+            while (tmp_c && strcmp(tmp_c->ptr, item->ptr) < 0) {
+                tmp_p = tmp_c;
+                tmp_c = tmp_c->next;
+            }
+
+            item->next = tmp_c;
+            if (tmp_p) tmp_p->next = item;
+        }
+    }
+
+    ++list_size;
+}
+
+bool SortedStringList::contains(const String& str) const {
+    if (list_begin) {
+        item_t* h = list_begin;
+        int     res;
+
+        do {
+            res = strcmp(h->ptr, str.c_str());
+            if (res == 0) return true;
+            else h = h->next;
+        } while (h && res < 0);
+    }
+
+    return false;
+}
