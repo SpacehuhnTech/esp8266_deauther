@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include "debug.h"
-#include "packetinjector.h"
-
 // ========== DEAUTH PACKET ========== //
 uint8_t deauth_pkt[] = {
     /*  0 - 1  */ 0xC0, 0x00,                         // Type, subtype: c0 => deauth, a0 => disassociate

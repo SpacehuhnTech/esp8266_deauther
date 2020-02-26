@@ -637,6 +637,60 @@ namespace cli {
             "  -v:   verbose output"
             );
 
+        Command cmd_probe = cli.addCommand("probe", [](cmd* c) {
+            Command cmd(c);
+
+            StringList ssid_list;
+            uint8_t to[6];
+            uint8_t ch;
+            unsigned long timeout = 0;
+            bool verbose;
+
+            { // SSIDs
+                String ssids = cmd.getArg("ssid").getValue();
+                ssid_list.parse(ssids, ",");
+            }
+
+            { // MAC to
+                String to_str = cmd.getArg("to").getValue();
+
+                if (to_str.length() != 17) {
+                    memcpy(to, mac::BROADCAST, 6);
+                } else {
+                    mac::fromStr(to, to_str.c_str());
+                }
+            }
+
+            { // Channel
+                ch = cmd.getArg("ch").getValue().toInt();
+            }
+
+            { // Time
+                long seconds = cmd.getArg("t").getValue().toInt();
+                if (seconds > 0) timeout = seconds*1000;
+            }
+
+            { // Verbose
+                verbose = cmd.getArg("v").isSet();
+            }
+
+            attack::startProbe(ssid_list, to, ch, timeout, verbose);
+        });
+        cmd_probe.addArg("s/sid/s");
+        cmd_probe.addArg("to,macto", "broadcast");
+        cmd_probe.addArg("ch/annel", "1");
+        cmd_probe.addArg("t/ime", "300");
+        cmd_probe.addFlagArg("v/erbose");
+        cmd_probe.setDescription(
+            "  Send WiFi network probe requests\n"
+            "  -s:    network names (SSIDs) for example: \"test A\",\"test B\"\n"
+            "  -to:   receiver MAC address (default=broadcast)\n"
+            "  -ch:   channel (default=1)\n"
+            "  -t:    attack timeout in seconds (default=300)\n"
+            "  -v:    verbose output"
+            );
+
+
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
             for (uint8_t i = 0; i<100; ++i) {
                 debugln();

@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include "debug.h"
-#include "packetinjector.h"
-
 // ========== BEACON PACKET ========== //
 uint8_t beacon_pkt[] = {
     // [22]
