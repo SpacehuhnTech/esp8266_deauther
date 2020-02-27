@@ -424,7 +424,7 @@ namespace cli {
 
             scan::start(ap, st, time, channels, ch_time, verbose, retain);
         });
-        cmd_scan.addArg("m/ode", "ap+st");
+        cmd_scan.addPosArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
         cmd_scan.addArg("ch/annel", "1,2,3,4,5,6,7,8,9,10,11,12,13,14");
         cmd_scan.addArg("ct/ime", "auto");
@@ -501,7 +501,7 @@ namespace cli {
 
             attack::startBeacon(ssid_list, from, to, enc, ch, timeout, verbose);
         });
-        cmd_beacon.addArg("s/sid/s");
+        cmd_beacon.addPosArg("s/sid/s");
         cmd_beacon.addArg("from,mac/from", "random");
         cmd_beacon.addArg("to,macto", "broadcast");
         cmd_beacon.addArg("enc/ryption", "open");
@@ -676,7 +676,7 @@ namespace cli {
 
             attack::startProbe(ssid_list, to, ch, timeout, verbose);
         });
-        cmd_probe.addArg("s/sid/s");
+        cmd_probe.addPosArg("s/sid/s");
         cmd_probe.addArg("to,macto", "broadcast");
         cmd_probe.addArg("ch/annel", "1");
         cmd_probe.addArg("t/ime", "300");
