@@ -108,27 +108,26 @@ namespace scan {
             }
         }
         // broadcast probe request from unassociated station
-        else if (buf[12] == 0x40) {
+        else if ((buf[12] == 0x40) && (buf[12+25] > 0)) {
             if (data.st_list.registerPacket(mac_b, NULL)) {
                 if (data.verbose) {
                     debug("Station ");
-                    debugln(strh::mac(mac_b));
+                    debug(strh::mac(mac_b));
+                    debug(' ');
                 }
             }
 
-            if (buf[12+25] > 0) {
-                const char* ssid = (const char*)&buf[12+26];
-                uint8_t     len  = buf[12+25];
+            const char* ssid = (const char*)&buf[12+26];
+            uint8_t     len  = buf[12+25];
 
-                if ((ssid[0] != '\0') && data.st_list.addProbe(mac_b, ssid, len)) {
-                    if (data.verbose) {
-                        debug("Probe \"");
+            if ((ssid[0] != '\0') && data.st_list.addProbe(mac_b, ssid, len)) {
+                if (data.verbose) {
+                    debug("Probe \"");
 
-                        for (uint8_t i = 0; i<len; ++i) {
-                            debug(char(ssid[i]));
-                        }
-                        debug("\"\n");
+                    for (uint8_t i = 0; i<len; ++i) {
+                        debug(char(ssid[i]));
                     }
+                    debug("\"\n");
                 }
             }
         }
