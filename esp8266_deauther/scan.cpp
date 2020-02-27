@@ -155,9 +155,13 @@ namespace scan {
         debug("Scanning for stations (WiFi client devices) on ");
         debug(data.num_of_channels);
         debug(" different channels");
-        debug(" in ");
-        debug(data.timeout/1000);
-        debugln(" seconds");
+        if (data.timeout > 0) {
+            debug(" in ");
+            debug(data.timeout/1000);
+            debug(" seconds");
+        }
+        debugln();
+        debugln("Type 'stop' to stop the scan");
 
         uint8_t ch = 1;
         wifi_set_channel(ch);
@@ -228,7 +232,7 @@ namespace scan {
         if (!data.ap && data.st) {
             unsigned long current_time = millis();
 
-            if (current_time - data.start_time >= data.timeout) {
+            if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
                 stopSTsearch();
             } else if (current_time - data.ch_update_time >= data.ch_time) {
                 setNextChannel();
@@ -245,11 +249,6 @@ namespace scan {
         { // Error check
             if (!ap && !st) {
                 debugln("ERROR: Invalid scan mode");
-                return;
-            }
-
-            if (st && (time <= 0)) {
-                debugln("ERROR: Station scan time equals 0");
                 return;
             }
 
@@ -270,7 +269,6 @@ namespace scan {
             num_of_channels += ((channels >> i) & 0x01);
         }
 
-        if (time < 1000) time = 1000;
         if (ch_time <= 0) ch_time = time/num_of_channels;
 
         data.ap       = ap;
