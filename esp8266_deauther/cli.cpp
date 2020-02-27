@@ -253,7 +253,7 @@ namespace cli {
                                     "Type 'scan -m ap' to search for access points");
                             return;
                         }
-                        scan::printAPs();
+                        scan::print();
 
                         debugln("Select access point(s) to attack\n"
                                 "  >=0: ID(s) to select for the attack");
@@ -422,7 +422,7 @@ namespace cli {
                 }
             }
 
-            scan::search(ap, st, time, channels, ch_time, verbose, retain);
+            scan::start(ap, st, time, channels, ch_time, verbose, retain);
         });
         cmd_scan.addArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
@@ -441,7 +441,7 @@ namespace cli {
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
-            scan::printResults();
+            scan::print();
         });
         cmd_results.setDescription("  Print list of scan results [access points (networks) and stations (clients)]");
 
@@ -719,6 +719,7 @@ namespace cli {
 
         Command cmd_stop = cli.addCommand("stop", [](cmd* c) {
             attack::stop();
+            scan::stop();
         });
         cmd_stop.setDescription("  Stop all attacks");
 

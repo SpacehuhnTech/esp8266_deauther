@@ -16,13 +16,64 @@
 extern "C" {
   #include "user_interface.h"
 }
+typedef struct scan_data_t {
+    bool          ap;
+    bool          st;
+    uint16_t      channels;
+    unsigned long ch_time;
+    unsigned long timeout;
+    bool          verbose;
+
+    uint8_t       num_of_channels;
+    unsigned long start_time;
+    unsigned long output_time;
+    unsigned long pkt_time;
+    unsigned long ch_update_time;
+    unsigned long pkts_received;
+    unsigned long pkts_per_second;
+
+    AccessPointList ap_list;
+    StationList     st_list;
+} scan_data_t;
 
 namespace scan {
     // ===== PRIVATE ===== //
-    AccessPointList ap_list;
-    StationList     station_list;
+    scan_data_t data;
+
+    void printChannel(uint8_t ch) {
+        if (data.verbose) {
+            debug("Sniff channel ");
+            debug(ch);
+            debug(" (");
+
+            if (data.ch_time < 1000) {
+                debug(data.ch_time);
+                debugln(" ms)");
+            } else {
+                debug(data.ch_time/1000);
+                debugln(" s)");
+            }
+        }
+    }
+
+    void setNextChannel() {
+        if (!data.num_of_channels > 0) return;
+
+        uint8_t ch = wifi_get_channel();
+
+        do {
+            if (++ch > 14) ch = 1;
+            if ((data.channels >> (ch-1)) & 0x01) {
+                printChannel(ch);
+                wifi_set_channel(ch);
+                break;
+            }
+        } while (true);
+    }
 
     void station_sniffer(uint8_t* buf, uint16_t len) {
+        if (!data.st) return;
+
         // drop frames that are too short to have a valid MAC header
         if (len < 28) return;
 
@@ -43,50 +94,154 @@ namespace scan {
 
         // frame from AP to station
         if (!mac::multicast(mac_a)) {
-            AccessPoint* ap = ap_list.search(mac_b);
+            AccessPoint* ap = data.ap_list.search(mac_b);
             if (ap) {
-                if (station_list.registerPacket(mac_a, ap)) {
-                    debug("Station ");
-                    debug(strh::mac(mac_a));
-                    debug(" in \"");
-                    debug(ap->getSSID());
-                    debugln('"');
+                if (data.st_list.registerPacket(mac_a, ap)) {
+                    if (data.verbose) {
+                        debug("Station ");
+                        debug(strh::mac(mac_a));
+                        debug(" in \"");
+                        debug(ap->getSSID());
+                        debugln('"');
+                    }
                 }
             }
         }
         // broadcast probe request from unassociated station
         else if (buf[12] == 0x40) {
-            if (station_list.registerPacket(mac_b, NULL)) {
-                debug("Station ");
-                debugln(strh::mac(mac_b));
+            if (data.st_list.registerPacket(mac_b, NULL)) {
+                if (data.verbose) {
+                    debug("Station ");
+                    debugln(strh::mac(mac_b));
+                }
             }
 
             if (buf[12+25] > 0) {
                 const char* ssid = (const char*)&buf[12+26];
                 uint8_t     len  = buf[12+25];
 
-                if ((ssid[0] != '\0') && station_list.addProbe(mac_b, ssid, len)) {
-                    debug("Probe \"");
+                if ((ssid[0] != '\0') && data.st_list.addProbe(mac_b, ssid, len)) {
+                    if (data.verbose) {
+                        debug("Probe \"");
 
-                    for (uint8_t i = 0; i<len; ++i) {
-                        debug(char(ssid[i]));
+                        for (uint8_t i = 0; i<len; ++i) {
+                            debug(char(ssid[i]));
+                        }
+                        debug("\"\n");
                     }
-                    debug("\"\n");
                 }
             }
         }
     }
 
-    // ===== PUBLIC ===== //
     void clearAPresults() {
-        ap_list.clear();
+        data.ap_list.clear();
     }
 
     void clearSTresults() {
-        station_list.clear();
+        data.st_list.clear();
     }
 
-    void search(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain) {
+    void startAPsearch() {
+        debugln("Scanning for access points (WiFi networks)");
+
+        WiFi.mode(WIFI_STA);
+        WiFi.disconnect();
+
+        WiFi.scanNetworks(true, true);
+    }
+
+    void startSTsearch() {
+        debug("Scanning for stations (WiFi client devices) on ");
+        debug(data.num_of_channels);
+        debug(" different channels");
+        debug(" in ");
+        debug(data.timeout/1000);
+        debugln(" seconds");
+
+        uint8_t ch = 1;
+        wifi_set_channel(ch);
+
+        if ((data.channels >> (ch-1)) & 0x01) {
+            printChannel(ch);
+        } else {
+            setNextChannel();
+        }
+
+        data.start_time     = millis();
+        data.ch_update_time = data.start_time;
+
+        wifi_set_promiscuous_rx_cb(station_sniffer);
+        wifi_promiscuous_enable(true);
+    }
+
+    void stopAPsearch() {
+        if (data.ap) {
+            WiFi.scanDelete();
+            data.ap = false;
+
+            debugln("Stopped access point scan");
+            debugln();
+
+            printAPs();
+            debugln();
+
+            if (data.st) startSTsearch();
+        }
+    }
+
+    void stopSTsearch() {
+        if (data.st) {
+            wifi_promiscuous_enable(false);
+            data.st = false;
+
+            debugln("Stopped station scan");
+            debugln();
+
+            printSTs();
+            debugln();
+        }
+    }
+
+    void updateAPsearch() {
+        if (data.ap && (WiFi.scanComplete() >= 0)) {
+            int n = WiFi.scanComplete();
+
+            for (int i = 0; i < n; ++i) {
+                if (((data.channels >> (WiFi.channel(i)-1)) & 0x01) &&
+                    !data.ap_list.search(WiFi.BSSID(i))) {
+                    data.ap_list.push(
+                        WiFi.SSID(i).c_str(),
+                        WiFi.BSSID(i),
+                        WiFi.RSSI(i),
+                        WiFi.encryptionType(i),
+                        WiFi.channel(i)
+                        );
+                }
+            }
+
+            stopAPsearch();
+        }
+    }
+
+    void updateSTsearch() {
+        if (!data.ap && data.st) {
+            unsigned long current_time = millis();
+
+            if (current_time - data.start_time >= data.timeout) {
+                stopSTsearch();
+            } else if (current_time - data.ch_update_time >= data.ch_time) {
+                setNextChannel();
+                data.ch_update_time = current_time;
+            } else if (data.verbose && (current_time - data.output_time >= 1000)) {
+                // print infos
+                data.output_time = current_time;
+            }
+        }
+    }
+
+    // ===== PUBLIC ===== //
+    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain) {
         { // Error check
             if (!ap && !st) {
                 debugln("ERROR: Invalid scan mode");
@@ -109,108 +264,45 @@ namespace scan {
             if (st) clearSTresults();
         }
 
-        if (ap) searchAPs();
-        if (st) searchSTs(time, channels, ch_time, verbose);
-    }
-
-    void searchAPs() {
-        debugln("Scanning for access points (WiFi networks)");
-
-        WiFi.mode(WIFI_STA);
-        WiFi.disconnect();
-
-        WiFi.scanNetworks(true, true);
-
-        int n = WiFi.scanComplete();
-
-        for (int i = 0; i<100 && n < 0; ++i) {
-            n = WiFi.scanComplete();
-            delay(100);
-        }
-
-        for (int i = 0; i < n; ++i) {
-            if (!ap_list.search(WiFi.BSSID(i))) {
-                ap_list.push(
-                    WiFi.SSID(i).c_str(),
-                    WiFi.BSSID(i),
-                    WiFi.RSSI(i),
-                    WiFi.encryptionType(i),
-                    WiFi.channel(i)
-                    );
-            }
-        }
-
-        WiFi.scanDelete();
-
-        debugln();
-        printAPs();
-    }
-
-    void searchSTs(unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose) {
         uint8_t num_of_channels = 0;
 
         for (uint8_t i = 0; i<14; ++i) {
             num_of_channels += ((channels >> i) & 0x01);
         }
 
-        if (num_of_channels == 0) return;
-
-        wifi_set_promiscuous_rx_cb(station_sniffer);
-        wifi_promiscuous_enable(true);
-
         if (time < 1000) time = 1000;
         if (ch_time <= 0) ch_time = time/num_of_channels;
 
-        debug("Scanning for stations (WiFi client devices) on ");
-        debug(num_of_channels);
-        debug(" different channels");
-        debug(" in ");
-        debug(time/1000);
-        debugln(" seconds");
+        data.ap       = ap;
+        data.st       = st;
+        data.channels = channels;
+        data.ch_time  = ch_time;
+        data.timeout  = time;
+        data.verbose  = verbose;
 
-        bool running             = true;
-        unsigned long start_time = millis();
+        data.num_of_channels = num_of_channels;
+        data.start_time      = millis();
+        data.output_time     = millis();
+        data.pkt_time        = millis();
+        data.ch_update_time  = millis();
+        data.pkts_received   = 0;
+        data.pkts_per_second = 0;
 
-        while (running) {
-            for (uint8_t i = 0; i<14 && running; ++i) {
-                if ((channels >> i) & 0x01) {
-                    if (verbose) {
-                        debug("Sniff channel ");
-                        debug(i+1);
-                        debug(" (");
+        if (ap) startAPsearch();
+        else if (st) startSTsearch();
+    }
 
-                        if (ch_time < 1000) {
-                            debug(ch_time);
-                            debugln(" ms)");
-                        } else {
-                            debug(ch_time/1000);
-                            debugln(" s)");
-                        }
-                    }
-
-                    wifi_set_channel(i+1);
-                    unsigned long ch_start_time = millis();
-
-                    while (running && millis() - ch_start_time < ch_time) {
-                        delay(1);
-                        running = !cli::read_exit() && millis() - start_time <= time;
-                    }
-                }
-            }
-        }
-
-        wifi_promiscuous_enable(false);
-
-        debugln();
-        printSTs();
+    void stop() {
+        stopAPsearch();
+        stopSTsearch();
     }
 
     void printAPs() {
-        if (ap_list.size() == 0) {
+        if (data.ap_list.size() == 0) {
             debugln("No access points (networks) found");
         } else {
             debug("Found ");
-            debug(ap_list.size());
+            debug(data.ap_list.size());
             debugln(" access points (networks):");
 
             debug(strh::right(3, "ID"));
@@ -230,11 +322,11 @@ namespace scan {
 
             debugln("==============================================================================");
 
-            ap_list.begin();
+            data.ap_list.begin();
             int i = 0;
 
-            while (ap_list.available()) {
-                AccessPoint* h = ap_list.iterate();
+            while (data.ap_list.available()) {
+                AccessPoint* h = data.ap_list.iterate();
 
                 debug(strh::right(3, String(i)));
                 debug(' ');
@@ -264,11 +356,11 @@ namespace scan {
     }
 
     void printSTs() {
-        if (station_list.size() == 0) {
+        if (data.st_list.size() == 0) {
             debugln("No stations (clients) found");
         } else {
             debug("Found ");
-            debug(station_list.size());
+            debug(data.st_list.size());
             debugln(" stations (clients):");
 
             debug(strh::right(3, "ID"));
@@ -289,10 +381,10 @@ namespace scan {
             debugln("===========================================================================================================================");
 
             int i = 0;
-            station_list.begin();
+            data.st_list.begin();
 
-            while (station_list.available()) {
-                Station* h = station_list.iterate();
+            while (data.st_list.available()) {
+                Station* h = data.st_list.iterate();
 
                 debug(strh::right(3, String(i)));
                 debug(' ');
@@ -328,16 +420,21 @@ namespace scan {
         }
     }
 
-    void printResults() {
+    void print() {
         printAPs();
         printSTs();
     }
 
+    void update() {
+        updateAPsearch();
+        updateSTsearch();
+    }
+
     AccessPointList& getAccessPoints() {
-        return ap_list;
+        return data.ap_list;
     }
 
     StationList& getStations() {
-        return station_list;
+        return data.st_list;
     }
 }

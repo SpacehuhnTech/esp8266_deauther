@@ -25,12 +25,10 @@ namespace attack {
     void stopBeacon();
     void stopDeauth();
     void stopProbe();
-
     void stop();
 
     void updateBeacon();
     void updateDeauth();
     void updateProbe();
-
     void update();
 }

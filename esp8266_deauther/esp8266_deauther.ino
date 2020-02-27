@@ -16,4 +16,5 @@ void setup() {
 void loop() {
     cli::update();
     attack::update();
+    scan::update();
 }

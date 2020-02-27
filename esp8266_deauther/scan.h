@@ -13,13 +13,14 @@ namespace scan {
     void clearAPresults();
     void clearSTresults();
 
-    void search(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain);
-    void searchAPs();
-    void searchSTs(unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose);
+    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain);
+    void stop();
 
+    void print();
     void printAPs();
     void printSTs();
-    void printResults();
+
+    void update();
 
     AccessPointList& getAccessPoints();
     StationList    & getStations();
