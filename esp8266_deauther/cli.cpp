@@ -403,7 +403,7 @@ namespace cli {
             }
 
             { // Verbose output
-                verbose = cmd.getArg("v").isSet();
+                verbose = !cmd.getArg("s").isSet();
             }
 
             { // Retain results
@@ -428,7 +428,7 @@ namespace cli {
         cmd_scan.addArg("t/ime", "14");
         cmd_scan.addArg("ch/annel", "1,2,3,4,5,6,7,8,9,10,11,12,13,14");
         cmd_scan.addArg("ct/ime", "auto");
-        cmd_scan.addFlagArg("v/erbose");
+        cmd_scan.addFlagArg("s/ilent");
         cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\n"
@@ -496,21 +496,21 @@ namespace cli {
             }
 
             { // Verbose
-                verbose = cmd.getArg("v").isSet();
+                verbose = !cmd.getArg("s").isSet();
             }
 
             attack::startBeacon(ssid_list, from, to, enc, ch, timeout, verbose);
         });
-        cmd_beacon.addPosArg("s/sid/s");
+        cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("from,mac/from", "random");
         cmd_beacon.addArg("to,macto", "broadcast");
         cmd_beacon.addArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("t/ime", "300");
-        cmd_beacon.addFlagArg("v/erbose");
+        cmd_beacon.addFlagArg("s/ilent");
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\n"
-            "  -s:    network names (SSIDs) for example: \"test A\",\"test B\"\n"
+            "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\n"
             "  -from: sender MAC address (default=random)\n"
             "  -to:   receiver MAC address (default=broadcast)\n"
             "  -enc:  encryption [open,wpa2] (default=open)\n"
@@ -612,7 +612,7 @@ namespace cli {
             }
 
             { // Verbose
-                verbose = cmd.getArg("v").isSet();
+                verbose = !cmd.getArg("s").isSet();
             }
 
             attack::startDeauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts, verbose);
@@ -624,7 +624,7 @@ namespace cli {
         cmd_deauth.addArg("n/um/ber", "0");
         cmd_deauth.addArg("r/ate", "20");
         cmd_deauth.addArg("m/ode", "deauth+disassoc");
-        cmd_deauth.addFlagArg("v/erbose");
+        cmd_deauth.addFlagArg("s/ilent");
         cmd_deauth.setDescription(
             "  Deauthenticate (disconnect) selected WiFi connections\n"
             "  -ap:  access point IDs to attack\n"
@@ -671,19 +671,19 @@ namespace cli {
             }
 
             { // Verbose
-                verbose = cmd.getArg("v").isSet();
+                verbose = !cmd.getArg("s").isSet();
             }
 
             attack::startProbe(ssid_list, to, ch, timeout, verbose);
         });
-        cmd_probe.addPosArg("s/sid/s");
+        cmd_probe.addPosArg("ssid/s");
         cmd_probe.addArg("to,macto", "broadcast");
         cmd_probe.addArg("ch/annel", "1");
         cmd_probe.addArg("t/ime", "300");
-        cmd_probe.addFlagArg("v/erbose");
+        cmd_probe.addFlagArg("s/ilent");
         cmd_probe.setDescription(
             "  Send WiFi network probe requests\n"
-            "  -s:    network names (SSIDs) for example: \"test A\",\"test B\"\n"
+            "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\n"
             "  -to:   receiver MAC address (default=broadcast)\n"
             "  -ch:   channel (default=1)\n"
             "  -t:    attack timeout in seconds (default=300)\n"
