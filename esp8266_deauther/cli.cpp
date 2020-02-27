@@ -441,9 +441,21 @@ namespace cli {
             );
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
-            scan::print();
+            Command cmd(c);
+            String mode = cmd.getArg("t").getValue();
+            if (mode == "ap") {
+                scan::printAPs();
+            } else if (mode == "st") {
+                scan::printSTs();
+            } else if (mode == "ap+st") {
+                scan::printAPs();
+                scan::printSTs();
+            }
         });
-        cmd_results.setDescription("  Print list of scan results [access points (networks) and stations (clients)]");
+        cmd_results.addPosArg("t/ype", "ap+st");
+        cmd_results.setDescription(
+            "  Print list of scan results [access points (networks) and stations (clients)]\n"
+            "  -t: type of results [ap,st,ap+st] (default=ap+st)");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);

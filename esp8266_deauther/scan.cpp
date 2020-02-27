@@ -127,7 +127,7 @@ namespace scan {
                     for (uint8_t i = 0; i<len; ++i) {
                         debug(char(ssid[i]));
                     }
-                    debug("\"\n");
+                    debugln("\"");
                 }
             }
         }
@@ -187,7 +187,6 @@ namespace scan {
             debugln();
 
             printAPs();
-            debugln();
 
             if (data.st) startSTsearch();
         }
@@ -202,7 +201,6 @@ namespace scan {
             debugln();
 
             printSTs();
-            debugln();
         }
     }
 
@@ -350,6 +348,7 @@ namespace scan {
             debugln("WPA(2) Enterprise networks are recognized as Open");
             debugln("================================================================================");
         }
+        debugln();
     }
 
     void printSTs() {
@@ -401,7 +400,8 @@ namespace scan {
 
                 while (h->getProbes().available()) {
                     if (!first) {
-                        debug("\n                                                                                         ");
+                        debugln();
+                        debug("                                                                                         ");
                     }
                     debug(/*strh::left(32, */ '"' + h->getProbes().iterate() + '"');
                     first = false;
@@ -415,6 +415,7 @@ namespace scan {
             debugln("Pkts = Recorded Packets");
             debugln("===========================================================================================================================");
         }
+        debugln();
     }
 
     void print() {
