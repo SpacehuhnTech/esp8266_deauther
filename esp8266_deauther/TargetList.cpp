@@ -45,6 +45,24 @@ bool Target::operator==(const Target& t) const {
            ch() == t.ch();
 }
 
+bool Target::operator<(const Target& t) const {
+    if (ptr == t.ptr) return true;
+    if (!ptr) return false;
+
+    return memcmp(from(), t.from(), 6) < 0 ||
+           memcmp(to(), t.to(), 6) < 0 ||
+           ch() < t.ch();
+}
+
+bool Target::operator>(const Target& t) const {
+    if (ptr == t.ptr) return true;
+    if (!ptr) return false;
+
+    return memcmp(from(), t.from(), 6) > 0 &&
+           memcmp(to(), t.to(), 6) > 0 &&
+           ch() > t.ch();
+}
+
 // ========== TargetList =========== //
 TargetList::TargetList(int max) : list_max_size(max) {}
 
@@ -56,11 +74,13 @@ void TargetList::moveFrom(TargetList& t) {
     target_t* th = t.list_begin;
 
     while (th) {
+        if ((list_max_size > 0) && (list_size >= list_max_size)) break;
+
         // Push to list
         if (!list_begin) {
             list_begin = th;
             list_end   = th;
-            h          = list_begin;
+            list_h     = list_begin;
         } else {
             list_end->next = th;
             list_end       = th;
@@ -74,7 +94,8 @@ void TargetList::moveFrom(TargetList& t) {
     t.list_begin = NULL;
     t.list_end   = NULL;
     t.list_size  = 0;
-    t.h          = NULL;
+    t.list_h     = NULL;
+    t.pos        = 0;
 }
 
 bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
@@ -88,27 +109,46 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
     new_target->ch   = ch;
     new_target->next = NULL;
 
-    // Check if already in list
     Target t(new_target);
 
-    target_t* h = list_begin;
-
-    while (h) {
-        if (Target(h) == t) {
-            free(new_target);
-            return false;
-        }
-        h = h->next;
-    }
-
-    // Push to list
+    // Empty list -> insert first element
     if (!list_begin) {
         list_begin = new_target;
         list_end   = new_target;
-        h          = list_begin;
+        list_h     = list_begin;
     } else {
-        list_end->next = new_target;
-        list_end       = new_target;
+        // Insert at start
+        if (Target(list_begin) > t) {
+            new_target->next = list_begin;
+            list_begin       = new_target;
+        }
+        // Insert at end
+        else if (Target(list_end) < t) {
+            list_end->next = new_target;
+            list_end       = new_target;
+        }
+        // Insert somewhere in the between (insertion sort)
+        else {
+            target_t* tmp_c = list_begin;
+            target_t* tmp_p = NULL;
+
+            int res;
+
+            do {
+                tmp_p = tmp_c;
+                tmp_c = tmp_c->next;
+            } while (tmp_c && Target(tmp_c) < t);
+
+
+            // Skip duplicates
+            if (res == 0) {
+                free(new_target);
+                return false;
+            } else {
+                new_target->next = tmp_c;
+                if (tmp_p) tmp_p->next = new_target;
+            }
+        }
     }
 
     ++(list_size);
@@ -116,33 +156,37 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
 }
 
 Target TargetList::get(int i) {
-    h = list_begin;
-    int j = 0;
-
-    while (h && j<i) {
-        h = h->next;
-        ++j;
+    if (i < pos) {
+        list_h = list_begin;
+        pos    = 0;
     }
 
-    return Target(h);
+    while (list_h && pos<i) {
+        list_h = list_h->next;
+        ++pos;
+    }
+
+    return Target(list_h);
 }
 
 void TargetList::begin() {
-    h = list_begin;
+    list_h = list_begin;
+    pos    = 0;
 }
 
 Target TargetList::iterate() {
-    Target t(h);
+    target_t* tmp = list_h;
 
-    if (h) {
-        h = h->next;
+    if (list_h) {
+        list_h = list_h->next;
+        ++pos;
     }
 
-    return t;
+    return Target(tmp);
 }
 
 bool TargetList::available() const {
-    return h;
+    return list_h;
 }
 
 int TargetList::size() const {
@@ -154,11 +198,11 @@ bool TargetList::full() const {
 }
 
 void TargetList::clear() {
-    h = list_begin;
+    list_h = list_begin;
 
-    while (h) {
-        target_t* to_delete = h;
-        h = h->next;
+    while (list_h) {
+        target_t* to_delete = list_h;
+        list_h = list_h->next;
         free(to_delete);
     }
 
@@ -166,5 +210,6 @@ void TargetList::clear() {
     list_end   = NULL;
     list_size  = 0;
 
-    h = NULL;
+    list_h = NULL;
+    pos    = 0;
 }

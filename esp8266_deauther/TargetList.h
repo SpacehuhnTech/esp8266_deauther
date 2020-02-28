@@ -27,6 +27,8 @@ class Target {
         uint8_t ch() const;
 
         bool operator==(const Target& t) const;
+        bool operator<(const Target& t) const;
+        bool operator>(const Target& t) const;
 };
 
 class TargetList {
@@ -37,7 +39,8 @@ class TargetList {
         int list_size     = 0;
         int list_max_size = 0;
 
-        target_t* h = NULL;
+        target_t* list_h = NULL;
+        int pos          = 0;
 
     public:
         TargetList(int max = MAX_TARGETS);
