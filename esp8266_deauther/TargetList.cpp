@@ -111,13 +111,13 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
             Target* tmp_c = list_begin;
             Target* tmp_p = NULL;
 
-            int res;
+            int res = compare(tmp_c, new_target);
 
-            do {
-                res   = compare(tmp_c, new_target);
+            while (tmp_c->getNext() && res < 0) {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            } while (tmp_c && res < 0);
+                res   = compare(tmp_c, new_target);
+            }
 
             // Skip duplicates
             if (res == 0) {

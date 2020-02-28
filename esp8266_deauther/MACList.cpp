@@ -78,13 +78,13 @@ bool MACList::push(const uint8_t* addr) {
             mac_t* tmp_c = list_begin;
             mac_t* tmp_p = NULL;
 
-            int res;
+            int res = compare(tmp_c, addr);
 
-            do {
-                res   = compare(tmp_c, addr);
+            while (tmp_c->next && res < 0) {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->next;
-            } while (tmp_c && res < 0);
+                res   = compare(tmp_c, addr);
+            }
 
             // Skip duplicates
             if (res == 0) {

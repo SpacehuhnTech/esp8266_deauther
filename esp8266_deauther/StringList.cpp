@@ -226,13 +226,13 @@ bool SortedStringList::push(String str) {
             str_t* tmp_c = list_begin;
             str_t* tmp_p = NULL;
 
-            int res;
+            int res = compare(tmp_c, str);
 
-            do {
-                res   = compare(tmp_c, str);
+            while (tmp_c->next && res < 0) {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->next;
-            } while (tmp_c && res < 0);
+                res   = compare(tmp_c, str);
+            }
 
             // Skip duplicates
             if (res == 0) {
@@ -256,12 +256,13 @@ bool SortedStringList::contains(const String& str) const {
     }
 
     str_t* tmp = list_begin;
-    int    res;
 
-    do {
-        res = compare(tmp, str);
+    int res = compare(tmp, str);
+
+    while (tmp->next && res < 0) {
         tmp = tmp->next;
-    } while (tmp && res < 0);
+        res = compare(tmp, str);
+    }
 
     return res == 0;
 }

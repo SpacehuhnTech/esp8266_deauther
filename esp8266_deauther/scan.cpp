@@ -117,7 +117,7 @@ namespace scan {
                 if (!data.silent) {
                     debug("Station ");
                     debug(strh::mac(mac_b));
-                    debug(' ');
+                    debugln(' ');
                 }
             }
 
@@ -213,8 +213,7 @@ namespace scan {
             int n = WiFi.scanComplete();
 
             for (int i = 0; i < n; ++i) {
-                if (((data.channels >> (WiFi.channel(i)-1)) & 0x01) &&
-                    !data.ap_list.search(WiFi.BSSID(i))) {
+                if (((data.channels >> (WiFi.channel(i)-1)) & 0x01)) {
                     data.ap_list.push(
                         WiFi.SSID(i).c_str(),
                         WiFi.BSSID(i),

@@ -108,13 +108,13 @@ bool StationList::push(uint8_t* mac, AccessPoint* ap) {
             Station* tmp_c = list_begin;
             Station* tmp_p = NULL;
 
-            int res;
+            int res = compare(tmp_c, mac);
 
-            do {
-                res   = compare(tmp_c, mac);
+            while (tmp_c->getNext() && res < 0) {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            } while (tmp_c && res < 0);
+                res   = compare(tmp_c, mac);
+            }
 
             // Skip duplicates
             if (res == 0) {
@@ -141,10 +141,7 @@ bool StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
 
         for (uint8_t i = 0; i<len; ++i) probe += char(ssid[i]);
 
-        if (!tmp->getProbes().contains(probe)) {
-            tmp->getProbes().push(probe);
-            return true;
-        }
+        return tmp->getProbes().push(probe);
     }
     return false;
 }
@@ -190,8 +187,9 @@ Station* StationList::search(uint8_t* mac) {
 
     int res = compare(tmp, mac);
 
-    while (tmp && res < 0) {
+    while (tmp->getNext() && res < 0) {
         tmp = tmp->getNext();
+        res = compare(tmp, mac);
     }
 
     return (res == 0) ? tmp : NULL;

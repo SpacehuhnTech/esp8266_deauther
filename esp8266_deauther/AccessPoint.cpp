@@ -137,13 +137,13 @@ bool AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t e
             AccessPoint* tmp_c = list_begin;
             AccessPoint* tmp_p = NULL;
 
-            int res;
+            int res = compare(tmp_c, bssid);
 
-            do {
-                res   = compare(tmp_c, bssid);
+            while (tmp_c->getNext() && res < 0) {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            } while (tmp_c && res < 0);
+                res   = compare(tmp_c, bssid);
+            }
 
             // Skip duplicates
             if (res == 0) {
@@ -168,8 +168,9 @@ AccessPoint* AccessPointList::search(uint8_t* bssid) {
 
     int res = compare(tmp, bssid);
 
-    while (tmp && res < 0) {
+    while (tmp->getNext() && res < 0) {
         tmp = tmp->getNext();
+        res = compare(tmp, bssid);
     }
 
     return (res == 0) ? tmp : NULL;
