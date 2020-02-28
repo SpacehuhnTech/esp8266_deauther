@@ -10,19 +10,21 @@
 
 class StringList {
     protected:
-        typedef struct item_t {
-            char  * ptr;
-            item_t* next;
-        } item_t;
+        typedef struct str_t {
+            char * ptr;
+            str_t* next;
+        } str_t;
 
-        item_t* list_begin = NULL;
-        item_t* list_end   = NULL;
-        int list_size      = 0;
+        str_t* list_begin = NULL;
+        str_t* list_end   = NULL;
+        int list_size     = 0;
         int list_max_size;
 
-        item_t* h = NULL;
+        str_t* list_h = NULL;
+        int list_pos  = 0;
 
-        char* stringCopy(const char* str, long len);
+        char* stringCopy(const char* str, long len) const;
+        int compare(const str_t* a, const String& b) const;
 
     public:
         StringList(int max = 0);
