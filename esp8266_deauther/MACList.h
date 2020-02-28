@@ -21,7 +21,7 @@ class MACList {
         int list_max_size = 0;
 
         mac_t* list_h = NULL;
-        int pos       = 0;
+        int list_pos  = 0;
 
     public:
         MACList(int max = 0);

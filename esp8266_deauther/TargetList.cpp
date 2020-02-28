@@ -95,7 +95,7 @@ void TargetList::moveFrom(TargetList& t) {
     t.list_end   = NULL;
     t.list_size  = 0;
     t.list_h     = NULL;
-    t.pos        = 0;
+    t.list_pos   = 0;
 }
 
 bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
@@ -156,22 +156,22 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
 }
 
 Target TargetList::get(int i) {
-    if (i < pos) {
-        list_h = list_begin;
-        pos    = 0;
+    if (i < list_pos) {
+        list_h   = list_begin;
+        list_pos = 0;
     }
 
-    while (list_h && pos<i) {
+    while (list_h && list_pos<i) {
         list_h = list_h->next;
-        ++pos;
+        ++list_pos;
     }
 
     return Target(list_h);
 }
 
 void TargetList::begin() {
-    list_h = list_begin;
-    pos    = 0;
+    list_h   = list_begin;
+    list_pos = 0;
 }
 
 Target TargetList::iterate() {
@@ -179,7 +179,7 @@ Target TargetList::iterate() {
 
     if (list_h) {
         list_h = list_h->next;
-        ++pos;
+        ++list_pos;
     }
 
     return Target(tmp);
@@ -210,6 +210,6 @@ void TargetList::clear() {
     list_end   = NULL;
     list_size  = 0;
 
-    list_h = NULL;
-    pos    = 0;
+    list_h   = NULL;
+    list_pos = 0;
 }

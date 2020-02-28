@@ -104,29 +104,29 @@ bool MACList::push(const uint8_t* addr) {
 }
 
 uint8_t* MACList::get(int i) {
-    if (i < pos) {
-        list_h = list_begin;
-        pos    = 0;
+    if (i < list_pos) {
+        list_h   = list_begin;
+        list_pos = 0;
     }
 
-    while (list_h && pos<i) {
+    while (list_h && list_pos<i) {
         list_h = list_h->next;
-        ++pos;
+        ++list_pos;
     }
 
     return list_h ? list_h->addr : NULL;
 }
 
 void MACList::begin() {
-    list_h = list_begin;
-    pos    = 0;
+    list_h   = list_begin;
+    list_pos = 0;
 }
 
 uint8_t* MACList::iterate() {
     if (list_h) {
         mac_t* tmp = list_h;
         list_h = list_h->next;
-        ++pos;
+        ++list_pos;
         return tmp->addr;
     } else {
         return NULL;
@@ -178,6 +178,6 @@ void MACList::clear() {
     list_end   = NULL;
     list_size  = 0;
 
-    list_h = NULL;
-    pos    = 0;
+    list_h   = NULL;
+    list_pos = 0;
 }

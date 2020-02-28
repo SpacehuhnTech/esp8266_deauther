@@ -40,7 +40,7 @@ class TargetList {
         int list_max_size = 0;
 
         target_t* list_h = NULL;
-        int pos          = 0;
+        int list_pos     = 0;
 
     public:
         TargetList(int max = MAX_TARGETS);
