@@ -44,6 +44,7 @@ class StringList {
         virtual bool contains(const String& str) const;
         bool available() const;
         int size() const;
+        bool full() const;
 
         void clear();
 };

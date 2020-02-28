@@ -68,4 +68,5 @@ class StationList {
 
         bool available() const;
         int size() const;
+        bool full() const;
 };

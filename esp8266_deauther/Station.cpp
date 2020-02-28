@@ -209,3 +209,7 @@ bool StationList::available() const {
 int StationList::size() const {
     return list_size;
 }
+
+bool StationList::full() const {
+    return list_max_size > 0 && list_size >= list_max_size;
+}

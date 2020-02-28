@@ -141,12 +141,16 @@ Target TargetList::iterate() {
     return t;
 }
 
-bool TargetList::available() {
+bool TargetList::available() const {
     return h;
 }
 
-int TargetList::size() {
+int TargetList::size() const {
     return list_size;
+}
+
+bool TargetList::full() const {
+    return list_max_size > 0 && list_size >= list_max_size;
 }
 
 void TargetList::clear() {

@@ -205,3 +205,7 @@ bool AccessPointList::available() const {
 int AccessPointList::size() const {
     return list_size;
 }
+
+bool AccessPointList::full() const {
+    return list_max_size > 0 && list_size >= list_max_size;
+}

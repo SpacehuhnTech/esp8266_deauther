@@ -65,4 +65,5 @@ class AccessPointList {
 
         bool available() const;
         int size() const;
+        bool full() const;
 };

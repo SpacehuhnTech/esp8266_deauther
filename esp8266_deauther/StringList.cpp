@@ -161,6 +161,10 @@ int StringList::size() const {
     return list_size;
 }
 
+bool StringList::full() const {
+    return list_max_size > 0 && list_size >= list_max_size;
+}
+
 void StringList::clear() {
     h = list_begin;
 

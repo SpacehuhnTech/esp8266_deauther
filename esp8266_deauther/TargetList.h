@@ -52,8 +52,9 @@ class TargetList {
         void begin();
         Target iterate();
 
-        bool available();
-        int size();
+        bool available() const;
+        int size() const;
+        bool full() const;
 
         void clear();
 };
