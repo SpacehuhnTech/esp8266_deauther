@@ -44,15 +44,19 @@ namespace scan {
         if (!data.silent) {
             debug("Sniff channel ");
             debug(ch);
-            debug(" (");
 
-            if (data.ch_time < 1000) {
-                debug(data.ch_time);
-                debugln(" ms)");
-            } else {
-                debug(data.ch_time/1000);
-                debugln(" s)");
+            if (data.ch_time > 0) {
+                debug(" (");
+                if (data.ch_time< 1000) {
+                    debug(data.ch_time);
+                    debug(" ms)");
+                } else {
+                    debug(data.ch_time/1000);
+                    debug(" s)");
+                }
             }
+
+            debugln();
         }
     }
 
@@ -234,7 +238,7 @@ namespace scan {
                 stopSTsearch();
             } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
                 stopSTsearch();
-            } else if (current_time - data.ch_update_time >= data.ch_time) {
+            } else if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
                 setNextChannel();
                 data.ch_update_time = current_time;
             } else if (!data.silent && (current_time - data.output_time >= 1000)) {
@@ -269,9 +273,8 @@ namespace scan {
             num_of_channels += ((channels >> i) & 0x01);
         }
 
-        if (ch_time <= 0) {
-            if (timeout > 0) ch_time = timeout/num_of_channels;
-            else ch_time = 1000;
+        if ((ch_time == 0) && (timeout > 0)) {
+            ch_time = timeout/num_of_channels;
         }
 
         data.ap       = ap;
