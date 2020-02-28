@@ -70,6 +70,27 @@ void Station::setNext(Station* next) {
     this->next = next;
 }
 
+bool Station::operator==(const uint8_t* mac) const {
+    if (this->mac == mac) return true;
+    if (!mac) return false;
+
+    return memcmp(this->mac, mac, 6) == 0;
+}
+
+bool Station::operator<(const uint8_t* mac) const {
+    if (this->mac == mac) return true;
+    if (!mac) return false;
+
+    return memcmp(this->mac, mac, 6) < 0;
+}
+
+bool Station::operator>(const uint8_t* mac) const {
+    if (this->mac == mac) return true;
+    if (!mac) return false;
+
+    return memcmp(this->mac, mac, 6) > 0;
+}
+
 // ========== StationList ========== //
 StationList::StationList(int max) : list_max_size(max) {}
 
@@ -80,36 +101,42 @@ StationList::~StationList() {
 bool StationList::push(uint8_t* mac, AccessPoint* ap) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    Station* st = new Station(mac, ap);
+    Station* new_st = new Station(mac, ap);
 
     // Empty list -> insert first element
     if (!list_begin) {
-        list_begin = st;
-        list_end   = st;
-        h          = list_begin;
+        list_begin = new_st;
+        list_end   = new_st;
+        list_h     = list_begin;
     } else {
         // Insert at start
-        if (memcmp(list_begin->getMAC(), mac, 6) > 0) {
-            st->setNext(list_begin);
-            list_begin = st;
+        if (*list_begin > mac) {
+            new_st->setNext(list_begin);
+            list_begin = new_st;
         }
         // Insert at end
-        else if (memcmp(list_end->getMAC(), mac, 6) < 0) {
-            list_end->setNext(st);
-            list_end = st;
+        else if (*list_end < mac) {
+            list_end->setNext(new_st);
+            list_end = new_st;
         }
         // Insert somewhere in the middle (insertion sort)
         else {
             Station* tmp_c = list_begin;
             Station* tmp_p = NULL;
 
-            while (tmp_c && memcmp(tmp_c->getMAC(), mac, 6) < 0) {
+            do {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            }
+            } while (tmp_c && *tmp_c < mac);
 
-            st->setNext(tmp_c);
-            if (tmp_p) tmp_p->setNext(st);
+            // Skip duplicates
+            if (*tmp_c == mac) {
+                delete new_st;
+                return false;
+            } else {
+                new_st->setNext(tmp_c);
+                if (tmp_p) tmp_p->setNext(new_st);
+            }
         }
     }
     ++list_size;
@@ -118,16 +145,16 @@ bool StationList::push(uint8_t* mac, AccessPoint* ap) {
 
 bool StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
     // find mac in list
-    Station* h = search(mac);
+    Station* tmp = search(mac);
 
-    if (h) {
+    if (tmp) {
         // add ssid to list
         String probe;
 
         for (uint8_t i = 0; i<len; ++i) probe += char(ssid[i]);
 
-        if (!h->getProbes().contains(probe)) {
-            h->getProbes().push(probe);
+        if (!tmp->getProbes().contains(probe)) {
+            tmp->getProbes().push(probe);
             return true;
         }
     }
@@ -135,13 +162,13 @@ bool StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
 }
 
 bool StationList::registerPacket(uint8_t* mac, AccessPoint* ap) {
-    Station* h = search(mac);
+    Station* tmp = search(mac);
 
-    if (h) {
-        if (ap && !h->getAccessPoint()) {
-            h->setAccessPoint(ap);
+    if (tmp) {
+        if (ap && !tmp->getAccessPoint()) {
+            tmp->setAccessPoint(ap);
         }
-        h->newPkt();
+        tmp->newPkt();
         return false;
     } else {
         push(mac, ap);
@@ -150,60 +177,62 @@ bool StationList::registerPacket(uint8_t* mac, AccessPoint* ap) {
 }
 
 void StationList::clear() {
-    Station* h = list_begin;
+    Station* tmp = list_begin;
 
-    while (h) {
-        Station* to_delete = h;
-        h = h->getNext();
+    while (tmp) {
+        Station* to_delete = tmp;
+        tmp = tmp->getNext();
         delete to_delete;
     }
 
     list_begin = NULL;
     list_end   = NULL;
     list_size  = 0;
+
+    list_h   = NULL;
+    list_pos = 0;
 }
 
 Station* StationList::search(uint8_t* mac) {
-    if (list_begin) {
-        Station* h = list_begin;
-        int res;
-
-        do {
-            res = memcmp(h->getMAC(), mac, 6);
-            if (res == 0) return h;
-            else h = h->getNext();
-        } while (h && res < 0);
+    if ((list_size == 0) || (*list_begin > mac) || (*list_end < mac)) {
+        return NULL;
     }
 
-    return NULL;
+    Station* tmp = list_begin;
+
+    while (tmp && *tmp < mac) {
+        tmp = tmp->getNext();
+    }
+
+    return (*tmp == mac) ? tmp : NULL;
 }
 
 Station* StationList::get(int i) {
-    h = list_begin;
-    int j = 0;
+    if (i < list_pos) begin();
 
-    while (h && j<i) {
-        h = h->getNext();
-        ++j;
-    }
+    while (list_h && list_pos<i) iterate();
 
-    return h;
+    return list_h;
 }
 
 void StationList::begin() {
-    h = list_begin;
+    list_h   = list_begin;
+    list_pos = 0;
 }
 
 Station* StationList::iterate() {
-    Station* res = h;
+    Station* tmp = list_h;
 
-    h = h->getNext();
+    if (list_h) {
+        list_h = list_h->getNext();
+        ++list_pos;
+    }
 
-    return res;
+    return tmp;
 }
 
 bool StationList::available() const {
-    return h;
+    return list_h;
 }
 
 int StationList::size() const {
