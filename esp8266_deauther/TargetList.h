@@ -13,18 +13,23 @@
 class TargetList;
 class Target;
 
-typedef struct target_t target_t;
-
 class Target {
     private:
-        target_t* ptr;
+        uint8_t from[6];
+        uint8_t to[6];
+        uint8_t ch;
+        Target* next;
 
     public:
-        Target(target_t* ptr);
+        Target(const uint8_t* from, const uint8_t* to, uint8_t ch);
 
-        uint8_t* from() const;
-        uint8_t* to() const;
-        uint8_t ch() const;
+        const uint8_t* getFrom() const;
+        const uint8_t* getTo() const;
+        uint8_t getCh() const;
+
+        Target* getNext();
+
+        void setNext(Target* next);
 
         bool operator==(const Target& t) const;
         bool operator<(const Target& t) const;
@@ -33,14 +38,14 @@ class Target {
 
 class TargetList {
     private:
-        target_t* list_begin = NULL;
-        target_t* list_end   = NULL;
+        Target* list_begin = NULL;
+        Target* list_end   = NULL;
 
         int list_size     = 0;
         int list_max_size = 0;
 
-        target_t* list_h = NULL;
-        int list_pos     = 0;
+        Target* list_h = NULL;
+        int list_pos   = 0;
 
     public:
         TargetList(int max = MAX_TARGETS);
@@ -50,10 +55,10 @@ class TargetList {
 
         bool push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
 
-        Target get(int i);
+        Target* get(int i);
 
         void begin();
-        Target iterate();
+        Target* iterate();
 
         bool available() const;
         int size() const;

