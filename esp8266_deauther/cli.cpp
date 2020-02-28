@@ -164,7 +164,7 @@ namespace cli {
                     debugln("Which network names do you wish to advertise?\r\n"
                             "  for example: \"network A\",\"network B\"");
                     CLI_READ_RES();
-                    cmd += " -s " + res;
+                    cmd += " -ssid " + res;
                     debugln();
                 }
 
@@ -361,86 +361,62 @@ namespace cli {
                     if (res == String('y')) cmd += " -s";
                     debugln();
                 }
-            } /*else if (res == "probe") {
-                 { // SSIDs
-                  debugln("Which network names do you wish to advertise?\r\n"
-                          "  for example: \"network A\",\"network B\"");
-                  CLI_READ_RES();
-                  cmd += " -s " + res;
-                  debugln();
-                 }
+            } else if (res == "probe") {
+                { // SSIDs
+                    debugln("Which network names do you wish to request for?\r\n"
+                            "  for example: \"network A\",\"network B\"");
+                    CLI_READ_RES();
+                    cmd += " -ssid " + res;
+                    debugln();
+                }
 
-                 { // From
-                  do {
-                      debugln("Who is the transmitter/sender?\r\n"
-                              "  MAC address: for example '00:20:91:aa:bb:5c\r\n"
-                              "  random:      generate random MAC address\r\n"
-                              " [default=random]");
-                      CLI_READ_RES("random");
-                  } while (!(res.length() == 17 || res == "random"));
-                  if (res != "random") cmd += " -from " + res;
-                  debugln();
-                 }
+                { // To
+                    do {
+                        debugln("Who is the receiver?\r\n"
+                                "  MAC address: for example 00:20:91:aa:bb:5cc\r\n"
+                                "  broadcast:   send to everyone\r\n"
+                                " [default=broadcast]");
+                        CLI_READ_RES("broadcast");
+                    } while (!(res.length() == 17 || res == "broadcast"));
+                    if (res != "broadcast") cmd += " -to " + res;
+                    debugln();
+                }
 
-                 { // To
-                  do {
-                      debugln("Who is the receiver?\r\n"
-                              "  MAC address: for example 00:20:91:aa:bb:5cc\r\n"
-                              "  broadcast:   send to everyone\r\n"
-                              " [default=broadcast]");
-                      CLI_READ_RES("broadcast");
-                  } while (!(res.length() == 17 || res == "broadcast"));
-                  if (res != "broadcast") cmd += " -to " + res;
-                  debugln();
-                 }
+                { // Channel
+                    do {
+                        debugln("Which channel should be used?\r\n"
+                                "  1-14: WiFi channel to send packets on\r\n"
+                                " [default=1]");
+                        CLI_READ_RES("1");
+                    } while (!(res.toInt() >= 1 && res.toInt() <= 14));
+                    if (res != "1") cmd += " -ch " + res;
+                    debugln();
+                }
 
-                 { // Encryption
-                  do {
-                      debugln("What encryption should it use?\r\n"
-                              "  open: no encryption, an open network without a password\r\n"
-                              "  wpa2: WPA2 protected network\r\n"
-                              " [default=open]");
-                      CLI_READ_RES("open");
-                  } while (!(res == "open" || res == "wpa2"));
-                  cmd += " -enc " + res;
-                  debugln();
-                 }
+                { // Time
+                    do {
+                        debugln("How long should the attack last?\r\n"
+                                "   0: Infinite\r\n"
+                                "  >0: Stop after x seconds\r\n"
+                                " [default=300]");
+                        CLI_READ_RES("300");
+                    } while (!(res.toInt() >= 0));
+                    if (res != "300") cmd += " -t " + res;
+                    debugln();
+                }
 
-                 { // Channel
-                  do {
-                      debugln("Which channel should be used?\r\n"
-                              "  1-14: WiFi channel to send packets on\r\n"
-                              " [default=1]");
-                      CLI_READ_RES("1");
-                  } while (!(res.toInt() >= 1 && res.toInt() <= 14));
-                  if (res != "1") cmd += " -ch " + res;
-                  debugln();
-                 }
-
-                 { // Time
-                  do {
-                      debugln("How long should the attack last?\r\n"
-                              "   0: Infinite\r\n"
-                              "  >0: Stop after x seconds\r\n"
-                              " [default=300]");
-                      CLI_READ_RES("300");
-                  } while (!(res.toInt() >= 0));
-                  if (res != "300") cmd += " -t " + res;
-                  debugln();
-                 }
-
-                 { // Silent
-                  do {
-                    debugln("Enable silent mode (mute output)?\r\n"
-                          "  y: Yes\r\n"
-                          "  n: No\r\n"
-                          " [default=n]");
-                      CLI_READ_RES("n");
-                  } while (!(res == String('y') || res == String('n')));
-                  if (res == String('y')) cmd += " -s";
-                  debugln();
-                 }
-                 }*/
+                { // Silent
+                    do {
+                        debugln("Enable silent mode (mute output)?\r\n"
+                                "  y: Yes\r\n"
+                                "  n: No\r\n"
+                                " [default=n]");
+                        CLI_READ_RES("n");
+                    } while (!(res == String('y') || res == String('n')));
+                    if (res == String('y')) cmd += " -s";
+                    debugln();
+                }
+            }
 
             // Result
             for (int i = 0; i<cmd.length()+2; ++i) debug('#');
@@ -776,7 +752,7 @@ namespace cli {
         cmd_probe.addArg("t/ime", "300");
         cmd_probe.addFlagArg("s/ilent");
         cmd_probe.setDescription(
-            "  Send WiFi network probe requests\r\n"
+            "  Send probe requests for WiFi networks\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -ch:   channel (default=1)\r\n"
