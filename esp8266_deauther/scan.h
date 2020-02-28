@@ -13,7 +13,7 @@ namespace scan {
     void clearAPresults();
     void clearSTresults();
 
-    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain);
+    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool silent, bool retain);
     void stop();
 
     void print();

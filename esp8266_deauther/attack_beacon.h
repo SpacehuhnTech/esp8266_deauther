@@ -73,7 +73,7 @@ typedef struct beacon_attack_data_t {
     unsigned long pkts_per_second;
     unsigned long pkt_time;
     unsigned long pkt_interval;
-    bool          verbose;
+    bool          silent;
 } beacon_attack_data_t;
 
 beacon_attack_data_t beacon_data;
@@ -131,7 +131,7 @@ bool send_beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, int e
 }
 
 // ========== ATTACK FUNCTIONS ========== //
-void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout, bool verbose) {
+void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout, bool silent) {
     { // Error checks
         if (ssid_list.size() == 0) {
             debugln("ERROR: No SSIDs specified");
@@ -194,7 +194,7 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
     beacon_data.pkts_per_second = 0;
     beacon_data.pkt_time        = millis();
     beacon_data.pkt_interval    = 100;
-    beacon_data.verbose         = verbose;
+    beacon_data.silent          = silent;
 }
 
 void stopBeacon() {
@@ -232,7 +232,7 @@ void updateBeacon() {
             }
         }
 
-        if (b.verbose && (millis() - b.output_time >= 1000)) {
+        if (!b.silent && (millis() - b.output_time >= 1000)) {
             b.pkts_sent += b.pkts_per_second;
 
             debug("Beacon attack: ");

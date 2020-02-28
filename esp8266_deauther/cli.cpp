@@ -76,12 +76,13 @@ namespace cli {
                 do {
                     debugln("What can I do for you today?\r\n"
                             "  scan:   Search for WiFi networks and clients\r\n"
-                            "  beacon: Send WiFi network advertisement beacons\r\n"
+                            "  beacon: Send WiFi network advertisement beacons (spam network scanners)\r\n"
                             "  deauth: Disrupt WiFi connections\r\n"
+                            "  probe:  Send WiFi network requests (spam client scanners)\r\n"
                             "Remember that you can always escape by typing 'exit'"
                             );
                     CLI_READ_RES();
-                } while (!(res == "scan" || res == "beacon" || res == "deauth"));
+                } while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe"));
                 cmd += res;
                 debugln();
             }
@@ -134,15 +135,15 @@ namespace cli {
                         debugln();
                     }
 
-                    { // Verbose output
+                    { // Silent
                         do {
-                            debugln("Print verbose output?\r\n"
+                            debugln("Enable silent mode (mute output)?\r\n"
                                     "  y: Yes\r\n"
                                     "  n: No\r\n"
-                                    " [default=y]");
-                            CLI_READ_RES("y");
+                                    " [default=n]");
+                            CLI_READ_RES("n");
                         } while (!(res == String('y') || res == String('n')));
-                        if (res == String('y')) cmd += " -v";
+                        if (res == String('y')) cmd += " -s";
                         debugln();
                     }
                 }
@@ -226,15 +227,15 @@ namespace cli {
                     debugln();
                 }
 
-                { // Verbose output
+                { // Silent
                     do {
-                        debugln("Print verbose output?\r\n"
+                        debugln("Enable silent mode (mute output)?\r\n"
                                 "  y: Yes\r\n"
                                 "  n: No\r\n"
-                                " [default=y]");
-                        CLI_READ_RES("y");
+                                " [default=n]");
+                        CLI_READ_RES("n");
                     } while (!(res == String('y') || res == String('n')));
-                    if (res == String('y')) cmd += " -v";
+                    if (res == String('y')) cmd += " -s";
                     debugln();
                 }
             } else if (res == "deauth") {
@@ -349,18 +350,97 @@ namespace cli {
                     debugln();
                 }
 
-                { // Verbose output
+                { // Silent
                     do {
-                        debugln("Print verbose output?\r\n"
+                        debugln("Enable silent mode (mute output)?\r\n"
                                 "  y: Yes\r\n"
                                 "  n: No\r\n"
-                                " [default=y]");
-                        CLI_READ_RES("y");
+                                " [default=n]");
+                        CLI_READ_RES("n");
                     } while (!(res == String('y') || res == String('n')));
-                    if (res == String('y')) cmd += " -v";
+                    if (res == String('y')) cmd += " -s";
                     debugln();
                 }
-            }
+            } /*else if (res == "probe") {
+                 { // SSIDs
+                  debugln("Which network names do you wish to advertise?\r\n"
+                          "  for example: \"network A\",\"network B\"");
+                  CLI_READ_RES();
+                  cmd += " -s " + res;
+                  debugln();
+                 }
+
+                 { // From
+                  do {
+                      debugln("Who is the transmitter/sender?\r\n"
+                              "  MAC address: for example '00:20:91:aa:bb:5c\r\n"
+                              "  random:      generate random MAC address\r\n"
+                              " [default=random]");
+                      CLI_READ_RES("random");
+                  } while (!(res.length() == 17 || res == "random"));
+                  if (res != "random") cmd += " -from " + res;
+                  debugln();
+                 }
+
+                 { // To
+                  do {
+                      debugln("Who is the receiver?\r\n"
+                              "  MAC address: for example 00:20:91:aa:bb:5cc\r\n"
+                              "  broadcast:   send to everyone\r\n"
+                              " [default=broadcast]");
+                      CLI_READ_RES("broadcast");
+                  } while (!(res.length() == 17 || res == "broadcast"));
+                  if (res != "broadcast") cmd += " -to " + res;
+                  debugln();
+                 }
+
+                 { // Encryption
+                  do {
+                      debugln("What encryption should it use?\r\n"
+                              "  open: no encryption, an open network without a password\r\n"
+                              "  wpa2: WPA2 protected network\r\n"
+                              " [default=open]");
+                      CLI_READ_RES("open");
+                  } while (!(res == "open" || res == "wpa2"));
+                  cmd += " -enc " + res;
+                  debugln();
+                 }
+
+                 { // Channel
+                  do {
+                      debugln("Which channel should be used?\r\n"
+                              "  1-14: WiFi channel to send packets on\r\n"
+                              " [default=1]");
+                      CLI_READ_RES("1");
+                  } while (!(res.toInt() >= 1 && res.toInt() <= 14));
+                  if (res != "1") cmd += " -ch " + res;
+                  debugln();
+                 }
+
+                 { // Time
+                  do {
+                      debugln("How long should the attack last?\r\n"
+                              "   0: Infinite\r\n"
+                              "  >0: Stop after x seconds\r\n"
+                              " [default=300]");
+                      CLI_READ_RES("300");
+                  } while (!(res.toInt() >= 0));
+                  if (res != "300") cmd += " -t " + res;
+                  debugln();
+                 }
+
+                 { // Silent
+                  do {
+                    debugln("Enable silent mode (mute output)?\r\n"
+                          "  y: Yes\r\n"
+                          "  n: No\r\n"
+                          " [default=n]");
+                      CLI_READ_RES("n");
+                  } while (!(res == String('y') || res == String('n')));
+                  if (res == String('y')) cmd += " -s";
+                  debugln();
+                 }
+                 }*/
 
             // Result
             for (int i = 0; i<cmd.length()+2; ++i) debug('#');
@@ -376,7 +456,7 @@ namespace cli {
             unsigned long time    = 0;
             unsigned long ch_time = 0;
             uint16_t channels     = 0;
-            bool verbose;
+            bool silent;
 
             bool retain;
             bool ap = false;
@@ -404,8 +484,8 @@ namespace cli {
                 ch_time = cmd.getArg("ct").getValue().toInt();
             }
 
-            { // Verbose output
-                verbose = !cmd.getArg("s").isSet();
+            { // Silent
+                silent = cmd.getArg("s").isSet();
             }
 
             { // Retain results
@@ -424,7 +504,7 @@ namespace cli {
                 }
             }
 
-            scan::start(ap, st, time, channels, ch_time, verbose, retain);
+            scan::start(ap, st, time, channels, ch_time, silent, retain);
         });
         cmd_scan.addPosArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
@@ -438,7 +518,7 @@ namespace cli {
             "  -t:  station scan time in seconds [>1] (default=14)\r\n"
             "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\r\n"
             "  -ct: channel scan time in milliseconds [>1] (default=auto)\r\n"
-            "  -v:  verbose output\r\n"
+            "  -s:  silent mode (mute output)\r\n"
             "  -r:  keep previous scan results"
             );
 
@@ -468,7 +548,7 @@ namespace cli {
             int enc = ENCRYPTION_OPEN;
             uint8_t ch;
             unsigned long timeout = 0;
-            bool verbose;
+            bool silent;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
@@ -509,11 +589,11 @@ namespace cli {
                 if (seconds > 0) timeout = seconds*1000;
             }
 
-            { // Verbose
-                verbose = !cmd.getArg("s").isSet();
+            { // Silent
+                silent = cmd.getArg("s").isSet();
             }
 
-            attack::startBeacon(ssid_list, from, to, enc, ch, timeout, verbose);
+            attack::startBeacon(ssid_list, from, to, enc, ch, timeout, silent);
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("from,mac/from", "random");
@@ -530,7 +610,7 @@ namespace cli {
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   channel (default=1)\r\n"
             "  -t:    attack timeout in seconds (default=300)\r\n"
-            "  -v:    verbose output"
+            "  -s:    silent mode (mute output)"
             );
 
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
@@ -546,7 +626,7 @@ namespace cli {
             bool deauth   = false;
             bool disassoc = false;
 
-            bool verbose;
+            bool silent;
 
             { // Read Access Point MACs
                 String ap_str = cmd.getArg("ap").getValue();
@@ -625,11 +705,11 @@ namespace cli {
                 }
             }
 
-            { // Verbose
-                verbose = !cmd.getArg("s").isSet();
+            { // Silent
+                silent = cmd.getArg("s").isSet();
             }
 
-            attack::startDeauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts, verbose);
+            attack::startDeauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts, silent);
         });
         cmd_deauth.addArg("ap", "");
         cmd_deauth.addArg("st/ation", "");
@@ -648,7 +728,7 @@ namespace cli {
             "  -n:   packet limit [>1] (default=0)\r\n"
             "  -r:   packets per second (default=20)\r\n"
             "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\r\n"
-            "  -v:   verbose output"
+            "  -s:   silent mode (mute output)"
             );
 
         Command cmd_probe = cli.addCommand("probe", [](cmd* c) {
@@ -658,7 +738,7 @@ namespace cli {
             uint8_t to[6];
             uint8_t ch;
             unsigned long timeout = 0;
-            bool verbose;
+            bool silent;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
@@ -684,11 +764,11 @@ namespace cli {
                 if (seconds > 0) timeout = seconds*1000;
             }
 
-            { // Verbose
-                verbose = !cmd.getArg("s").isSet();
+            { // Silent
+                silent = cmd.getArg("s").isSet();
             }
 
-            attack::startProbe(ssid_list, to, ch, timeout, verbose);
+            attack::startProbe(ssid_list, to, ch, timeout, silent);
         });
         cmd_probe.addPosArg("ssid/s");
         cmd_probe.addArg("to,macto", "broadcast");
@@ -701,7 +781,7 @@ namespace cli {
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -ch:   channel (default=1)\r\n"
             "  -t:    attack timeout in seconds (default=300)\r\n"
-            "  -v:    verbose output"
+            "  -s:    silent mode (mute output)"
             );
 
 

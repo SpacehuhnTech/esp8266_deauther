@@ -46,7 +46,7 @@ typedef struct probe_attack_data_t {
     unsigned long pkts_per_second;
     unsigned long pkt_time;
     unsigned long pkt_interval;
-    bool          verbose;
+    bool          silent;
 } probe_attack_data_t;
 
 probe_attack_data_t probe_data;
@@ -85,7 +85,7 @@ bool send_probe(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid) {
 }
 
 // ========== ATTACK FUNCTIONS ========== //
-void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long timeout, bool verbose) {
+void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long timeout, bool silent) {
     { // Error checks
         if (ssid_list.size() == 0) {
             debugln("ERROR: No SSIDs specified");
@@ -133,7 +133,7 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
     probe_data.pkts_per_second = 0;
     probe_data.pkt_time        = millis();
     probe_data.pkt_interval    = 100;
-    probe_data.verbose         = verbose;
+    probe_data.silent          = silent;
 }
 
 void stopProbe() {
@@ -167,7 +167,7 @@ void updateProbe() {
             }
         }
 
-        if (b.verbose && (millis() - b.output_time >= 1000)) {
+        if (!b.silent && (millis() - b.output_time >= 1000)) {
             b.pkts_sent += b.pkts_per_second;
 
             debug("Probe attack: ");

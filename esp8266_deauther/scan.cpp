@@ -22,7 +22,7 @@ typedef struct scan_data_t {
     uint16_t      channels;
     unsigned long ch_time;
     unsigned long timeout;
-    bool          verbose;
+    bool          silent;
 
     uint8_t       num_of_channels;
     unsigned long start_time;
@@ -41,7 +41,7 @@ namespace scan {
     scan_data_t data;
 
     void printChannel(uint8_t ch) {
-        if (data.verbose) {
+        if (!data.silent) {
             debug("Sniff channel ");
             debug(ch);
             debug(" (");
@@ -97,7 +97,7 @@ namespace scan {
             AccessPoint* ap = data.ap_list.search(mac_b);
             if (ap) {
                 if (data.st_list.registerPacket(mac_a, ap)) {
-                    if (data.verbose) {
+                    if (!data.silent) {
                         debug("Station ");
                         debug(strh::mac(mac_a));
                         debug(" in \"");
@@ -110,7 +110,7 @@ namespace scan {
         // broadcast probe request from unassociated station
         else if ((buf[12] == 0x40) && (buf[12+25] > 0)) {
             if (data.st_list.registerPacket(mac_b, NULL)) {
-                if (data.verbose) {
+                if (!data.silent) {
                     debug("Station ");
                     debug(strh::mac(mac_b));
                     debug(' ');
@@ -121,7 +121,7 @@ namespace scan {
             uint8_t     len  = buf[12+25];
 
             if ((ssid[0] != '\0') && data.st_list.addProbe(mac_b, ssid, len)) {
-                if (data.verbose) {
+                if (!data.silent) {
                     debug("Probe \"");
 
                     for (uint8_t i = 0; i<len; ++i) {
@@ -234,7 +234,7 @@ namespace scan {
             } else if (current_time - data.ch_update_time >= data.ch_time) {
                 setNextChannel();
                 data.ch_update_time = current_time;
-            } else if (data.verbose && (current_time - data.output_time >= 1000)) {
+            } else if (!data.silent && (current_time - data.output_time >= 1000)) {
                 // print infos
                 data.output_time = current_time;
             }
@@ -242,7 +242,7 @@ namespace scan {
     }
 
     // ===== PUBLIC ===== //
-    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool verbose, bool retain) {
+    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
         { // Error check
             if (!ap && !st) {
                 debugln("ERROR: Invalid scan mode");
@@ -273,7 +273,7 @@ namespace scan {
         data.channels = channels;
         data.ch_time  = ch_time;
         data.timeout  = time;
-        data.verbose  = verbose;
+        data.silent   = silent;
 
         data.num_of_channels = num_of_channels;
         data.start_time      = millis();
