@@ -8,6 +8,7 @@
 
 #include "AccessPoint.h"
 #include "StringList.h"
+#include "config.h"
 
 // ========== Station ========== //
 
@@ -16,9 +17,9 @@ class Station {
         uint8_t mac[6];
         AccessPoint* ap;
 
-        uint32_t pkts = 1;
-        SortedStringList probes;
-        Station* next = NULL;
+        uint32_t pkts           = 1;
+        SortedStringList probes = SortedStringList(MAX_PROBES);
+        Station* next           = NULL;
 
     public:
         Station(uint8_t* mac, AccessPoint* ap);
@@ -46,13 +47,15 @@ class StationList {
         Station* list_begin = NULL;
         Station* list_end   = NULL;
         int list_size       = 0;
+        int list_max_size;
 
         Station* h = NULL;
 
     public:
+        StationList(int max = MAX_STATIONS);
         ~StationList();
 
-        void push(uint8_t* mac, AccessPoint* ap);
+        bool push(uint8_t* mac, AccessPoint* ap);
         bool addProbe(uint8_t* mac, const char* ssid, uint8_t len);
         bool registerPacket(uint8_t* mac, AccessPoint* ap);
         void clear();

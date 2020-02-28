@@ -7,14 +7,15 @@
 #pragma once
 
 #include <Arduino.h>
+#include "config.h"
 
 // ========== AccessPoint ========== //
 
 class AccessPoint {
     private:
-        char  * ssid;
+        char* ssid;
         uint8_t bssid[6];
-        int     rssi;
+        int rssi;
         uint8_t enc;
         uint8_t ch;
         AccessPoint* next = NULL;
@@ -45,13 +46,15 @@ class AccessPointList {
         AccessPoint* list_begin = NULL;
         AccessPoint* list_end   = NULL;
         int list_size           = 0;
+        int list_max_size;
 
         AccessPoint* h = NULL;
 
     public:
+        AccessPointList(int max = MAX_ACCESS_POINTS);
         ~AccessPointList();
 
-        void push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
+        bool push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
         AccessPoint* search(uint8_t* bssid);
         void clear();
 

@@ -8,6 +8,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include "config.h"
 
 class TargetList;
 class Target;
@@ -33,16 +34,18 @@ class TargetList {
         target_t* list_begin = NULL;
         target_t* list_end   = NULL;
 
-        int list_size = 0;
+        int list_size     = 0;
+        int list_max_size = 0;
 
         target_t* h = NULL;
 
     public:
+        TargetList(int max = MAX_TARGETS);
         ~TargetList();
 
         void moveFrom(TargetList& t);
 
-        void push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
+        bool push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
 
         Target get(int i);
 

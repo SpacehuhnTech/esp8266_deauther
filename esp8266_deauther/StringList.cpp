@@ -15,7 +15,7 @@ char* StringList::stringCopy(const char* str, long len) {
     return newstr;
 }
 
-StringList::StringList() {}
+StringList::StringList(int max) : list_max_size(max) {}
 
 StringList::StringList(const String& input, String delimiter) {
     parse(input, delimiter);
@@ -29,6 +29,8 @@ void StringList::moveFrom(StringList& sl) {
     item_t* ih = sl.list_begin;
 
     while (ih) {
+        if ((list_max_size > 0) && (list_size >= list_max_size)) break;
+
         // Push to list
         if (!list_begin) {
             list_begin = ih;
@@ -50,7 +52,9 @@ void StringList::moveFrom(StringList& sl) {
     sl.h          = NULL;
 }
 
-void StringList::push(String str) {
+bool StringList::push(String str) {
+    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+
     item_t* item = (item_t*)malloc(sizeof(item_t));
 
     item->ptr  = stringCopy(str.c_str(), str.length());
@@ -66,6 +70,7 @@ void StringList::push(String str) {
     }
 
     ++list_size;
+    return true;
 }
 
 String StringList::popFirst() {
@@ -173,7 +178,11 @@ void StringList::clear() {
     h = NULL;
 }
 
-void SortedStringList::push(String str) {
+SortedStringList::SortedStringList(int max) : StringList(max) {}
+
+bool SortedStringList::push(String str) {
+    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+
     item_t* item = (item_t*)malloc(sizeof(item_t));
 
     item->ptr  = stringCopy(str.c_str(), str.length());
@@ -211,6 +220,7 @@ void SortedStringList::push(String str) {
     }
 
     ++list_size;
+    return true;
 }
 
 bool SortedStringList::contains(const String& str) const {

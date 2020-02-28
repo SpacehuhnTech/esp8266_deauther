@@ -46,6 +46,8 @@ bool Target::operator==(const Target& t) const {
 }
 
 // ========== TargetList =========== //
+TargetList::TargetList(int max) : list_max_size(max) {}
+
 TargetList::~TargetList() {
     clear();
 }
@@ -75,7 +77,9 @@ void TargetList::moveFrom(TargetList& t) {
     t.h          = NULL;
 }
 
-void TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
+bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
+    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+
     // Create new target
     target_t* new_target = (target_t*)malloc(sizeof(target_t));
 
@@ -92,7 +96,7 @@ void TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
     while (h) {
         if (Target(h) == t) {
             free(new_target);
-            return;
+            return false;
         }
         h = h->next;
     }
@@ -108,6 +112,7 @@ void TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
     }
 
     ++(list_size);
+    return true;
 }
 
 Target TargetList::get(int i) {

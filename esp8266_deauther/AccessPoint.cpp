@@ -100,12 +100,15 @@ void AccessPoint::setNext(AccessPoint* next) {
 }
 
 // ========== AccessPointList ========== //
+AccessPointList::AccessPointList(int max) : list_max_size(max) {}
 
 AccessPointList::~AccessPointList() {
     clear();
 }
 
-void AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
+bool AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
+    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+
     AccessPoint* ap = new AccessPoint(ssid, bssid, rssi, enc, ch);
 
     // Empty list -> insert first element
@@ -139,6 +142,7 @@ void AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t e
         }
     }
     ++list_size;
+    return true;
 }
 
 AccessPoint* AccessPointList::search(uint8_t* bssid) {

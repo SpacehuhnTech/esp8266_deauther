@@ -71,12 +71,15 @@ void Station::setNext(Station* next) {
 }
 
 // ========== StationList ========== //
+StationList::StationList(int max) : list_max_size(max) {}
 
 StationList::~StationList() {
     clear();
 }
 
-void StationList::push(uint8_t* mac, AccessPoint* ap) {
+bool StationList::push(uint8_t* mac, AccessPoint* ap) {
+    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+
     Station* st = new Station(mac, ap);
 
     // Empty list -> insert first element
@@ -110,6 +113,7 @@ void StationList::push(uint8_t* mac, AccessPoint* ap) {
         }
     }
     ++list_size;
+    return true;
 }
 
 bool StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {

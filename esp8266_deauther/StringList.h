@@ -18,19 +18,20 @@ class StringList {
         item_t* list_begin = NULL;
         item_t* list_end   = NULL;
         int list_size      = 0;
+        int list_max_size;
 
         item_t* h = NULL;
 
         char* stringCopy(const char* str, long len);
 
     public:
-        StringList();
+        StringList(int max = 0);
         StringList(const String& input, String delimiter);
         ~StringList();
 
         void moveFrom(StringList& sl);
 
-        virtual void push(String str);
+        virtual bool push(String str);
         String popFirst();
 
         void parse(const String& input, String delimiter);
@@ -49,6 +50,8 @@ class StringList {
 
 class SortedStringList : public StringList {
     public:
-        void push(String str) override;
+        SortedStringList(int max = 0);
+
+        bool push(String str) override;
         bool contains(const String& str) const override;
 };
