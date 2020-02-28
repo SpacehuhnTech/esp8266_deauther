@@ -262,6 +262,8 @@ namespace scan {
             }
         }
 
+        stop();
+
         if (!retain) {
             if (ap) clearAPresults();
             if (st) clearSTresults();
@@ -284,11 +286,13 @@ namespace scan {
         data.timeout  = timeout;
         data.silent   = silent;
 
+        unsigned long current_time = millis();
+
         data.num_of_channels = num_of_channels;
-        data.start_time      = millis();
-        data.output_time     = millis();
-        data.pkt_time        = millis();
-        data.ch_update_time  = millis();
+        data.start_time      = current_time;
+        data.output_time     = current_time;
+        data.pkt_time        = current_time;
+        data.ch_update_time  = current_time;
         data.pkts_received   = 0;
         data.pkts_per_second = 0;
 
