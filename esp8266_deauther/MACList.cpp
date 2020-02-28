@@ -32,7 +32,7 @@ void MACList::moveFrom(MACList& t) {
         if (!list_begin) {
             list_begin = th;
             list_end   = th;
-            mac_h      = list_begin;
+            list_h     = list_begin;
         } else {
             list_end->next = th;
             list_end       = th;
@@ -46,7 +46,7 @@ void MACList::moveFrom(MACList& t) {
     t.list_begin = NULL;
     t.list_end   = NULL;
     t.list_size  = 0;
-    t.mac_h      = NULL;
+    t.list_h     = NULL;
 }
 
 bool MACList::push(const uint8_t* addr) {
@@ -62,7 +62,7 @@ bool MACList::push(const uint8_t* addr) {
     if (!list_begin) {
         list_begin = new_target;
         list_end   = new_target;
-        mac_h      = list_begin;
+        list_h     = list_begin;
     } else {
         // Insert at start
         if (memcmp(list_begin->addr, new_target->addr, 6) > 0) {
@@ -105,27 +105,27 @@ bool MACList::push(const uint8_t* addr) {
 
 uint8_t* MACList::get(int i) {
     if (i < pos) {
-        mac_h = list_begin;
-        pos   = 0;
+        list_h = list_begin;
+        pos    = 0;
     }
 
-    while (mac_h && pos<i) {
-        mac_h = mac_h->next;
+    while (list_h && pos<i) {
+        list_h = list_h->next;
         ++pos;
     }
 
-    return mac_h ? mac_h->addr : NULL;
+    return list_h ? list_h->addr : NULL;
 }
 
 void MACList::begin() {
-    mac_h = list_begin;
-    pos   = 0;
+    list_h = list_begin;
+    pos    = 0;
 }
 
 uint8_t* MACList::iterate() {
-    if (mac_h) {
-        mac_t* tmp = mac_h;
-        mac_h = mac_h->next;
+    if (list_h) {
+        mac_t* tmp = list_h;
+        list_h = list_h->next;
         ++pos;
         return tmp->addr;
     } else {
@@ -134,7 +134,7 @@ uint8_t* MACList::iterate() {
 }
 
 bool MACList::available() const {
-    return mac_h;
+    return list_h;
 }
 
 int MACList::size() const {
@@ -150,7 +150,7 @@ bool MACList::contains(const uint8_t* mac) const {
         return false;
     }
 
-    if ((memcmp(list_begin, mac, 6) < 0) || (memcmp(list_end, mac, 6) > 0)) {
+    if ((memcmp(list_begin, mac, 6) > 0) || (memcmp(list_end, mac, 6) < 0)) {
         return false;
     }
 
@@ -166,11 +166,11 @@ bool MACList::contains(const uint8_t* mac) const {
 }
 
 void MACList::clear() {
-    mac_h = list_begin;
+    list_h = list_begin;
 
-    while (mac_h) {
-        mac_t* to_delete = mac_h;
-        mac_h = mac_h->next;
+    while (list_h) {
+        mac_t* to_delete = list_h;
+        list_h = list_h->next;
         free(to_delete);
     }
 
@@ -178,6 +178,6 @@ void MACList::clear() {
     list_end   = NULL;
     list_size  = 0;
 
-    mac_h = NULL;
-    pos   = 0;
+    list_h = NULL;
+    pos    = 0;
 }
