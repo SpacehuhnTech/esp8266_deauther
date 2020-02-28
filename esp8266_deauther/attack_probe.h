@@ -138,8 +138,12 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
 
 void stopProbe() {
     if (probe_data.ssids.size() > 0) {
+        probe_data.pkts_sent += probe_data.pkts_per_second;
         probe_data.ssids.clear();
-        debugln("Probe attack stopped");
+
+        debug("Probe attack stopped. Sent ");
+        debug(probe_data.pkts_sent);
+        debugln(" packets.");
     }
 }
 

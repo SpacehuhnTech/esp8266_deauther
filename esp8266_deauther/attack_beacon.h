@@ -199,8 +199,12 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
 
 void stopBeacon() {
     if (beacon_data.ssids.size() > 0) {
+        beacon_data.pkts_sent += beacon_data.pkts_per_second;
         beacon_data.ssids.clear();
-        debugln("Beacon attack stopped");
+
+        debug("Beacon attack stopped. Sent ");
+        debug(beacon_data.pkts_sent);
+        debugln(" packets.");
     }
 }
 

@@ -127,8 +127,12 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
 
 void stopDeauth() {
     if (deauth_data.targets.size() > 0) {
+        deauth_data.pkts_sent += deauth_data.pkts_per_second;
         deauth_data.targets.clear();
-        debugln("Deauth attack stopped");
+
+        debug("Deauth attack stopped. Sent ");
+        debug(deauth_data.pkts_sent);
+        debugln(" packets.");
     }
 }
 
