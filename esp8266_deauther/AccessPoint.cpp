@@ -99,6 +99,27 @@ void AccessPoint::setNext(AccessPoint* next) {
     this->next = next;
 }
 
+bool AccessPoint::operator==(const uint8_t* bssid) const {
+    if (this->bssid == bssid) return true;
+    if (!bssid) return false;
+
+    return memcmp(this->bssid, bssid, 6) == 0;
+}
+
+bool AccessPoint::operator<(const uint8_t* bssid) const {
+    if (this->bssid == bssid) return true;
+    if (!bssid) return false;
+
+    return memcmp(this->bssid, bssid, 6) < 0;
+}
+
+bool AccessPoint::operator>(const uint8_t* bssid) const {
+    if (this->bssid == bssid) return true;
+    if (!bssid) return false;
+
+    return memcmp(this->bssid, bssid, 6) > 0;
+}
+
 // ========== AccessPointList ========== //
 AccessPointList::AccessPointList(int max) : list_max_size(max) {}
 
@@ -109,36 +130,42 @@ AccessPointList::~AccessPointList() {
 bool AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    AccessPoint* ap = new AccessPoint(ssid, bssid, rssi, enc, ch);
+    AccessPoint* new_ap = new AccessPoint(ssid, bssid, rssi, enc, ch);
 
     // Empty list -> insert first element
     if (!list_begin) {
-        list_begin = ap;
-        list_end   = ap;
-        h          = list_begin;
+        list_begin = new_ap;
+        list_end   = new_ap;
+        list_h     = list_begin;
     } else {
         // Insert at start
-        if (memcmp(list_begin->getBSSID(), bssid, 6) > 0) {
-            ap->setNext(list_begin);
-            list_begin = ap;
+        if (*list_begin > bssid) {
+            new_ap->setNext(list_begin);
+            list_begin = new_ap;
         }
         // Insert at end
-        else if (memcmp(list_end->getBSSID(), bssid, 6) < 0) {
-            list_end->setNext(ap);
-            list_end = ap;
+        else if (*list_end < bssid) {
+            list_end->setNext(new_ap);
+            list_end = new_ap;
         }
         // Insert somewhere in the middle (insertion sort)
         else {
             AccessPoint* tmp_c = list_begin;
             AccessPoint* tmp_p = NULL;
 
-            while (tmp_c && memcmp(tmp_c->getBSSID(), bssid, 6) < 0) {
+            do {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            }
+            } while (tmp_c && *tmp_c < bssid);
 
-            ap->setNext(tmp_c);
-            if (tmp_p) tmp_p->setNext(ap);
+            // Skip duplicates
+            if (*tmp_c == bssid) {
+                delete new_ap;
+                return false;
+            } else {
+                new_ap->setNext(tmp_c);
+                if (tmp_p) tmp_p->setNext(new_ap);
+            }
         }
     }
     ++list_size;
@@ -146,60 +173,66 @@ bool AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t e
 }
 
 AccessPoint* AccessPointList::search(uint8_t* bssid) {
-    if (list_begin) {
-        AccessPoint* h = list_begin;
-        int res;
-
-        do {
-            res = memcmp(h->getBSSID(), bssid, 6);
-            if (res == 0) return h;
-            else h = h->getNext();
-        } while (h && res < 0);
+    if (list_size == 0) {
+        return NULL;
     }
 
-    return NULL;
+    if ((*list_begin > bssid) || (*list_end < bssid)) {
+        return false;
+    }
+
+    AccessPoint* tmp = list_begin;
+
+    while (tmp && *tmp < bssid) {
+        tmp = tmp->getNext();
+    }
+
+    return (*tmp == bssid) ? tmp : NULL;
 }
 
 void AccessPointList::clear() {
-    AccessPoint* h = list_begin;
+    AccessPoint* tmp = list_begin;
 
-    while (h) {
-        AccessPoint* to_delete = h;
-        h = h->getNext();
+    while (tmp) {
+        AccessPoint* to_delete = tmp;
+        tmp = tmp->getNext();
         delete to_delete;
     }
 
     list_begin = NULL;
     list_end   = NULL;
     list_size  = 0;
+
+    list_h   = NULL;
+    list_pos = 0;
 }
 
 AccessPoint* AccessPointList::get(int i) {
-    h = list_begin;
-    int j = 0;
+    if (i < list_pos) begin();
 
-    while (h && j<i) {
-        h = h->getNext();
-        ++j;
-    }
+    while (list_h && list_pos<i) iterate();
 
-    return h;
+    return list_h;
 }
 
 void AccessPointList::begin() {
-    h = list_begin;
+    list_h   = list_begin;
+    list_pos = 0;
 }
 
 AccessPoint* AccessPointList::iterate() {
-    AccessPoint* res = h;
+    AccessPoint* tmp = list_h;
 
-    h = h->getNext();
+    if (list_h) {
+        list_h = list_h->getNext();
+        ++list_pos;
+    }
 
-    return res;
+    return tmp;
 }
 
 bool AccessPointList::available() const {
-    return h;
+    return list_h;
 }
 
 int AccessPointList::size() const {
