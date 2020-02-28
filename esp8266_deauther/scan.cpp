@@ -229,7 +229,10 @@ namespace scan {
         if (!data.ap && data.st) {
             unsigned long current_time = millis();
 
-            if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
+            if (data.st_list.full()) {
+                debugln("Station list full");
+                stopSTsearch();
+            } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
                 stopSTsearch();
             } else if (current_time - data.ch_update_time >= data.ch_time) {
                 setNextChannel();
@@ -242,7 +245,7 @@ namespace scan {
     }
 
     // ===== PUBLIC ===== //
-    void start(bool ap, bool st, unsigned long time, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
+    void start(bool ap, bool st, unsigned long timeout, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
         { // Error check
             if (!ap && !st) {
                 debugln("ERROR: Invalid scan mode");
@@ -266,13 +269,16 @@ namespace scan {
             num_of_channels += ((channels >> i) & 0x01);
         }
 
-        if (ch_time <= 0) ch_time = time/num_of_channels;
+        if (ch_time <= 0) {
+            if (timeout > 0) ch_time = timeout/num_of_channels;
+            else ch_time = 1000;
+        }
 
         data.ap       = ap;
         data.st       = st;
         data.channels = channels;
         data.ch_time  = ch_time;
-        data.timeout  = time;
+        data.timeout  = timeout;
         data.silent   = silent;
 
         data.num_of_channels = num_of_channels;
