@@ -37,10 +37,6 @@ class AccessPoint {
         AccessPoint* getNext();
 
         void setNext(AccessPoint* next);
-
-        bool operator==(const uint8_t* bssid) const;
-        bool operator<(const uint8_t* bssid) const;
-        bool operator>(const uint8_t* bssid) const;
 };
 
 // ========== AccessPointList ========== //
@@ -55,6 +51,8 @@ class AccessPointList {
 
         AccessPoint* list_h = NULL;
         int list_pos        = 0;
+
+        int compare(const AccessPoint* ap, const uint8_t* bssid) const;
 
     public:
         AccessPointList(int max = MAX_ACCESS_POINTS);

@@ -70,28 +70,12 @@ void Station::setNext(Station* next) {
     this->next = next;
 }
 
-bool Station::operator==(const uint8_t* mac) const {
-    if (this->mac == mac) return true;
-    if (!mac) return false;
-
-    return memcmp(this->mac, mac, 6) == 0;
-}
-
-bool Station::operator<(const uint8_t* mac) const {
-    if (this->mac == mac) return true;
-    if (!mac) return false;
-
-    return memcmp(this->mac, mac, 6) < 0;
-}
-
-bool Station::operator>(const uint8_t* mac) const {
-    if (this->mac == mac) return true;
-    if (!mac) return false;
-
-    return memcmp(this->mac, mac, 6) > 0;
-}
-
 // ========== StationList ========== //
+
+int StationList::compare(const Station* st, const uint8_t* mac) const {
+    return memcmp(st->getMAC(), mac, 6);
+}
+
 StationList::StationList(int max) : list_max_size(max) {}
 
 StationList::~StationList() {
@@ -110,12 +94,12 @@ bool StationList::push(uint8_t* mac, AccessPoint* ap) {
         list_h     = list_begin;
     } else {
         // Insert at start
-        if (*list_begin > mac) {
+        if (compare(list_begin, mac) > 0) {
             new_st->setNext(list_begin);
             list_begin = new_st;
         }
         // Insert at end
-        else if (*list_end < mac) {
+        else if (compare(list_end, mac) < 0) {
             list_end->setNext(new_st);
             list_end = new_st;
         }
@@ -124,13 +108,16 @@ bool StationList::push(uint8_t* mac, AccessPoint* ap) {
             Station* tmp_c = list_begin;
             Station* tmp_p = NULL;
 
+            int res;
+
             do {
+                res   = compare(tmp_c, mac);
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            } while (tmp_c && *tmp_c < mac);
+            } while (tmp_c && res < 0);
 
             // Skip duplicates
-            if (*tmp_c == mac) {
+            if (res == 0) {
                 delete new_st;
                 return false;
             } else {
@@ -139,6 +126,7 @@ bool StationList::push(uint8_t* mac, AccessPoint* ap) {
             }
         }
     }
+
     ++list_size;
     return true;
 }
@@ -194,17 +182,19 @@ void StationList::clear() {
 }
 
 Station* StationList::search(uint8_t* mac) {
-    if ((list_size == 0) || (*list_begin > mac) || (*list_end < mac)) {
+    if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
         return NULL;
     }
 
     Station* tmp = list_begin;
 
-    while (tmp && *tmp < mac) {
+    int res = compare(tmp, mac);
+
+    while (tmp && res < 0) {
         tmp = tmp->getNext();
     }
 
-    return (*tmp == mac) ? tmp : NULL;
+    return (res == 0) ? tmp : NULL;
 }
 
 Station* StationList::get(int i) {

@@ -38,10 +38,6 @@ class Station {
         void setAccessPoint(AccessPoint* ap);
         void newPkt();
         void setNext(Station* next);
-
-        bool operator==(const uint8_t* mac) const;
-        bool operator<(const uint8_t* mac) const;
-        bool operator>(const uint8_t* mac) const;
 };
 
 // ========== StationList ========== //
@@ -55,6 +51,8 @@ class StationList {
 
         Station* list_h = NULL;
         int list_pos    = 0;
+
+        int compare(const Station* st, const uint8_t* mac) const;
 
     public:
         StationList(int max = MAX_STATIONS);

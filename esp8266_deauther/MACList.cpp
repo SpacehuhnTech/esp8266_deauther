@@ -9,13 +9,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-// ========== Target =========== //
-typedef struct mac_t {
-    uint8_t addr[6];
-    mac_t * next;
-} mac_t;
-
 // ========== MACList =========== //
+
+int MACList::compare(const mac_t* a, const uint8_t* b) const {
+    return memcmp(a->addr, b, 6);
+}
+
 MACList::MACList(int max) : list_max_size(max) {}
 
 MACList::~MACList() {
@@ -65,12 +64,12 @@ bool MACList::push(const uint8_t* addr) {
         list_h     = list_begin;
     } else {
         // Insert at start
-        if (memcmp(list_begin->addr, new_target->addr, 6) > 0) {
+        if (compare(list_begin, addr) > 0) {
             new_target->next = list_begin;
             list_begin       = new_target;
         }
         // Insert at end
-        else if (memcmp(list_end->addr, new_target->addr, 6) < 0) {
+        else if (compare(list_end, addr) < 0) {
             list_end->next = new_target;
             list_end       = new_target;
         }
@@ -82,7 +81,7 @@ bool MACList::push(const uint8_t* addr) {
             int res;
 
             do {
-                res   = memcmp(tmp_c->addr, new_target->addr, 6);
+                res   = compare(tmp_c, addr);
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->next;
             } while (tmp_c && res < 0);
@@ -139,21 +138,17 @@ bool MACList::full() const {
 }
 
 bool MACList::contains(const uint8_t* mac) const {
-    if (list_size == 0) {
-        return false;
-    }
-
-    if ((memcmp(list_begin, mac, 6) > 0) || (memcmp(list_end, mac, 6) < 0)) {
+    if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
         return false;
     }
 
     mac_t* tmp = list_begin;
     int    res;
 
-    do {
-        res = memcmp(tmp->addr, mac, 6);
+    while (tmp && res < 0) {
+        res = compare(tmp, mac);
         tmp = tmp->next;
-    } while (tmp && res < 0);
+    }
 
     return res == 0;
 }

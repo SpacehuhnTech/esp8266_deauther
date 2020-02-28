@@ -14,6 +14,11 @@ typedef struct mac_t mac_t;
 
 class MACList {
     private:
+        typedef struct mac_t {
+            uint8_t addr[6];
+            mac_t * next;
+        } mac_t;
+
         mac_t* list_begin = NULL;
         mac_t* list_end   = NULL;
 
@@ -22,6 +27,8 @@ class MACList {
 
         mac_t* list_h = NULL;
         int list_pos  = 0;
+
+        int compare(const mac_t* a, const uint8_t* b) const;
 
     public:
         MACList(int max = 0);

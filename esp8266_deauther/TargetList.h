@@ -30,10 +30,6 @@ class Target {
         Target* getNext();
 
         void setNext(Target* next);
-
-        bool operator==(const Target& t) const;
-        bool operator<(const Target& t) const;
-        bool operator>(const Target& t) const;
 };
 
 class TargetList {
@@ -46,6 +42,8 @@ class TargetList {
 
         Target* list_h = NULL;
         int list_pos   = 0;
+
+        int compare(const Target* a, const Target* b) const;
 
     public:
         TargetList(int max = MAX_TARGETS);

@@ -37,25 +37,19 @@ void Target::setNext(Target* next) {
     this->next = next;
 }
 
-bool Target::operator==(const Target& t) const {
-    return memcmp(from, t.from, 6) == 0 &&
-           memcmp(to, t.to, 6) == 0 &&
-           ch == t.ch;
-}
-
-bool Target::operator<(const Target& t) const {
-    return memcmp(from, t.from, 6) < 0 ||
-           memcmp(to, t.to, 6) < 0 ||
-           ch < t.ch;
-}
-
-bool Target::operator>(const Target& t) const {
-    return memcmp(from, t.from, 6) > 0 &&
-           memcmp(to, t.to, 6) > 0 &&
-           ch > t.ch;
-}
-
 // ========== TargetList =========== //
+
+int TargetList::compare(const Target* a, const Target* b) const {
+    if (a == b) return 0;
+    else if ((memcmp(a->getFrom(), b->getFrom(), 6) < 0) ||
+             (memcmp(a->getTo(), b->getTo(), 6) < 0) ||
+             (a->getCh() < b->getCh())) return -1;
+    else if ((memcmp(a->getFrom(), b->getFrom(), 6) > 0) ||
+             (memcmp(a->getTo(), b->getTo(), 6) > 0) ||
+             (a->getCh() > b->getCh())) return 1;
+    else return 0;
+}
+
 TargetList::TargetList(int max) : list_max_size(max) {}
 
 TargetList::~TargetList() {
@@ -103,12 +97,12 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
         list_h     = list_begin;
     } else {
         // Insert at start
-        if (list_begin > new_target) {
+        if (compare(list_begin, new_target) > 0) {
             new_target->setNext(list_begin);
             list_begin = new_target;
         }
         // Insert at end
-        else if (list_end < new_target) {
+        else if (compare(list_end, new_target) < 0) {
             list_end->setNext(new_target);
             list_end = new_target;
         }
@@ -117,13 +111,16 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
             Target* tmp_c = list_begin;
             Target* tmp_p = NULL;
 
+            int res;
+
             do {
+                res   = compare(tmp_c, new_target);
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->getNext();
-            } while (tmp_c && tmp_c < new_target);
+            } while (tmp_c && res < 0);
 
             // Skip duplicates
-            if (tmp_c == new_target) {
+            if (res == 0) {
                 free(new_target);
                 return false;
             } else {
