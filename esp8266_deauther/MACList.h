@@ -20,10 +20,11 @@ class MACList {
         int list_size     = 0;
         int list_max_size = 0;
 
-        mac_t* h = NULL;
+        mac_t* mac_h = NULL;
+        int pos      = 0;
 
     public:
-        MACList(int max = MAX_TARGETS);
+        MACList(int max = 0);
         ~MACList();
 
         void moveFrom(MACList& t);
@@ -38,6 +39,7 @@ class MACList {
         bool available() const;
         int size() const;
         bool full() const;
+        bool contains(const uint8_t* mac) const;
 
         void clear();
 };

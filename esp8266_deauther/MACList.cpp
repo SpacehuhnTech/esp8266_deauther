@@ -32,7 +32,7 @@ void MACList::moveFrom(MACList& t) {
         if (!list_begin) {
             list_begin = th;
             list_end   = th;
-            h          = list_begin;
+            mac_h      = list_begin;
         } else {
             list_end->next = th;
             list_end       = th;
@@ -46,7 +46,7 @@ void MACList::moveFrom(MACList& t) {
     t.list_begin = NULL;
     t.list_end   = NULL;
     t.list_size  = 0;
-    t.h          = NULL;
+    t.mac_h      = NULL;
 }
 
 bool MACList::push(const uint8_t* addr) {
@@ -58,27 +58,45 @@ bool MACList::push(const uint8_t* addr) {
     memcpy(new_target->addr, addr, 6);
     new_target->next = NULL;
 
-    // Check if already in list
-
-    /*
-       mac_t* h = list_begin;
-
-       while (h) {
-        if (Target(h) == t) {
-            free(new_target);
-            return false;
-        }
-        h = h->next;
-       }*/
-
-    // Push to list
+    // Empty list -> insert first element
     if (!list_begin) {
         list_begin = new_target;
         list_end   = new_target;
-        h          = list_begin;
+        mac_h      = list_begin;
     } else {
-        list_end->next = new_target;
-        list_end       = new_target;
+        // Insert at start
+        if (memcmp(list_begin->addr, new_target->addr, 6) > 0) {
+            new_target->next = list_begin;
+            list_begin       = new_target;
+        }
+        // Insert at end
+        else if (memcmp(list_end->addr, new_target->addr, 6) < 0) {
+            list_end->next = new_target;
+            list_end       = new_target;
+        }
+        // Insert somewhere in the between (insertion sort)
+        else {
+            mac_t* tmp_c = list_begin;
+            mac_t* tmp_p = NULL;
+
+            int res;
+
+            do {
+                res   = memcmp(tmp_c->addr, new_target->addr, 6);
+                tmp_p = tmp_c;
+                tmp_c = tmp_c->next;
+            } while (tmp_c && res < 0);
+
+            /*
+               // Skip duplicates
+               if (res == 0) {
+                free(new_target);
+                return false;
+               } else {*/
+            new_target->next = tmp_c;
+            if (tmp_p) tmp_p->next = new_target;
+            // }
+        }
     }
 
     ++(list_size);
@@ -86,25 +104,29 @@ bool MACList::push(const uint8_t* addr) {
 }
 
 uint8_t* MACList::get(int i) {
-    h = list_begin;
-    int j = 0;
-
-    while (h && j<i) {
-        h = h->next;
-        ++j;
+    if (i < pos) {
+        mac_h = list_begin;
+        pos   = 0;
     }
 
-    return iterate();
+    while (mac_h && pos<i) {
+        mac_h = mac_h->next;
+        ++pos;
+    }
+
+    return mac_h ? mac_h->addr : NULL;
 }
 
 void MACList::begin() {
-    h = list_begin;
+    mac_h = list_begin;
+    pos   = 0;
 }
 
 uint8_t* MACList::iterate() {
-    if (h) {
-        mac_t* tmp = h;
-        h = h->next;
+    if (mac_h) {
+        mac_t* tmp = mac_h;
+        mac_h = mac_h->next;
+        ++pos;
         return tmp->addr;
     } else {
         return NULL;
@@ -112,7 +134,7 @@ uint8_t* MACList::iterate() {
 }
 
 bool MACList::available() const {
-    return h;
+    return mac_h;
 }
 
 int MACList::size() const {
@@ -123,12 +145,32 @@ bool MACList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void MACList::clear() {
-    h = list_begin;
+bool MACList::contains(const uint8_t* mac) const {
+    if (list_size == 0) {
+        return false;
+    }
 
-    while (h) {
-        mac_t* to_delete = h;
-        h = h->next;
+    if ((memcmp(list_begin, mac, 6) < 0) || (memcmp(list_end, mac, 6) > 0)) {
+        return false;
+    }
+
+    mac_t* tmp = list_begin;
+    int    res;
+
+    do {
+        res = memcmp(tmp->addr, mac, 6);
+        tmp = tmp->next;
+    } while (tmp && res < 0);
+
+    return res == 0;
+}
+
+void MACList::clear() {
+    mac_h = list_begin;
+
+    while (mac_h) {
+        mac_t* to_delete = mac_h;
+        mac_h = mac_h->next;
         free(to_delete);
     }
 
@@ -136,5 +178,6 @@ void MACList::clear() {
     list_end   = NULL;
     list_size  = 0;
 
-    h = NULL;
+    mac_h = NULL;
+    pos   = 0;
 }
