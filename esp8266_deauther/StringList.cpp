@@ -191,8 +191,6 @@ void StringList::clear() {
 
 SortedStringList::SortedStringList(int max) : StringList(max) {}
 
-#include "debug.h"
-
 bool SortedStringList::push(const char* str, unsigned long len) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
@@ -201,31 +199,24 @@ bool SortedStringList::push(const char* str, unsigned long len) {
     new_str->ptr  = stringCopy(str, len);
     new_str->next = NULL;
 
-    debug(new_str->ptr);
-    delay(1);
-
     // Empty list -> insert first element
     if (!list_begin) {
         list_begin = new_str;
         list_end   = new_str;
         list_h     = list_begin;
-        debug(" insert at start (empty list)");
     } else {
         // Insert at start
         if (compare(list_begin, new_str) > 0) {
             new_str->next = list_begin;
             list_begin    = new_str;
-            debug(" insert at start");
         }
         // Insert at end
         else if (compare(list_end, new_str) < 0) {
             list_end->next = new_str;
             list_end       = new_str;
-            debug(" insert at end");
         }
         // Insert somewhere in the between (insertion sort)
         else {
-            debug(" insert somewhere in between");
             str_t* tmp_c = list_begin;
             str_t* tmp_p = NULL;
 
@@ -241,7 +232,6 @@ bool SortedStringList::push(const char* str, unsigned long len) {
             if (res == 0) {
                 free(new_str->ptr);
                 free(new_str);
-                debugln(" Duplicate");
                 return false;
             } else {
                 new_str->next = tmp_c;
@@ -250,7 +240,6 @@ bool SortedStringList::push(const char* str, unsigned long len) {
         }
     }
 
-    debugln(" OK");
     ++list_size;
     return true;
 }
