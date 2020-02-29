@@ -61,19 +61,19 @@ uint8_t beacon_pkt[] = {
 
 // ========== ATTACK DATA ========== //
 typedef struct beacon_attack_data_t {
-    StringList    ssids;
-    uint8_t       from[6];
-    uint8_t       to[6];
-    int           enc;
-    uint8_t       ch;
-    unsigned long timeout;
-    unsigned long start_time;
-    unsigned long output_time;
-    unsigned long pkts_sent;
-    unsigned long pkts_per_second;
-    unsigned long pkt_time;
-    unsigned long pkt_interval;
-    bool          silent;
+    SortedStringList ssids;
+    uint8_t          from[6];
+    uint8_t          to[6];
+    int              enc;
+    uint8_t          ch;
+    unsigned long    timeout;
+    unsigned long    start_time;
+    unsigned long    output_time;
+    unsigned long    pkts_sent;
+    unsigned long    pkts_per_second;
+    unsigned long    pkt_time;
+    unsigned long    pkt_interval;
+    bool             silent;
 } beacon_attack_data_t;
 
 beacon_attack_data_t beacon_data;

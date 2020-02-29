@@ -36,17 +36,17 @@ uint8_t probe_pkt[] = {
 
 // ========== ATTACK DATA ========== //
 typedef struct probe_attack_data_t {
-    StringList    ssids;
-    uint8_t       to[6];
-    uint8_t       ch;
-    unsigned long timeout;
-    unsigned long start_time;
-    unsigned long output_time;
-    unsigned long pkts_sent;
-    unsigned long pkts_per_second;
-    unsigned long pkt_time;
-    unsigned long pkt_interval;
-    bool          silent;
+    SortedStringList ssids;
+    uint8_t          to[6];
+    uint8_t          ch;
+    unsigned long    timeout;
+    unsigned long    start_time;
+    unsigned long    output_time;
+    unsigned long    pkts_sent;
+    unsigned long    pkts_per_second;
+    unsigned long    pkt_time;
+    unsigned long    pkt_interval;
+    bool             silent;
 } probe_attack_data_t;
 
 probe_attack_data_t probe_data;

@@ -518,7 +518,7 @@ namespace cli {
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
 
-            StringList ssid_list;
+            SortedStringList ssid_list;
             uint8_t from[6];
             uint8_t to[6];
             int enc = ENCRYPTION_OPEN;
@@ -710,7 +710,7 @@ namespace cli {
         Command cmd_probe = cli.addCommand("probe", [](cmd* c) {
             Command cmd(c);
 
-            StringList ssid_list;
+            SortedStringList ssid_list;
             uint8_t to[6];
             uint8_t ch;
             unsigned long timeout = 0;
