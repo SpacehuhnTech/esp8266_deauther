@@ -110,8 +110,8 @@ bool send_beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, int e
 
     // Channel
     memcpy(&frame[pkt_len], &beacon_pkt[80], 2);
-    frame[pkt_len] = ch;
-    pkt_len       += 2 + 1;
+    frame[pkt_len+2] = ch;
+    pkt_len         += 2+ 1;
 
     // RSN
     switch (enc) {
