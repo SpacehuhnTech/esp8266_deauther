@@ -23,8 +23,9 @@ class StringList {
         str_t* list_h = NULL;
         int list_pos  = 0;
 
-        char* stringCopy(const char* str, long len) const;
+        char* stringCopy(const char* str, unsigned long len) const;
         int compare(const str_t* a, const String& b) const;
+        int compare(const str_t* a, const str_t* b) const;
 
     public:
         StringList(int max = 0);
@@ -33,7 +34,8 @@ class StringList {
 
         void moveFrom(StringList& sl);
 
-        virtual bool push(String str);
+        bool push(String str);
+        virtual bool push(const char* str, unsigned long len);
         String popFirst();
 
         void parse(const String& input, String delimiter);
@@ -55,6 +57,7 @@ class SortedStringList : public StringList {
     public:
         SortedStringList(int max = 0);
 
-        bool push(String str) override;
+        using StringList::push;
+        bool push(const char* str, unsigned long len) override;
         bool contains(const String& str) const override;
 };

@@ -8,7 +8,7 @@
 
 // ========== StringList ========== //
 
-char* StringList::stringCopy(const char* str, long len) const {
+char* StringList::stringCopy(const char* str, unsigned long len) const {
     char* newstr = (char*)malloc(len+1);
 
     memcpy(newstr, str, len);
@@ -19,6 +19,10 @@ char* StringList::stringCopy(const char* str, long len) const {
 
 int StringList::compare(const str_t* a, const String& b) const {
     return strcmp(a->ptr, b.c_str());
+}
+
+int StringList::compare(const str_t* a, const str_t* b) const {
+    return strcmp(a->ptr, b->ptr);
 }
 
 StringList::StringList(int max) : list_max_size(max) {}
@@ -60,20 +64,24 @@ void StringList::moveFrom(StringList& sl) {
 }
 
 bool StringList::push(String str) {
+    return push(str.c_str(), str.length());
+}
+
+bool StringList::push(const char* str, unsigned long len) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    str_t* item = (str_t*)malloc(sizeof(str_t));
+    str_t* new_str = (str_t*)malloc(sizeof(str_t));
 
-    item->ptr  = stringCopy(str.c_str(), str.length());
-    item->next = NULL;
+    new_str->ptr  = stringCopy(str, len);
+    new_str->next = NULL;
 
     if (!list_begin) {
-        list_begin = item;
-        list_end   = item;
+        list_begin = new_str;
+        list_end   = new_str;
         list_h     = list_begin;
     } else {
-        list_end->next = item;
-        list_end       = item;
+        list_end->next = new_str;
+        list_end       = new_str;
     }
 
     ++list_size;
@@ -109,22 +117,8 @@ void StringList::parse(const String& input, String delimiter) {
 
     for (int i = 0; i <= len; ++i) {
         if ((i-j > 0) && ((i == len) || (input.substring(i, i+delimiter_len) == delimiter))) {
-            str_t* item = (str_t*)malloc(sizeof(str_t));
-            item->ptr  = stringCopy(&ptr[j], i-j);
-            item->next = NULL;
-
+            push(&ptr[j], i-j);
             j = i+delimiter_len;
-
-            if (!list_begin) {
-                list_begin = item;
-                list_end   = item;
-                list_h     = list_begin;
-            } else {
-                list_end->next = item;
-                list_end       = item;
-            }
-
-            ++list_size;
         }
     }
 }
@@ -197,55 +191,66 @@ void StringList::clear() {
 
 SortedStringList::SortedStringList(int max) : StringList(max) {}
 
-bool SortedStringList::push(String str) {
+#include "debug.h"
+
+bool SortedStringList::push(const char* str, unsigned long len) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    str_t* item = (str_t*)malloc(sizeof(str_t));
+    str_t* new_str = (str_t*)malloc(sizeof(str_t));
 
-    item->ptr  = stringCopy(str.c_str(), str.length());
-    item->next = NULL;
+    new_str->ptr  = stringCopy(str, len);
+    new_str->next = NULL;
+
+    debug(new_str->ptr);
+    delay(1);
 
     // Empty list -> insert first element
     if (!list_begin) {
-        list_begin = item;
-        list_end   = item;
+        list_begin = new_str;
+        list_end   = new_str;
         list_h     = list_begin;
+        debug(" insert at start (empty list)");
     } else {
         // Insert at start
-        if (compare(list_begin, str) > 0) {
-            item->next = list_begin;
-            list_begin = item;
+        if (compare(list_begin, new_str) > 0) {
+            new_str->next = list_begin;
+            list_begin    = new_str;
+            debug(" insert at start");
         }
         // Insert at end
-        else if (compare(list_end, str) < 0) {
-            list_end->next = item;
-            list_end       = item;
+        else if (compare(list_end, new_str) < 0) {
+            list_end->next = new_str;
+            list_end       = new_str;
+            debug(" insert at end");
         }
         // Insert somewhere in the between (insertion sort)
         else {
+            debug(" insert somewhere in between");
             str_t* tmp_c = list_begin;
             str_t* tmp_p = NULL;
 
-            int res = compare(tmp_c, str);
+            int res = compare(tmp_c, new_str);
 
             while (tmp_c->next && res < 0) {
                 tmp_p = tmp_c;
                 tmp_c = tmp_c->next;
-                res   = compare(tmp_c, str);
+                res   = compare(tmp_c, new_str);
             }
 
             // Skip duplicates
             if (res == 0) {
-                free(item->ptr);
-                free(item);
+                free(new_str->ptr);
+                free(new_str);
+                debugln(" Duplicate");
                 return false;
             } else {
-                item->next = tmp_c;
-                if (tmp_p) tmp_p->next = item;
+                new_str->next = tmp_c;
+                tmp_p->next   = new_str;
             }
         }
     }
 
+    debugln(" OK");
     ++list_size;
     return true;
 }
