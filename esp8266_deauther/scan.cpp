@@ -373,11 +373,11 @@ namespace scan {
 
             debug(strh::right(3, "ID"));
             debug(' ');
-            debug(strh::left(17, "MAC-Address"));
-            debug(' ');
             debug(strh::right(4, "Pkts"));
             debug(' ');
             debug(strh::left(8, "Vendor"));
+            debug(' ');
+            debug(strh::left(17, "MAC-Address"));
             debug(' ');
             debug(strh::left(34, "AccessPoint-SSID"));
             debug(' ');
@@ -396,11 +396,11 @@ namespace scan {
 
                 debug(strh::right(3, String(i)));
                 debug(' ');
-                debug(h->getMACString());
-                debug(' ');
                 debug(strh::right(4, String(h->getPackets())));
                 debug(' ');
                 debug(strh::left(8, h->getVendor()));
+                debug(' ');
+                debug(h->getMACString());
                 debug(' ');
                 debug(strh::left(34, h->getSSIDString()));
                 debug(' ');
