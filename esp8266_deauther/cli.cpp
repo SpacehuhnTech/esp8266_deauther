@@ -574,7 +574,7 @@ namespace cli {
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("from,mac/from", "random");
         cmd_beacon.addArg("to,macto", "broadcast");
-        cmd_beacon.addArg("enc/ryption", "open");
+        cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("t/ime", "300");
         cmd_beacon.addFlagArg("s/ilent");
