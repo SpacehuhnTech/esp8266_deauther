@@ -103,6 +103,8 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
         }
     }
 
+    stopProbe();
+
     { // Output
         debug("Sending probes to ");
         debug(strh::mac(to));

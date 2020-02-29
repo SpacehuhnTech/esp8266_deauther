@@ -66,6 +66,8 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
         }
     }
 
+    stopDeauth();
+
     { // Output
         if (deauth && disassoc) {
             debug("Deauthing and disassociating ");

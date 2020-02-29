@@ -149,6 +149,8 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
         }
     }
 
+    stopBeacon();
+
     { // Output
         debug("Sending beacons from ");
         debug(strh::mac(from));
