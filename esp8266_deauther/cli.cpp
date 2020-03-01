@@ -570,9 +570,10 @@ namespace cli {
             }
 
             attack::startBeacon(ssid_list, from, to, enc, ch, timeout, silent);
+            scan::startAuth(from, timeout, silent);
         });
         cmd_beacon.addPosArg("ssid/s");
-        cmd_beacon.addArg("from,mac/from", "random");
+        cmd_beacon.addArg("from,mac/from,bssid", "random");
         cmd_beacon.addArg("to,macto", "broadcast");
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
