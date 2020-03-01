@@ -255,3 +255,7 @@ void updateBeacon() {
         }
     }
 }
+
+String getBeacon(uint8_t num) {
+    return beacon_data.ssids.get(beacon_data.from[5] - num);
+}

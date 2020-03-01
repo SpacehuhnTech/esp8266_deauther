@@ -31,4 +31,6 @@ namespace attack {
     void updateDeauth();
     void updateProbe();
     void update();
+
+    String getBeacon(uint8_t num);
 }
