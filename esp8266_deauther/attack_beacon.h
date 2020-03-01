@@ -173,11 +173,13 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
         debugln("SSIDs:");
 
         while (ssid_list.available()) {
-            debugln(ssid_list.iterate());
+            debug("  \"");
+            debug(ssid_list.iterate());
+            debugln("\"");
         }
 
         if (timeout > 0) {
-            debug("Stop after ");
+            debug("Timeout: ");
             debug(timeout/1000);
             debugln(" seconds");
         }

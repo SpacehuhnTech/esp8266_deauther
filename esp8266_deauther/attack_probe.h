@@ -118,7 +118,7 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
         }
 
         if (timeout > 0) {
-            debug("Stop after ");
+            debug("Timeout: ");
             debug(timeout/1000);
             debugln(" seconds");
         }

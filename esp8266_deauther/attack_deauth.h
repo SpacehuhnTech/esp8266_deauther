@@ -98,13 +98,13 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
         debugln(" packets per second");
 
         if (timeout > 0) {
-            debug("Stop after ");
+            debug("Timeout: ");
             debug(timeout/1000);
             debugln(" seconds");
         }
 
         if (pkts > 0) {
-            debug("Stop after ");
+            debug("Send ");
             debug(pkts);
             debugln(" packets");
         }
