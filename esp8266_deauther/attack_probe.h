@@ -176,11 +176,11 @@ void updateProbe() {
         if (!b.silent && (millis() - b.output_time >= 1000)) {
             b.pkts_sent += b.pkts_per_second;
 
-            debug("Probe attack: ");
+            debug("[Probe attack: ");
             debug(b.pkts_per_second);
             debug(" pkts/s, ");
             debug(b.pkts_sent);
-            debugln(" total");
+            debugln(" total]");
 
             b.output_time = millis();
 

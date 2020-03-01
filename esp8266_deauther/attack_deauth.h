@@ -151,11 +151,11 @@ void updateDeauth() {
         if (!d.silent && (millis() - d.output_time >= 1000)) {
             d.pkts_sent += d.pkts_per_second;
 
-            debug("Deauth attack: ");
+            debug("[Deauth attack: ");
             debug(d.pkts_per_second);
             debug(" pkts/s, ");
             debug(d.pkts_sent);
-            debugln(" total");
+            debugln(" total]");
 
             d.output_time = millis();
 

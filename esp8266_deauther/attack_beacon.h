@@ -243,11 +243,11 @@ void updateBeacon() {
         if (!b.silent && (millis() - b.output_time >= 1000)) {
             b.pkts_sent += b.pkts_per_second;
 
-            debug("Beacon attack: ");
+            debug("[Beacon attack: ");
             debug(b.pkts_per_second);
             debug(" pkts/s, ");
             debug(b.pkts_sent);
-            debugln(" total");
+            debugln(" total]");
 
             b.output_time = millis();
 
