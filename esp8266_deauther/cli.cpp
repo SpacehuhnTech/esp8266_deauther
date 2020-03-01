@@ -15,6 +15,7 @@
 #include "mac.h"
 #include "vendor.h"
 #include "attack.h"
+#include "alias.h"
 
 // ram usage
 extern "C" {
@@ -761,6 +762,36 @@ namespace cli {
             "  -s:    silent mode (mute output)"
             );
 
+        Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
+            Command cmd(c);
+
+            String name    = cmd.getArg("name").getValue();
+            String mac_str = cmd.getArg("mac").getValue();
+
+            // No valid mac? Try switching arg values!
+            if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
+                String tmp = name;
+                name       = mac_str;
+                mac_str    = tmp;
+            }
+
+            uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+            mac::fromStr(mac, mac_str.c_str());
+
+            if (mac::valid(mac) && alias::add(mac, name)) {
+                debug("Alias \"");
+                debug(name);
+                debug("\" for ");
+                debug(strh::mac(mac));
+                debugln(" saved");
+            } else {
+                debugln("Something went wrong :(");
+                debugln("Invalid MAC address or already in list");
+            }
+        });
+        cmd_alias.addPosArg("name");
+        cmd_alias.addPosArg("mac");
+        cmd_alias.setDescription("  Give MACs an alias (Names max 17 chars)");
 
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
             for (uint8_t i = 0; i<100; ++i) {

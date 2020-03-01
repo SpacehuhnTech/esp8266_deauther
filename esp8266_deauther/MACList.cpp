@@ -9,10 +9,60 @@
 #include <string.h>
 #include <stdlib.h>
 
+// ========== MAC =========== //
+
+MAC::MAC(const uint8_t* addr, const char* name) {
+    memcpy(this->addr, addr, 6);
+
+    if (name) {
+        unsigned long len = strlen(name);
+
+        if (len > 0) {
+            if (len > 17) len = 17;
+            this->name = (char*)malloc(len+1);
+
+            memcpy(this->name, name, len);
+            this->name[len] = '\0';
+        }
+    }
+}
+
+MAC::~MAC() {
+    if (name) {
+        free(name);
+        name = NULL;
+    }
+}
+
+const char* MAC::getName() const {
+    return name;
+}
+
+const uint8_t* MAC::getAddr() const {
+    return addr;
+}
+
+MAC* MAC::getNext() {
+    return next;
+}
+
+void MAC::setNext(MAC* next) {
+    this->next = next;
+}
+
 // ========== MACList =========== //
 
-int MACList::compare(const mac_t* a, const uint8_t* b) const {
-    return memcmp(a->addr, b, 6);
+int MACList::compare(const MAC* a, const uint8_t* b) const {
+    return memcmp(a->getAddr(), b, 6);
+}
+
+int MACList::compare(const MAC* a, const MAC* b) const {
+    bool res_mac  = compare(a, b->getAddr());
+    bool res_name = strcmp(a->getName(), b->getName());
+
+    if ((res_mac < 0) && (res_name < 0)) return -1;
+    if ((res_mac > 0) && (res_name > 0)) return 1;
+    return 0;
 }
 
 MACList::MACList(int max) : list_max_size(max) {}
@@ -21,78 +71,48 @@ MACList::~MACList() {
     clear();
 }
 
-void MACList::moveFrom(MACList& t) {
-    mac_t* th = t.list_begin;
-
-    while (th) {
-        if ((list_max_size > 0) && (list_size >= list_max_size)) break;
-
-        // Push to list
-        if (!list_begin) {
-            list_begin = th;
-            list_end   = th;
-            list_h     = list_begin;
-        } else {
-            list_end->next = th;
-            list_end       = th;
-        }
-
-        ++(list_size);
-
-        th = th->next;
-    }
-
-    t.list_begin = NULL;
-    t.list_end   = NULL;
-    t.list_size  = 0;
-    t.list_h     = NULL;
-}
-
-bool MACList::push(const uint8_t* addr) {
+bool MACList::push(const uint8_t* addr, const char* name) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
     // Create new target
-    mac_t* new_target = (mac_t*)malloc(sizeof(mac_t));
-
-    memcpy(new_target->addr, addr, 6);
-    new_target->next = NULL;
+    MAC* new_mac = new MAC(addr, name);
 
     // Empty list -> insert first element
     if (!list_begin) {
-        list_begin = new_target;
-        list_end   = new_target;
+        list_begin = new_mac;
+        list_end   = new_mac;
         list_h     = list_begin;
     } else {
         // Insert at start
-        if (compare(list_begin, addr) > 0) {
-            new_target->next = list_begin;
-            list_begin       = new_target;
+        if (compare(list_begin, new_mac) > 0) {
+            new_mac->setNext(list_begin);
+            list_begin = new_mac;
         }
         // Insert at end
-        else if (compare(list_end, addr) < 0) {
-            list_end->next = new_target;
-            list_end       = new_target;
+        else if (compare(list_end, new_mac) < 0) {
+            list_end->setNext(new_mac);
+            list_end = new_mac;
         }
         // Insert somewhere in the between (insertion sort)
         else {
-            mac_t* tmp_c = list_begin;
-            mac_t* tmp_p = NULL;
+            MAC* tmp_c = list_begin;
+            MAC* tmp_p = NULL;
 
-            int res = compare(tmp_c, addr);
+            int res = compare(tmp_c, new_mac);
 
-            while (tmp_c->next && res < 0) {
+            while (tmp_c->getNext() && res < 0) {
                 tmp_p = tmp_c;
-                tmp_c = tmp_c->next;
-                res   = compare(tmp_c, addr);
+                tmp_c = tmp_c->getNext();
+                res   = compare(tmp_c, new_mac);
             }
 
             // Skip duplicates
             if (res == 0) {
-                free(new_target);
+                delete new_mac;
                 return false;
             } else {
-                new_target->next = tmp_c;
-                if (tmp_p) tmp_p->next = new_target;
+                new_mac->setNext(tmp_c);
+                if (tmp_p) tmp_p->setNext(new_mac);
             }
         }
     }
@@ -101,12 +121,45 @@ bool MACList::push(const uint8_t* addr) {
     return true;
 }
 
-uint8_t* MACList::get(int i) {
+MAC* MACList::search(const uint8_t* mac) {
+    if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
+        return NULL;
+    }
+
+    MAC* tmp = list_begin;
+    int  res = compare(tmp, mac);
+
+    while (tmp->getNext() && res < 0) {
+        tmp = tmp->getNext();
+        res = compare(tmp, mac);
+    }
+
+    return (res == 0) ? tmp : NULL;
+}
+
+void MACList::clear() {
+    list_h = list_begin;
+
+    while (list_h) {
+        MAC* to_delete = list_h;
+        list_h = list_h->getNext();
+        delete to_delete;
+    }
+
+    list_begin = NULL;
+    list_end   = NULL;
+    list_size  = 0;
+
+    list_h   = NULL;
+    list_pos = 0;
+}
+
+MAC* MACList::get(int i) {
     if (i < list_pos) begin();
 
     while (list_h && list_pos<i) iterate();
 
-    return list_h ? list_h->addr : NULL;
+    return list_h;
 }
 
 void MACList::begin() {
@@ -114,15 +167,15 @@ void MACList::begin() {
     list_pos = 0;
 }
 
-uint8_t* MACList::iterate() {
+MAC* MACList::iterate() {
+    MAC* tmp = list_h;
+
     if (list_h) {
-        mac_t* tmp = list_h;
-        list_h = list_h->next;
+        list_h = list_h->getNext();
         ++list_pos;
-        return tmp->addr;
-    } else {
-        return NULL;
     }
+
+    return tmp;
 }
 
 bool MACList::available() const {
@@ -135,37 +188,4 @@ int MACList::size() const {
 
 bool MACList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
-}
-
-bool MACList::contains(const uint8_t* mac) const {
-    if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
-        return false;
-    }
-
-    mac_t* tmp = list_begin;
-    int    res;
-
-    while (tmp && res < 0) {
-        res = compare(tmp, mac);
-        tmp = tmp->next;
-    }
-
-    return res == 0;
-}
-
-void MACList::clear() {
-    list_h = list_begin;
-
-    while (list_h) {
-        mac_t* to_delete = list_h;
-        list_h = list_h->next;
-        free(to_delete);
-    }
-
-    list_begin = NULL;
-    list_end   = NULL;
-    list_size  = 0;
-
-    list_h   = NULL;
-    list_pos = 0;
 }

@@ -484,7 +484,7 @@ namespace scan {
                 debug(' ');
                 debug(strh::left(8, h->getVendor()));
                 debug(' ');
-                debug(h->getMACString());
+                debug(strh::left(17, h->getMACString()));
                 debug(' ');
                 debug(strh::left(34, h->getSSIDString()));
                 debug(' ');

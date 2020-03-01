@@ -7,6 +7,7 @@
 #include "Station.h"
 #include "strh.h"
 #include "vendor.h"
+#include "alias.h"
 
 // ========== Station ========== //
 
@@ -20,7 +21,7 @@ const uint8_t* Station::getMAC() const {
 }
 
 String Station::getMACString() const {
-    return strh::mac(mac);
+    return alias::get(mac);
 }
 
 const AccessPoint* Station::getAccessPoint() const {
