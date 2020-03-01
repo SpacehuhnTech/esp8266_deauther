@@ -47,7 +47,7 @@ namespace scan {
 
             if (data.ch_time > 0) {
                 debug(" (");
-                if (data.ch_time< 1000) {
+                if (data.ch_time < 1000) {
                     debug(data.ch_time);
                     debug(" ms)");
                 } else {
@@ -75,64 +75,85 @@ namespace scan {
         } while (true);
     }
 
-    void station_sniffer(uint8_t* buf, uint16_t len) {
-        if (!data.st) return;
+    Station* register_station(uint8_t* mac, AccessPoint* ap) {
+        Station* tmp = data.st_list.search(mac);
 
+        if (!tmp && data.st_list.push(mac)) {
+            tmp = data.st_list.search(mac);
+            if (!data.silent) {
+                debug(strh::mac(mac));
+                debugln(" new station");
+                if (ap) {
+                    debug(strh::mac(mac));
+                    debug(" connected to \"");
+                    debug(ap->getSSID());
+                    debugln('"');
+                }
+            }
+        }
+
+        if (!tmp) {
+            // Push error
+            return NULL;
+        }
+
+        if (ap) tmp->setAccessPoint(ap);
+        tmp->newPkt();
+
+        return tmp;
+    }
+
+    void station_sniffer(uint8_t* buf, uint16_t len) {
         // drop frames that are too short to have a valid MAC header
         if (len < 28) return;
 
-        // drop deauthentication and disassociation frames
-        if ((buf[12] == 0xc0) || (buf[12] == 0xa0)) return;
+        uint8_t type = buf[12];
 
-        // drop beacon and probe response frames
-        if ((buf[12] == 0x80) || (buf[12] == 0x50)) return;
+        // drop ... frames
+        if (
+            (type == 0xc0) || // deauthentication
+            (type == 0xa0) || // disassociation
+            (type == 0x80) || // beacon frames
+            (type == 0x50)    // probe response
+            ) return;
 
         // only allow data frames
         // if(buf[12] != 0x08 && buf[12] != 0x88) return;
 
-        uint8_t* mac_a = &buf[16]; // To (Receiver)
-        uint8_t* mac_b = &buf[22]; // From (Transmitter)
+        uint8_t* mac_to   = &buf[16]; // To (Receiver)
+        uint8_t* mac_from = &buf[22]; // From (Transmitter)
 
         // drop frames with corrupted MAC addresses
-        if (!mac::valid(mac_a) || !mac::valid(mac_b)) return;
+        if (!mac::valid(mac_to) || !mac::valid(mac_from)) return;
 
-        // frame from AP to station
-        if (!mac::multicast(mac_a)) {
-            AccessPoint* ap = data.ap_list.search(mac_b);
-            if (ap) {
-                if (data.st_list.registerPacket(mac_a, ap)) {
-                    if (!data.silent) {
-                        debug("Station ");
-                        debug(strh::mac(mac_a));
-                        debug(" in \"");
-                        debug(ap->getSSID());
-                        debugln('"');
-                    }
-                }
-            }
-        }
-        // broadcast probe request from unassociated station
-        else if ((buf[12] == 0x40) && (buf[12+25] > 0)) {
-            if (data.st_list.registerPacket(mac_b, NULL)) {
-                if (!data.silent) {
-                    debug("Station ");
-                    debug(strh::mac(mac_b));
-                    debugln(' ');
-                }
-            }
-
+        // broadcast probe request
+        if ((type == 0x40) && (buf[12+25] > 0)) {
             const char* ssid = (const char*)&buf[12+26];
             uint8_t     len  = buf[12+25];
 
-            if ((ssid[0] != '\0') && data.st_list.addProbe(mac_b, ssid, len)) {
-                if (!data.silent) {
-                    debug("Probe \"");
+            Station* st = register_station(mac_from, NULL);
 
-                    for (uint8_t i = 0; i<len; ++i) {
-                        debug(char(ssid[i]));
-                    }
+            if (st && st->addProbe(ssid, len)) {
+                if (!data.silent) {
+                    debug(strh::mac(mac_from));
+                    debug(" probe \"");
+
+                    for (uint8_t i = 0; i<len; ++i) debug(char(ssid[i]));
                     debugln("\"");
                 }
+            }
+        }
+        // anything else that isn't a broadcast frame
+        else if (!mac::multicast(mac_to)) {
+            AccessPoint* ap = data.ap_list.search(mac_to);
+
+            if (ap) {
+                // From station to access point
+                register_station(mac_from, ap);
+            } else {
+                // From access point to station
+                ap = data.ap_list.search(mac_from);
+                if (ap) register_station(mac_to, ap);
             }
         }
     }

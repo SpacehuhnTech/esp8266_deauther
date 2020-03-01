@@ -70,6 +70,10 @@ void Station::setNext(Station* next) {
     this->next = next;
 }
 
+bool Station::addProbe(const char* ssid, uint8_t len) {
+    return probes.push(ssid, len);
+}
+
 // ========== StationList ========== //
 
 int StationList::compare(const Station* st, const uint8_t* mac) const {
@@ -82,10 +86,10 @@ StationList::~StationList() {
     clear();
 }
 
-bool StationList::push(uint8_t* mac, AccessPoint* ap) {
+bool StationList::push(uint8_t* mac) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    Station* new_st = new Station(mac, ap);
+    Station* new_st = new Station(mac, NULL);
 
     // Empty list -> insert first element
     if (!list_begin) {
@@ -129,36 +133,6 @@ bool StationList::push(uint8_t* mac, AccessPoint* ap) {
 
     ++list_size;
     return true;
-}
-
-bool StationList::addProbe(uint8_t* mac, const char* ssid, uint8_t len) {
-    // find mac in list
-    Station* tmp = search(mac);
-
-    if (tmp) {
-        // add ssid to list
-        String probe;
-
-        for (uint8_t i = 0; i<len; ++i) probe += char(ssid[i]);
-
-        return tmp->getProbes().push(probe);
-    }
-    return false;
-}
-
-bool StationList::registerPacket(uint8_t* mac, AccessPoint* ap) {
-    Station* tmp = search(mac);
-
-    if (tmp) {
-        if (ap && !tmp->getAccessPoint()) {
-            tmp->setAccessPoint(ap);
-        }
-        tmp->newPkt();
-        return false;
-    } else {
-        push(mac, ap);
-        return true;
-    }
 }
 
 void StationList::clear() {

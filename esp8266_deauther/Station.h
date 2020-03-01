@@ -17,7 +17,7 @@ class Station {
         uint8_t mac[6];
         AccessPoint* ap;
 
-        uint32_t pkts           = 1;
+        uint32_t pkts           = 0;
         SortedStringList probes = SortedStringList(MAX_PROBES);
         Station* next           = NULL;
 
@@ -36,8 +36,10 @@ class Station {
         Station* getNext();
 
         void setAccessPoint(AccessPoint* ap);
-        void newPkt();
         void setNext(Station* next);
+
+        bool addProbe(const char* ssid, uint8_t len);
+        void newPkt();
 };
 
 // ========== StationList ========== //
@@ -58,9 +60,7 @@ class StationList {
         StationList(int max = MAX_STATIONS);
         ~StationList();
 
-        bool push(uint8_t* mac, AccessPoint* ap);
-        bool addProbe(uint8_t* mac, const char* ssid, uint8_t len);
-        bool registerPacket(uint8_t* mac, AccessPoint* ap);
+        bool push(uint8_t* mac);
         void clear();
 
         Station* search(uint8_t* mac);
