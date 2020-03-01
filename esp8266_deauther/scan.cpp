@@ -266,6 +266,7 @@ namespace scan {
             for (int i = 0; i < n; ++i) {
                 if (((data.channels >> (WiFi.channel(i)-1)) & 0x01)) {
                     data.ap_list.push(
+                        WiFi.isHidden(i),
                         WiFi.SSID(i).c_str(),
                         WiFi.BSSID(i),
                         WiFi.RSSI(i),

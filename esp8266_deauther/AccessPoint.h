@@ -13,6 +13,7 @@
 
 class AccessPoint {
     private:
+        bool hidden;
         char* ssid;
         uint8_t bssid[6];
         int rssi;
@@ -21,7 +22,7 @@ class AccessPoint {
         AccessPoint* next = NULL;
 
     public:
-        AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
+        AccessPoint(bool hidden, const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
         ~AccessPoint();
 
         const char* getSSID() const;
@@ -31,7 +32,7 @@ class AccessPoint {
         int getRSSI() const;
         String getEncryption() const;
         uint8_t getChannel() const;
-        bool hidden() const;
+        bool isHidden() const;
         String getVendor() const;
 
         AccessPoint* getNext();
@@ -58,8 +59,8 @@ class AccessPointList {
         AccessPointList(int max = MAX_ACCESS_POINTS);
         ~AccessPointList();
 
-        bool push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
-        AccessPoint* search(uint8_t* bssid);
+        bool push(bool hidden, const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
+        AccessPoint* search(const uint8_t* bssid);
         void clear();
 
         AccessPoint* get(int i);

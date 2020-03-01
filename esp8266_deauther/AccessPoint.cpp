@@ -7,12 +7,15 @@
 #include "AccessPoint.h"
 #include "strh.h"
 #include "vendor.h"
+#include "alias.h"
 
 #include <ESP8266WiFi.h>
 
 // ========== AccessPoint ========== //
 
-AccessPoint::AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
+AccessPoint::AccessPoint(bool hidden, const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
+    this->hidden = hidden;
+
     if (ssid) {
         int ssidlen = strlen(ssid);
 
@@ -25,7 +28,7 @@ AccessPoint::AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc
         }
     }
 
-    memcpy(this->bssid, bssid, 6);
+    if (bssid) memcpy(this->bssid, bssid, 6);
     this->rssi = rssi;
     this->enc  = enc;
     this->ch   = ch;
@@ -34,7 +37,7 @@ AccessPoint::AccessPoint(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc
 AccessPoint::~AccessPoint() {
     if (ssid) {
         free(ssid);
-        this->ssid = NULL;
+        ssid = NULL;
     }
 }
 
@@ -47,7 +50,7 @@ const uint8_t* AccessPoint::getBSSID() const {
 }
 
 String AccessPoint::getSSIDString() const {
-    if (hidden()) {
+    if (isHidden()) {
         return "*HIDDEN-NETWORK*";
     } else {
         return '"' + String(ssid) + '"';
@@ -55,7 +58,7 @@ String AccessPoint::getSSIDString() const {
 }
 
 String AccessPoint::getBSSIDString() const {
-    return strh::mac(bssid);
+    return alias::get(bssid);
 }
 
 int AccessPoint::getRSSI() const {
@@ -83,8 +86,8 @@ uint8_t AccessPoint::getChannel() const {
     return ch;
 }
 
-bool AccessPoint::hidden() const {
-    return !ssid;
+bool AccessPoint::isHidden() const {
+    return hidden;
 }
 
 String AccessPoint::getVendor() const {
@@ -111,10 +114,10 @@ AccessPointList::~AccessPointList() {
     clear();
 }
 
-bool AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
+bool AccessPointList::push(bool hidden, const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    AccessPoint* new_ap = new AccessPoint(ssid, bssid, rssi, enc, ch);
+    AccessPoint* new_ap = new AccessPoint(hidden, ssid, bssid, rssi, enc, ch);
 
     // Empty list -> insert first element
     if (!list_begin) {
@@ -159,14 +162,13 @@ bool AccessPointList::push(const char* ssid, uint8_t* bssid, int rssi, uint8_t e
     return true;
 }
 
-AccessPoint* AccessPointList::search(uint8_t* bssid) {
+AccessPoint* AccessPointList::search(const uint8_t* bssid) {
     if ((list_size == 0) || (compare(list_begin, bssid) > 0) || (compare(list_end, bssid) < 0)) {
         return NULL;
     }
 
     AccessPoint* tmp = list_begin;
-
-    int res = compare(tmp, bssid);
+    int res          = compare(tmp, bssid);
 
     while (tmp->getNext() && res < 0) {
         tmp = tmp->getNext();
