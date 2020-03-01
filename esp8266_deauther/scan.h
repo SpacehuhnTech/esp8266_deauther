@@ -14,6 +14,7 @@ namespace scan {
     void clearSTresults();
 
     void start(bool ap, bool st, unsigned long timeout, uint16_t channels, unsigned long ch_time, bool silent, bool retain);
+    void startAuth(uint8_t* mac, unsigned long timeout, bool silent);
     void stop();
 
     void print();

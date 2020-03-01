@@ -21,6 +21,8 @@ class Station {
         SortedStringList probes = SortedStringList(MAX_PROBES);
         Station* next           = NULL;
 
+        uint32_t auths = 0;
+
     public:
         Station(uint8_t* mac, AccessPoint* ap);
 
@@ -31,14 +33,17 @@ class Station {
         String getSSIDString() const;
         String getBSSIDString() const;
         String getVendor() const;
+        uint32_t getAuths() const;
 
         SortedStringList& getProbes();
         Station* getNext();
 
         void setAccessPoint(AccessPoint* ap);
+        void setAuth(uint8_t auths);
         void setNext(Station* next);
 
         bool addProbe(const char* ssid, uint8_t len);
+        bool addAuth(uint8_t num);
         void newPkt();
 };
 

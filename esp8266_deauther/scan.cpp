@@ -10,6 +10,7 @@
 #include "vendor.h"
 #include "cli.h"
 #include "mac.h"
+#include "attack.h"
 
 #include <ESP8266WiFi.h>
 
@@ -19,9 +20,11 @@ extern "C" {
 typedef struct scan_data_t {
     bool          ap;
     bool          st;
+    bool          auth;
     uint16_t      channels;
     unsigned long ch_time;
     unsigned long timeout;
+    uint8_t       bssid[5];
     bool          silent;
 
     uint8_t       num_of_channels;
@@ -143,6 +146,20 @@ namespace scan {
                 }
             }
         }
+        // authentication
+        else if (data.auth && (type == 0xb0) && (memcmp(mac_to, data.bssid, 5) == 0)) {
+            Station* st = register_station(mac_from, NULL);
+
+            if (st && st->addAuth(mac_to[5])) {
+                if (!data.silent) {
+                    debug(strh::mac(mac_from));
+                    debug(" auth \"");
+                    // debugln(strh::mac(mac_to));
+                    debug(attack::getBeacon(mac_to[5]));
+                    debugln("\"");
+                }
+            }
+        }
         // anything else that isn't a broadcast frame
         else if (!mac::multicast(mac_to)) {
             AccessPoint* ap = data.ap_list.search(mac_to);
@@ -229,6 +246,18 @@ namespace scan {
         }
     }
 
+    void stopAuthSearch() {
+        if (data.auth) {
+            wifi_promiscuous_enable(false);
+            data.auth = false;
+
+            debugln("Stopped beacon authentication scan");
+            debugln();
+
+            printSTs();
+        }
+    }
+
     void updateAPsearch() {
         if (data.ap && (WiFi.scanComplete() >= 0)) {
             int n = WiFi.scanComplete();
@@ -265,6 +294,12 @@ namespace scan {
                 // print infos
                 data.output_time = current_time;
             }
+        }
+    }
+
+    void updateAuthSearch() {
+        if (data.auth && (data.timeout > 0) && (millis() - data.start_time >= data.timeout)) {
+            stopAuthSearch();
         }
     }
 
@@ -320,9 +355,35 @@ namespace scan {
         else if (st) startSTsearch();
     }
 
+    void startAuth(uint8_t* mac, unsigned long timeout, bool silent) {
+        stop();
+
+        data.auth       = true;
+        data.timeout    = timeout;
+        data.silent     = silent;
+        data.start_time = millis();
+        memcpy(data.bssid, mac, 5);
+
+        debug("Scanning for authentications on ");
+        debugln(strh::mac(data.bssid));
+        debugln();
+
+        // Reset authentications
+        data.st_list.begin();
+
+        while (data.st_list.available()) {
+            Station* tmp = data.st_list.iterate();
+            tmp->setAuth(0);
+        }
+
+        wifi_set_promiscuous_rx_cb(station_sniffer);
+        wifi_promiscuous_enable(true);
+    }
+
     void stop() {
         stopAPsearch();
         stopSTsearch();
+        stopAuthSearch();
     }
 
     void printAPs() {
@@ -459,6 +520,7 @@ namespace scan {
     void update() {
         updateAPsearch();
         updateSTsearch();
+        updateAuthSearch();
     }
 
     AccessPointList& getAccessPoints() {
