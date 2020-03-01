@@ -83,15 +83,16 @@ namespace scan {
 
         if (!tmp && data.st_list.push(mac)) {
             tmp = data.st_list.search(mac);
-            if (!data.silent) {
+
+            if (!data.silent && ap) {
+                // debug(strh::mac(mac));
+                // debugln(" new station");
+                // if (ap) {
                 debug(strh::mac(mac));
-                debugln(" new station");
-                if (ap) {
-                    debug(strh::mac(mac));
-                    debug(" connected to \"");
-                    debug(ap->getSSID());
-                    debugln('"');
-                }
+                debug(" connected to \"");
+                debug(ap->getSSID());
+                debugln('"');
+                // }
             }
         }
 
