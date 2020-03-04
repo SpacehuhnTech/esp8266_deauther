@@ -538,7 +538,7 @@ namespace cli {
                 if (from_str.length() != 17) {
                     vendor::randomize(from);
                 } else {
-                    mac::fromStr(from, from_str.c_str());
+                    mac::fromStr(from_str.c_str(), from);
                 }
             }
 
@@ -548,7 +548,7 @@ namespace cli {
                 if (to_str.length() != 17) {
                     memcpy(to, mac::BROADCAST, 6);
                 } else {
-                    mac::fromStr(to, to_str.c_str());
+                    mac::fromStr(to_str.c_str(), to);
                 }
             }
 
@@ -649,8 +649,8 @@ namespace cli {
                     uint8_t mac_to[6];
                     uint8_t ch;
 
-                    mac::fromStr(mac_from, mac_from_str.c_str());
-                    mac::fromStr(mac_to, mac_to_str.c_str());
+                    mac::fromStr(mac_from_str.c_str(), mac_from);
+                    mac::fromStr(mac_to_str.c_str(), mac_to);
                     ch = ch_str.toInt();
 
                     targets.push(mac_from, mac_to, ch);
@@ -729,7 +729,7 @@ namespace cli {
                 if (to_str.length() != 17) {
                     memcpy(to, mac::BROADCAST, 6);
                 } else {
-                    mac::fromStr(to, to_str.c_str());
+                    mac::fromStr(to_str.c_str(), to);
                 }
             }
 
@@ -776,7 +776,7 @@ namespace cli {
             }
 
             uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            mac::fromStr(mac, mac_str.c_str());
+            mac::fromStr(mac_str.c_str(), mac);
 
             if (mac::valid(mac) && alias::add(mac, name)) {
                 debug("Alias \"");

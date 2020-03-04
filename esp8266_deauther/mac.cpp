@@ -48,7 +48,7 @@ namespace mac {
         return true;
     }
 
-    void fromStr(uint8_t* mac, const char* str) {
+    void fromStr(const char* str, uint8_t* mac) {
         if (strlen(str) != 17) return;
 
         for (int i = 0; i<6; ++i) {

@@ -7,11 +7,12 @@
 #include "alias.h"
 #include "MACList.h"
 #include "strh.h"
+#include "mac.h"
 
 namespace alias {
     MACList list;
 
-    bool add(const uint8_t* mac, String name) {
+    bool add(const uint8_t* mac, const String& name) {
         return list.push(mac, name.c_str());
     }
 
@@ -28,16 +29,19 @@ namespace alias {
         return strh::mac(mac);
     }
 
-    const uint8_t* resolve(String name) {
+    bool resolve(const String& name, uint8_t* buffer) {
         list.begin();
 
         MAC* tmp = list.iterate();
 
         while (list.available()) {
             if (strcmp(tmp->getName(), name.c_str()) == 0) {
-                return tmp->getAddr();
+                memcpy(buffer, tmp->getAddr(), 6);
+                return true;
             }
         }
-        return NULL;
+
+        mac::fromStr(name.c_str(), buffer);
+        return false;
     }
 }
