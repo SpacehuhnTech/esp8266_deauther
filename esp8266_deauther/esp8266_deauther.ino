@@ -8,9 +8,11 @@
 #include "cli.h"
 #include "scan.h"
 #include "attack.h"
+#include "eeprom.h"
 
 void setup() {
     cli::begin();
+    eeprom::begin();
 }
 
 void loop() {
