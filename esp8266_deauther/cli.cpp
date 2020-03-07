@@ -510,6 +510,8 @@ namespace cli {
                 scan::printAPs();
                 scan::printSTs();
             }
+
+            alias::print();
         });
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.setDescription(

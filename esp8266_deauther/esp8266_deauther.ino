@@ -9,10 +9,12 @@
 #include "scan.h"
 #include "attack.h"
 #include "eeprom.h"
+#include "alias.h"
 
 void setup() {
     cli::begin();
     eeprom::begin();
+    alias::load();
 }
 
 void loop() {

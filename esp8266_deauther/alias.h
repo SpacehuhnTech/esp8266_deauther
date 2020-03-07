@@ -8,7 +8,12 @@
 #include <Arduino.h> // String
 
 namespace alias {
+    void clear();
+    void load();
+    void save();
+
     bool add(const uint8_t* mac, const String& name);
     String get(const uint8_t* mac);
     bool resolve(const String& name, uint8_t* buffer);
+    void print();
 }

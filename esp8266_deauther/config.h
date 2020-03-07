@@ -21,3 +21,9 @@
 #define EEPROM_SIZE       4095
 #define EEPROM_BOOT_ADDR  3210
 #define BOOT_MAGIC_NUM    1234567890
+
+// ==== Alias List Settings ===== //
+#define ALIAS_ADDR 100
+#define ALIAS_MAGIC_NUM 1234567891
+#define MAX_ALIAS_NUM 25
+#define MAX_ALIAS_LEN 12
