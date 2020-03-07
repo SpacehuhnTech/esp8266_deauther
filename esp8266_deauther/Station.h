@@ -10,6 +10,10 @@
 #include "StringList.h"
 #include "config.h"
 
+#ifndef MAX_STATIONS
+#define MAX_STATIONS 0
+#endif // ifndef MAX_ALIAS
+
 // ========== Station ========== //
 
 class Station {

@@ -9,6 +9,10 @@
 #include <Arduino.h>
 #include "config.h"
 
+#ifndef MAX_ACCESS_POINTS
+#define MAX_ACCESS_POINTS 0
+#endif // ifndef MAX_ALIAS
+
 // ========== AccessPoint ========== //
 
 class AccessPoint {
