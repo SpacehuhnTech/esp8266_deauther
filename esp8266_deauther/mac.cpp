@@ -28,14 +28,6 @@ namespace mac {
     }
 
     // ===== PUBLIC ===== //
-    bool valid(const uint8_t* mac) {
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (mac[i] != 0x00) return true;
-        }
-
-        return false;
-    }
-
     bool multicast(const uint8_t* mac) {
         return (mac[0] & 0x01) == 1;
     }

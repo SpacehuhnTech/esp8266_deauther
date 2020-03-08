@@ -12,7 +12,6 @@
 namespace mac {
     const static uint8_t BROADCAST[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 
-    bool valid(const uint8_t* mac);
     bool multicast(const uint8_t* mac);
     bool equals(const uint8_t* macA, const uint8_t* macB);
 

@@ -127,9 +127,6 @@ namespace scan {
         uint8_t* mac_to   = &buf[16]; // To (Receiver)
         uint8_t* mac_from = &buf[22]; // From (Transmitter)
 
-        // drop frames with corrupted MAC addresses
-        if (!mac::valid(mac_to) || !mac::valid(mac_from)) return;
-
         // broadcast probe request
         if ((type == 0x40) && (buf[12+25] > 0)) {
             const char* ssid = (const char*)&buf[12+26];
