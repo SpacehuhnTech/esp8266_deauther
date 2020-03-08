@@ -35,6 +35,8 @@ namespace cli {
     StringList history; // !< Command history
 
     uint16_t getChannels(const String& ch_str) {
+        if (ch_str == "all") return 0x3FFF;
+
         StringList ch_list(ch_str, ",");
 
         uint16_t channels = 0;
@@ -514,20 +516,25 @@ namespace cli {
             String ch_str     = cmd.getArg("ch").getValue();
             uint16_t channels = getChannels(ch_str);
 
+            String ssid = cmd.getArg("ssid").getValue();
+
             if (mode == "ap") {
-                scan::printAPs(channels);
+                scan::printAPs(channels, ssid);
             } else if (mode == "st") {
-                scan::printSTs(channels);
+                scan::printSTs(channels, ssid);
             } else if (mode == "ap+st") {
-                scan::printAPs(channels);
-                scan::printSTs(channels);
+                scan::printAPs(channels, ssid);
+                scan::printSTs(channels, ssid);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.addArg("ch/annel/s", "all");
+        cmd_results.addArg("ssid", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
-            "  -t: type of results [ap,st,ap+st] (default=ap+st)");
+            "  -ch:   ...\n"
+            "  -ssid: ...\n"
+            "  -t:    type of results [ap,st,ap+st] (default=ap+st)");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);

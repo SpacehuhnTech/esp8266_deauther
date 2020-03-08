@@ -17,8 +17,8 @@ namespace scan {
     void startAuth(uint8_t* mac, unsigned long timeout, bool silent);
     void stop();
 
-    void printAPs(uint16_t channels = 0x3FFF);
-    void printSTs(uint16_t channels = 0x3FFF);
+    void printAPs(uint16_t channels = 0x3FFF, String ssid = "");
+    void printSTs(uint16_t channels = 0x3FFF, String ssid = "");
 
     void update();
 

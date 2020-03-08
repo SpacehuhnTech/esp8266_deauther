@@ -385,7 +385,7 @@ namespace scan {
         stopAuthSearch();
     }
 
-    void printAPs(uint16_t channels) {
+    void printAPs(uint16_t channels, String ssid) {
         debug("Access Point (Network) List: ");
         debugln(data.ap_list.size());
         debugln("-------------------------------");
@@ -414,20 +414,22 @@ namespace scan {
             AccessPoint* h = data.ap_list.iterate();
 
             if ((channels >> (h->getChannel()-1)) & 0x01) {
-                debug(strh::right(3, String(i)));
-                debug(' ');
-                debug(strh::left(34, h->getSSIDString()));
-                debug(' ');
-                debug(strh::right(4, String(h->getRSSI())));
-                debug(' ');
-                debug(strh::left(4, h->getEncryption()));
-                debug(' ');
-                debug(strh::right(2, String(h->getChannel())));
-                debug(' ');
-                debug(strh::left(17, h->getBSSIDString()));
-                debug(' ');
-                debug(strh::left(8, h->getVendor()));
-                debugln();
+                if ((ssid.length() == 0) || (ssid == String(h->getSSID()))) {
+                    debug(strh::right(3, String(i)));
+                    debug(' ');
+                    debug(strh::left(34, h->getSSIDString()));
+                    debug(' ');
+                    debug(strh::right(4, String(h->getRSSI())));
+                    debug(' ');
+                    debug(strh::left(4, h->getEncryption()));
+                    debug(' ');
+                    debug(strh::right(2, String(h->getChannel())));
+                    debug(' ');
+                    debug(strh::left(17, h->getBSSIDString()));
+                    debug(' ');
+                    debug(strh::left(8, h->getVendor()));
+                    debugln();
+                }
             }
 
             ++i;
@@ -441,7 +443,7 @@ namespace scan {
         debugln();
     }
 
-    void printSTs(uint16_t channels) {
+    void printSTs(uint16_t channels, String ssid) {
         debug("Station (Client) List: ");
         debugln(data.st_list.size());
         debugln("-------------------------");
@@ -467,35 +469,38 @@ namespace scan {
         data.st_list.begin();
 
         while (data.st_list.available()) {
-            Station* h = data.st_list.iterate();
+            Station* h            = data.st_list.iterate();
+            const AccessPoint* ap = h->getAccessPoint();
 
-            if (h->getAccessPoint() && (channels >> (h->getAccessPoint()->getChannel()-1)) & 0x01) {
-                debug(strh::right(3, String(i)));
-                debug(' ');
-                debug(strh::right(4, String(h->getPackets())));
-                debug(' ');
-                debug(strh::left(8, h->getVendor()));
-                debug(' ');
-                debug(strh::left(17, h->getMACString()));
-                debug(' ');
-                debug(strh::left(34, h->getSSIDString()));
-                debug(' ');
-                debug(strh::left(17, h->getBSSIDString()));
-                debug(' ');
+            if (!ap || ((ap->getChannel()-1)) & 0x01) {
+                if (!ap || (ssid.length() == 0) || (ssid == String(ap->getSSID()))) {
+                    debug(strh::right(3, String(i)));
+                    debug(' ');
+                    debug(strh::right(4, String(h->getPackets())));
+                    debug(' ');
+                    debug(strh::left(8, h->getVendor()));
+                    debug(' ');
+                    debug(strh::left(17, h->getMACString()));
+                    debug(' ');
+                    debug(strh::left(34, h->getSSIDString()));
+                    debug(' ');
+                    debug(strh::left(17, h->getBSSIDString()));
+                    debug(' ');
 
-                h->getProbes().begin();
-                bool first = true;
+                    h->getProbes().begin();
+                    bool first = true;
 
-                while (h->getProbes().available()) {
-                    if (!first) {
-                        debugln();
-                        debug("                                                                                         ");
+                    while (h->getProbes().available()) {
+                        if (!first) {
+                            debugln();
+                            debug("                                                                                         ");
+                        }
+                        debug(/*strh::left(32, */ '"' + h->getProbes().iterate() + '"');
+                        first = false;
                     }
-                    debug(/*strh::left(32, */ '"' + h->getProbes().iterate() + '"');
-                    first = false;
-                }
 
-                debugln();
+                    debugln();
+                }
             }
             ++i;
         }
