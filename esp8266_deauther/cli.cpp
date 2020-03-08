@@ -502,6 +502,7 @@ namespace cli {
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             Command cmd(c);
             String mode = cmd.getArg("t").getValue();
+
             if (mode == "ap") {
                 scan::printAPs();
             } else if (mode == "st") {
@@ -510,8 +511,6 @@ namespace cli {
                 scan::printAPs();
                 scan::printSTs();
             }
-
-            alias::print();
         });
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.setDescription(
@@ -767,33 +766,64 @@ namespace cli {
         Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
             Command cmd(c);
 
+            String mode = cmd.getArg("mode").getValue();
+
+            if (mode == "list") {
+                alias::print();
+                return;
+            }
+
             String name    = cmd.getArg("name").getValue();
             String mac_str = cmd.getArg("mac").getValue();
 
-            // No valid mac? Try switching arg values!
-            if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
-                String tmp = name;
-                name       = mac_str;
-                mac_str    = tmp;
+            if (mode == "add") {
+                // No valid mac? Try switching arg values!
+                if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
+                    String tmp = name;
+                    name       = mac_str;
+                    mac_str    = tmp;
+                }
+                uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                mac::fromStr(mac_str.c_str(), mac);
+
+                if (mac::valid(mac) && alias::add(mac, name)) {
+                    debug("Alias \"");
+                    debug(name);
+                    debug("\" for ");
+                    debug(strh::mac(mac));
+                    debugln(" saved");
+                } else {
+                    debugln("Something went wrong :(");
+                    debugln("Invalid MAC address or already in list");
+                }
+                return;
             }
 
-            uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            mac::fromStr(mac_str.c_str(), mac);
+            if (mode == "remove") {
+                uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                mac::fromStr(name.c_str(), mac);
 
-            if (mac::valid(mac) && alias::add(mac, name)) {
-                debug("Alias \"");
-                debug(name);
-                debug("\" for ");
-                debug(strh::mac(mac));
-                debugln(" saved");
-            } else {
-                debugln("Something went wrong :(");
-                debugln("Invalid MAC address or already in list");
+                if (alias::remove(mac)) {
+                    debug("Removed alias ");
+                    debugln(strh::mac(mac));
+                } else if (alias::remove(name)) {
+                    debug("Removed alias ");
+                    debugln(name);
+                } else if (alias::remove(name.toInt())) {
+                    debug("Removed alias ");
+                    debugln(mac_str);
+                }
+                return;
             }
         });
-        cmd_alias.addPosArg("name");
-        cmd_alias.addPosArg("mac");
-        cmd_alias.setDescription("  Give MACs an alias (Names max 17 chars)");
+        cmd_alias.addPosArg("mode", "list");
+        cmd_alias.addPosArg("name", "");
+        cmd_alias.addPosArg("mac", "");
+        cmd_alias.setDescription(
+            "  Set alias for MAC address (no arguments = print list)\n"
+            "  -mode: 'add' or 'remove'\n"
+            "  -name: alias name\n"
+            "  -mac:  MAC address");
 
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
             for (uint8_t i = 0; i<100; ++i) {

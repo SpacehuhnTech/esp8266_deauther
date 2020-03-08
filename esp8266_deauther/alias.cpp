@@ -5,7 +5,6 @@
  */
 
 #include "alias.h"
-#include "MACList.h"
 #include "strh.h"
 #include "mac.h"
 #include "debug.h"
@@ -30,31 +29,45 @@ namespace alias {
         list.magic_num = ALIAS_MAGIC_NUM;
 
         add(mac::BROADCAST, "broadcast");
-
-        debugln("Cleared MAC alias list");
     }
 
     void load() {
         eeprom::getObject(ALIAS_ADDR, list);
 
         if ((list.magic_num != ALIAS_MAGIC_NUM) || (list.size > MAX_ALIAS_NUM)) {
-            debug(list.magic_num);
-            debug(" != ");
-            debugln(ALIAS_MAGIC_NUM);
-
             clear();
+            // debugln("Resetted MAC alias list");
         } else {
-            debugln("Loaded MAC alias list");
+            // debugln("Loaded MAC alias list");
         }
     }
 
     void save() {
         eeprom::saveObject(ALIAS_ADDR, list);
-        debugln("Saved MAC alias list");
+    }
+
+    int search(const uint8_t* mac) {
+        if (mac) {
+            for (unsigned int i = 0; i<list.size && i<MAX_ALIAS_NUM; ++i) {
+                if (memcmp(list.data[i].mac, mac, 6) == 0) {
+                    return i;
+                }
+            }
+        }
+        return -1;
+    }
+
+    int search(const String& name) {
+        for (unsigned int i = 0; i<list.size && i<MAX_ALIAS_NUM; ++i) {
+            if (strncmp(list.data[i].name, name.c_str(), MAX_ALIAS_LEN) == 0) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     bool add(const uint8_t* mac, const String& name) {
-        if (list.size < MAX_ALIAS_NUM) {
+        if ((list.size < MAX_ALIAS_NUM) && (search(mac) < 0) && (search(name) < 0)) {
             alias_t* a = &list.data[list.size];
             memcpy(a->mac, mac, 6);
             strncpy(a->name, name.c_str(), MAX_ALIAS_LEN);
@@ -66,37 +79,60 @@ namespace alias {
     }
 
     String get(const uint8_t* mac) {
-        for (unsigned int i = 0; i<list.size; ++i) {
-            if (memcmp(list.data[i].mac, mac, 6) == 0) {
-                String res;
+        int id = search(mac);
 
-                for (unsigned int j = 0; j<MAX_ALIAS_LEN; ++j) {
-                    res += char(list.data[i].name[j]);
-                }
+        if ((id >= 0) && (id <= list.size)) {
+            String res;
 
-                return res;
+            for (unsigned int j = 0; j<MAX_ALIAS_LEN; ++j) {
+                res += char(list.data[id].name[j]);
             }
+
+            return res;
         }
 
         return strh::mac(mac);
     }
 
     bool resolve(const String& name, uint8_t* buffer) {
-        for (unsigned int i = 0; i<list.size; ++i) {
-            if (strncmp(list.data[i].name, name.c_str(), MAX_ALIAS_LEN) == 0) {
-                memcpy(buffer, list.data[i].mac, 6);
-                return true;
-            }
+        int id = search(name);
+
+        if ((id >= 0) && (id <= list.size)) {
+            memcpy(buffer, list.data[id].mac, 6);
+            return true;
         }
 
-        mac::fromStr(name.c_str(), buffer);
         return false;
     }
 
-    void print() {
-        debugln("Alias:");
+    bool remove(int id) {
+        if ((id >= 0) && (id <= list.size)) {
+            for (unsigned int i = id; i<list.size && i<MAX_ALIAS_NUM; ++i) {
+                alias_t* c = &list.data[i];
+                alias_t* n = &list.data[i+1];
+                memcpy(c->mac, n->mac, 6);
+                strncpy(c->name, n->name, MAX_ALIAS_LEN);
+            }
+            --list.size;
+            save();
+            return true;
+        }
+        return false;
+    }
 
-        for (unsigned int i = 0; i<list.size; ++i) {
+    bool remove(const uint8_t* mac) {
+        return remove(search(mac));
+    }
+
+    bool remove(const String& name) {
+        return remove(search(name));
+    }
+
+    void print() {
+        debug("MAC Alias List: ");
+        debugln(list.size);
+
+        for (unsigned int i = 0; i<list.size && i<MAX_ALIAS_NUM; ++i) {
             debug(i);
             debug(" ");
             debug(strh::mac(list.data[i].mac));
@@ -107,5 +143,7 @@ namespace alias {
             }
             debugln();
         }
+
+        debugln();
     }
 }
