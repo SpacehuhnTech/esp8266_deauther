@@ -23,8 +23,31 @@ typedef struct alias_list_t {
 } alias_list_t;
 
 namespace alias {
+    // ===== PRIVATE ===== //
     alias_list_t list;
 
+    int bin_search(const uint8_t* mac, int low_end, int up_end) {
+        int res;
+        int mid = (low_end + up_end) / 2;
+
+        while (low_end <= up_end) {
+            res = memcmp(mac, list.data[mid].mac, 6);
+
+            if (res == 0) {
+                return mid;
+            } else if (res < 0) {
+                up_end = mid - 1;
+                mid    = (low_end + up_end) / 2;
+            } else if (res > 0) {
+                low_end = mid + 1;
+                mid     = (low_end + up_end) / 2;
+            }
+        }
+
+        return -1;
+    }
+
+    // ===== PUBLIC ===== //
     void clear() {
         list.size      = 0;
         list.magic_num = ALIAS_MAGIC_NUM;
@@ -48,18 +71,15 @@ namespace alias {
     }
 
     int search(const uint8_t* mac) {
-        if (mac) {
-            for (unsigned int i = 0; i<list.size && i<MAX_ALIAS_NUM; ++i) {
-                if (memcmp(list.data[i].mac, mac, 6) == 0) {
-                    return i;
-                }
-            }
-        }
-        return -1;
+        // NULL pointer or empty list
+        if (!mac || (list.size == 0)) return -1;
+
+        // Search remaining list
+        return bin_search(mac, 1, list.size-2);
     }
 
     int search(const String& name) {
-        for (unsigned int i = 0; i<list.size && i<MAX_ALIAS_NUM; ++i) {
+        for (unsigned int i = 0; i<list.size; ++i) {
             if (strncmp(list.data[i].name, name.c_str(), MAX_ALIAS_LEN) == 0) {
                 return i;
             }
@@ -72,7 +92,34 @@ namespace alias {
             (search(mac) > 0) ||
             (search(name) > 0)) return false;
 
-        alias_t* a = &list.data[list.size];
+        alias_t* a = NULL;
+
+        // Empty list
+        if (list.size == 0) {
+            a = &list.data[0];
+        }
+        // Insert at end
+        else if (memcmp(list.data[list.size-1].mac, mac, 6) < 0) {
+            a = &list.data[list.size];
+        } else {
+            // Insert somewhere at start or in beween (insertion sort)
+            unsigned int i = 0;
+
+            while (i<list.size && memcmp(list.data[i].mac, mac, 6) < 0) {
+                ++i;
+            }
+
+            a = &list.data[i];
+
+            // Copy/move everything
+            for (unsigned int j = list.size; j>i; --j) {
+                alias_t* c = &list.data[j];
+                alias_t* p = &list.data[j-1];
+                memcpy(c->mac, p->mac, 6);
+                strncpy(c->name, p->name, MAX_ALIAS_LEN);
+            }
+        }
+
         memcpy(a->mac, mac, 6);
         strncpy(a->name, name.c_str(), MAX_ALIAS_LEN);
         ++list.size;
@@ -113,7 +160,7 @@ namespace alias {
     bool remove(int id) {
         if ((id < 0) || (id > list.size)) return false;
 
-        for (unsigned int i = id; i<list.size && i<MAX_ALIAS_NUM; ++i) {
+        for (unsigned int i = id; i<list.size; ++i) {
             alias_t* c = &list.data[i];
             alias_t* n = &list.data[i+1];
             memcpy(c->mac, n->mac, 6);
@@ -146,7 +193,7 @@ namespace alias {
         debugln();
         debugln("===========================================");
 
-        for (unsigned int i = 0; i<list.size && i<MAX_ALIAS_NUM; ++i) {
+        for (unsigned int i = 0; i<list.size; ++i) {
             debug(strh::right(3, String(i)));
             debug(' ');
             debug(strh::left(MAX_ALIAS_LEN, getName(i)));

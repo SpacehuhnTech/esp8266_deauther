@@ -786,7 +786,7 @@ namespace cli {
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 mac::fromStr(mac_str.c_str(), mac);
 
-                if (mac::valid(mac) && alias::add(mac, name)) {
+                if (alias::add(mac, name)) {
                     debug("Alias \"");
                     debug(name);
                     debug("\" for ");
