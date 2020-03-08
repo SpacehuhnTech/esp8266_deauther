@@ -385,16 +385,16 @@ namespace scan {
         stopAuthSearch();
     }
 
-    void printAPs(uint16_t channels, String ssids) {
+    void printAPs(uint16_t channels, String ssids, const uint8_t* bssid) {
         StringList ssid_list(ssids, ",");
 
-        data.ap_list.print(channels, &ssid_list);
+        data.ap_list.print(channels, &ssid_list, bssid);
     }
 
-    void printSTs(uint16_t channels, String ssids) {
+    void printSTs(uint16_t channels, String ssids, const uint8_t* bssid) {
         StringList ssid_list(ssids, ",");
 
-        data.st_list.print(channels, &ssid_list);
+        data.st_list.print(channels, &ssid_list, bssid);
     }
 
     void update() {

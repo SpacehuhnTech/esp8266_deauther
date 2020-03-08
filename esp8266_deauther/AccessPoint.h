@@ -44,7 +44,7 @@ class AccessPoint {
 
         void setNext(AccessPoint* next);
 
-        void print(unsigned int id, uint16_t channels = 0x3FFF, const StringList* ssids = NULL);
+        void print(unsigned int id, uint16_t channels = 0x3FFF, const StringList* ssids = NULL, const uint8_t* bssid = NULL);
 };
 
 // ========== AccessPointList ========== //
@@ -79,5 +79,5 @@ class AccessPointList {
         int size() const;
         bool full() const;
 
-        void print(uint16_t channels = 0x3FFF, const StringList* ssids = NULL);
+        void print(uint16_t channels = 0x3FFF, const StringList* ssids = NULL, const uint8_t* bssid = NULL);
 };

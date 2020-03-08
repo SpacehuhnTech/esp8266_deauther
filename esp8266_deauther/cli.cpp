@@ -518,23 +518,37 @@ namespace cli {
 
             String ssid = cmd.getArg("ssid").getValue();
 
+            uint8_t* mac_ptr;
+            uint8_t mac[6];
+
+            String mac_str = cmd.getArg("bssid").getValue();
+
+            if (mac_str.length()) {
+                mac::fromStr(mac_str.c_str(), mac);
+                mac_ptr = mac;
+            } else {
+                mac_ptr = NULL;
+            }
+
             if (mode == "ap") {
-                scan::printAPs(channels, ssid);
+                scan::printAPs(channels, ssid, mac_ptr);
             } else if (mode == "st") {
-                scan::printSTs(channels, ssid);
+                scan::printSTs(channels, ssid, mac_ptr);
             } else if (mode == "ap+st") {
-                scan::printAPs(channels, ssid);
-                scan::printSTs(channels, ssid);
+                scan::printAPs(channels, ssid, mac_ptr);
+                scan::printSTs(channels, ssid, mac_ptr);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.addArg("ch/annel/s", "all");
-        cmd_results.addArg("ssid", "");
+        cmd_results.addArg("ssid/s", "");
+        cmd_results.addArg("bssid", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
-            "  -ch:   ...\n"
-            "  -ssid: ...\n"
-            "  -t:    type of results [ap,st,ap+st] (default=ap+st)");
+            "  -ch:    ...\n"
+            "  -ssid:  ...\n"
+            "  -bssid: ...\n"
+            "  -t:     type of results [ap,st,ap+st] (default=ap+st)");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
