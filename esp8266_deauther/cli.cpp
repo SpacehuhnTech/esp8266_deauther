@@ -545,10 +545,10 @@ namespace cli {
         cmd_results.addArg("bssid", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
-            "  -ch:    ...\n"
-            "  -ssid:  ...\n"
-            "  -bssid: ...\n"
-            "  -t:     type of results [ap,st,ap+st] (default=ap+st)");
+            "  -t:     type of results [ap,st,ap+st] (default=ap+st)\r\n"
+            "  -ch:    filter by channel(s)\r\n"
+            "  -ssid:  filter by SSID(s)\r\n"
+            "  -bssid: filter by BSSID");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
@@ -853,9 +853,9 @@ namespace cli {
         cmd_alias.addPosArg("name", "");
         cmd_alias.addPosArg("mac", "");
         cmd_alias.setDescription(
-            "  Set alias for MAC address (no arguments = print list)\n"
-            "  -mode: 'add' or 'remove'\n"
-            "  -name: alias name\n"
+            "  Set alias for MAC address (no arguments = print list)\r\n"
+            "  -mode: 'add' or 'remove'\r\n"
+            "  -name: alias name\r\n"
             "  -mac:  MAC address");
 
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
