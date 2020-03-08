@@ -34,6 +34,22 @@ namespace cli {
     SimpleCLI  cli;     // !< Instance of SimpleCLI library
     StringList history; // !< Command history
 
+    uint16_t getChannels(const String& ch_str) {
+        StringList ch_list(ch_str, ",");
+
+        uint16_t channels = 0;
+
+        while (ch_list.available()) {
+            int ch = ch_list.iterate().toInt();
+
+            if ((ch >= 1) && (ch <= 14)) {
+                channels |= 1 << (ch-1);
+            }
+        }
+
+        return channels;
+    }
+
     // ===== PUBLIC ===== //
     void begin() {
         debug_init();
@@ -257,7 +273,7 @@ namespace cli {
                                     "Type 'scan -m ap' to search for access points");
                             return;
                         }
-                        scan::print();
+                        scan::printAPs();
 
                         debugln("Select access point(s) to attack\r\n"
                                 "  >=0: ID(s) to select for the attack");
@@ -446,15 +462,7 @@ namespace cli {
 
             { // Channels
                 String ch_str = cmd.getArg("ch").getValue();
-                StringList ch_list(ch_str, ",");
-
-                while (ch_list.available()) {
-                    int ch = ch_list.iterate().toInt();
-
-                    if ((ch >= 1) && (ch <= 14)) {
-                        channels |= 1 << (ch-1);
-                    }
-                }
+                channels      = getChannels(ch_str);
             }
 
             { // Channel scan time
@@ -503,16 +511,20 @@ namespace cli {
             Command cmd(c);
             String mode = cmd.getArg("t").getValue();
 
+            String ch_str     = cmd.getArg("ch").getValue();
+            uint16_t channels = getChannels(ch_str);
+
             if (mode == "ap") {
-                scan::printAPs();
+                scan::printAPs(channels);
             } else if (mode == "st") {
-                scan::printSTs();
+                scan::printSTs(channels);
             } else if (mode == "ap+st") {
-                scan::printAPs();
-                scan::printSTs();
+                scan::printAPs(channels);
+                scan::printSTs(channels);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");
+        cmd_results.addArg("ch/annel/s", "all");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
             "  -t: type of results [ap,st,ap+st] (default=ap+st)");

@@ -17,9 +17,8 @@ namespace scan {
     void startAuth(uint8_t* mac, unsigned long timeout, bool silent);
     void stop();
 
-    void print();
-    void printAPs();
-    void printSTs();
+    void printAPs(uint16_t channels = 0x3FFF);
+    void printSTs(uint16_t channels = 0x3FFF);
 
     void update();
 

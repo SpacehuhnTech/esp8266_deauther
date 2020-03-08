@@ -385,37 +385,35 @@ namespace scan {
         stopAuthSearch();
     }
 
-    void printAPs() {
-        if (data.ap_list.size() == 0) {
-            debugln("No access points (networks) found");
-        } else {
-            debug("Found ");
-            debug(data.ap_list.size());
-            debugln(" access points (networks):");
+    void printAPs(uint16_t channels) {
+        debug("Access Point (Network) List: ");
+        debugln(data.ap_list.size());
+        debugln("-------------------------------");
 
-            debug(strh::right(3, "ID"));
-            debug(' ');
-            debug(strh::left(34, "SSID (Network Name)"));
-            debug(' ');
-            debug(strh::right(4, "RSSI"));
-            debug(' ');
-            debug(strh::left(4, "Mode"));
-            debug(' ');
-            debug(strh::right(2, "Ch"));
-            debug(' ');
-            debug(strh::left(17, "BSSID (MAC Addr.)"));
-            debug(' ');
-            debug(strh::left(8, "Vendor"));
-            debugln();
+        debug(strh::right(3, "ID"));
+        debug(' ');
+        debug(strh::left(34, "SSID (Network Name)"));
+        debug(' ');
+        debug(strh::right(4, "RSSI"));
+        debug(' ');
+        debug(strh::left(4, "Mode"));
+        debug(' ');
+        debug(strh::right(2, "Ch"));
+        debug(' ');
+        debug(strh::left(17, "BSSID (MAC Addr.)"));
+        debug(' ');
+        debug(strh::left(8, "Vendor"));
+        debugln();
 
-            debugln("==============================================================================");
+        debugln("==============================================================================");
 
-            data.ap_list.begin();
-            int i = 0;
+        data.ap_list.begin();
+        int i = 0;
 
-            while (data.ap_list.available()) {
-                AccessPoint* h = data.ap_list.iterate();
+        while (data.ap_list.available()) {
+            AccessPoint* h = data.ap_list.iterate();
 
+            if ((channels >> (h->getChannel()-1)) & 0x01) {
                 debug(strh::right(3, String(i)));
                 debug(' ');
                 debug(strh::left(34, h->getSSIDString()));
@@ -430,51 +428,48 @@ namespace scan {
                 debug(' ');
                 debug(strh::left(8, h->getVendor()));
                 debugln();
-
-                ++i;
             }
 
-            debugln("================================================================================");
-            debugln("Ch   = 2.4 GHz Channel");
-            debugln("RSSI = Signal strengh");
-            debugln("WPA* = WPA & WPA2 auto mode");
-            debugln("WPA(2) Enterprise networks are recognized as Open");
-            debugln("================================================================================");
+            ++i;
         }
+
+        debugln("==============================================================================");
+        debugln("Ch = 2.4 GHz Channel  ,  RSSI = Signal strengh  ,  WPA* = WPA & WPA2 auto mode");
+        debugln("WPA(2) Enterprise networks are recognized as Open");
+        debugln("==============================================================================");
+
         debugln();
     }
 
-    void printSTs() {
-        if (data.st_list.size() == 0) {
-            debugln("No stations (clients) found");
-        } else {
-            debug("Found ");
-            debug(data.st_list.size());
-            debugln(" stations (clients):");
+    void printSTs(uint16_t channels) {
+        debug("Station (Client) List: ");
+        debugln(data.st_list.size());
+        debugln("-------------------------");
 
-            debug(strh::right(3, "ID"));
-            debug(' ');
-            debug(strh::right(4, "Pkts"));
-            debug(' ');
-            debug(strh::left(8, "Vendor"));
-            debug(' ');
-            debug(strh::left(17, "MAC-Address"));
-            debug(' ');
-            debug(strh::left(34, "AccessPoint-SSID"));
-            debug(' ');
-            debug(strh::left(17, "AccessPoint-BSSID"));
-            debug(' ');
-            debug(strh::left(34, "Probe-Requests"));
-            debugln();
+        debug(strh::right(3, "ID"));
+        debug(' ');
+        debug(strh::right(4, "Pkts"));
+        debug(' ');
+        debug(strh::left(8, "Vendor"));
+        debug(' ');
+        debug(strh::left(17, "MAC-Address"));
+        debug(' ');
+        debug(strh::left(34, "AccessPoint-SSID"));
+        debug(' ');
+        debug(strh::left(17, "AccessPoint-BSSID"));
+        debug(' ');
+        debug(strh::left(34, "Probe-Requests"));
+        debugln();
 
-            debugln("===========================================================================================================================");
+        debugln("===========================================================================================================================");
 
-            int i = 0;
-            data.st_list.begin();
+        int i = 0;
+        data.st_list.begin();
 
-            while (data.st_list.available()) {
-                Station* h = data.st_list.iterate();
+        while (data.st_list.available()) {
+            Station* h = data.st_list.iterate();
 
+            if (h->getAccessPoint() && (channels >> (h->getAccessPoint()->getChannel()-1)) & 0x01) {
                 debug(strh::right(3, String(i)));
                 debug(' ');
                 debug(strh::right(4, String(h->getPackets())));
@@ -501,19 +496,15 @@ namespace scan {
                 }
 
                 debugln();
-                ++i;
             }
-
-            debugln("===========================================================================================================================");
-            debugln("Pkts = Recorded Packets");
-            debugln("===========================================================================================================================");
+            ++i;
         }
-        debugln();
-    }
 
-    void print() {
-        printAPs();
-        printSTs();
+        debugln("===========================================================================================================================");
+        debugln("Pkts = Recorded Packets");
+        debugln("===========================================================================================================================");
+
+        debugln();
     }
 
     void update() {
