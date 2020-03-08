@@ -25,6 +25,10 @@ int StringList::compare(const str_t* a, const str_t* b) const {
     return strcmp(a->ptr, b->ptr);
 }
 
+int StringList::compare(const str_t* a, const char* b) const {
+    return strcmp(a->ptr, b);
+}
+
 StringList::StringList(int max) : list_max_size(max) {}
 
 StringList::StringList(const String& input, String delimiter) {
@@ -148,6 +152,10 @@ String StringList::iterate() {
 }
 
 bool StringList::contains(const String& str) const {
+    return contains(str.c_str());
+}
+
+bool StringList::contains(const char* str) const {
     str_t* tmp = list_begin;
 
     while (tmp && compare(tmp, str) != 0) {
@@ -244,7 +252,7 @@ bool SortedStringList::push(const char* str, unsigned long len) {
     return true;
 }
 
-bool SortedStringList::contains(const String& str) const {
+bool SortedStringList::contains(const char* str) const {
     if ((list_size == 0) || (compare(list_begin, str) > 0) || (compare(list_end, str) < 0)) {
         return false;
     }

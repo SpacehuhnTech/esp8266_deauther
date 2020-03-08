@@ -385,131 +385,16 @@ namespace scan {
         stopAuthSearch();
     }
 
-    void printAPs(uint16_t channels, String ssid) {
-        debug("Access Point (Network) List: ");
-        debugln(data.ap_list.size());
-        debugln("-------------------------------");
+    void printAPs(uint16_t channels, String ssids) {
+        StringList ssid_list(ssids, ",");
 
-        debug(strh::right(3, "ID"));
-        debug(' ');
-        debug(strh::left(34, "SSID (Network Name)"));
-        debug(' ');
-        debug(strh::right(4, "RSSI"));
-        debug(' ');
-        debug(strh::left(4, "Mode"));
-        debug(' ');
-        debug(strh::right(2, "Ch"));
-        debug(' ');
-        debug(strh::left(17, "BSSID (MAC Addr.)"));
-        debug(' ');
-        debug(strh::left(8, "Vendor"));
-        debugln();
-
-        debugln("==============================================================================");
-
-        data.ap_list.begin();
-        int i = 0;
-
-        while (data.ap_list.available()) {
-            AccessPoint* h = data.ap_list.iterate();
-
-            if ((channels >> (h->getChannel()-1)) & 0x01) {
-                if ((ssid.length() == 0) || (ssid == String(h->getSSID()))) {
-                    debug(strh::right(3, String(i)));
-                    debug(' ');
-                    debug(strh::left(34, h->getSSIDString()));
-                    debug(' ');
-                    debug(strh::right(4, String(h->getRSSI())));
-                    debug(' ');
-                    debug(strh::left(4, h->getEncryption()));
-                    debug(' ');
-                    debug(strh::right(2, String(h->getChannel())));
-                    debug(' ');
-                    debug(strh::left(17, h->getBSSIDString()));
-                    debug(' ');
-                    debug(strh::left(8, h->getVendor()));
-                    debugln();
-                }
-            }
-
-            ++i;
-        }
-
-        debugln("==============================================================================");
-        debugln("Ch = 2.4 GHz Channel  ,  RSSI = Signal strengh  ,  WPA* = WPA & WPA2 auto mode");
-        debugln("WPA(2) Enterprise networks are recognized as Open");
-        debugln("==============================================================================");
-
-        debugln();
+        data.ap_list.print(channels, &ssid_list);
     }
 
-    void printSTs(uint16_t channels, String ssid) {
-        debug("Station (Client) List: ");
-        debugln(data.st_list.size());
-        debugln("-------------------------");
+    void printSTs(uint16_t channels, String ssids) {
+        StringList ssid_list(ssids, ",");
 
-        debug(strh::right(3, "ID"));
-        debug(' ');
-        debug(strh::right(4, "Pkts"));
-        debug(' ');
-        debug(strh::left(8, "Vendor"));
-        debug(' ');
-        debug(strh::left(17, "MAC-Address"));
-        debug(' ');
-        debug(strh::left(34, "AccessPoint-SSID"));
-        debug(' ');
-        debug(strh::left(17, "AccessPoint-BSSID"));
-        debug(' ');
-        debug(strh::left(34, "Probe-Requests"));
-        debugln();
-
-        debugln("===========================================================================================================================");
-
-        int i = 0;
-        data.st_list.begin();
-
-        while (data.st_list.available()) {
-            Station* h            = data.st_list.iterate();
-            const AccessPoint* ap = h->getAccessPoint();
-
-            if (!ap || ((ap->getChannel()-1)) & 0x01) {
-                if (!ap || (ssid.length() == 0) || (ssid == String(ap->getSSID()))) {
-                    debug(strh::right(3, String(i)));
-                    debug(' ');
-                    debug(strh::right(4, String(h->getPackets())));
-                    debug(' ');
-                    debug(strh::left(8, h->getVendor()));
-                    debug(' ');
-                    debug(strh::left(17, h->getMACString()));
-                    debug(' ');
-                    debug(strh::left(34, h->getSSIDString()));
-                    debug(' ');
-                    debug(strh::left(17, h->getBSSIDString()));
-                    debug(' ');
-
-                    h->getProbes().begin();
-                    bool first = true;
-
-                    while (h->getProbes().available()) {
-                        if (!first) {
-                            debugln();
-                            debug("                                                                                         ");
-                        }
-                        debug(/*strh::left(32, */ '"' + h->getProbes().iterate() + '"');
-                        first = false;
-                    }
-
-                    debugln();
-                }
-            }
-            ++i;
-        }
-
-        debugln("===========================================================================================================================");
-        debugln("Pkts = Recorded Packets");
-        debugln("===========================================================================================================================");
-
-        debugln();
+        data.st_list.print(channels, &ssid_list);
     }
 
     void update() {

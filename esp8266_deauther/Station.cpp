@@ -8,6 +8,7 @@
 #include "strh.h"
 #include "vendor.h"
 #include "alias.h"
+#include "debug.h"
 
 // ========== Station ========== //
 
@@ -90,6 +91,42 @@ bool Station::addAuth(uint8_t num) {
 
 void Station::newPkt() {
     ++pkts;
+}
+
+void Station::print(unsigned int id, uint16_t channels, const StringList* ssids) {
+    const AccessPoint* ap = getAccessPoint();
+
+    if (ap) {
+        if ((((channels >> (ap->getChannel()-1)) & 1) == 0)) return;
+        if (ssids && ssids->size() && !ssids->contains(ap->getSSID())) return;
+    }
+
+    debug(strh::right(3, String(id)));
+    debug(' ');
+    debug(strh::right(4, String(getPackets())));
+    debug(' ');
+    debug(strh::left(8, getVendor()));
+    debug(' ');
+    debug(strh::left(17, getMACString()));
+    debug(' ');
+    debug(strh::left(34, getSSIDString()));
+    debug(' ');
+    debug(strh::left(17, getBSSIDString()));
+    debug(' ');
+
+    getProbes().begin();
+    bool first = true;
+
+    while (getProbes().available()) {
+        if (!first) {
+            debugln();
+            debug("                                                                                         ");
+        }
+        debug(/*strh::left(32, */ '"' + getProbes().iterate() + '"');
+        first = false;
+    }
+
+    debugln();
 }
 
 // ========== StationList ========== //
@@ -221,4 +258,41 @@ int StationList::size() const {
 
 bool StationList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
+}
+
+void StationList::print(uint16_t channels, const StringList* ssids) {
+    debug("Station (Client) List: ");
+    debugln(size());
+    debugln("-------------------------");
+
+    debug(strh::right(3, "ID"));
+    debug(' ');
+    debug(strh::right(4, "Pkts"));
+    debug(' ');
+    debug(strh::left(8, "Vendor"));
+    debug(' ');
+    debug(strh::left(17, "MAC-Address"));
+    debug(' ');
+    debug(strh::left(34, "AccessPoint-SSID"));
+    debug(' ');
+    debug(strh::left(17, "AccessPoint-BSSID"));
+    debug(' ');
+    debug(strh::left(34, "Probe-Requests"));
+    debugln();
+
+    debugln("===========================================================================================================================");
+
+    int i = 0;
+    begin();
+
+    while (available()) {
+        iterate()->print(i, channels, ssids);
+        ++i;
+    }
+
+    debugln("===========================================================================================================================");
+    debugln("Pkts = Recorded Packets");
+    debugln("===========================================================================================================================");
+
+    debugln();
 }

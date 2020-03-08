@@ -8,6 +8,7 @@
 #include "strh.h"
 #include "vendor.h"
 #include "alias.h"
+#include "debug.h"
 
 #include <ESP8266WiFi.h>
 
@@ -100,6 +101,26 @@ AccessPoint* AccessPoint::getNext() {
 
 void AccessPoint::setNext(AccessPoint* next) {
     this->next = next;
+}
+
+void AccessPoint::print(unsigned int id, uint16_t channels, const StringList* ssids) {
+    if (((channels >> (getChannel()-1)) & 1) == 0) return;
+    if (ssids && ssids->size() && !ssids->contains(getSSID())) return;
+
+    debug(strh::right(3, String(id)));
+    debug(' ');
+    debug(strh::left(34, getSSIDString()));
+    debug(' ');
+    debug(strh::right(4, String(getRSSI())));
+    debug(' ');
+    debug(strh::left(4, getEncryption()));
+    debug(' ');
+    debug(strh::right(2, String(getChannel())));
+    debug(' ');
+    debug(strh::left(17, getBSSIDString()));
+    debug(' ');
+    debug(strh::left(8, getVendor()));
+    debugln();
 }
 
 // ========== AccessPointList ========== //
@@ -229,4 +250,42 @@ int AccessPointList::size() const {
 
 bool AccessPointList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
+}
+
+void AccessPointList::print(uint16_t channels, const StringList* ssids) {
+    debug("Access Point (Network) List: ");
+    debugln(size());
+    debugln("-------------------------------");
+
+    debug(strh::right(3, "ID"));
+    debug(' ');
+    debug(strh::left(34, "SSID (Network Name)"));
+    debug(' ');
+    debug(strh::right(4, "RSSI"));
+    debug(' ');
+    debug(strh::left(4, "Mode"));
+    debug(' ');
+    debug(strh::right(2, "Ch"));
+    debug(' ');
+    debug(strh::left(17, "BSSID (MAC Addr.)"));
+    debug(' ');
+    debug(strh::left(8, "Vendor"));
+    debugln();
+
+    debugln("==============================================================================");
+
+    begin();
+    int i = 0;
+
+    while (available()) {
+        iterate()->print(i, channels, ssids);
+        ++i;
+    }
+
+    debugln("==============================================================================");
+    debugln("Ch = 2.4 GHz Channel  ,  RSSI = Signal strengh  ,  WPA* = WPA & WPA2 auto mode");
+    debugln("WPA(2) Enterprise networks are recognized as Open");
+    debugln("==============================================================================");
+
+    debugln();
 }

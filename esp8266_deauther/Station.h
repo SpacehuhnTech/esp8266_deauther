@@ -49,6 +49,8 @@ class Station {
         bool addProbe(const char* ssid, uint8_t len);
         bool addAuth(uint8_t num);
         void newPkt();
+
+        void print(unsigned int id, uint16_t channels = 0x3FFF, const StringList* ssids = NULL);
 };
 
 // ========== StationList ========== //
@@ -81,4 +83,6 @@ class StationList {
         bool available() const;
         int size() const;
         bool full() const;
+
+        void print(uint16_t channels = 0x3FFF, const StringList* ssids = NULL);
 };
