@@ -50,7 +50,7 @@ class Station {
         bool addAuth(uint8_t num);
         void newPkt();
 
-        void print(unsigned int id, uint16_t channels = 0x3FFF, const StringList* ssids = NULL, const uint8_t* bssid = NULL);
+        void print(unsigned int id, uint16_t channels = 0x3FFF, const StringList* ssids = NULL, const uint8_t* bssid = NULL, const StringList* vendors = NULL);
 };
 
 // ========== StationList ========== //
@@ -84,5 +84,5 @@ class StationList {
         int size() const;
         bool full() const;
 
-        void print(uint16_t channels = 0x3FFF, const StringList* ssids = NULL, const uint8_t* bssid = NULL);
+        void print(uint16_t channels = 0x3FFF, const StringList* ssids = NULL, const uint8_t* bssid = NULL, const StringList* vendors = NULL);
 };

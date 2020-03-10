@@ -149,7 +149,7 @@ namespace cli {
                                     "  >1: Channel time in milliseconds\r\n"
                                     " [default=auto]");
                             CLI_READ_RES("auto");
-                        } while (!(res.toInt() > 0));
+                        } while (!(res.toInt() > 0) && res != "auto");
                         if (res != "auto") cmd += " -ct " + res;
                         debugln();
                     }
@@ -516,7 +516,8 @@ namespace cli {
             String ch_str     = cmd.getArg("ch").getValue();
             uint16_t channels = getChannels(ch_str);
 
-            String ssid = cmd.getArg("ssid").getValue();
+            String ssid   = cmd.getArg("ssid").getValue();
+            String vendor = cmd.getArg("vendor").getValue();
 
             uint8_t* mac_ptr;
             uint8_t mac[6];
@@ -531,24 +532,26 @@ namespace cli {
             }
 
             if (mode == "ap") {
-                scan::printAPs(channels, ssid, mac_ptr);
+                scan::printAPs(channels, ssid, mac_ptr, vendor);
             } else if (mode == "st") {
-                scan::printSTs(channels, ssid, mac_ptr);
+                scan::printSTs(channels, ssid, mac_ptr, vendor);
             } else if (mode == "ap+st") {
-                scan::printAPs(channels, ssid, mac_ptr);
-                scan::printSTs(channels, ssid, mac_ptr);
+                scan::printAPs(channels, ssid, mac_ptr, vendor);
+                scan::printSTs(channels, ssid, mac_ptr, vendor);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.addArg("ch/annel/s", "all");
         cmd_results.addArg("ssid/s", "");
         cmd_results.addArg("bssid", "");
+        cmd_results.addArg("vendor/s", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
-            "  -t:     type of results [ap,st,ap+st] (default=ap+st)\r\n"
-            "  -ch:    filter by channel(s)\r\n"
-            "  -ssid:  filter by SSID(s)\r\n"
-            "  -bssid: filter by BSSID");
+            "  -t:      type of results [ap,st,ap+st] (default=ap+st)\r\n"
+            "  -ch:     filter by channel(s)\r\n"
+            "  -ssid:   filter by SSID(s)\r\n"
+            "  -bssid:  filter by BSSID\r\n"
+            "  -vendor: filter by vendor name(s)");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
