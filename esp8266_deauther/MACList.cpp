@@ -6,8 +6,11 @@
 
 #include "MACList.h"
 
-#include <string.h>
-#include <stdlib.h>
+// #include <string.h>
+// #include <stdlib.h>
+
+#include "StringList.h"
+#include "mac.h"
 
 // ========== MAC =========== //
 
@@ -41,6 +44,21 @@ MACList::MACList(int max) : list_max_size(max) {}
 
 MACList::~MACList() {
     clear();
+}
+
+void MACList::parse(const String& input, String delimiter) {
+    StringList mac_list(input, delimiter);
+
+    mac_list.begin();
+
+    while (mac_list.available()) {
+        uint8_t mac[6];
+        String  mac_str = mac_list.iterate();
+        if (mac_str.length() == 17) {
+            mac::fromStr(mac_str.c_str(), mac);
+            push(mac);
+        }
+    }
 }
 
 bool MACList::push(const uint8_t* addr) {

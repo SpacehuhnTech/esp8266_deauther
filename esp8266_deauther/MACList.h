@@ -6,11 +6,10 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
-
+// #include <stdint.h>
+// #include <stddef.h>
+#include <Arduino.h> // String
 #include "config.h"
-
 
 class MAC {
     private:
@@ -43,6 +42,8 @@ class MACList {
     public:
         MACList(int max = 0);
         ~MACList();
+
+        void parse(const String& input, String delimiter);
 
         bool push(const uint8_t* addr);
         MAC* search(const uint8_t* mac);
