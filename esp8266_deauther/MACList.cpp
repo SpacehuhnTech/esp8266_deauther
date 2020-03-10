@@ -11,31 +11,8 @@
 
 // ========== MAC =========== //
 
-MAC::MAC(const uint8_t* addr, const char* name) {
-    memcpy(this->addr, addr, 6);
-
-    if (name) {
-        unsigned long len = strlen(name);
-
-        if (len > 0) {
-            if (len > 17) len = 17;
-            this->name = (char*)malloc(len+1);
-
-            memcpy(this->name, name, len);
-            this->name[len] = '\0';
-        }
-    }
-}
-
-MAC::~MAC() {
-    if (name) {
-        free(name);
-        name = NULL;
-    }
-}
-
-const char* MAC::getName() const {
-    return name;
+MAC::MAC(const uint8_t* addr) {
+    if (addr) memcpy(this->addr, addr, 6);
 }
 
 const uint8_t* MAC::getAddr() const {
@@ -57,12 +34,7 @@ int MACList::compare(const MAC* a, const uint8_t* b) const {
 }
 
 int MACList::compare(const MAC* a, const MAC* b) const {
-    bool res_mac  = compare(a, b->getAddr());
-    bool res_name = strcmp(a->getName(), b->getName());
-
-    if ((res_mac < 0) && (res_name < 0)) return -1;
-    if ((res_mac > 0) && (res_name > 0)) return 1;
-    return 0;
+    return compare(a, b->getAddr());
 }
 
 MACList::MACList(int max) : list_max_size(max) {}
@@ -71,11 +43,11 @@ MACList::~MACList() {
     clear();
 }
 
-bool MACList::push(const uint8_t* addr, const char* name) {
+bool MACList::push(const uint8_t* addr) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
     // Create new target
-    MAC* new_mac = new MAC(addr, name);
+    MAC* new_mac = new MAC(addr);
 
     // Empty list -> insert first element
     if (!list_begin) {

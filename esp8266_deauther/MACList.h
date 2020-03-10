@@ -15,14 +15,11 @@
 class MAC {
     private:
         uint8_t addr[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-        char* name      = NULL;
         MAC* next       = NULL;
 
     public:
-        MAC(const uint8_t* addr, const char* name);
-        ~MAC();
+        MAC(const uint8_t* addr);
 
-        const char* getName() const;
         const uint8_t* getAddr() const;
 
         MAC* getNext();
@@ -47,7 +44,7 @@ class MACList {
         MACList(int max = 0);
         ~MACList();
 
-        bool push(const uint8_t* addr, const char* name);
+        bool push(const uint8_t* addr);
         MAC* search(const uint8_t* mac);
         void clear();
 
