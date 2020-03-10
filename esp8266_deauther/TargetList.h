@@ -10,6 +10,10 @@
 #include <stddef.h>
 #include "config.h"
 
+#ifndef MAX_TARGETS
+#define MAX_TARGETS 0
+#endif // ifndef MAX_ALIAS
+
 class TargetList;
 class Target;
 

@@ -5,43 +5,206 @@
  */
 
 #include "alias.h"
-#include "MACList.h"
 #include "strh.h"
 #include "mac.h"
+#include "debug.h"
+#include "eeprom.h"
+#include "vendor.h"
+
+typedef struct alias_t {
+    uint8_t mac[6];
+    char    name[MAX_ALIAS_LEN];
+} alias_t;
+
+typedef struct alias_list_t {
+    uint32_t magic_num;
+    alias_t  data[MAX_ALIAS_NUM];
+    int      size;
+} alias_list_t;
 
 namespace alias {
-    MACList list;
+    // ===== PRIVATE ===== //
+    alias_list_t list;
+
+    int bin_search(const uint8_t* mac, int low_end, int up_end) {
+        int res;
+        int mid = (low_end + up_end) / 2;
+
+        while (low_end <= up_end) {
+            res = memcmp(mac, list.data[mid].mac, 6);
+
+            if (res == 0) {
+                return mid;
+            } else if (res < 0) {
+                up_end = mid - 1;
+                mid    = (low_end + up_end) / 2;
+            } else if (res > 0) {
+                low_end = mid + 1;
+                mid     = (low_end + up_end) / 2;
+            }
+        }
+
+        return -1;
+    }
+
+    // ===== PUBLIC ===== //
+    void clear() {
+        list.size      = 0;
+        list.magic_num = ALIAS_MAGIC_NUM;
+
+        add(mac::BROADCAST, "broadcast");
+    }
+
+    void load() {
+        eeprom::getObject(ALIAS_ADDR, list);
+
+        if ((list.magic_num != ALIAS_MAGIC_NUM) || (list.size > MAX_ALIAS_NUM)) {
+            clear();
+            // debugln("Resetted MAC alias list");
+        } else {
+            // debugln("Loaded MAC alias list");
+        }
+    }
+
+    void save() {
+        eeprom::saveObject(ALIAS_ADDR, list);
+    }
+
+    int search(const uint8_t* mac) {
+        // NULL pointer or empty list
+        if (!mac || (list.size == 0)) return -1;
+
+        // Search remaining list
+        return bin_search(mac, 1, list.size-2);
+    }
+
+    int search(const String& name) {
+        for (unsigned int i = 0; i<list.size; ++i) {
+            if (strncmp(list.data[i].name, name.c_str(), MAX_ALIAS_LEN) == 0) {
+                return i;
+            }
+        }
+        return -1;
+    }
 
     bool add(const uint8_t* mac, const String& name) {
-        return list.push(mac, name.c_str());
+        if ((list.size >= MAX_ALIAS_NUM) ||
+            (search(mac) > 0) ||
+            (search(name) > 0)) return false;
+
+        alias_t* a = NULL;
+
+        // Empty list
+        if (list.size == 0) {
+            a = &list.data[0];
+        }
+        // Insert at end
+        else if (memcmp(list.data[list.size-1].mac, mac, 6) < 0) {
+            a = &list.data[list.size];
+        } else {
+            // Insert somewhere at start or in beween (insertion sort)
+            unsigned int i = 0;
+
+            while (i<list.size && memcmp(list.data[i].mac, mac, 6) < 0) {
+                ++i;
+            }
+
+            a = &list.data[i];
+
+            // Copy/move everything
+            for (unsigned int j = list.size; j>i; --j) {
+                alias_t* c = &list.data[j];
+                alias_t* p = &list.data[j-1];
+                memcpy(c->mac, p->mac, 6);
+                strncpy(c->name, p->name, MAX_ALIAS_LEN);
+            }
+        }
+
+        memcpy(a->mac, mac, 6);
+        strncpy(a->name, name.c_str(), MAX_ALIAS_LEN);
+        ++list.size;
+        save();
+
+        return true;
     }
 
     String get(const uint8_t* mac) {
-        MAC* tmp = list.search(mac);
+        int id = search(mac);
 
-        if (tmp) {
-            const char* name = tmp->getName();
-            if (name) {
-                return String(name);
-            }
-        }
+        if ((id < 0) || (id > list.size)) return strh::mac(mac);
 
-        return strh::mac(mac);
+        return getName(id);
     }
 
     bool resolve(const String& name, uint8_t* buffer) {
-        list.begin();
+        int id = search(name);
 
-        MAC* tmp = list.iterate();
+        if ((id < 0) || (id > list.size)) return false;
 
-        while (list.available()) {
-            if (strcmp(tmp->getName(), name.c_str()) == 0) {
-                memcpy(buffer, tmp->getAddr(), 6);
-                return true;
-            }
+        memcpy(buffer, list.data[id].mac, 6);
+        return true;
+    }
+
+    String getName(int id) {
+        if ((id < 0) || (id > list.size)) return String();
+
+        String res;
+
+        for (unsigned int i = 0; i<MAX_ALIAS_LEN && list.data[id].name[i] != '\0'; ++i) {
+            res += char(list.data[id].name[i]);
         }
 
-        mac::fromStr(name.c_str(), buffer);
-        return false;
+        return res;
+    }
+
+    bool remove(int id) {
+        if ((id < 0) || (id > list.size)) return false;
+
+        for (unsigned int i = id; i<list.size; ++i) {
+            alias_t* c = &list.data[i];
+            alias_t* n = &list.data[i+1];
+            memcpy(c->mac, n->mac, 6);
+            strncpy(c->name, n->name, MAX_ALIAS_LEN);
+        }
+        --list.size;
+        save();
+        return true;
+    }
+
+    bool remove(const uint8_t* mac) {
+        return remove(search(mac));
+    }
+
+    bool remove(const String& name) {
+        return remove(search(name));
+    }
+
+    void print() {
+        debug("MAC Alias List: ");
+        debugln(list.size);
+
+        debug(strh::right(3, "ID"));
+        debug(' ');
+        debug(strh::left(MAX_ALIAS_LEN, "Name"));
+        debug(' ');
+        debug(strh::left(17, "MAC-Address"));
+        debug(' ');
+        debug(strh::left(8, "Vendor"));
+        debugln();
+        debugln("===========================================");
+
+        for (unsigned int i = 0; i<list.size; ++i) {
+            debug(strh::right(3, String(i)));
+            debug(' ');
+            debug(strh::left(MAX_ALIAS_LEN, getName(i)));
+            debug(' ');
+            debug(strh::left(17, strh::mac(list.data[i].mac)));
+            debug(' ');
+            debug(strh::left(8, vendor::search(list.data[i].mac)));
+            debugln();
+        }
+        debugln("===========================================");
+
+        debugln();
     }
 }

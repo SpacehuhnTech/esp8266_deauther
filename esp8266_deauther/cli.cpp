@@ -34,6 +34,24 @@ namespace cli {
     SimpleCLI  cli;     // !< Instance of SimpleCLI library
     StringList history; // !< Command history
 
+    uint16_t getChannels(const String& ch_str) {
+        if (ch_str == "all") return 0x3FFF;
+
+        StringList ch_list(ch_str, ",");
+
+        uint16_t channels = 0;
+
+        while (ch_list.available()) {
+            int ch = ch_list.iterate().toInt();
+
+            if ((ch >= 1) && (ch <= 14)) {
+                channels |= 1 << (ch-1);
+            }
+        }
+
+        return channels;
+    }
+
     // ===== PUBLIC ===== //
     void begin() {
         debug_init();
@@ -131,7 +149,7 @@ namespace cli {
                                     "  >1: Channel time in milliseconds\r\n"
                                     " [default=auto]");
                             CLI_READ_RES("auto");
-                        } while (!(res.toInt() > 0));
+                        } while (!(res.toInt() > 0) && res != "auto");
                         if (res != "auto") cmd += " -ct " + res;
                         debugln();
                     }
@@ -257,7 +275,7 @@ namespace cli {
                                     "Type 'scan -m ap' to search for access points");
                             return;
                         }
-                        scan::print();
+                        scan::printAPs();
 
                         debugln("Select access point(s) to attack\r\n"
                                 "  >=0: ID(s) to select for the attack");
@@ -446,15 +464,7 @@ namespace cli {
 
             { // Channels
                 String ch_str = cmd.getArg("ch").getValue();
-                StringList ch_list(ch_str, ",");
-
-                while (ch_list.available()) {
-                    int ch = ch_list.iterate().toInt();
-
-                    if ((ch >= 1) && (ch <= 14)) {
-                        channels |= 1 << (ch-1);
-                    }
-                }
+                channels      = getChannels(ch_str);
             }
 
             { // Channel scan time
@@ -502,19 +512,46 @@ namespace cli {
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             Command cmd(c);
             String mode = cmd.getArg("t").getValue();
+
+            String ch_str     = cmd.getArg("ch").getValue();
+            uint16_t channels = getChannels(ch_str);
+
+            String ssid   = cmd.getArg("ssid").getValue();
+            String vendor = cmd.getArg("vendor").getValue();
+
+            uint8_t* mac_ptr;
+            uint8_t mac[6];
+
+            String mac_str = cmd.getArg("bssid").getValue();
+
+            if (mac_str.length()) {
+                mac::fromStr(mac_str.c_str(), mac);
+                mac_ptr = mac;
+            } else {
+                mac_ptr = NULL;
+            }
+
             if (mode == "ap") {
-                scan::printAPs();
+                scan::printAPs(channels, ssid, mac_ptr, vendor);
             } else if (mode == "st") {
-                scan::printSTs();
+                scan::printSTs(channels, ssid, mac_ptr, vendor);
             } else if (mode == "ap+st") {
-                scan::printAPs();
-                scan::printSTs();
+                scan::printAPs(channels, ssid, mac_ptr, vendor);
+                scan::printSTs(channels, ssid, mac_ptr, vendor);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");
+        cmd_results.addArg("ch/annel/s", "all");
+        cmd_results.addArg("ssid/s", "");
+        cmd_results.addArg("bssid", "");
+        cmd_results.addArg("vendor/s", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
-            "  -t: type of results [ap,st,ap+st] (default=ap+st)");
+            "  -t:      type of results [ap,st,ap+st] (default=ap+st)\r\n"
+            "  -ch:     filter by channel(s)\r\n"
+            "  -ssid:   filter by SSID(s)\r\n"
+            "  -bssid:  filter by BSSID\r\n"
+            "  -vendor: filter by vendor name(s)");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
@@ -765,33 +802,64 @@ namespace cli {
         Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
             Command cmd(c);
 
+            String mode = cmd.getArg("mode").getValue();
+
+            if (mode == "list") {
+                alias::print();
+                return;
+            }
+
             String name    = cmd.getArg("name").getValue();
             String mac_str = cmd.getArg("mac").getValue();
 
-            // No valid mac? Try switching arg values!
-            if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
-                String tmp = name;
-                name       = mac_str;
-                mac_str    = tmp;
+            if (mode == "add") {
+                // No valid mac? Try switching arg values!
+                if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
+                    String tmp = name;
+                    name       = mac_str;
+                    mac_str    = tmp;
+                }
+                uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                mac::fromStr(mac_str.c_str(), mac);
+
+                if (alias::add(mac, name)) {
+                    debug("Alias \"");
+                    debug(name);
+                    debug("\" for ");
+                    debug(strh::mac(mac));
+                    debugln(" saved");
+                } else {
+                    debugln("Something went wrong :(");
+                    debugln("Invalid MAC address or already in list");
+                }
+                return;
             }
 
-            uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-            mac::fromStr(mac_str.c_str(), mac);
+            if (mode == "remove") {
+                uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                mac::fromStr(name.c_str(), mac);
 
-            if (mac::valid(mac) && alias::add(mac, name)) {
-                debug("Alias \"");
-                debug(name);
-                debug("\" for ");
-                debug(strh::mac(mac));
-                debugln(" saved");
-            } else {
-                debugln("Something went wrong :(");
-                debugln("Invalid MAC address or already in list");
+                if (alias::remove(mac)) {
+                    debug("Removed alias ");
+                    debugln(strh::mac(mac));
+                } else if (alias::remove(name)) {
+                    debug("Removed alias ");
+                    debugln(name);
+                } else if (alias::remove(name.toInt())) {
+                    debug("Removed alias ");
+                    debugln(mac_str);
+                }
+                return;
             }
         });
-        cmd_alias.addPosArg("name");
-        cmd_alias.addPosArg("mac");
-        cmd_alias.setDescription("  Give MACs an alias (Names max 17 chars)");
+        cmd_alias.addPosArg("mode", "list");
+        cmd_alias.addPosArg("name", "");
+        cmd_alias.addPosArg("mac", "");
+        cmd_alias.setDescription(
+            "  Set alias for MAC address (no arguments = print list)\r\n"
+            "  -mode: 'add' or 'remove'\r\n"
+            "  -name: alias name\r\n"
+            "  -mac:  MAC address");
 
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
             for (uint8_t i = 0; i<100; ++i) {

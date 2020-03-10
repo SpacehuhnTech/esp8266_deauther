@@ -14,10 +14,28 @@ namespace vendor {
         int     res;
         int     mid = (low_end + up_end) / 2;
 
+        {
+            // Check if bigger than list end
+            list_bytes[0] = pgm_read_byte_near(vendor_macs + up_end*5);
+            list_bytes[1] = pgm_read_byte_near(vendor_macs + up_end*5 + 1);
+            list_bytes[2] = pgm_read_byte_near(vendor_macs + up_end*5 + 2);
+            res           = memcmp(bytes, list_bytes, 3);
+            if (res > 0) return -1;
+            if (res == 0) return up_end;
+
+            // Check if smaller than list begin
+            list_bytes[0] = pgm_read_byte_near(vendor_macs + low_end*5);
+            list_bytes[1] = pgm_read_byte_near(vendor_macs + low_end*5 + 1);
+            list_bytes[2] = pgm_read_byte_near(vendor_macs + low_end*5 + 2);
+            res           = memcmp(bytes, list_bytes, 3);
+            if (res < 0) return -1;
+            if (res == 0) return low_end;
+        }
+
         while (low_end <= up_end) {
-            list_bytes[0] = pgm_read_byte_near(vendor_macs + mid * 5);
-            list_bytes[1] = pgm_read_byte_near(vendor_macs + mid * 5 + 1);
-            list_bytes[2] = pgm_read_byte_near(vendor_macs + mid * 5 + 2);
+            list_bytes[0] = pgm_read_byte_near(vendor_macs + mid*5);
+            list_bytes[1] = pgm_read_byte_near(vendor_macs + mid*5 + 1);
+            list_bytes[2] = pgm_read_byte_near(vendor_macs + mid*5 + 2);
 
             res = memcmp(bytes, list_bytes, 3);
 
@@ -37,19 +55,22 @@ namespace vendor {
 
     // ===== Public ===== //
     String search(const uint8_t* mac) {
+        if (!mac) return String();
+
+        int pos_mac = bin_search(mac, 0, sizeof(vendor_macs) / 5 - 1);
+
+        if (pos_mac < 0) return String();
+
+        int pos_name = pgm_read_byte_near(vendor_macs + pos_mac*5 + 3) |
+                       pgm_read_byte_near(vendor_macs + pos_mac*5 + 4) << 8;
         String name;
-        int    pos_mac  = bin_search(mac, 0, sizeof(vendor_macs) / 5 - 1);
-        int    pos_name = pgm_read_byte_near(vendor_macs + pos_mac * 5 + 3) | pgm_read_byte_near(vendor_macs + pos_mac * 5 + 4) << 8;
+        char   tmp;
 
-        if (pos_mac >= 0) {
-            char tmp;
+        for (int i = 0; i < 8; i++) {
+            tmp = (char)pgm_read_byte_near(vendor_names + pos_name*8 + i);
 
-            for (int i = 0; i < 8; i++) {
-                tmp = (char)pgm_read_byte_near(vendor_names + pos_name * 8 + i);
-
-                if (tmp != '\0') name += tmp;
-                tmp += ' ';
-            }
+            if (tmp != '\0') name += tmp;
+            tmp += ' ';
         }
 
         return name;

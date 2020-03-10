@@ -26,6 +26,7 @@ class StringList {
         char* stringCopy(const char* str, unsigned long len) const;
         int compare(const str_t* a, const String& b) const;
         int compare(const str_t* a, const str_t* b) const;
+        int compare(const str_t* a, const char* b) const;
 
     public:
         StringList(int max = 0);
@@ -45,7 +46,9 @@ class StringList {
         void begin();
         String iterate();
 
-        virtual bool contains(const String& str) const;
+        bool contains(const String& str) const;
+        virtual bool contains(const char* str) const;
+
         bool available() const;
         int size() const;
         bool full() const;
@@ -59,5 +62,7 @@ class SortedStringList : public StringList {
 
         using StringList::push;
         bool push(const char* str, unsigned long len) override;
-        bool contains(const String& str) const override;
+
+        using StringList::contains;
+        bool contains(const char* str) const override;
 };
