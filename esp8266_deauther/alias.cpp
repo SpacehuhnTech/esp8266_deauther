@@ -79,7 +79,7 @@ namespace alias {
     }
 
     int search(const String& name) {
-        for (unsigned int i = 0; i<list.size; ++i) {
+        for (int i = 0; i<list.size; ++i) {
             if (strncmp(list.data[i].name, name.c_str(), MAX_ALIAS_LEN) == 0) {
                 return i;
             }
@@ -112,7 +112,7 @@ namespace alias {
             a = &list.data[i];
 
             // Copy/move everything
-            for (unsigned int j = list.size; j>i; --j) {
+            for (int j = list.size; j>i; --j) {
                 alias_t* c = &list.data[j];
                 alias_t* p = &list.data[j-1];
                 memcpy(c->mac, p->mac, 6);
@@ -160,7 +160,7 @@ namespace alias {
     bool remove(int id) {
         if ((id < 0) || (id > list.size)) return false;
 
-        for (unsigned int i = id; i<list.size; ++i) {
+        for (int i = id; i<list.size; ++i) {
             alias_t* c = &list.data[i];
             alias_t* n = &list.data[i+1];
             memcpy(c->mac, n->mac, 6);
@@ -193,7 +193,7 @@ namespace alias {
         debugln();
         debugln("===========================================");
 
-        for (unsigned int i = 0; i<list.size; ++i) {
+        for (int i = 0; i<list.size; ++i) {
             debug(strh::right(3, String(i)));
             debug(' ');
             debug(strh::left(MAX_ALIAS_LEN, getName(i)));
