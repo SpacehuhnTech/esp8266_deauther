@@ -57,11 +57,11 @@ bool send_disassoc(uint8_t ch, const uint8_t* from, const uint8_t* to) {
 void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts, bool silent) {
     { // Error checks
         if (targets.size() == 0) {
-            debugln("ERROR: No targets specified");
+            debuglnF("ERROR: No targets specified");
             return;
         }
         if (!deauth && !disassoc) {
-            debugln("ERROR: Invalid mode");
+            debuglnF("ERROR: Invalid mode");
             return;
         }
     }
@@ -70,46 +70,46 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
 
     { // Output
         if (deauth && disassoc) {
-            debug("Deauthing and disassociating ");
+            debugF("Deauthing and disassociating ");
         } else if (deauth) {
-            debug("Deauthing ");
+            debugF("Deauthing ");
         } else if (disassoc) {
-            debug("Disassociating ");
+            debugF("Disassociating ");
         }
 
         debug(targets.size());
-        debugln(" targets:");
+        debuglnF(" targets:");
 
         // Print MACs
         targets.begin();
 
         while (targets.available()) {
             Target* t = targets.iterate();
-            debug("- From ");
+            debugF("- From ");
             debug(strh::mac(t->getFrom()));
-            debug(" to ");
+            debugF(" to ");
             debug(strh::mac(t->getTo()));
-            debug(" on channel ");
+            debugF(" on channel ");
             debugln(t->getCh());
         }
 
-        debug("With ");
+        debugF("With ");
         debug(rate);
-        debugln(" packets per second");
+        debuglnF(" packets per second");
 
         if (timeout > 0) {
-            debug("Timeout: ");
+            debugF("Timeout: ");
             debug(timeout/1000);
-            debugln(" seconds");
+            debuglnF(" seconds");
         }
 
         if (pkts > 0) {
-            debug("Send ");
+            debugF("Send ");
             debug(pkts);
-            debugln(" packets");
+            debuglnF(" packets");
         }
 
-        debugln("Type 'stop' to stop the attack");
+        debuglnF("Type 'stop' to stop the attack");
     }
 
     deauth_data.targets.moveFrom(targets);
@@ -132,9 +132,9 @@ void stopDeauth() {
         deauth_data.pkts_sent += deauth_data.pkts_per_second;
         deauth_data.targets.clear();
 
-        debug("Deauth attack stopped. Sent ");
+        debugF("Deauth attack stopped. Sent ");
         debug(deauth_data.pkts_sent);
-        debugln(" packets.");
+        debuglnF(" packets.");
     }
 }
 
@@ -151,11 +151,11 @@ void updateDeauth() {
         if (!d.silent && (millis() - d.output_time >= 1000)) {
             d.pkts_sent += d.pkts_per_second;
 
-            debug("[Deauth attack: ");
+            debugF("[Deauth attack: ");
             debug(d.pkts_per_second);
-            debug(" pkts/s, ");
+            debugF(" pkts/s, ");
             debug(d.pkts_sent);
-            debugln(" total]");
+            debuglnF(" total]");
 
             d.output_time = millis();
 

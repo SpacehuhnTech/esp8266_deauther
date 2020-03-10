@@ -123,7 +123,7 @@ void Station::print(unsigned int id, uint16_t channels, const StringList* ssids,
     while (getProbes().available()) {
         if (!first) {
             debugln();
-            debug("                                                                                         ");
+            debugF("                                                                                         ");
         }
         debug(/*strh::left(32, */ '"' + getProbes().iterate() + '"');
         first = false;
@@ -264,9 +264,9 @@ bool StationList::full() const {
 }
 
 void StationList::print(uint16_t channels, const StringList* ssids, const uint8_t* bssid, const StringList* vendors) {
-    debug("Station (Client) List: ");
+    debugF("Station (Client) List: ");
     debugln(size());
-    debugln("-------------------------");
+    debuglnF("-------------------------");
 
     debug(strh::right(3, "ID"));
     debug(' ');
@@ -283,7 +283,7 @@ void StationList::print(uint16_t channels, const StringList* ssids, const uint8_
     debug(strh::left(34, "Probe-Requests"));
     debugln();
 
-    debugln("===========================================================================================================================");
+    debuglnF("===========================================================================================================================");
 
     int i = 0;
     begin();
@@ -293,9 +293,9 @@ void StationList::print(uint16_t channels, const StringList* ssids, const uint8_
         ++i;
     }
 
-    debugln("===========================================================================================================================");
-    debugln("Pkts = Recorded Packets");
-    debugln("===========================================================================================================================");
+    debuglnF("===========================================================================================================================");
+    debuglnF("Pkts = Recorded Packets");
+    debuglnF("===========================================================================================================================");
 
     debugln();
 }

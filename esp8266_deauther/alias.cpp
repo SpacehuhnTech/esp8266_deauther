@@ -60,9 +60,9 @@ namespace alias {
 
         if ((list.magic_num != ALIAS_MAGIC_NUM) || (list.size > MAX_ALIAS_NUM)) {
             clear();
-            // debugln("Resetted MAC alias list");
+            // debuglnF("Resetted MAC alias list");
         } else {
-            // debugln("Loaded MAC alias list");
+            // debuglnF("Loaded MAC alias list");
         }
     }
 
@@ -180,7 +180,7 @@ namespace alias {
     }
 
     void print() {
-        debug("MAC Alias List: ");
+        debugF("MAC Alias List: ");
         debugln(list.size);
 
         debug(strh::right(3, "ID"));
@@ -191,7 +191,7 @@ namespace alias {
         debug(' ');
         debug(strh::left(8, "Vendor"));
         debugln();
-        debugln("===========================================");
+        debuglnF("===========================================");
 
         for (int i = 0; i<list.size; ++i) {
             debug(strh::right(3, String(i)));
@@ -203,7 +203,7 @@ namespace alias {
             debug(strh::left(8, vendor::search(list.data[i].mac)));
             debugln();
         }
-        debugln("===========================================");
+        debuglnF("===========================================");
 
         debugln();
     }

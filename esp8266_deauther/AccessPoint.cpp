@@ -255,9 +255,9 @@ bool AccessPointList::full() const {
 }
 
 void AccessPointList::print(uint16_t channels, const StringList* ssids, const uint8_t* bssid, const StringList* vendors) {
-    debug("Access Point (Network) List: ");
+    debugF("Access Point (Network) List: ");
     debugln(size());
-    debugln("-------------------------------");
+    debuglnF("-------------------------------");
 
     debug(strh::right(3, "ID"));
     debug(' ');
@@ -274,7 +274,7 @@ void AccessPointList::print(uint16_t channels, const StringList* ssids, const ui
     debug(strh::left(8, "Vendor"));
     debugln();
 
-    debugln("==============================================================================");
+    debuglnF("==============================================================================");
 
     begin();
     int i = 0;
@@ -284,10 +284,10 @@ void AccessPointList::print(uint16_t channels, const StringList* ssids, const ui
         ++i;
     }
 
-    debugln("==============================================================================");
-    debugln("Ch = 2.4 GHz Channel  ,  RSSI = Signal strengh  ,  WPA* = WPA & WPA2 auto mode");
-    debugln("WPA(2) Enterprise networks are recognized as Open");
-    debugln("==============================================================================");
+    debuglnF("==============================================================================");
+    debuglnF("Ch = 2.4 GHz Channel  ,  RSSI = Signal strengh  ,  WPA* = WPA & WPA2 auto mode");
+    debuglnF("WPA(2) Enterprise networks are recognized as Open");
+    debuglnF("==============================================================================");
 
     debugln();
 }

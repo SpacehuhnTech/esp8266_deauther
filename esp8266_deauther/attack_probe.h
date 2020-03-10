@@ -88,17 +88,17 @@ bool send_probe(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid) {
 void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long timeout, bool silent) {
     { // Error checks
         if (ssid_list.size() == 0) {
-            debugln("ERROR: No SSIDs specified");
+            debuglnF("ERROR: No SSIDs specified");
             return;
         }
 
         if (!to) {
-            debugln("ERROR: MAC address not specified");
+            debuglnF("ERROR: MAC address not specified");
             return;
         }
 
         if ((ch < 1) || (ch > 14)) {
-            debugln("ERROR: Invalid channel");
+            debuglnF("ERROR: Invalid channel");
             return;
         }
     }
@@ -106,23 +106,23 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
     stopProbe();
 
     { // Output
-        debug("Sending probes to ");
+        debugF("Sending probes to ");
         debug(strh::mac(to));
-        debug(" on channel ");
+        debugF(" on channel ");
         debugln(ch);
 
-        debugln("SSIDs:");
+        debuglnF("SSIDs:");
 
         while (ssid_list.available()) {
             debugln(ssid_list.iterate());
         }
 
         if (timeout > 0) {
-            debug("Timeout: ");
+            debugF("Timeout: ");
             debug(timeout/1000);
-            debugln(" seconds");
+            debuglnF(" seconds");
         }
-        debugln("Type 'stop' to stop the attack");
+        debuglnF("Type 'stop' to stop the attack");
     }
 
     probe_data.ssids.moveFrom(ssid_list);
@@ -143,9 +143,9 @@ void stopProbe() {
         probe_data.pkts_sent += probe_data.pkts_per_second;
         probe_data.ssids.clear();
 
-        debug("Probe attack stopped. Sent ");
+        debugF("Probe attack stopped. Sent ");
         debug(probe_data.pkts_sent);
-        debugln(" packets.");
+        debuglnF(" packets.");
     }
 }
 
@@ -176,11 +176,11 @@ void updateProbe() {
         if (!b.silent && (millis() - b.output_time >= 1000)) {
             b.pkts_sent += b.pkts_per_second;
 
-            debug("[Probe attack: ");
+            debugF("[Probe attack: ");
             debug(b.pkts_per_second);
-            debug(" pkts/s, ");
+            debugF(" pkts/s, ");
             debug(b.pkts_sent);
-            debugln(" total]");
+            debuglnF(" total]");
 
             b.output_time = millis();
 

@@ -21,6 +21,8 @@
 #define debug(...) DEBUG_PORT.print(__VA_ARGS__)
 #define debugln(...) DEBUG_PORT.println(__VA_ARGS__)
 #define debugf(...) DEBUG_PORT.printf(__VA_ARGS__)
+#define debugF(...) DEBUG_PORT.print(F(__VA_ARGS__))
+#define debuglnF(...) DEBUG_PORT.println(F(__VA_ARGS__))
 
 #define debug_available() DEBUG_PORT.available()
 #define debug_read() DEBUG_PORT.readStringUntil('\n')

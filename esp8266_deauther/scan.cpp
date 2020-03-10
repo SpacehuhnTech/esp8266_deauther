@@ -45,17 +45,17 @@ namespace scan {
 
     void printChannel(uint8_t ch) {
         if (!data.silent) {
-            debug("Sniff channel ");
+            debugF("Sniff channel ");
             debug(ch);
 
             if (data.ch_time > 0) {
-                debug(" (");
+                debugF(" (");
                 if (data.ch_time < 1000) {
                     debug(data.ch_time);
-                    debug(" ms)");
+                    debugF(" ms)");
                 } else {
                     debug(data.ch_time/1000);
-                    debug(" s)");
+                    debugF(" s)");
                 }
             }
 
@@ -86,10 +86,10 @@ namespace scan {
 
             if (!data.silent && ap) {
                 // debug(strh::mac(mac));
-                // debugln(" new station");
+                // debuglnF(" new station");
                 // if (ap) {
                 debug(strh::mac(mac));
-                debug(" connected to \"");
+                debugF(" connected to \"");
                 debug(ap->getSSID());
                 debugln('"');
                 // }
@@ -137,10 +137,10 @@ namespace scan {
             if (st && st->addProbe(ssid, len)) {
                 if (!data.silent) {
                     debug(strh::mac(mac_from));
-                    debug(" probe \"");
+                    debugF(" probe \"");
 
                     for (uint8_t i = 0; i<len; ++i) debug(char(ssid[i]));
-                    debugln("\"");
+                    debuglnF("\"");
                 }
             }
         }
@@ -151,10 +151,10 @@ namespace scan {
             if (st && st->addAuth(mac_to[5])) {
                 if (!data.silent) {
                     debug(strh::mac(mac_from));
-                    debug(" auth \"");
+                    debugF(" auth \"");
                     // debugln(strh::mac(mac_to));
                     debug(attack::getBeacon(mac_to[5]));
-                    debugln("\"");
+                    debuglnF("\"");
                 }
             }
         }
@@ -182,7 +182,7 @@ namespace scan {
     }
 
     void startAPsearch() {
-        debugln("Scanning for access points (WiFi networks)");
+        debuglnF("Scanning for access points (WiFi networks)");
 
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
@@ -191,16 +191,16 @@ namespace scan {
     }
 
     void startSTsearch() {
-        debug("Scanning for stations (WiFi client devices) on ");
+        debugF("Scanning for stations (WiFi client devices) on ");
         debug(data.num_of_channels);
-        debug(" different channels");
+        debugF(" different channels");
         if (data.timeout > 0) {
-            debug(" in ");
+            debugF(" in ");
             debug(data.timeout/1000);
-            debug(" seconds");
+            debugF(" seconds");
         }
         debugln();
-        debugln("Type 'stop' to stop the scan");
+        debuglnF("Type 'stop' to stop the scan");
 
         uint8_t ch = 1;
         wifi_set_channel(ch);
@@ -223,7 +223,7 @@ namespace scan {
             WiFi.scanDelete();
             data.ap = false;
 
-            debugln("Stopped access point scan");
+            debuglnF("Stopped access point scan");
             debugln();
 
             printAPs();
@@ -237,7 +237,7 @@ namespace scan {
             wifi_promiscuous_enable(false);
             data.st = false;
 
-            debugln("Stopped station scan");
+            debuglnF("Stopped station scan");
             debugln();
 
             printSTs();
@@ -249,7 +249,7 @@ namespace scan {
             wifi_promiscuous_enable(false);
             data.auth = false;
 
-            debugln("Stopped beacon authentication scan");
+            debuglnF("Stopped beacon authentication scan");
             debugln();
 
             printSTs();
@@ -282,7 +282,7 @@ namespace scan {
             unsigned long current_time = millis();
 
             if (data.st_list.full()) {
-                debugln("Station list full");
+                debuglnF("Station list full");
                 stopSTsearch();
             } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
                 stopSTsearch();
@@ -306,12 +306,12 @@ namespace scan {
     void start(bool ap, bool st, unsigned long timeout, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
         { // Error check
             if (!ap && !st) {
-                debugln("ERROR: Invalid scan mode");
+                debuglnF("ERROR: Invalid scan mode");
                 return;
             }
 
             if (st && (channels == 0)) {
-                debugln("ERROR: No channels specified");
+                debuglnF("ERROR: No channels specified");
                 return;
             }
         }
@@ -363,7 +363,7 @@ namespace scan {
         data.start_time = millis();
         memcpy(data.bssid, mac, 5);
 
-        debug("Scanning for authentications on ");
+        debugF("Scanning for authentications on ");
         debugln(strh::mac(data.bssid));
         debugln();
 

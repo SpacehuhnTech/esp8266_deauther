@@ -134,17 +134,17 @@ bool send_beacon(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid, int e
 void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout, bool silent) {
     { // Error checks
         if (ssid_list.size() == 0) {
-            debugln("ERROR: No SSIDs specified");
+            debuglnF("ERROR: No SSIDs specified");
             return;
         }
 
         if (!from || !to) {
-            debugln("ERROR: MAC address not specified");
+            debuglnF("ERROR: MAC address not specified");
             return;
         }
 
         if ((ch < 1) || (ch > 14)) {
-            debugln("ERROR: Invalid channel");
+            debuglnF("ERROR: Invalid channel");
             return;
         }
     }
@@ -152,38 +152,38 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
     stopBeacon();
 
     { // Output
-        debug("Sending beacons from ");
+        debugF("Sending beacons from ");
         debug(strh::mac(from));
-        debug(" to ");
+        debugF(" to ");
         debug(strh::mac(to));
-        debug(" on channel ");
+        debugF(" on channel ");
         debugln(ch);
 
-        debug("Encryption: ");
+        debugF("Encryption: ");
 
         switch (enc) {
             case ENCRYPTION_OPEN:
-                debugln("none");
+                debuglnF("none");
                 break;
             case ENCRYPTION_WPA2:
-                debugln("WPA2");
+                debuglnF("WPA2");
                 break;
         }
 
-        debugln("SSIDs:");
+        debuglnF("SSIDs:");
 
         while (ssid_list.available()) {
-            debug("  \"");
+            debugF("  \"");
             debug(ssid_list.iterate());
-            debugln("\"");
+            debuglnF("\"");
         }
 
         if (timeout > 0) {
-            debug("Timeout: ");
+            debugF("Timeout: ");
             debug(timeout/1000);
-            debugln(" seconds");
+            debuglnF(" seconds");
         }
-        debugln("Type 'stop' to stop the attack");
+        debuglnF("Type 'stop' to stop the attack");
     }
 
     beacon_data.ssids.moveFrom(ssid_list);
@@ -206,9 +206,9 @@ void stopBeacon() {
         beacon_data.pkts_sent += beacon_data.pkts_per_second;
         beacon_data.ssids.clear();
 
-        debug("Beacon attack stopped. Sent ");
+        debugF("Beacon attack stopped. Sent ");
         debug(beacon_data.pkts_sent);
-        debugln(" packets.");
+        debuglnF(" packets.");
     }
 }
 
@@ -243,11 +243,11 @@ void updateBeacon() {
         if (!b.silent && (millis() - b.output_time >= 1000)) {
             b.pkts_sent += b.pkts_per_second;
 
-            debug("[Beacon attack: ");
+            debugF("[Beacon attack: ");
             debug(b.pkts_per_second);
-            debug(" pkts/s, ");
+            debugF(" pkts/s, ");
             debug(b.pkts_sent);
-            debugln(" total]");
+            debuglnF(" total]");
 
             b.output_time = millis();
 
