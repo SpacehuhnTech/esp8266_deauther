@@ -92,25 +92,24 @@ bool StringList::push(const char* str, unsigned long len) {
     return true;
 }
 
-String StringList::popFirst() {
-    String str(list_begin->ptr);
+bool StringList::forcePush(String str) {
+    return forcePush(str.c_str(), str.length());
+}
 
-    str_t* next = list_begin->next;
+bool StringList::forcePush(const char* str, unsigned long len) {
+    if (!push(str, len)) {
+        str_t* new_str = list_begin;
 
-    free(list_begin);
+        list_begin = list_begin->next;
 
-    if (next) {
-        list_begin = next;
-        list_h     = list_begin;
-    } else {
-        list_begin = NULL;
-        list_end   = NULL;
-        list_h     = NULL;
+        free(new_str->ptr);
+        new_str->ptr  = stringCopy(str, len);
+        new_str->next = NULL;
+
+        list_end->next = new_str;
+        list_end       = new_str;
     }
-
-    list_pos = 0;
-
-    return str;
+    return true;
 }
 
 void StringList::parse(const String& input, String delimiter) {
@@ -198,6 +197,10 @@ void StringList::clear() {
 // ========== SortedStringList ========== //
 
 SortedStringList::SortedStringList(int max) : StringList(max) {}
+
+SortedStringList::SortedStringList(const String& input, String delimiter) {
+    parse(input, delimiter);
+}
 
 bool SortedStringList::push(const char* str, unsigned long len) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;

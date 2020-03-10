@@ -37,7 +37,9 @@ class StringList {
 
         bool push(String str);
         virtual bool push(const char* str, unsigned long len);
-        String popFirst();
+
+        bool forcePush(String st);
+        bool forcePush(const char* str, unsigned long len);
 
         void parse(const String& input, String delimiter);
 
@@ -59,6 +61,7 @@ class StringList {
 class SortedStringList : public StringList {
     public:
         SortedStringList(int max = 0);
+        SortedStringList(const String& input, String delimiter);
 
         using StringList::push;
         bool push(const char* str, unsigned long len) override;

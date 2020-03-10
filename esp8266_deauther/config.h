@@ -16,6 +16,7 @@
 #define MAX_STATIONS 40      // Station scan results
 #define MAX_TARGETS 32       // Deauth targets, Beacons, Probes
 #define MAX_PROBES 10        // Probes per station scan result
+#define HISTORY_SIZE 10      // CLI command history
 
 // ======EEPROM Settings ===== //
 #define EEPROM_SIZE       4095

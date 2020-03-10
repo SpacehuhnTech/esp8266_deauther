@@ -8,7 +8,7 @@
 
 #include <SimpleCLI.h> // SimpleCLI library
 
-#include "debug.h"     // debug(), debugln(), debugf()
+#include "debug.h"
 #include "scan.h"
 #include "strh.h"
 #include "StringList.h"
@@ -16,6 +16,7 @@
 #include "vendor.h"
 #include "attack.h"
 #include "alias.h"
+#include "config.h"
 
 // ram usage
 extern "C" {
@@ -31,8 +32,8 @@ extern "C" {
 
 namespace cli {
     // ===== PRIVATE ===== //
-    SimpleCLI  cli;     // !< Instance of SimpleCLI library
-    StringList history; // !< Command history
+    SimpleCLI  cli;                   // !< Instance of SimpleCLI library
+    StringList history(HISTORY_SIZE); // !< Command history
 
     uint16_t getChannels(const String& ch_str) {
         if (ch_str == "all") return 0x3FFF;
@@ -955,8 +956,12 @@ namespace cli {
 
             cli::parse(input.c_str());
 
-            history.push(input);
-            if (history.size() > 10) history.popFirst();
+            history.forcePush(input);
+            // history.push(input);
+            // if (history.size() > 2) {
+            //    history.popFirst();
+            //    debugln("POP");
+            // }
         }
     }
 }

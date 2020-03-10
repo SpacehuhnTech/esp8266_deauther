@@ -393,8 +393,8 @@ namespace scan {
     }
 
     void printSTs(uint16_t channels, String ssids, const uint8_t* bssid, String vendors) {
-        StringList ssid_list(ssids, ",");
-        StringList vendor_list(vendors, ",");
+        SortedStringList ssid_list(ssids, ",");
+        SortedStringList vendor_list(vendors, ",");
 
         data.st_list.print(channels, &ssid_list, bssid, &vendor_list);
     }
