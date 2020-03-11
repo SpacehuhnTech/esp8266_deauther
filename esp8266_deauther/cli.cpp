@@ -519,26 +519,15 @@ namespace cli {
 
             String ssid   = cmd.getArg("ssid").getValue();
             String vendor = cmd.getArg("vendor").getValue();
-
-            uint8_t* mac_ptr;
-            uint8_t mac[6];
-
-            String mac_str = cmd.getArg("bssid").getValue();
-
-            if (mac_str.length()) {
-                mac::fromStr(mac_str.c_str(), mac);
-                mac_ptr = mac;
-            } else {
-                mac_ptr = NULL;
-            }
+            String mac    = cmd.getArg("bssid").getValue();
 
             if (mode == "ap") {
-                scan::printAPs(channels, ssid, mac_ptr, vendor);
+                scan::printAPs(channels, ssid, mac, vendor);
             } else if (mode == "st") {
-                scan::printSTs(channels, ssid, mac_ptr, vendor);
+                scan::printSTs(channels, ssid, mac, vendor);
             } else if (mode == "ap+st") {
-                scan::printAPs(channels, ssid, mac_ptr, vendor);
-                scan::printSTs(channels, ssid, mac_ptr, vendor);
+                scan::printAPs(channels, ssid, mac, vendor);
+                scan::printSTs(channels, ssid, mac, vendor);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");

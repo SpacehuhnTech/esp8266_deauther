@@ -40,12 +40,14 @@ class MACList {
         int compare(const MAC* a, const MAC* b) const;
 
     public:
-        MACList(int max = 0);
+        MACList(int max                                        = 0);
+        MACList(const String& input, String delimiter, int max = 0);
         ~MACList();
 
         void parse(const String& input, String delimiter);
 
         bool push(const uint8_t* addr);
+        bool contains(const uint8_t* mac);
         MAC* search(const uint8_t* mac);
         void clear();
 

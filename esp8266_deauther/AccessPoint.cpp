@@ -103,10 +103,10 @@ void AccessPoint::setNext(AccessPoint* next) {
     this->next = next;
 }
 
-void AccessPoint::print(unsigned int id, uint16_t channels, const StringList* ssids, const uint8_t* bssid, const StringList* vendors) {
+void AccessPoint::print(unsigned int id, uint16_t channels, const StringList* ssids, MACList* bssid, const StringList* vendors) {
     if (((channels >> (getChannel()-1)) & 1) == 0) return;
     if (ssids && ssids->size() && !ssids->contains(getSSID())) return;
-    if (bssid && (memcmp(bssid, getBSSID(), 6) != 0)) return;
+    if (bssid && bssid->size() && !bssid->contains(getBSSID())) return;
     if (vendors && vendors->size() && !vendors->contains(getVendor())) return;
 
     debug(strh::right(3, String(id)));
@@ -254,7 +254,7 @@ bool AccessPointList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void AccessPointList::print(uint16_t channels, const StringList* ssids, const uint8_t* bssid, const StringList* vendors) {
+void AccessPointList::print(uint16_t channels, const StringList* ssids, MACList* bssid, const StringList* vendors) {
     debugF("Access Point (Network) List: ");
     debugln(size());
     debuglnF("-------------------------------");

@@ -93,13 +93,13 @@ void Station::newPkt() {
     ++pkts;
 }
 
-void Station::print(unsigned int id, uint16_t channels, const StringList* ssids, const uint8_t* bssid, const StringList* vendors) {
+void Station::print(unsigned int id, uint16_t channels, const StringList* ssids, MACList* bssid, const StringList* vendors) {
     const AccessPoint* ap = getAccessPoint();
 
     if (ap) {
         if ((((channels >> (ap->getChannel()-1)) & 1) == 0)) return;
         if (ssids && ssids->size() && !ssids->contains(ap->getSSID())) return;
-        if (bssid && (memcmp(bssid, ap->getBSSID(), 6) != 0)) return;
+        if (bssid && bssid->size() && !bssid->contains(ap->getBSSID())) return;
     }
 
     if (vendors && vendors->size() && !vendors->contains(getVendor())) return;
@@ -263,7 +263,7 @@ bool StationList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void StationList::print(uint16_t channels, const StringList* ssids, const uint8_t* bssid, const StringList* vendors) {
+void StationList::print(uint16_t channels, const StringList* ssids, MACList* bssid, const StringList* vendors) {
     debugF("Station (Client) List: ");
     debugln(size());
     debuglnF("-------------------------");

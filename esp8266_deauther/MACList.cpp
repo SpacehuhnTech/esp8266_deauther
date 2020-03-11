@@ -42,18 +42,22 @@ int MACList::compare(const MAC* a, const MAC* b) const {
 
 MACList::MACList(int max) : list_max_size(max) {}
 
+MACList::MACList(const String& input, String delimiter, int max) : list_max_size(max) {
+    parse(input, delimiter);
+}
+
 MACList::~MACList() {
     clear();
 }
 
 void MACList::parse(const String& input, String delimiter) {
-    StringList mac_list(input, delimiter);
+    StringList str_list(input, delimiter);
 
-    mac_list.begin();
+    str_list.begin();
 
-    while (mac_list.available()) {
+    while (str_list.available()) {
         uint8_t mac[6];
-        String  mac_str = mac_list.iterate();
+        String  mac_str = str_list.iterate();
         if (mac_str.length() == 17) {
             mac::fromStr(mac_str.c_str(), mac);
             push(mac);
@@ -109,6 +113,10 @@ bool MACList::push(const uint8_t* addr) {
 
     ++(list_size);
     return true;
+}
+
+bool MACList::contains(const uint8_t* mac) {
+    return search(mac);
 }
 
 MAC* MACList::search(const uint8_t* mac) {
