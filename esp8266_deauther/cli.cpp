@@ -17,6 +17,7 @@
 #include "attack.h"
 #include "alias.h"
 #include "config.h"
+#include "scan_filter.h"
 
 // ram usage
 extern "C" {
@@ -518,19 +519,28 @@ namespace cli {
             String mode = cmd.getArg("t").getValue();
 
             String ch_str     = cmd.getArg("ch").getValue();
-            uint16_t channels = getChannels(ch_str);
+            String ssid_str   = cmd.getArg("ssid").getValue();
+            String mac_str    = cmd.getArg("bssid").getValue();
+            String vendor_str = cmd.getArg("vendor").getValue();
 
-            String ssid   = cmd.getArg("ssid").getValue();
-            String vendor = cmd.getArg("vendor").getValue();
-            String mac    = cmd.getArg("bssid").getValue();
+            uint16_t channels = getChannels(ch_str);
+            StringList ssids(ssid_str, ",");
+            MACList macs(mac_str, ",");
+            StringList vendors(vendor_str, ",");
+
+            scan_filter_t filter;
+            filter.channels = channels;
+            filter.ssids    = &ssids;
+            filter.bssid    = &macs;
+            filter.vendors  = &vendors;
 
             if (mode == "ap") {
-                scan::printAPs(channels, ssid, mac, vendor);
+                scan::printAPs(&filter);
             } else if (mode == "st") {
-                scan::printSTs(channels, ssid, mac, vendor);
+                scan::printSTs(&filter);
             } else if (mode == "ap+st") {
-                scan::printAPs(channels, ssid, mac, vendor);
-                scan::printSTs(channels, ssid, mac, vendor);
+                scan::printAPs(&filter);
+                scan::printSTs(&filter);
             }
         });
         cmd_results.addPosArg("t/ype", "ap+st");

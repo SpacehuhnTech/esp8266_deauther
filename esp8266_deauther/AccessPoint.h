@@ -8,8 +8,7 @@
 
 #include <Arduino.h>
 #include "config.h"
-#include "StringList.h"
-#include "MACList.h"
+#include "scan_filter.h"
 
 #ifndef MAX_ACCESS_POINTS
 #define MAX_ACCESS_POINTS 0
@@ -45,7 +44,7 @@ class AccessPoint {
 
         void setNext(AccessPoint* next);
 
-        void print(unsigned int id, uint16_t channels = 0x3FFF, const StringList* ssids = NULL, MACList* bssid = NULL, const StringList* vendors = NULL);
+        void print(int id, const scan_filter_t* filter = NULL);
 };
 
 // ========== AccessPointList ========== //
@@ -80,5 +79,5 @@ class AccessPointList {
         int size() const;
         bool full() const;
 
-        void print(uint16_t channels = 0x3FFF, const StringList* ssids = NULL, MACList* bssid = NULL, const StringList* vendors = NULL);
+        void print(const scan_filter_t* filter = NULL);
 };

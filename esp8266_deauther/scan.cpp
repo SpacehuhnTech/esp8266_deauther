@@ -385,20 +385,12 @@ namespace scan {
         stopAuthSearch();
     }
 
-    void printAPs(uint16_t channels, String ssids, String bssid, String vendors) {
-        StringList ssid_list(ssids, ",");
-        StringList vendor_list(vendors, ",");
-        MACList    mac_list(bssid, ",");
-
-        data.ap_list.print(channels, &ssid_list, &mac_list, &vendor_list);
+    void printAPs(const scan_filter_t* filter) {
+        data.ap_list.print(filter);
     }
 
-    void printSTs(uint16_t channels, String ssids, String bssid, String vendors) {
-        SortedStringList ssid_list(ssids, ",");
-        SortedStringList vendor_list(vendors, ",");
-        MACList mac_list(bssid, ",");
-
-        data.st_list.print(channels, &ssid_list, &mac_list, &vendor_list);
+    void printSTs(const scan_filter_t* filter) {
+        data.st_list.print(filter);
     }
 
     void update() {

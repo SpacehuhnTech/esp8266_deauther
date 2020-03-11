@@ -47,7 +47,7 @@ class MACList {
         void parse(const String& input, String delimiter);
 
         bool push(const uint8_t* addr);
-        bool contains(const uint8_t* mac);
+        bool contains(const uint8_t* mac) const;
         MAC* search(const uint8_t* mac);
         void clear();
 

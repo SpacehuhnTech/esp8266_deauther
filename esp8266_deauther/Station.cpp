@@ -93,16 +93,18 @@ void Station::newPkt() {
     ++pkts;
 }
 
-void Station::print(unsigned int id, uint16_t channels, const StringList* ssids, MACList* bssid, const StringList* vendors) {
+void Station::print(int id, const scan_filter_t* f) {
     const AccessPoint* ap = getAccessPoint();
 
-    if (ap) {
-        if ((((channels >> (ap->getChannel()-1)) & 1) == 0)) return;
-        if (ssids && ssids->size() && !ssids->contains(ap->getSSID())) return;
-        if (bssid && bssid->size() && !bssid->contains(ap->getBSSID())) return;
-    }
+    if (f) {
+        if (ap) {
+            if ((((f->channels >> (ap->getChannel()-1)) & 1) == 0)) return;
+            if (f->ssids && f->ssids->size() && !f->ssids->contains(ap->getSSID())) return;
+            if (f->bssid && f->bssid->size() && !f->bssid->contains(ap->getBSSID())) return;
+        }
 
-    if (vendors && vendors->size() && !vendors->contains(getVendor())) return;
+        if (f->vendors && f->vendors->size() && !f->vendors->contains(getVendor())) return;
+    }
 
     debug(strh::right(3, String(id)));
     debug(' ');
@@ -263,7 +265,7 @@ bool StationList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void StationList::print(uint16_t channels, const StringList* ssids, MACList* bssid, const StringList* vendors) {
+void StationList::print(const scan_filter_t* filter) {
     debugF("Station (Client) List: ");
     debugln(size());
     debuglnF("-------------------------");
@@ -289,7 +291,7 @@ void StationList::print(uint16_t channels, const StringList* ssids, MACList* bss
     begin();
 
     while (available()) {
-        iterate()->print(i, channels, ssids, bssid, vendors);
+        iterate()->print(i, filter);
         ++i;
     }
 

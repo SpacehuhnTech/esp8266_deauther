@@ -115,8 +115,20 @@ bool MACList::push(const uint8_t* addr) {
     return true;
 }
 
-bool MACList::contains(const uint8_t* mac) {
-    return search(mac);
+bool MACList::contains(const uint8_t* mac) const {
+    if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
+        return false;
+    }
+
+    MAC* tmp = list_begin;
+    int  res = compare(tmp, mac);
+
+    while (tmp->getNext() && res < 0) {
+        tmp = tmp->getNext();
+        res = compare(tmp, mac);
+    }
+
+    return res == 0;
 }
 
 MAC* MACList::search(const uint8_t* mac) {

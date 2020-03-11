@@ -8,6 +8,7 @@
 
 #include "AccessPoint.h"
 #include "Station.h"
+#include "scan_filter.h"
 
 namespace scan {
     void clearAPresults();
@@ -17,8 +18,8 @@ namespace scan {
     void startAuth(uint8_t* mac, unsigned long timeout, bool silent);
     void stop();
 
-    void printAPs(uint16_t channels = 0x3FFF, String ssid = "", String bssid = "", String vendors = "");
-    void printSTs(uint16_t channels = 0x3FFF, String ssid = "", String bssid = "", String vendors = "");
+    void printAPs(const scan_filter_t* filter = NULL);
+    void printSTs(const scan_filter_t* filter = NULL);
 
     void update();
 
