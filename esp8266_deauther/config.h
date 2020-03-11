@@ -7,16 +7,19 @@
 #pragma once
 
 // ===== Serial Communication ===== //
-#define ENABLE_DEBUG         // Enable serial logging
-#define DEBUG_PORT Serial    // Serial port
-#define DEBUG_BAUD 115200    // Serial baud rate
+#define ENABLE_DEBUG      // Enable serial logging
+#define DEBUG_PORT Serial // Serial port
+#define DEBUG_BAUD 115200 // Serial baud rate
+
+// ===== Command Line History ===== //
+#define ENABLE_HISTORY
+#define HISTORY_SIZE 10      // CLI command history
 
 // ===== List Max Sizes ===== //
 #define MAX_ACCESS_POINTS 80 // Access point scan results
 #define MAX_STATIONS 40      // Station scan results
 #define MAX_TARGETS 32       // Deauth targets, Beacons, Probes
 #define MAX_PROBES 10        // Probes per station scan result
-#define HISTORY_SIZE 10      // CLI command history
 
 // ======EEPROM Settings ===== //
 #define EEPROM_SIZE       4095

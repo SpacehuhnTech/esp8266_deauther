@@ -32,8 +32,11 @@ extern "C" {
 
 namespace cli {
     // ===== PRIVATE ===== //
-    SimpleCLI  cli;                   // !< Instance of SimpleCLI library
+    SimpleCLI cli;                    // !< Instance of SimpleCLI library
+
+#ifdef ENABLE_HISTORY
     StringList history(HISTORY_SIZE); // !< Command history
+#endif // ifdef ENABLE_HISTORY
 
     uint16_t getChannels(const String& ch_str) {
         if (ch_str == "all") return 0x3FFF;
@@ -883,6 +886,7 @@ namespace cli {
         });
         cmd_stop.setDescription("  Stop all attacks");
 
+#ifdef ENABLE_HISTORY
         Command cmd_history = cli.addCommand("history", [](cmd* c) {
             debuglnF("Command history:");
 
@@ -894,6 +898,7 @@ namespace cli {
             }
         });
         cmd_history.setDescription("  Print previous 10 commands");
+#endif // ifdef ENABLE_HISTORY
     }
 
     void parse(const char* input) {
@@ -944,13 +949,9 @@ namespace cli {
             String input = debug_read();
 
             cli::parse(input.c_str());
-
+#ifdef ENABLE_HISTORY
             history.forcePush(input);
-            // history.push(input);
-            // if (history.size() > 2) {
-            //    history.popFirst();
-            //    debuglnF("POP");
-            // }
+#endif // ifdef ENABLE_HISTORY
         }
     }
 }
