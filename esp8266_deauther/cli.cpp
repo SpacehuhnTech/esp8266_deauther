@@ -918,6 +918,11 @@ namespace cli {
         });
         cmd_history.setDescription("  Print previous 10 commands");
 #endif // ifdef ENABLE_HISTORY
+
+        Command cmd_reboot = cli.addCommand("reboot,restart", [](cmd* c) {
+            ESP.restart();
+        });
+        cmd_reboot.setDescription("  Restarts/Reboots the ESP8266");
     }
 
     void parse(const char* input) {
