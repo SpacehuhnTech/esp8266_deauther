@@ -61,12 +61,21 @@ namespace cli {
     void begin() {
         debug_init();
 
-        debuglnF("This is a tool.\r\n"
+        debuglnF("\r\nSTARTED \\o/\r\n");
+
+        debuglnF(VERSION);
+
+        debuglnF("\r\nDISCLAIMER:\r\n"
+                 "This is a tool.\r\n"
                  "It's neither good nor bad.\r\n"
                  "Use it to study and test.\r\n"
                  "Never use it to create harm or damage!\r\n"
                  "\r\n"
                  "The continuation of this project counts on you!\r\n");
+
+        debuglnF("Type \"help\" to see all commands.\r\n"
+                 "Type \"start\" to go through the functionalities step by step.\r\n");
+
 
         cli.setOnError([](cmd_error* e) {
             CommandError cmdError(e); // Create wrapper object

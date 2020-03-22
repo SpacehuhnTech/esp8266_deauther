@@ -6,6 +6,8 @@
 
 #pragma once
 
+#define VERSION "Version 3.0.0 dev 2020-03-22#1"
+
 // ===== Serial Communication ===== //
 #define ENABLE_DEBUG      // Enable serial logging
 #define DEBUG_PORT Serial // Serial port
