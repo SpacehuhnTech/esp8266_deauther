@@ -57,4 +57,10 @@ namespace strh {
 
         return str;
     }
+
+    String quote(String str) {
+        if (!str.startsWith("\"")) str = '"' + str;
+        if (!str.endsWith("\"")) str = str + '"';
+        return str;
+    }
 }

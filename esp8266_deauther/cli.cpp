@@ -66,12 +66,12 @@ namespace cli {
         debuglnF(VERSION);
 
         debuglnF("\r\nDISCLAIMER:\r\n"
-                 "This is a tool.\r\n"
-                 "It's neither good nor bad.\r\n"
-                 "Use it to study and test.\r\n"
-                 "Never use it to create harm or damage!\r\n"
+                 " This is a tool.\r\n"
+                 " It's neither good nor bad.\r\n"
+                 " Use it to study and test.\r\n"
+                 " Never use it to create harm or damage!\r\n"
                  "\r\n"
-                 "The continuation of this project counts on you!\r\n");
+                 " The continuation of this project counts on you!\r\n");
 
         debuglnF("Type \"help\" to see all commands.\r\n"
                  "Type \"start\" to go through the functionalities step by step.\r\n");
@@ -107,15 +107,18 @@ namespace cli {
             { // Command
                 do {
                     debuglnF("What can I do for you today?\r\n"
-                             "  scan:   Search for WiFi networks and clients\r\n"
-                             "  beacon: Send WiFi network advertisement beacons (spam network scanners)\r\n"
-                             "  deauth: Disrupt WiFi connections\r\n"
-                             "  probe:  Send WiFi network requests (spam client scanners)\r\n"
-                             "  alias:  Give MAC addresses an alias\r\n"
+                             "  scan:    Search for WiFi networks and clients\r\n"
+                             "  ---------\r\n"
+                             "  beacon:  Send WiFi network advertisement beacons (spam network scanners)\r\n"
+                             "  deauth:  Disrupt WiFi connections\r\n"
+                             "  probe:   Send WiFi network requests (spam client scanners)\r\n"
+                             "  ---------\r\n"
+                             "  alias:   Give MAC addresses an alias\r\n"
+                             "  results: Display and filter scan results\r\n"
                              "Remember that you can always escape by typing 'exit'"
                              );
                     CLI_READ_RES();
-                } while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias"));
+                } while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias" || res == "results"));
                 cmd += res;
                 debugln();
             }
@@ -197,7 +200,7 @@ namespace cli {
                     debuglnF("Which network names do you wish to advertise?\r\n"
                              "  for example: \"network A\",\"network B\"");
                     CLI_READ_RES();
-                    cmd += " -ssid " + res;
+                    cmd += " -ssid " + strh::quote(res);
                     debugln();
                 }
 
@@ -373,9 +376,9 @@ namespace cli {
                 { // Mode
                     do {
                         debuglnF("What kind of packets shall be sent?\r\n"
-                                 "deauth:          Deauthentication\r\n"
-                                 "disassoc:        Disassociation\r\n"
-                                 "deauth+disassoc: Both\r\n"
+                                 "  deauth:          Deauthentication\r\n"
+                                 "  disassoc:        Disassociation\r\n"
+                                 "  deauth+disassoc: Both\r\n"
                                  " [default=deauth+disassoc]");
                         CLI_READ_RES("deauth+disassoc");
                     } while (!(res == "deauth" || res == "disassoc" || res == "deauth+disassoc"));
@@ -399,7 +402,7 @@ namespace cli {
                     debuglnF("Which network names do you wish to request for?\r\n"
                              "  for example: \"network A\",\"network B\"");
                     CLI_READ_RES();
-                    cmd += " -ssid " + res;
+                    cmd += " -ssid " + strh::quote(res);
                     debugln();
                 }
 
@@ -469,7 +472,7 @@ namespace cli {
                         debuglnF("Alias (name):");
                         CLI_READ_RES();
 
-                        if (res.length() > 0) cmd += " -name \"" + res + "\"";
+                        if (res.length() > 0) cmd += " -name " + strh::quote(res);
                         debugln();
                     }
 
@@ -480,6 +483,56 @@ namespace cli {
                         if (res.length() > 0) cmd += " -mac " + res;
                         debugln();
                     }
+                }
+            } else if (res == "results") {
+                { // Type
+                    do {
+                        debuglnF("Filter type of results:\r\n"
+                                 "  ap:    Access points (WiFi networks)\r\n"
+                                 "  st:    Stations (WiFi client devices)\r\n"
+                                 "  ap+st: Access points and stations\r\n"
+                                 " [default=ap+st]"
+                                 );
+                        CLI_READ_RES("ap+st");
+                    } while (!(res == "ap" || res == "st" || res == "ap+st"));
+                    if (res != "ap+st") cmd += " -t " + res;
+                    debugln();
+                }
+
+                { // Channel(s)
+                    debuglnF("Filter channel(s):\r\n"
+                             "  1-14: WiFi channel(s) to search on (for example: 1,6,11)\r\n"
+                             " [default=all]");
+                    CLI_READ_RES("all");
+                    if (res != "all") cmd += " -ch " + res;
+                    debugln();
+                }
+
+                { // SSIDs
+                    debuglnF("Filter for SSIDs (network names):\r\n"
+                             "  for example: \"network A\",\"network B\"\r\n"
+                             " [default=*No filter*]\r\n");
+                    CLI_READ_RES();
+                    if (res.length() > 0) cmd += " -ssid " + strh::quote(res);
+                    debugln();
+                }
+
+                { // BSSID
+                    debuglnF("Filter for BSSID (MAC address of access point):\r\n"
+                             "  for example 00:20:91:aa:bb:5cc\r\n"
+                             " [default=*No filter*]\r\n");
+                    CLI_READ_RES();
+                    if (res.length() > 0) cmd += " -bssid " + res;
+                    debugln();
+                }
+
+                { // Vendor
+                    debuglnF("Filter for vendor name:\r\n"
+                             "  for example \"Apple\",\"Intel\"\r\n"
+                             " [default=*No filter*]\r\n");
+                    CLI_READ_RES();
+                    if (res.length() > 0) cmd += " -vendor " + strh::quote(res);
+                    debugln();
                 }
             }
 
@@ -592,14 +645,14 @@ namespace cli {
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.addArg("ch/annel/s", "all");
         cmd_results.addArg("ssid/s", "");
-        cmd_results.addArg("bssid", "");
+        cmd_results.addArg("bssid/s", "");
         cmd_results.addArg("vendor/s", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
             "  -t:      type of results [ap,st,ap+st] (default=ap+st)\r\n"
             "  -ch:     filter by channel(s)\r\n"
             "  -ssid:   filter by SSID(s)\r\n"
-            "  -bssid:  filter by BSSID\r\n"
+            "  -bssid:  filter by BSSID(s)\r\n"
             "  -vendor: filter by vendor name(s)");
 
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
