@@ -85,9 +85,8 @@ namespace cli {
 
             if (cmdError.hasCommand()) {
                 debugln();
-                debugF("Did you mean \"");
+                debugF("Did you mean:");
                 debug(cmdError.getCommand().toString());
-                debugF("\"?");
             }
 
             debugln();
@@ -112,10 +111,11 @@ namespace cli {
                              "  beacon: Send WiFi network advertisement beacons (spam network scanners)\r\n"
                              "  deauth: Disrupt WiFi connections\r\n"
                              "  probe:  Send WiFi network requests (spam client scanners)\r\n"
+                             "  alias:  Give MAC addresses an alias\r\n"
                              "Remember that you can always escape by typing 'exit'"
                              );
                     CLI_READ_RES();
-                } while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe"));
+                } while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias"));
                 cmd += res;
                 debugln();
             }
@@ -449,10 +449,47 @@ namespace cli {
                     if (res == String('y')) cmd += " -s";
                     debugln();
                 }
+            } else if (res == "alias") {
+                { // Mode
+                    do {
+                        debuglnF("Do you want to set a new alias, remove one or see the entire list?\r\n"
+                                 "  list:   Print list of existing MAC address aliases\r\n"
+                                 "  add:    Add new MAC address alias to list\r\n"
+                                 "  remove: Remove an exisiting MAC address alias\r\n"
+                                 " [default=list]"
+                                 );
+                        CLI_READ_RES("list");
+                    } while (!(res == "list" || res == "add" || res == "remove"));
+                    if (res != "list") cmd += " -mode " + res;
+                    debugln();
+                }
+
+                if (res != "list") {
+                    { // Name
+                        debuglnF("Alias (name):");
+                        CLI_READ_RES();
+
+                        if (res.length() > 0) cmd += " -name \"" + res + "\"";
+                        debugln();
+                    }
+
+                    { // MAC
+                        debuglnF("MAC address:");
+                        CLI_READ_RES();
+
+                        if (res.length() > 0) cmd += " -mac " + res;
+                        debugln();
+                    }
+                }
             }
 
+
             // Result
-            for (int i = 0; i<cmd.length()+2; ++i) debug('#');
+            for (int i = 0; i<cmd.length()+4 || i<21; ++i) debug('#');
+            debugln();
+            debuglnF("Exiting start command");
+
+            for (int i = 0; i<cmd.length()+4 || i<21; ++i) debug('#');
             debugln();
 
             cli::parse(cmd.c_str());
@@ -864,12 +901,12 @@ namespace cli {
                 return;
             }
         });
-        cmd_alias.addPosArg("mode", "list");
+        cmd_alias.addPosArg("m/ode", "list");
         cmd_alias.addPosArg("name", "");
         cmd_alias.addPosArg("mac", "");
         cmd_alias.setDescription(
-            "  Set alias for MAC address (no arguments = print list)\r\n"
-            "  -mode: 'add' or 'remove'\r\n"
+            "  Manage alias for MAC address\r\n"
+            "  -mode: add,remove or list (default=list)\r\n"
             "  -name: alias name\r\n"
             "  -mac:  MAC address");
 
@@ -919,7 +956,7 @@ namespace cli {
         cmd_history.setDescription("  Print previous 10 commands");
 #endif // ifdef ENABLE_HISTORY
 
-        Command cmd_reboot = cli.addCommand("reboot,restart", [](cmd* c) {
+        Command cmd_reboot = cli.addCommand("restart,reboot", [](cmd* c) {
             ESP.restart();
         });
         cmd_reboot.setDescription("  Restarts/Reboots the ESP8266");
