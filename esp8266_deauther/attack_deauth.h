@@ -85,17 +85,16 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
 
         while (targets.available()) {
             Target* t = targets.iterate();
-            debugF("- From ");
+            debugF("- transmitter=");
             debug(strh::mac(t->getFrom()));
-            debugF(" to ");
+            debugF(", receiver=");
             debug(strh::mac(t->getTo()));
-            debugF(" on channel ");
+            debugF(", channel=");
             debugln(t->getCh());
         }
 
-        debugF("With ");
-        debug(rate);
-        debuglnF(" packets per second");
+        debugF("Packets per second: ");
+        debugln(rate);
 
         if (timeout > 0) {
             debugF("Timeout: ");
