@@ -24,7 +24,7 @@ typedef struct scan_data_t {
     uint16_t      channels;
     unsigned long ch_time;
     unsigned long timeout;
-    uint8_t       bssid[5];
+    uint8_t       bssid[6];
     bool          silent;
 
     uint8_t       num_of_channels;
@@ -361,7 +361,7 @@ namespace scan {
         data.timeout    = timeout;
         data.silent     = silent;
         data.start_time = millis();
-        memcpy(data.bssid, mac, 5);
+        memcpy(data.bssid, mac, 6);
 
         debugF("Scanning for authentications on ");
         debugln(strh::mac(data.bssid));

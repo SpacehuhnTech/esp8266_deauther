@@ -57,6 +57,19 @@ namespace cli {
         return channels;
     }
 
+    void toMAC(const String& str, uint8_t* mac) {
+        // if in alias list, copy
+        if (!alias::resolve(str, mac)) {
+            if (str == "random") {
+                vendor::randomize(mac);
+            } else if (str == "broadcast") {
+                memcpy(mac, mac::BROADCAST, 6);
+            } else if (str.length() == 17) {
+                mac::fromStr(str.c_str(), mac);
+            }
+        }
+    }
+
     // ===== PUBLIC ===== //
     void begin() {
         debug_init();
@@ -673,22 +686,12 @@ namespace cli {
 
             { // MAC from
                 String from_str = cmd.getArg("from").getValue();
-
-                if (from_str.length() != 17) {
-                    vendor::randomize(from);
-                } else {
-                    mac::fromStr(from_str.c_str(), from);
-                }
+                toMAC(from_str, from);
             }
 
             { // MAC to
                 String to_str = cmd.getArg("to").getValue();
-
-                if (to_str.length() != 17) {
-                    memcpy(to, mac::BROADCAST, 6);
-                } else {
-                    mac::fromStr(to_str.c_str(), to);
-                }
+                toMAC(to_str, to);
             }
 
             { // Encryption
@@ -788,8 +791,8 @@ namespace cli {
                     uint8_t mac_to[6];
                     uint8_t ch;
 
-                    mac::fromStr(mac_from_str.c_str(), mac_from);
-                    mac::fromStr(mac_to_str.c_str(), mac_to);
+                    toMAC(mac_from_str, mac_from);
+                    toMAC(mac_to_str, mac_to);
                     ch = ch_str.toInt();
 
                     targets.push(mac_from, mac_to, ch);
@@ -864,12 +867,7 @@ namespace cli {
 
             { // MAC to
                 String to_str = cmd.getArg("to").getValue();
-
-                if (to_str.length() != 17) {
-                    memcpy(to, mac::BROADCAST, 6);
-                } else {
-                    mac::fromStr(to_str.c_str(), to);
-                }
+                toMAC(to_str, to);
             }
 
             { // Channel
@@ -922,7 +920,7 @@ namespace cli {
                     mac_str    = tmp;
                 }
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                mac::fromStr(mac_str.c_str(), mac);
+                toMAC(mac_str, mac);
 
                 if (alias::add(mac, name)) {
                     debugF("Alias \"");
@@ -939,7 +937,7 @@ namespace cli {
 
             if (mode == "remove") {
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                mac::fromStr(name.c_str(), mac);
+                toMAC(name, mac);
 
                 if (alias::remove(mac)) {
                     debugF("Removed alias ");
