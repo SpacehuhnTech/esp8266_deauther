@@ -19,12 +19,12 @@
 class AccessPoint {
     private:
         bool hidden;
-        char* ssid;
+        char* ssid = nullptr;
         uint8_t bssid[6];
         int rssi;
         uint8_t enc;
         uint8_t ch;
-        AccessPoint* next = NULL;
+        AccessPoint* next = nullptr;
 
     public:
         AccessPoint(bool hidden, const char* ssid, uint8_t* bssid, int rssi, uint8_t enc, uint8_t ch);
@@ -44,20 +44,20 @@ class AccessPoint {
 
         void setNext(AccessPoint* next);
 
-        void print(int id, const scan_filter_t* filter = NULL);
+        void print(int id, const scan_filter_t* filter = nullptr);
 };
 
 // ========== AccessPointList ========== //
 
 class AccessPointList {
     private:
-        AccessPoint* list_begin = NULL;
-        AccessPoint* list_end   = NULL;
+        AccessPoint* list_begin = nullptr;
+        AccessPoint* list_end   = nullptr;
 
         int list_size = 0;
         int list_max_size;
 
-        AccessPoint* list_h = NULL;
+        AccessPoint* list_h = nullptr;
         int list_pos        = 0;
 
         int compare(const AccessPoint* ap, const uint8_t* bssid) const;
@@ -79,5 +79,5 @@ class AccessPointList {
         int size() const;
         bool full() const;
 
-        void print(const scan_filter_t* filter = NULL);
+        void print(const scan_filter_t* filter = nullptr);
 };

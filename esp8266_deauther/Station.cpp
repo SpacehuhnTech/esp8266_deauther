@@ -154,7 +154,7 @@ StationList::~StationList() {
 bool StationList::push(uint8_t* mac) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    Station* new_st = new Station(mac, NULL);
+    Station* new_st = new Station(mac, nullptr);
 
     // Empty list -> insert first element
     if (!list_begin) {
@@ -175,7 +175,7 @@ bool StationList::push(uint8_t* mac) {
         // Insert somewhere in the middle (insertion sort)
         else {
             Station* tmp_c = list_begin;
-            Station* tmp_p = NULL;
+            Station* tmp_p = nullptr;
 
             int res = compare(tmp_c, mac);
 
@@ -209,17 +209,17 @@ void StationList::clear() {
         delete to_delete;
     }
 
-    list_begin = NULL;
-    list_end   = NULL;
+    list_begin = nullptr;
+    list_end   = nullptr;
     list_size  = 0;
 
-    list_h   = NULL;
+    list_h   = nullptr;
     list_pos = 0;
 }
 
 Station* StationList::search(uint8_t* mac) {
     if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
-        return NULL;
+        return nullptr;
     }
 
     Station* tmp = list_begin;
@@ -231,7 +231,7 @@ Station* StationList::search(uint8_t* mac) {
         res = compare(tmp, mac);
     }
 
-    return (res == 0) ? tmp : NULL;
+    return (res == 0) ? tmp : nullptr;
 }
 
 Station* StationList::get(int i) {

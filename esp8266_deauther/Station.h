@@ -24,7 +24,7 @@ class Station {
 
         uint32_t pkts           = 0;
         SortedStringList probes = SortedStringList(MAX_PROBES);
-        Station* next           = NULL;
+        Station* next           = nullptr;
 
         uint32_t auths = 0;
 

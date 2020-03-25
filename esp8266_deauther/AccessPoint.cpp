@@ -23,8 +23,8 @@ AccessPoint::AccessPoint(bool hidden, const char* ssid, uint8_t* bssid, int rssi
         if (ssidlen > 0) {
             if (ssidlen > 32) ssidlen = 32;
 
-            this->ssid = (char*)malloc(ssidlen+1);
-            memcpy(this->ssid, ssid, ssidlen+1);
+            this->ssid = new char[ssidlen+1];
+            memcpy(this->ssid, ssid, ssidlen);
             this->ssid[ssidlen] = '\0';
         }
     }
@@ -37,8 +37,8 @@ AccessPoint::AccessPoint(bool hidden, const char* ssid, uint8_t* bssid, int rssi
 
 AccessPoint::~AccessPoint() {
     if (ssid) {
-        free(ssid);
-        ssid = NULL;
+        delete[] ssid;
+        ssid = nullptr;
     }
 }
 
@@ -163,7 +163,7 @@ bool AccessPointList::push(bool hidden, const char* ssid, uint8_t* bssid, int rs
         // Insert somewhere in the middle (insertion sort)
         else {
             AccessPoint* tmp_c = list_begin;
-            AccessPoint* tmp_p = NULL;
+            AccessPoint* tmp_p = nullptr;
 
             int res = compare(tmp_c, bssid);
 
@@ -189,7 +189,7 @@ bool AccessPointList::push(bool hidden, const char* ssid, uint8_t* bssid, int rs
 
 AccessPoint* AccessPointList::search(const uint8_t* bssid) {
     if ((list_size == 0) || (compare(list_begin, bssid) > 0) || (compare(list_end, bssid) < 0)) {
-        return NULL;
+        return nullptr;
     }
 
     AccessPoint* tmp = list_begin;
@@ -200,7 +200,7 @@ AccessPoint* AccessPointList::search(const uint8_t* bssid) {
         res = compare(tmp, bssid);
     }
 
-    return (res == 0) ? tmp : NULL;
+    return (res == 0) ? tmp : nullptr;
 }
 
 void AccessPointList::clear() {
@@ -212,11 +212,11 @@ void AccessPointList::clear() {
         delete to_delete;
     }
 
-    list_begin = NULL;
-    list_end   = NULL;
+    list_begin = nullptr;
+    list_end   = nullptr;
     list_size  = 0;
 
-    list_h   = NULL;
+    list_h   = nullptr;
     list_pos = 0;
 }
 
