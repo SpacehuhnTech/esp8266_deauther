@@ -51,8 +51,6 @@ namespace alias {
     void clear() {
         list.size      = 0;
         list.magic_num = ALIAS_MAGIC_NUM;
-
-        add(mac::BROADCAST, "broadcast");
     }
 
     void load() {
