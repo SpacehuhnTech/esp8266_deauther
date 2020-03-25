@@ -31,7 +31,7 @@ int StringList::compare(const str_t* a, const char* b) const {
 
 StringList::StringList(int max) : list_max_size(max) {}
 
-StringList::StringList(const String& input, String delimiter) {
+StringList::StringList(const String& input, String delimiter, int max) : list_max_size(max) {
     parse(input, delimiter);
 }
 
@@ -198,7 +198,7 @@ void StringList::clear() {
 
 SortedStringList::SortedStringList(int max) : StringList(max) {}
 
-SortedStringList::SortedStringList(const String& input, String delimiter) {
+SortedStringList::SortedStringList(const String& input, String delimiter, int max) : StringList(max) {
     parse(input, delimiter);
 }
 

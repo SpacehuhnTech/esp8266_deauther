@@ -29,8 +29,8 @@ class StringList {
         int compare(const str_t* a, const char* b) const;
 
     public:
-        StringList(int max = 0);
-        StringList(const String& input, String delimiter);
+        StringList(int max                                        = 0);
+        StringList(const String& input, String delimiter, int max = 0);
         ~StringList();
 
         void moveFrom(StringList& sl);
@@ -60,8 +60,8 @@ class StringList {
 
 class SortedStringList : public StringList {
     public:
-        SortedStringList(int max = 0);
-        SortedStringList(const String& input, String delimiter);
+        SortedStringList(int max                                        = 0);
+        SortedStringList(const String& input, String delimiter, int max = 0);
 
         using StringList::push;
         bool push(const char* str, unsigned long len) override;
