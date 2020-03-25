@@ -39,10 +39,50 @@ namespace cli {
     StringList history(HISTORY_SIZE); // !< Command history
 #endif // ifdef ENABLE_HISTORY
 
+    void toMAC(const String& str, uint8_t* mac) {
+        // if in alias list, copy
+        if (!alias::resolve(str, mac)) {
+            if (str == "random") {
+                vendor::randomize(mac);
+            } else if (str == "broadcast") {
+                memcpy(mac, mac::BROADCAST, 6);
+            } else if (str.length() == 17) {
+                mac::fromStr(str.c_str(), mac);
+            }
+        }
+    }
+
+    SortedStringList toIntList(const String& str) {
+        StringList values(str, ",");
+
+        SortedStringList list;
+
+        values.begin();
+
+        while (values.available()) {
+            String h = values.iterate();
+
+            int hyphen = h.indexOf("-", 1);
+            if ((hyphen >= 0) && (hyphen < h.length()-1)) {
+                int start = h.substring(0, hyphen).toInt();
+                int end   = h.substring(hyphen+1).toInt();
+
+                for (int i = start; i<=end; ++i) {
+                    list.push(String(i));
+                }
+            } else {
+                list.push(String(h.toInt()));
+            }
+        }
+
+        return list;
+    }
+
     uint16_t getChannels(const String& ch_str) {
         if (ch_str == "all") return 0x3FFF;
 
-        StringList ch_list(ch_str, ",");
+        SortedStringList ch_list = toIntList(ch_str);
+        ch_list.begin();
 
         uint16_t channels = 0;
 
@@ -57,19 +97,6 @@ namespace cli {
         return channels;
     }
 
-    void toMAC(const String& str, uint8_t* mac) {
-        // if in alias list, copy
-        if (!alias::resolve(str, mac)) {
-            if (str == "random") {
-                vendor::randomize(mac);
-            } else if (str == "broadcast") {
-                memcpy(mac, mac::BROADCAST, 6);
-            } else if (str.length() == 17) {
-                mac::fromStr(str.c_str(), mac);
-            }
-        }
-    }
-
     // ===== PUBLIC ===== //
     void begin() {
         debug_init();
@@ -78,13 +105,15 @@ namespace cli {
 
         debuglnF(VERSION);
 
-        debuglnF("\r\nDISCLAIMER:\r\n"
-                 " This is a tool.\r\n"
-                 " It's neither good nor bad.\r\n"
-                 " Use it to study and test.\r\n"
-                 " Never use it to create harm or damage!\r\n"
+        debuglnF("\r\n"
+                 "[=================== DISCLAIMER ===================]\r\n"
+                 "  This is a tool.\r\n"
+                 "  It's neither good nor bad.\r\n"
+                 "  Use it to study and test.\r\n"
+                 "  Never use it to create harm or damage!\r\n"
                  "\r\n"
-                 " The continuation of this project counts on you!\r\n");
+                 "  The continuation of this project counts on you!\r\n"
+                 "[==================================================]\r\n");
 
         debuglnF("Type \"help\" to see all commands.\r\n"
                  "Type \"start\" to go through the functionalities step by step.\r\n");
@@ -749,8 +778,9 @@ namespace cli {
             bool silent;
 
             { // Read Access Point MACs
-                String ap_str = cmd.getArg("ap").getValue();
-                StringList list(ap_str, ",");
+                String ap_str         = cmd.getArg("ap").getValue();
+                SortedStringList list = toIntList(ap_str);
+                list.begin();
 
                 while (list.available()) {
                     AccessPoint* ap = scan::getAccessPoints().get(list.iterate().toInt());
@@ -761,8 +791,9 @@ namespace cli {
             }
 
             { // Read Station MACs
-                String st_str = cmd.getArg("st").getValue();
-                StringList list(st_str, ",");
+                String st_str         = cmd.getArg("st").getValue();
+                SortedStringList list = toIntList(st_str);
+                list.begin();
 
                 while (list.available()) {
                     Station* st = scan::getStations().get(list.iterate().toInt());

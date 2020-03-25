@@ -226,7 +226,7 @@ bool SortedStringList::push(const char* str, unsigned long len) {
             list_end->next = new_str;
             list_end       = new_str;
         }
-        // Insert somewhere in the between (insertion sort)
+        // Insert somewhere inbetween (insertion sort)
         else {
             str_t* tmp_c = list_begin;
             str_t* tmp_p = NULL;
