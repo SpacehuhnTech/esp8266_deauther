@@ -75,7 +75,7 @@ namespace alias {
         if (!mac || (list.size == 0)) return -1;
 
         // Search remaining list
-        return bin_search(mac, 1, list.size-2);
+        return bin_search(mac, 0, list.size-1);
     }
 
     int search(const String& name) {
@@ -131,7 +131,7 @@ namespace alias {
     String get(const uint8_t* mac) {
         int id = search(mac);
 
-        if ((id < 0) || (id > list.size)) return strh::mac(mac);
+        if ((id < 0) || (id >= list.size)) return strh::mac(mac);
 
         return getName(id);
     }
@@ -139,14 +139,14 @@ namespace alias {
     bool resolve(const String& name, uint8_t* buffer) {
         int id = search(name);
 
-        if ((id < 0) || (id > list.size)) return false;
+        if ((id < 0) || (id >= list.size)) return false;
 
         memcpy(buffer, list.data[id].mac, 6);
         return true;
     }
 
     String getName(int id) {
-        if ((id < 0) || (id > list.size)) return String();
+        if ((id < 0) || (id >= list.size)) return String();
 
         String res;
 
@@ -158,7 +158,7 @@ namespace alias {
     }
 
     bool remove(int id) {
-        if ((id < 0) || (id > list.size)) return false;
+        if ((id < 0) || (id >= list.size)) return false;
 
         for (int i = id; i<list.size; ++i) {
             alias_t* c = &list.data[i];
@@ -182,6 +182,7 @@ namespace alias {
     void print() {
         debugF("MAC Alias List: ");
         debugln(list.size);
+        debuglnF("------------------");
 
         debug(strh::right(3, "ID"));
         debug(' ');
