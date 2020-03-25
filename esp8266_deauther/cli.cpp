@@ -316,6 +316,18 @@ namespace cli {
                     if (res == String('y')) cmd += " -s";
                     debugln();
                 }
+
+                { // Scan
+                    do {
+                        debuglnF("Scan for authentication requests?\r\n"
+                                 "  y: Yes\r\n"
+                                 "  n: No\r\n"
+                                 " [default=n]");
+                        CLI_READ_RES("n");
+                    } while (!(res == String('y') || res == String('n')));
+                    if (res == String('y')) cmd += " -scan";
+                    debugln();
+                }
             } else if (res == "deauth") {
                 { // Target
                     do {
@@ -707,6 +719,7 @@ namespace cli {
             uint8_t ch;
             unsigned long timeout = 0;
             bool silent;
+            bool scan;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
@@ -741,8 +754,12 @@ namespace cli {
                 silent = cmd.getArg("s").isSet();
             }
 
+            { // Scan
+                scan = cmd.getArg("scan").isSet();
+            }
+
             attack::startBeacon(ssid_list, from, to, enc, ch, timeout, silent);
-            scan::startAuth(from, timeout, silent);
+            if (scan) scan::startAuth(from, timeout, silent);
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("from,mac/from,bssid", "random");
@@ -751,6 +768,7 @@ namespace cli {
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("t/ime", "300");
         cmd_beacon.addFlagArg("s/ilent");
+        cmd_beacon.addFlagArg("scan");
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
@@ -759,7 +777,8 @@ namespace cli {
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   channel (default=1)\r\n"
             "  -t:    attack timeout in seconds (default=300)\r\n"
-            "  -s:    silent mode (mute output)"
+            "  -s:    silent mode (mute output)\r\n"
+            "  -scan: scan for authentications"
             );
 
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
