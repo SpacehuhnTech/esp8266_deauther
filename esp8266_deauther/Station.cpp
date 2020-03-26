@@ -12,7 +12,7 @@
 
 // ========== Station ========== //
 
-Station::Station(uint8_t* mac, AccessPoint* ap) {
+Station::Station(const uint8_t* mac, AccessPoint* ap) {
     memcpy(this->mac, mac, 6);
     this->ap = ap;
 }
@@ -31,6 +31,10 @@ const AccessPoint* Station::getAccessPoint() const {
 
 uint32_t Station::getPackets() const {
     return pkts;
+}
+
+int8_t Station::getRSSI() const {
+    return rssi;
 }
 
 String Station::getSSIDString() const {
@@ -89,8 +93,9 @@ bool Station::addAuth(uint8_t num) {
     }
 }
 
-void Station::newPkt() {
+void Station::newPkt(int8_t rssi) {
     ++pkts;
+    this->rssi = rssi;
 }
 
 void Station::print(int id, const scan_filter_t* f) {
@@ -114,6 +119,8 @@ void Station::print(int id, const scan_filter_t* f) {
     debug(strh::right(3, String(id)));
     debug(' ');
     debug(strh::right(4, String(getPackets())));
+    debug(' ');
+    debug(strh::right(4, String(getRSSI())));
     debug(' ');
     debug(strh::left(8, getVendor()));
     debug(' ');
@@ -151,7 +158,7 @@ StationList::~StationList() {
     clear();
 }
 
-bool StationList::push(uint8_t* mac) {
+bool StationList::push(const uint8_t* mac) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
     Station* new_st = new Station(mac, nullptr);
@@ -217,7 +224,7 @@ void StationList::clear() {
     list_pos = 0;
 }
 
-Station* StationList::search(uint8_t* mac) {
+Station* StationList::search(const uint8_t* mac) {
     if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
         return nullptr;
     }
@@ -279,6 +286,8 @@ void StationList::print(const scan_filter_t* filter) {
     debug(' ');
     debug(strh::right(4, "Pkts"));
     debug(' ');
+    debug(strh::right(4, "RSSI"));
+    debug(' ');
     debug(strh::left(8, "Vendor"));
     debug(' ');
     debug(strh::left(17, "MAC-Address"));
@@ -290,7 +299,7 @@ void StationList::print(const scan_filter_t* filter) {
     debug(strh::left(34, "Probe-Requests"));
     debugln();
 
-    debuglnF("===========================================================================================================================");
+    debuglnF("================================================================================================================================");
 
     int i = 0;
     begin();
@@ -300,9 +309,9 @@ void StationList::print(const scan_filter_t* filter) {
         ++i;
     }
 
-    debuglnF("===========================================================================================================================");
+    debuglnF("================================================================================================================================");
     debuglnF("Pkts = Recorded Packets");
-    debuglnF("===========================================================================================================================");
+    debuglnF("================================================================================================================================");
 
     debugln();
 }

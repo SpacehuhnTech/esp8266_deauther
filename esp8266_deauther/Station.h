@@ -23,18 +23,20 @@ class Station {
         AccessPoint* ap;
 
         uint32_t pkts           = 0;
+        int8_t rssi             = -127;
         SortedStringList probes = SortedStringList(MAX_PROBES);
         Station* next           = nullptr;
 
         uint32_t auths = 0;
 
     public:
-        Station(uint8_t* mac, AccessPoint* ap);
+        Station(const uint8_t* mac, AccessPoint* ap);
 
         const uint8_t* getMAC() const;
         String getMACString() const;
         const AccessPoint* getAccessPoint() const;
         uint32_t getPackets() const;
+        int8_t getRSSI() const;
         String getSSIDString() const;
         String getBSSIDString() const;
         String getVendor() const;
@@ -49,7 +51,7 @@ class Station {
 
         bool addProbe(const char* ssid, uint8_t len);
         bool addAuth(uint8_t num);
-        void newPkt();
+        void newPkt(int8_t rssi);
 
         void print(int id, const scan_filter_t* filter = NULL);
 };
@@ -72,10 +74,10 @@ class StationList {
         StationList(int max = MAX_STATIONS);
         ~StationList();
 
-        bool push(uint8_t* mac);
+        bool push(const uint8_t* mac);
         void clear();
 
-        Station* search(uint8_t* mac);
+        Station* search(const uint8_t* mac);
         Station* get(int i);
 
         void begin();

@@ -17,6 +17,7 @@
 extern "C" {
   #include "user_interface.h"
 }
+
 typedef struct scan_data_t {
     bool          ap;
     bool          st;
@@ -38,6 +39,53 @@ typedef struct scan_data_t {
     AccessPointList ap_list;
     StationList     st_list;
 } scan_data_t;
+
+typedef struct wifi_pkt_rx_ctrl_t {
+    signed   rssi          : 8;
+    unsigned rate          : 4;
+    unsigned is_group      : 1;
+    unsigned               : 1;
+    unsigned sig_mode      : 2;
+    unsigned legacy_length : 12;
+    unsigned damatch0      : 1;
+    unsigned damatch1      : 1;
+    unsigned bssidmatch0   : 1;
+    unsigned bssidmatch1   : 1;
+    unsigned mcs           : 7;
+    unsigned cwb           : 1;
+    unsigned ht_length     : 16;
+    unsigned smoothing     : 1;
+    unsigned not_sounding  : 1;
+    unsigned               : 1;
+    unsigned aggregation   : 1;
+    unsigned stbc          : 2;
+    unsigned fec_coding    : 1;
+    unsigned sgi           : 1;
+    unsigned rx_state      : 8;
+    unsigned ampdu_cnt     : 8;
+    unsigned channel       : 4;
+    unsigned               : 12;
+} wifi_pkt_rx_ctrl_t;
+
+typedef struct wifi_pkt_lenseq_t {
+    uint16_t length;
+    uint16_t seq;
+    uint8_t  address3[6];
+} wifi_pkt_lenseq_t;
+
+typedef struct wifi_pkt_mgmt_t {
+    wifi_pkt_rx_ctrl_t rx_ctrl;
+    uint8_t            payload[112];
+    uint16_t           cnt;
+    uint16_t           len;
+} wifi_pkt_mgmt_t;
+
+typedef struct wifi_pkt_data_t {
+    wifi_pkt_rx_ctrl_t rx_ctrl;
+    uint8_t            payload[36];
+    uint16_t           cnt;
+    wifi_pkt_lenseq_t  lenseq[1];
+} wifi_pkt_data_t;
 
 namespace scan {
     // ===== PRIVATE ===== //
@@ -78,7 +126,7 @@ namespace scan {
         } while (true);
     }
 
-    Station* register_station(uint8_t* mac, AccessPoint* ap) {
+    Station* register_station(const uint8_t* mac, AccessPoint* ap, int8_t rssi) {
         Station* tmp = data.st_list.search(mac);
 
         if (!tmp && data.st_list.push(mac)) {
@@ -102,16 +150,33 @@ namespace scan {
         }
 
         if (ap) tmp->setAccessPoint(ap);
-        tmp->newPkt();
+        tmp->newPkt(rssi);
 
         return tmp;
     }
 
     void station_sniffer(uint8_t* buf, uint16_t len) {
-        // drop frames that are too short to have a valid MAC header
-        if (len < 28) return;
+        wifi_pkt_rx_ctrl_t* ctrl { nullptr };
+        uint8_t* payload { nullptr };
+        size_t   payload_len { 0 };
 
-        uint8_t type = buf[12];
+        if (len == sizeof(wifi_pkt_mgmt_t)) {
+            wifi_pkt_mgmt_t* pkt { (wifi_pkt_mgmt_t*)buf };
+            ctrl        = &pkt->rx_ctrl;
+            payload     = pkt->payload;
+            payload_len = 112;
+        } else if (len == sizeof(wifi_pkt_data_t)) {
+            wifi_pkt_data_t* pkt { (wifi_pkt_data_t*)buf };
+            ctrl        = &pkt->rx_ctrl;
+            payload     = pkt->payload;
+            payload_len = 36;
+        } else if (len == sizeof(wifi_pkt_rx_ctrl_t)) {
+            ctrl = (wifi_pkt_rx_ctrl_t*)buf;
+        }
+
+        if (payload_len == 0) return;
+
+        uint8_t type = payload[0]; // buf[12];
 
         // drop ... frames
         if (
@@ -124,15 +189,16 @@ namespace scan {
         // only allow data frames
         // if(buf[12] != 0x08 && buf[12] != 0x88) return;
 
-        uint8_t* mac_to   = &buf[16]; // To (Receiver)
-        uint8_t* mac_from = &buf[22]; // From (Transmitter)
+        const uint8_t* mac_to   = &payload[4];  // &buf[16]; // To (Receiver)
+        const uint8_t* mac_from = &payload[10]; // &buf[22]; // From (Transmitter)
+        const int8_t   rssi     = ctrl->rssi;
 
         // broadcast probe request
-        if ((type == 0x40) && (buf[12+25] > 0)) {
-            const char* ssid = (const char*)&buf[12+26];
-            uint8_t     len  = buf[12+25];
+        if ((type == 0x40) && (payload[25] > 0)) {
+            const char* ssid = (const char*)&payload[26];
+            uint8_t     len  = payload[25];
 
-            Station* st = register_station(mac_from, NULL);
+            Station* st = register_station(mac_from, NULL, rssi);
 
             if (st && st->addProbe(ssid, len)) {
                 if (!data.silent) {
@@ -146,7 +212,7 @@ namespace scan {
         }
         // authentication
         else if (data.auth && (type == 0xb0) && (memcmp(mac_to, data.bssid, 5) == 0)) {
-            Station* st = register_station(mac_from, NULL);
+            Station* st = register_station(mac_from, NULL, rssi);
 
             if (st && st->addAuth(mac_to[5])) {
                 if (!data.silent) {
@@ -164,11 +230,11 @@ namespace scan {
 
             if (ap) {
                 // From station to access point
-                register_station(mac_from, ap);
+                register_station(mac_from, ap, rssi);
             } else {
                 // From access point to station
                 ap = data.ap_list.search(mac_from);
-                if (ap) register_station(mac_to, ap);
+                if (ap) register_station(mac_to, ap, rssi);
             }
         }
     }
