@@ -50,6 +50,23 @@ MACList::~MACList() {
     clear();
 }
 
+void MACList::moveFrom(MACList& ml) {
+    clear();
+
+    this->list_begin    = ml.list_begin;
+    this->list_end      = ml.list_end;
+    this->list_size     = ml.list_size;
+    this->list_max_size = ml.list_max_size;
+    this->list_h        = ml.list_h;
+    this->list_pos      = ml.list_pos;
+
+    ml.list_begin = NULL;
+    ml.list_end   = NULL;
+    ml.list_size  = 0;
+    ml.list_h     = NULL;
+    ml.list_pos   = 0;
+}
+
 void MACList::parse(const String& input, String delimiter) {
     StringList str_list(input, delimiter);
 

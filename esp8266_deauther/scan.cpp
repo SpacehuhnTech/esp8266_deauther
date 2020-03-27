@@ -18,15 +18,35 @@ extern "C" {
   #include "user_interface.h"
 }
 
+#define SNIFFER_PREAMBLE()\
+    wifi_pkt_rx_ctrl_t* ctrl { nullptr };\
+    uint8_t* payload { nullptr };\
+    size_t   payload_len { 0 };\
+    if (len == sizeof(wifi_pkt_mgmt_t)) {\
+        wifi_pkt_mgmt_t* pkt { (wifi_pkt_mgmt_t*)buf };\
+        ctrl        = &pkt->rx_ctrl;\
+        payload     = pkt->payload;\
+        payload_len = 112;\
+    } else if (len == sizeof(wifi_pkt_data_t)) {\
+        wifi_pkt_data_t* pkt { (wifi_pkt_data_t*)buf };\
+        ctrl        = &pkt->rx_ctrl;\
+        payload     = pkt->payload;\
+        payload_len = 36;\
+    } else if (len == sizeof(wifi_pkt_rx_ctrl_t)) {\
+        ctrl = (wifi_pkt_rx_ctrl_t*)buf;\
+    }
+
 typedef struct scan_data_t {
     bool          ap;
     bool          st;
     bool          auth;
+    bool          rssi;
     uint16_t      channels;
     unsigned long ch_time;
     unsigned long timeout;
     uint8_t       bssid[6];
     bool          silent;
+    rssi_cb_f     rssi_cb;
 
     uint8_t       num_of_channels;
     unsigned long start_time;
@@ -38,6 +58,7 @@ typedef struct scan_data_t {
 
     AccessPointList ap_list;
     StationList     st_list;
+    MACList         mac_filter;
 } scan_data_t;
 
 typedef struct wifi_pkt_rx_ctrl_t {
@@ -156,23 +177,7 @@ namespace scan {
     }
 
     void station_sniffer(uint8_t* buf, uint16_t len) {
-        wifi_pkt_rx_ctrl_t* ctrl { nullptr };
-        uint8_t* payload { nullptr };
-        size_t   payload_len { 0 };
-
-        if (len == sizeof(wifi_pkt_mgmt_t)) {
-            wifi_pkt_mgmt_t* pkt { (wifi_pkt_mgmt_t*)buf };
-            ctrl        = &pkt->rx_ctrl;
-            payload     = pkt->payload;
-            payload_len = 112;
-        } else if (len == sizeof(wifi_pkt_data_t)) {
-            wifi_pkt_data_t* pkt { (wifi_pkt_data_t*)buf };
-            ctrl        = &pkt->rx_ctrl;
-            payload     = pkt->payload;
-            payload_len = 36;
-        } else if (len == sizeof(wifi_pkt_rx_ctrl_t)) {
-            ctrl = (wifi_pkt_rx_ctrl_t*)buf;
-        }
+        SNIFFER_PREAMBLE();
 
         if (payload_len == 0) return;
 
@@ -236,6 +241,21 @@ namespace scan {
                 ap = data.ap_list.search(mac_from);
                 if (ap) register_station(mac_to, ap, rssi);
             }
+        }
+    }
+
+    void rssi_sniffer(uint8_t* buf, uint16_t len) {
+        SNIFFER_PREAMBLE();
+
+        if (payload_len == 0) return;
+
+        const uint8_t  type     = payload[0];
+        const uint8_t* receiver = &payload[4];
+        const uint8_t* sender   = &payload[10];
+        const int8_t   rssi     = ctrl->rssi;
+
+        if ((data.mac_filter.size() == 0) || data.mac_filter.contains(sender)) {
+            data.rssi_cb(rssi);
         }
     }
 
@@ -310,6 +330,18 @@ namespace scan {
         }
     }
 
+    void stopRSSI() {
+        if (data.rssi) {
+            wifi_promiscuous_enable(false);
+            data.rssi = false;
+
+            data.mac_filter.clear();
+
+            debuglnF("Stopped RSSI scanner");
+            debugln();
+        }
+    }
+
     void stopAuthSearch() {
         if (data.auth) {
             wifi_promiscuous_enable(false);
@@ -368,6 +400,15 @@ namespace scan {
         }
     }
 
+    void updateRSSI() {
+        unsigned long current_time = millis();
+
+        if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
+            setNextChannel();
+            data.ch_update_time = current_time;
+        }
+    }
+
     // ===== PUBLIC ===== //
     void start(bool ap, bool st, unsigned long timeout, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
         { // Error check
@@ -420,6 +461,60 @@ namespace scan {
         else if (st) startSTsearch();
     }
 
+    void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels, unsigned long ch_time) {
+        if (!rssi_cb) {
+            // ERROR
+            return;
+        }
+
+        data.rssi_cb = rssi_cb;
+        data.mac_filter.moveFrom(mac_filter);
+
+        /*
+                if (data.mac_filter.size() == 0) {
+                    // ERROR
+                    return;
+                }*/
+
+        data.channels = channels;
+        data.ch_time  = ch_time;
+
+        uint8_t num_of_channels = 0;
+
+        for (uint8_t i = 0; i<14; ++i) {
+            num_of_channels += ((channels >> i) & 0x01);
+        }
+
+        unsigned long current_time = millis();
+
+        data.rssi            = true;
+        data.num_of_channels = num_of_channels;
+        data.start_time      = current_time;
+        data.output_time     = current_time;
+        data.pkt_time        = current_time;
+        data.ch_update_time  = current_time;
+        data.pkts_received   = 0;
+        data.pkts_per_second = 0;
+
+        debugF("Scanning for RSSI on ");
+        debug(data.num_of_channels);
+        debugF(" different channels");
+        debugln();
+        debuglnF("Type 'stop' to stop the scan");
+
+        uint8_t ch = 1;
+        wifi_set_channel(ch);
+
+        if ((data.channels >> (ch-1)) & 0x01) {
+            printChannel(ch);
+        } else {
+            setNextChannel();
+        }
+
+        wifi_set_promiscuous_rx_cb(rssi_sniffer);
+        wifi_promiscuous_enable(true);
+    }
+
     void startAuth(uint8_t* mac, unsigned long timeout, bool silent) {
         stop();
 
@@ -448,6 +543,7 @@ namespace scan {
     void stop() {
         stopAPsearch();
         stopSTsearch();
+        stopRSSI();
         stopAuthSearch();
     }
 

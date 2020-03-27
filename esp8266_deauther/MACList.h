@@ -44,6 +44,8 @@ class MACList {
         MACList(const String& input, String delimiter, int max = 0);
         ~MACList();
 
+        void moveFrom(MACList& ml);
+
         void parse(const String& input, String delimiter);
 
         bool push(const uint8_t* addr);

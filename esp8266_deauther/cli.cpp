@@ -31,6 +31,11 @@ extern "C" {
         return;\
     }
 
+
+void rssi_meter_cb(int8_t rssi) {
+    debugln(rssi);
+}
+
 namespace cli {
     // ===== PRIVATE ===== //
     SimpleCLI cli;                    // !< Instance of SimpleCLI library
@@ -683,6 +688,19 @@ namespace cli {
             "  -r:  keep previous scan results"
             );
 
+        Command cmd_rssi = cli.addCommand("rssi", [](cmd* c) {
+            Command cmd(c);
+            String mac_str = cmd.getArg("mac").getValue();
+
+            MACList macs(mac_str, ",");
+
+            scan::startRSSI(&rssi_meter_cb, macs);
+        });
+        cmd_rssi.addPosArg("mac", "");
+        cmd_rssi.setDescription(
+            "  RSSI meter\r\n"
+            "  -mac: MAC addresses");
+
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             Command cmd(c);
             String mode = cmd.getArg("t").getValue();
@@ -899,7 +917,7 @@ namespace cli {
         });
         cmd_deauth.addArg("ap", "");
         cmd_deauth.addArg("st/ation", "");
-        cmd_deauth.addArg("mac", "");
+        cmd_deauth.addArg("mac,manual", "");
         cmd_deauth.addArg("t/ime/out", "300");
         cmd_deauth.addArg("n/um/ber", "0");
         cmd_deauth.addArg("r/ate", "20");
