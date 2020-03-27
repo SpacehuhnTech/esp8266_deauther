@@ -9,9 +9,9 @@
 #include "StringList.h"
 #include "MACList.h"
 
-typedef struct scan_filter_t {
+typedef struct result_filter_t {
     uint16_t          channels;
     const StringList* ssids;
     const MACList   * bssid;
     const StringList* vendors;
-} scan_filter_t;
+} result_filter_t;

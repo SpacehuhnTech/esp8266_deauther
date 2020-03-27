@@ -451,11 +451,11 @@ namespace scan {
         stopAuthSearch();
     }
 
-    void printAPs(const scan_filter_t* filter) {
+    void printAPs(const result_filter_t* filter) {
         data.ap_list.print(filter);
     }
 
-    void printSTs(const scan_filter_t* filter) {
+    void printSTs(const result_filter_t* filter) {
         data.st_list.print(filter);
     }
 

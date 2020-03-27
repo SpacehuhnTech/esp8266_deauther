@@ -98,7 +98,7 @@ void Station::newPkt(int8_t rssi) {
     this->rssi = rssi;
 }
 
-void Station::print(int id, const scan_filter_t* f) {
+void Station::print(int id, const result_filter_t* f) {
     const AccessPoint* ap = getAccessPoint();
 
     if (f) {
@@ -277,7 +277,7 @@ bool StationList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void StationList::print(const scan_filter_t* filter) {
+void StationList::print(const result_filter_t* filter) {
     debugF("Station (Client) List: ");
     debugln(size());
     debuglnF("-------------------------");

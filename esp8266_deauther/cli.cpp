@@ -697,7 +697,7 @@ namespace cli {
             MACList macs(mac_str, ",");
             StringList vendors(vendor_str, ",");
 
-            scan_filter_t filter;
+            result_filter_t filter;
             filter.channels = channels;
             filter.ssids    = &ssids;
             filter.bssid    = &macs;

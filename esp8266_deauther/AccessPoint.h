@@ -44,7 +44,7 @@ class AccessPoint {
 
         void setNext(AccessPoint* next);
 
-        void print(int id, const scan_filter_t* filter = nullptr);
+        void print(int id, const result_filter_t* filter = nullptr);
 };
 
 // ========== AccessPointList ========== //
@@ -79,5 +79,5 @@ class AccessPointList {
         int size() const;
         bool full() const;
 
-        void print(const scan_filter_t* filter = nullptr);
+        void print(const result_filter_t* filter = nullptr);
 };

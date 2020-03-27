@@ -103,7 +103,7 @@ void AccessPoint::setNext(AccessPoint* next) {
     this->next = next;
 }
 
-void AccessPoint::print(int id, const scan_filter_t* f) {
+void AccessPoint::print(int id, const result_filter_t* f) {
     if (f) {
         if (((f->channels >> (getChannel()-1)) & 1) == 0) return;
         if (f->ssids && f->ssids->size() && !f->ssids->contains(getSSID())) return;
@@ -256,7 +256,7 @@ bool AccessPointList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void AccessPointList::print(const scan_filter_t* filter) {
+void AccessPointList::print(const result_filter_t* filter) {
     debugF("Access Point (Network) List: ");
     debugln(size());
     debuglnF("-------------------------------");

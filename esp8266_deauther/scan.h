@@ -18,8 +18,8 @@ namespace scan {
     void startAuth(uint8_t* mac, unsigned long timeout, bool silent);
     void stop();
 
-    void printAPs(const scan_filter_t* filter = NULL);
-    void printSTs(const scan_filter_t* filter = NULL);
+    void printAPs(const result_filter_t* filter = NULL);
+    void printSTs(const result_filter_t* filter = NULL);
 
     void update();
 
