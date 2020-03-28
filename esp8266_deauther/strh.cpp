@@ -59,8 +59,10 @@ namespace strh {
     }
 
     String quote(String str) {
-        if (!str.startsWith("\"")) str = '"' + str;
-        if (!str.endsWith("\"")) str = str + '"';
+        if (!str.startsWith("\"") || !str.endsWith("\"")) {
+            str.replace("\"", "\\\"");
+            str = '"' + str + '"';
+        }
         return str;
     }
 }
