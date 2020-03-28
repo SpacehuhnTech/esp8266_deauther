@@ -25,7 +25,7 @@
 #define debuglnF(...) DEBUG_PORT.println(F(__VA_ARGS__))
 
 #define debug_available() DEBUG_PORT.available()
-#define debug_read() DEBUG_PORT.readStringUntil('\n')
+#define debug_read() DEBUG_PORT.read()
 
 #else /* ifdef ENABLE_DEBUG */
 
