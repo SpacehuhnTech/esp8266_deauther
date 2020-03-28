@@ -141,22 +141,24 @@ namespace cli {
         Command cmd_help = cli.addCommand("help", [](cmd* c) {
             Command cmd(c);
 
-            Argument arg = cmd.getArg("command");
+            Argument cmdName = cmd.getArg("command");
+            bool description = !cmd.getArg("short").isSet();
 
-            if (arg.isSet()) {
-                String cmdName = arg.getValue();
-                Command tmp    = cli.getCommand(cmdName);
+            if (cmdName.isSet()) {
+                String cmdNameStr = cmdName.getValue();
+                Command tmp       = cli.getCommand(cmdNameStr);
                 if (tmp) {
-                    debugln(tmp.toString());
+                    debugln(tmp.toString(description));
                 } else {
-                    debug(cmdName);
+                    debug(cmdNameStr);
                     debuglnF(" not found :(");
                 }
             } else {
-                debugln(cli.toString());
+                debug(cli.toString(description));
             }
         });
         cmd_help.addPosArg("cmd,command", "");
+        cmd_help.addFlagArg("s/hort");
         cmd_help.setDescription("  Print the list of commands that you see right now");
 
         Command cmd_start = cli.addCommand("start", [](cmd* c) {
