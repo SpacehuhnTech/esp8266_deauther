@@ -223,7 +223,7 @@ namespace cli {
                                  "  1-14: WiFi channel(s) to search on (for example: 1,6,11)\r\n"
                                  " [default=all]\r\n");
                         CLI_READ_RES_DEFAULT("all");
-                        if (res != "all") cmd += " -ch " + res;
+                        if ((res != "all") && (res != "1-14")) cmd += " -ch " + res;
                     }
 
                     { // Channel scan time
@@ -552,7 +552,7 @@ namespace cli {
                              "  1-14: WiFi channel(s) to search on (for example: 1,6,11)\r\n"
                              " [default=all]\r\n");
                     CLI_READ_RES_DEFAULT("all");
-                    if (res != "all") cmd += " -ch " + res;
+                    if ((res != "all") && (res != "1-14")) cmd += " -ch " + res;
                 }
 
                 { // SSIDs
@@ -647,7 +647,7 @@ namespace cli {
         });
         cmd_scan.addPosArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "14");
-        cmd_scan.addArg("ch/annel", "1,2,3,4,5,6,7,8,9,10,11,12,13,14");
+        cmd_scan.addArg("ch/annel", "all");
         cmd_scan.addArg("ct/ime", "auto");
         cmd_scan.addFlagArg("s/ilent");
         cmd_scan.addFlagArg("r/etain");
