@@ -60,10 +60,10 @@ void MACList::moveFrom(MACList& ml) {
     this->list_h        = ml.list_h;
     this->list_pos      = ml.list_pos;
 
-    ml.list_begin = NULL;
-    ml.list_end   = NULL;
+    ml.list_begin = nullptr;
+    ml.list_end   = nullptr;
     ml.list_size  = 0;
-    ml.list_h     = NULL;
+    ml.list_h     = nullptr;
     ml.list_pos   = 0;
 }
 
@@ -107,7 +107,7 @@ bool MACList::push(const uint8_t* addr) {
         // Insert somewhere in the between (insertion sort)
         else {
             MAC* tmp_c = list_begin;
-            MAC* tmp_p = NULL;
+            MAC* tmp_p = nullptr;
 
             int res = compare(tmp_c, new_mac);
 
@@ -150,7 +150,7 @@ bool MACList::contains(const uint8_t* mac) const {
 
 MAC* MACList::search(const uint8_t* mac) {
     if ((list_size == 0) || (compare(list_begin, mac) > 0) || (compare(list_end, mac) < 0)) {
-        return NULL;
+        return nullptr;
     }
 
     MAC* tmp = list_begin;
@@ -161,7 +161,7 @@ MAC* MACList::search(const uint8_t* mac) {
         res = compare(tmp, mac);
     }
 
-    return (res == 0) ? tmp : NULL;
+    return (res == 0) ? tmp : nullptr;
 }
 
 void MACList::clear() {
@@ -173,11 +173,11 @@ void MACList::clear() {
         delete to_delete;
     }
 
-    list_begin = NULL;
-    list_end   = NULL;
+    list_begin = nullptr;
+    list_end   = nullptr;
     list_size  = 0;
 
-    list_h   = NULL;
+    list_h   = nullptr;
     list_pos = 0;
 }
 

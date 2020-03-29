@@ -38,13 +38,13 @@ class Target {
 
 class TargetList {
     private:
-        Target* list_begin = NULL;
-        Target* list_end   = NULL;
+        Target* list_begin = nullptr;
+        Target* list_end   = nullptr;
 
         int list_size     = 0;
         int list_max_size = 0;
 
-        Target* list_h = NULL;
+        Target* list_h = nullptr;
         int list_pos   = 0;
 
         int compare(const Target* a, const Target* b) const;

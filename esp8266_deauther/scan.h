@@ -23,8 +23,8 @@ namespace scan {
 
     void stop();
 
-    void printAPs(const result_filter_t* filter = NULL);
-    void printSTs(const result_filter_t* filter = NULL);
+    void printAPs(const result_filter_t* filter = nullptr);
+    void printSTs(const result_filter_t* filter = nullptr);
 
     void update();
 

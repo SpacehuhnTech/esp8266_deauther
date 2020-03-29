@@ -53,19 +53,19 @@ class Station {
         bool addAuth(uint8_t num);
         void newPkt(int8_t rssi);
 
-        void print(int id, const result_filter_t* filter = NULL);
+        void print(int id, const result_filter_t* filter = nullptr);
 };
 
 // ========== StationList ========== //
 
 class StationList {
     private:
-        Station* list_begin = NULL;
-        Station* list_end   = NULL;
+        Station* list_begin = nullptr;
+        Station* list_end   = nullptr;
         int list_size       = 0;
         int list_max_size;
 
-        Station* list_h = NULL;
+        Station* list_h = nullptr;
         int list_pos    = 0;
 
         int compare(const Station* st, const uint8_t* mac) const;
@@ -87,5 +87,5 @@ class StationList {
         int size() const;
         bool full() const;
 
-        void print(const result_filter_t* filter = NULL);
+        void print(const result_filter_t* filter = nullptr);
 };

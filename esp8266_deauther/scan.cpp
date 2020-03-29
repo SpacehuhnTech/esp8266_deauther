@@ -167,7 +167,7 @@ namespace scan {
 
         if (!tmp) {
             // Push error
-            return NULL;
+            return nullptr;
         }
 
         if (ap) tmp->setAccessPoint(ap);
@@ -203,7 +203,7 @@ namespace scan {
             const char* ssid = (const char*)&payload[26];
             uint8_t     len  = payload[25];
 
-            Station* st = register_station(mac_from, NULL, rssi);
+            Station* st = register_station(mac_from, nullptr, rssi);
 
             if (st && st->addProbe(ssid, len)) {
                 if (!data.silent) {
@@ -217,7 +217,7 @@ namespace scan {
         }
         // authentication
         else if (data.auth && (type == 0xb0) && (memcmp(mac_to, data.bssid, 5) == 0)) {
-            Station* st = register_station(mac_from, NULL, rssi);
+            Station* st = register_station(mac_from, nullptr, rssi);
 
             if (st && st->addAuth(mac_to[5])) {
                 if (!data.silent) {

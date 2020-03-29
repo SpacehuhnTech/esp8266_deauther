@@ -14,7 +14,7 @@ Target::Target(const uint8_t* from, const uint8_t* to, uint8_t ch) {
     memcpy(this->from, from, 6);
     memcpy(this->to, to, 6);
     this->ch   = ch;
-    this->next = NULL;
+    this->next = nullptr;
 }
 
 const uint8_t* Target::getFrom() const {
@@ -77,10 +77,10 @@ void TargetList::moveFrom(TargetList& t) {
         tmp = tmp->getNext();
     }
 
-    t.list_begin = NULL;
-    t.list_end   = NULL;
+    t.list_begin = nullptr;
+    t.list_end   = nullptr;
     t.list_size  = 0;
-    t.list_h     = NULL;
+    t.list_h     = nullptr;
     t.list_pos   = 0;
 }
 
@@ -109,7 +109,7 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
         // Insert somewhere in the between (insertion sort)
         else {
             Target* tmp_c = list_begin;
-            Target* tmp_p = NULL;
+            Target* tmp_p = nullptr;
 
             int res = compare(tmp_c, new_target);
 
@@ -179,10 +179,10 @@ void TargetList::clear() {
         delete tmp;
     }
 
-    list_begin = NULL;
-    list_end   = NULL;
+    list_begin = nullptr;
+    list_end   = nullptr;
     list_size  = 0;
 
-    list_h   = NULL;
+    list_h   = nullptr;
     list_pos = 0;
 }

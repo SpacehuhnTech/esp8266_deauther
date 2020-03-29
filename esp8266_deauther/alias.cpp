@@ -69,7 +69,7 @@ namespace alias {
     }
 
     int search(const uint8_t* mac) {
-        // NULL pointer or empty list
+        // null-pointer or empty list
         if (!mac || (list.size == 0)) return -1;
 
         // Search remaining list
@@ -90,7 +90,7 @@ namespace alias {
             (search(mac) > 0) ||
             (search(name) > 0)) return false;
 
-        alias_t* a = NULL;
+        alias_t* a = nullptr;
 
         // Empty list
         if (list.size == 0) {

@@ -60,10 +60,10 @@ void StringList::moveFrom(StringList& sl) {
         ih = ih->next;
     }
 
-    sl.list_begin = NULL;
-    sl.list_end   = NULL;
+    sl.list_begin = nullptr;
+    sl.list_end   = nullptr;
     sl.list_size  = 0;
-    sl.list_h     = NULL;
+    sl.list_h     = nullptr;
     sl.list_pos   = 0;
 }
 
@@ -77,7 +77,7 @@ bool StringList::push(const char* str, unsigned long len) {
     str_t* new_str = (str_t*)malloc(sizeof(str_t));
 
     new_str->ptr  = stringCopy(str, len);
-    new_str->next = NULL;
+    new_str->next = nullptr;
 
     if (!list_begin) {
         list_begin = new_str;
@@ -102,9 +102,9 @@ bool StringList::forcePush(const char* str, unsigned long len) {
 
         list_begin = list_begin->next;
 
-        free(new_str->ptr);
+        delete new_str->ptr;
         new_str->ptr  = stringCopy(str, len);
-        new_str->next = NULL;
+        new_str->next = nullptr;
 
         list_end->next = new_str;
         list_end       = new_str;
@@ -186,11 +186,11 @@ void StringList::clear() {
         free(to_delete);
     }
 
-    list_begin = NULL;
-    list_end   = NULL;
+    list_begin = nullptr;
+    list_end   = nullptr;
     list_size  = 0;
 
-    list_h   = NULL;
+    list_h   = nullptr;
     list_pos = 0;
 }
 
@@ -208,7 +208,7 @@ bool SortedStringList::push(const char* str, unsigned long len) {
     str_t* new_str = (str_t*)malloc(sizeof(str_t));
 
     new_str->ptr  = stringCopy(str, len);
-    new_str->next = NULL;
+    new_str->next = nullptr;
 
     // Empty list -> insert first element
     if (!list_begin) {
@@ -229,7 +229,7 @@ bool SortedStringList::push(const char* str, unsigned long len) {
         // Insert somewhere inbetween (insertion sort)
         else {
             str_t* tmp_c = list_begin;
-            str_t* tmp_p = NULL;
+            str_t* tmp_p = nullptr;
 
             int res = compare(tmp_c, new_str);
 

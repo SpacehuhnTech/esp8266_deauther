@@ -14,7 +14,7 @@
 class MAC {
     private:
         uint8_t addr[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-        MAC* next       = NULL;
+        MAC* next       = nullptr;
 
     public:
         MAC(const uint8_t* addr);
@@ -27,13 +27,13 @@ class MAC {
 
 class MACList {
     private:
-        MAC* list_begin = NULL;
-        MAC* list_end   = NULL;
+        MAC* list_begin = nullptr;
+        MAC* list_end   = nullptr;
 
         int list_size     = 0;
         int list_max_size = 0;
 
-        MAC* list_h  = NULL;
+        MAC* list_h  = nullptr;
         int list_pos = 0;
 
         int compare(const MAC* a, const uint8_t* b) const;

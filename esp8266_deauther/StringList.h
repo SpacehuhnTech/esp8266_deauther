@@ -15,12 +15,12 @@ class StringList {
             str_t* next;
         } str_t;
 
-        str_t* list_begin = NULL;
-        str_t* list_end   = NULL;
+        str_t* list_begin = nullptr;
+        str_t* list_end   = nullptr;
         int list_size     = 0;
         int list_max_size;
 
-        str_t* list_h = NULL;
+        str_t* list_h = nullptr;
         int list_pos  = 0;
 
         char* stringCopy(const char* str, unsigned long len) const;
