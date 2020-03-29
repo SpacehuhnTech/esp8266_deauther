@@ -9,7 +9,7 @@
 // ========== StringList ========== //
 
 char* StringList::stringCopy(const char* str, unsigned long len) const {
-    char* newstr = (char*)malloc(len+1);
+    char* newstr = new char[len+1];
 
     memcpy(newstr, str, len);
     newstr[len] = '\0';
@@ -74,7 +74,7 @@ bool StringList::push(String str) {
 bool StringList::push(const char* str, unsigned long len) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    str_t* new_str = (str_t*)malloc(sizeof(str_t));
+    str_t* new_str = new str_t();
 
     new_str->ptr  = stringCopy(str, len);
     new_str->next = nullptr;
@@ -102,7 +102,7 @@ bool StringList::forcePush(const char* str, unsigned long len) {
 
         list_begin = list_begin->next;
 
-        delete new_str->ptr;
+        delete[] new_str->ptr;
         new_str->ptr  = stringCopy(str, len);
         new_str->next = nullptr;
 
@@ -182,8 +182,8 @@ void StringList::clear() {
     while (tmp) {
         str_t* to_delete = tmp;
         tmp = tmp->next;
-        free(to_delete->ptr);
-        free(to_delete);
+        delete[] to_delete->ptr;
+        delete to_delete;
     }
 
     list_begin = nullptr;
@@ -205,7 +205,7 @@ SortedStringList::SortedStringList(const String& input, String delimiter, int ma
 bool SortedStringList::push(const char* str, unsigned long len) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
-    str_t* new_str = (str_t*)malloc(sizeof(str_t));
+    str_t* new_str = new str_t();
 
     new_str->ptr  = stringCopy(str, len);
     new_str->next = nullptr;
@@ -241,8 +241,8 @@ bool SortedStringList::push(const char* str, unsigned long len) {
 
             // Skip duplicates
             if (res == 0) {
-                free(new_str->ptr);
-                free(new_str);
+                delete[] new_str->ptr;
+                delete new_str;
                 return false;
             } else {
                 new_str->next = tmp_c;

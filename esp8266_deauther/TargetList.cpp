@@ -121,7 +121,7 @@ bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) 
 
             // Skip duplicates
             if (res == 0) {
-                free(new_target);
+                delete new_target;
                 return false;
             } else {
                 new_target->setNext(tmp_c);
