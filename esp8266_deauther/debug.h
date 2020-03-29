@@ -26,6 +26,7 @@
 
 #define debug_available() DEBUG_PORT.available()
 #define debug_read() DEBUG_PORT.read()
+#define debug_peek() DEBUG_PORT.peek()
 
 #else /* ifdef ENABLE_DEBUG */
 
