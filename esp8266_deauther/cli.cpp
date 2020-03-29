@@ -52,7 +52,7 @@ namespace cli {
     StringList history(HISTORY_SIZE); // !< Command history
 #endif // ifdef ENABLE_HISTORY
 
-    void toMAC(const String& str, uint8_t* mac) {
+    void parse_mac(const String& str, uint8_t* mac) {
         // if in alias list, copy
         if (!alias::resolve(str, mac)) {
             if (str == "random") {
@@ -65,7 +65,20 @@ namespace cli {
         }
     }
 
-    SortedStringList toIntList(const String& str) {
+    unsigned long parse_time(const String& str, unsigned long defaultMultiplicator) {
+        unsigned long value = str.toInt();
+
+        if (value > 0) {
+            if (str.endsWith("s") || str.endsWith("sec")) value *= 1000;
+            else if (str.endsWith("m") || str.endsWith("min")) value *= 60*1000;
+            else if (str.endsWith("h")) value *= 60*60*1000;
+            else value *= defaultMultiplicator;
+        }
+
+        return value;
+    }
+
+    SortedStringList parse_int_list(const String& str) {
         StringList values(str, ",");
 
         SortedStringList list;
@@ -91,10 +104,10 @@ namespace cli {
         return list;
     }
 
-    uint16_t getChannels(const String& ch_str) {
+    uint16_t parse_channels(const String& ch_str) {
         if (ch_str == "all") return 0x3FFF;
 
-        SortedStringList ch_list = toIntList(ch_str);
+        SortedStringList ch_list = parse_int_list(ch_str);
         ch_list.begin();
 
         uint16_t channels = 0;
@@ -211,8 +224,8 @@ namespace cli {
                     { // Scan time
                         do {
                             debuglnF("Scan for how long?\r\n"
-                                     "  >1: Station scan time in seconds\r\n"
-                                     " [default=14]");
+                                     "  >1: Station scan time\r\n"
+                                     " [default=14s]");
                             CLI_READ_RES_DEFAULT("14");
                         } while (!(res.toInt() > 0));
                         if (res != "14") cmd += " -t " + res;
@@ -624,17 +637,18 @@ namespace cli {
             bool st = false;
 
             { // Station scan time
-                long seconds = cmd.getArg("t").getValue().toInt();
-                if (seconds > 0) time = seconds*1000;
+                String time_str = cmd.getArg("t").getValue();
+                time            = parse_time(time_str, 1000);
             }
 
             { // Channels
                 String ch_str = cmd.getArg("ch").getValue();
-                channels      = getChannels(ch_str);
+                channels      = parse_channels(ch_str);
             }
 
             { // Channel scan time
-                ch_time = cmd.getArg("ct").getValue().toInt();
+                String time_str = cmd.getArg("ct").getValue();
+                ch_time         = parse_time(time_str, 1);
             }
 
             { // Silent
@@ -660,7 +674,7 @@ namespace cli {
             scan::start(ap, st, time, channels, ch_time, silent, retain);
         });
         cmd_scan.addPosArg("m/ode", "ap+st");
-        cmd_scan.addArg("t/ime", "14");
+        cmd_scan.addArg("t/ime", "14s");
         cmd_scan.addArg("ch/annel", "all");
         cmd_scan.addArg("ct/ime", "auto");
         cmd_scan.addFlagArg("s/ilent");
@@ -668,9 +682,9 @@ namespace cli {
         cmd_scan.setDescription(
             "  Scan for WiFi devices\r\n"
             "  -m:  scan mode [ap,st,ap+st] (default=ap+st)\r\n"
-            "  -t:  station scan time in seconds [>1] (default=14)\r\n"
+            "  -t:  station scan time (default=14s)\r\n"
             "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\r\n"
-            "  -ct: channel scan time in milliseconds [>1] (default=auto)\r\n"
+            "  -ct: channel scan time in milliseconds (default=auto)\r\n"
             "  -s:  silent mode (mute output)\r\n"
             "  -r:  keep previous scan results"
             );
@@ -697,7 +711,7 @@ namespace cli {
             String mac_str    = cmd.getArg("bssid").getValue();
             String vendor_str = cmd.getArg("vendor").getValue();
 
-            uint16_t channels = getChannels(ch_str);
+            uint16_t channels = parse_channels(ch_str);
             StringList ssids(ssid_str, ",");
             MACList macs(mac_str, ",");
             StringList vendors(vendor_str, ",");
@@ -749,12 +763,12 @@ namespace cli {
 
             { // MAC from
                 String from_str = cmd.getArg("from").getValue();
-                toMAC(from_str, from);
+                parse_mac(from_str, from);
             }
 
             { // MAC to
                 String to_str = cmd.getArg("to").getValue();
-                toMAC(to_str, to);
+                parse_mac(to_str, to);
             }
 
             { // Encryption
@@ -767,8 +781,8 @@ namespace cli {
             }
 
             { // Time
-                long seconds = cmd.getArg("t").getValue().toInt();
-                if (seconds > 0) timeout = seconds*1000;
+                String time_str = cmd.getArg("t").getValue();
+                timeout         = parse_time(time_str, 1000);
             }
 
             { // Silent
@@ -787,7 +801,7 @@ namespace cli {
         cmd_beacon.addArg("to,macto", "broadcast");
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
-        cmd_beacon.addArg("t/ime", "300");
+        cmd_beacon.addArg("t/ime/out", "5min");
         cmd_beacon.addFlagArg("s/ilent");
         cmd_beacon.addFlagArg("scan");
         cmd_beacon.setDescription(
@@ -797,7 +811,7 @@ namespace cli {
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   channel (default=1)\r\n"
-            "  -t:    attack timeout in seconds (default=300)\r\n"
+            "  -t:    attack timeout (default=5min)\r\n"
             "  -s:    silent mode (mute output)\r\n"
             "  -scan: scan for authentications"
             );
@@ -819,7 +833,7 @@ namespace cli {
 
             { // Read Access Point MACs
                 String ap_str         = cmd.getArg("ap").getValue();
-                SortedStringList list = toIntList(ap_str);
+                SortedStringList list = parse_int_list(ap_str);
                 list.begin();
 
                 while (list.available()) {
@@ -833,7 +847,7 @@ namespace cli {
 
             { // Read Station MACs
                 String st_str         = cmd.getArg("st").getValue();
-                SortedStringList list = toIntList(st_str);
+                SortedStringList list = parse_int_list(st_str);
                 list.begin();
 
                 while (list.available()) {
@@ -870,8 +884,8 @@ namespace cli {
                     uint8_t mac_to[6];
                     uint8_t ch;
 
-                    toMAC(mac_from_str, mac_from);
-                    toMAC(mac_to_str, mac_to);
+                    parse_mac(mac_from_str, mac_from);
+                    parse_mac(mac_to_str, mac_to);
                     ch = ch_str.toInt();
 
                     targets.push(mac_from, mac_to, ch);
@@ -879,8 +893,8 @@ namespace cli {
             }
 
             { // Time
-                long seconds = cmd.getArg("t").getValue().toInt();
-                if (seconds > 0) timeout = seconds*1000;
+                String time_str = cmd.getArg("t").getValue();
+                timeout         = parse_time(time_str, 1000);
             }
 
             { // Number
@@ -913,7 +927,7 @@ namespace cli {
         cmd_deauth.addArg("ap", "");
         cmd_deauth.addArg("st/ation", "");
         cmd_deauth.addArg("mac,manual", "");
-        cmd_deauth.addArg("t/ime/out", "300");
+        cmd_deauth.addArg("t/ime/out", "5min");
         cmd_deauth.addArg("n/um/ber", "0");
         cmd_deauth.addArg("r/ate", "20");
         cmd_deauth.addArg("m/ode", "deauth+disassoc");
@@ -923,7 +937,7 @@ namespace cli {
             "  -ap:  access point IDs to attack\r\n"
             "  -st:  station IDs to attack\r\n"
             "  -mac: manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\r\n"
-            "  -t:   attack timeout in seconds (default=300)\r\n"
+            "  -t:   attack timeout (default=5min)\r\n"
             "  -n:   packet limit [>1] (default=0)\r\n"
             "  -r:   packets per second (default=20)\r\n"
             "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\r\n"
@@ -946,7 +960,7 @@ namespace cli {
 
             { // MAC to
                 String to_str = cmd.getArg("to").getValue();
-                toMAC(to_str, to);
+                parse_mac(to_str, to);
             }
 
             { // Channel
@@ -954,8 +968,8 @@ namespace cli {
             }
 
             { // Time
-                long seconds = cmd.getArg("t").getValue().toInt();
-                if (seconds > 0) timeout = seconds*1000;
+                String time_str = cmd.getArg("t").getValue();
+                timeout         = parse_time(time_str, 1000);
             }
 
             { // Silent
@@ -967,14 +981,14 @@ namespace cli {
         cmd_probe.addPosArg("ssid/s");
         cmd_probe.addArg("to,macto", "broadcast");
         cmd_probe.addArg("ch/annel", "1");
-        cmd_probe.addArg("t/ime", "300");
+        cmd_probe.addArg("t/ime/out", "5min");
         cmd_probe.addFlagArg("s/ilent");
         cmd_probe.setDescription(
             "  Send probe requests for WiFi networks\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -ch:   channel (default=1)\r\n"
-            "  -t:    attack timeout in seconds (default=300)\r\n"
+            "  -t:    attack timeout (default=5min)\r\n"
             "  -s:    silent mode (mute output)"
             );
 
@@ -999,7 +1013,7 @@ namespace cli {
                     mac_str    = tmp;
                 }
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                toMAC(mac_str, mac);
+                parse_mac(mac_str, mac);
 
                 if (alias::add(mac, name)) {
                     debugF("Alias \"");
@@ -1016,7 +1030,7 @@ namespace cli {
 
             if (mode == "remove") {
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                toMAC(name, mac);
+                parse_mac(name, mac);
 
                 if (alias::remove(mac)) {
                     debugF("Removed alias ");
