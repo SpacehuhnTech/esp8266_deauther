@@ -69,23 +69,37 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
     stopDeauth();
 
     { // Output
+        debuglnF("[ ===== Deauth Attack ===== ]");
+
+        debug(strh::left(16, "Mode:"));
         if (deauth && disassoc) {
-            debugF("Deauthing and disassociating ");
+            debuglnF("deauthentication and disassociation");
         } else if (deauth) {
-            debugF("Deauthing ");
+            debuglnF("deauthentication");
         } else if (disassoc) {
-            debugF("Disassociating ");
+            debuglnF("disassociation");
         }
 
-        debug(targets.size());
-        debuglnF(" targets:");
+        debug(strh::left(16, "Packets/second:"));
+        debugln(rate);
+
+        debug(strh::left(16, "Timeout:"));
+        if (timeout > 0) debugln(strh::time(timeout));
+        else debugln("-");
+
+        debug(strh::left(16, "Max. packets:"));
+        if (pkts > 0) debugln(pkts);
+        else debugln("-");
+
+        debug(strh::left(16, "Targets:"));
+        debugln(targets.size());
 
         // Print MACs
         targets.begin();
 
         while (targets.available()) {
             Target* t = targets.iterate();
-            debugF("- transmitter ");
+            debugF("  transmitter ");
             debug(strh::mac(t->getFrom()));
             debugF(", receiver ");
             debug(strh::mac(t->getTo()));
@@ -93,22 +107,9 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
             debugln(t->getCh());
         }
 
-        debugF("Packets per second: ");
-        debugln(rate);
-
-        if (timeout > 0) {
-            debugF("Timeout: ");
-            debug(timeout/1000);
-            debuglnF(" seconds");
-        }
-
-        if (pkts > 0) {
-            debugF("Send ");
-            debug(pkts);
-            debuglnF(" packets");
-        }
-
+        debugln();
         debuglnF("Type 'stop' to stop the attack");
+        debugln();
     }
 
     deauth_data.targets.moveFrom(targets);

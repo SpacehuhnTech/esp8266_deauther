@@ -152,38 +152,46 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
     stopBeacon();
 
     { // Output
-        debugF("Sending beacons from ");
-        debug(strh::mac(from));
-        debugF(" to ");
-        debug(strh::mac(to));
-        debugF(" on channel ");
+        debuglnF("[ ===== Beacon Attack ===== ]");
+
+        debug(strh::left(12, "BSSID:"));
+        debugln(strh::mac(from));
+
+        debug(strh::left(12, "Receiver:"));
+        debugln(strh::mac(to));
+
+        debug(strh::left(12, "Channel:"));
         debugln(ch);
 
-        debugF("Encryption: ");
+        debug(strh::left(12, "Encryption:"));
 
         switch (enc) {
             case ENCRYPTION_OPEN:
-                debuglnF("none");
+                debuglnF("none (open)");
                 break;
             case ENCRYPTION_WPA2:
                 debuglnF("WPA2");
                 break;
         }
 
-        debuglnF("SSIDs:");
+        debug(strh::left(12, "Timeout:"));
+        if (timeout > 0) debugln(strh::time(timeout));
+        else debuglnF("-");
+
+        debug(strh::left(12, "SSIDs:"));
+        debugln(ssid_list.size());
+
+        ssid_list.begin();
 
         while (ssid_list.available()) {
             debugF("  \"");
             debug(ssid_list.iterate());
-            debuglnF("\"");
+            debugln('"');
         }
 
-        if (timeout > 0) {
-            debugF("Timeout: ");
-            debug(timeout/1000);
-            debuglnF(" seconds");
-        }
+        debugln();
         debuglnF("Type 'stop' to stop the attack");
+        debugln();
     }
 
     beacon_data.ssids.moveFrom(ssid_list);
