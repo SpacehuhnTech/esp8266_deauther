@@ -114,7 +114,7 @@ namespace scan {
 
     void printChannel(uint8_t ch) {
         if (!data.silent) {
-            debugF("Sniff channel ");
+            debugF("Sniff on channel ");
             debug(ch);
 
             if (data.ch_time > 0) {

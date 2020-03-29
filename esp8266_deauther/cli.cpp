@@ -823,7 +823,8 @@ namespace cli {
                 list.begin();
 
                 while (list.available()) {
-                    AccessPoint* ap = scan::getAccessPoints().get(list.iterate().toInt());
+                    int id          = list.iterate().toInt();
+                    AccessPoint* ap = scan::getAccessPoints().get(id);
                     if (ap) {
                         targets.push(ap->getBSSID(), mac::BROADCAST, ap->getChannel());
                     }
@@ -836,9 +837,16 @@ namespace cli {
                 list.begin();
 
                 while (list.available()) {
-                    Station* st = scan::getStations().get(list.iterate().toInt());
-                    if (st && st->getAccessPoint()) {
-                        targets.push(st->getAccessPoint()->getBSSID(), st->getMAC(), st->getAccessPoint()->getChannel());
+                    int id      = list.iterate().toInt();
+                    Station* st = scan::getStations().get(id);
+                    if (st) {
+                        if (st->getAccessPoint()) {
+                            targets.push(st->getAccessPoint()->getBSSID(), st->getMAC(), st->getAccessPoint()->getChannel());
+                        } else {
+                            debugF("WARNING: Station ");
+                            debug(id);
+                            debuglnF(" is not connected to an AP, therefor can't be deauthed.");
+                        }
                     }
                 }
             }
