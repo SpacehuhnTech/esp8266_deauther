@@ -66,4 +66,36 @@ namespace strh {
         }
         return str;
     }
+
+    String time(unsigned long time) {
+        String str;
+
+        unsigned long second_ms = 1000;
+        unsigned long minute_ms = 60*second_ms;
+        unsigned long hour_ms   = 60*minute_ms;
+
+        if (time > hour_ms) {
+            unsigned long hours = time/hour_ms;
+            time -= hours*hour_ms;
+            str  += String(hours)+"h";
+        }
+
+        if (time > minute_ms) {
+            unsigned long minutes = time/minute_ms;
+            time -= minutes*minute_ms;
+            str  += String(minutes)+"min";
+        }
+
+        if (time > second_ms) {
+            unsigned long seconds = time/second_ms;
+            time -= seconds*second_ms;
+            str  += String(seconds)+"s";
+        }
+
+        if (time > 0) {
+            str += String(time)+"ms";
+        }
+
+        return str;
+    }
 }
