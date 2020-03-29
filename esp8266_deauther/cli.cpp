@@ -276,7 +276,7 @@ namespace cli {
                     debuglnF("Which network names do you wish to advertise?\r\n"
                              "  for example: \"network A\",\"network B\"");
                     CLI_READ_RES();
-                    cmd += " -ssid " + strh::quote(res);
+                    cmd += " -ssid " + strh::escape(res);
                 }
 
                 { // From
@@ -474,7 +474,7 @@ namespace cli {
                     debuglnF("Which network names do you wish to request for?\r\n"
                              "  for example: \"network A\",\"network B\"");
                     CLI_READ_RES();
-                    cmd += " -ssid " + strh::quote(res);
+                    cmd += " -ssid " + strh::escape(res);
                 }
 
                 { // To
@@ -537,7 +537,7 @@ namespace cli {
                         debuglnF("Alias (name):");
                         CLI_READ_RES();
 
-                        if (res.length() > 0) cmd += " -name " + strh::quote(res);
+                        if (res.length() > 0) cmd += " -name " + strh::escape(res);
                     }
 
                     { // MAC
@@ -587,7 +587,7 @@ namespace cli {
                              "  for example: \"network A\",\"network B\"\r\n"
                              " [default=*No filter*]");
                     CLI_READ_RES_DEFAULT("");
-                    if (res.length() > 0) cmd += " -ssid " + strh::quote(res);
+                    if (res.length() > 0) cmd += " -ssid " + strh::escape(res);
                 }
 
                 { // BSSID
@@ -603,7 +603,7 @@ namespace cli {
                              "  for example \"Apple\",\"Intel\"\r\n"
                              " [default=*No filter*]");
                     CLI_READ_RES_DEFAULT("");
-                    if (res.length() > 0) cmd += " -vendor " + strh::quote(res);
+                    if (res.length() > 0) cmd += " -vendor " + strh::escape(res);
                 }
             }
 

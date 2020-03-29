@@ -58,8 +58,9 @@ namespace strh {
         return str;
     }
 
-    String quote(String str) {
+    String escape(String str) {
         if ((str == String('"')) || !str.startsWith("\"") || !str.endsWith("\"")) {
+            str.replace("\\", "\\\\");
             str.replace("\"", "\\\"");
             str = '"' + str + '"';
         }
