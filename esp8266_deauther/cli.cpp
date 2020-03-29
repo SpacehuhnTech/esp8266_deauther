@@ -545,6 +545,20 @@ namespace cli {
                         CLI_READ_RES_DEFAULT("ap+st");
                     } while (!(res == "ap" || res == "st" || res == "ap+st"));
                     if (res != "ap+st") cmd += " -t " + res;
+
+                    if ((res == "ap") && (scan::getAccessPoints().size() == 0)) {
+                        debuglnF("ERROR: No access points in scan results.\r\n"
+                                 "Type 'scan -m ap' to search for access points");
+                        return;
+                    } else if ((res == "st") && (scan::getStations().size() == 0)) {
+                        debuglnF("ERROR: No stations in scan results.\r\n"
+                                 "Type 'scan -m st' to search for stations");
+                        return;
+                    } else if ((res == "ap+st") && (scan::getAccessPoints().size() == 0) && (scan::getStations().size() == 0)) {
+                        debuglnF("ERROR: No access points or stations in scan results.\r\n"
+                                 "Type 'scan' to search for access points");
+                        return;
+                    }
                 }
 
                 { // Channel(s)
