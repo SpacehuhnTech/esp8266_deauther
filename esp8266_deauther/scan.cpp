@@ -268,7 +268,7 @@ namespace scan {
     }
 
     void startAPsearch() {
-        debuglnF("Scanning for access points (WiFi networks)");
+        debuglnF("[ ===== Access Point Scan ===== ]");
 
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
@@ -277,16 +277,28 @@ namespace scan {
     }
 
     void startSTsearch() {
-        debugF("Scanning for stations (WiFi client devices) on ");
-        debug(data.num_of_channels);
-        debugF(" different channels");
-        if (data.timeout > 0) {
-            debugF(" in ");
-            debug(data.timeout/1000);
-            debugF(" seconds");
+        debuglnF("[ ===== Station Scan ===== ]");
+
+        debug(strh::left(10, "Scan time:"));
+        if (data.timeout > 0) debugln(strh::time(data.timeout));
+        else debuglnF("-");
+
+        debug(strh::left(10, "Channels:"));
+        debugln(data.num_of_channels);
+
+        for (uint8_t i = 0; i<14; ++i) {
+            if ((data.channels >> (i)) & 0x01) {
+                debugF("- ");
+                debug(strh::right(2, String(i+1)));
+                debugF(" (");
+                debug(strh::time(data.ch_time));
+                debugln(')');
+            }
         }
+
         debugln();
         debuglnF("Type 'stop' to stop the scan");
+        debugln();
 
         uint8_t ch = 1;
         wifi_set_channel(ch);

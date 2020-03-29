@@ -99,7 +99,7 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
 
         while (targets.available()) {
             Target* t = targets.iterate();
-            debugF("  transmitter ");
+            debugF("- transmitter ");
             debug(strh::mac(t->getFrom()));
             debugF(", receiver ");
             debug(strh::mac(t->getTo()));

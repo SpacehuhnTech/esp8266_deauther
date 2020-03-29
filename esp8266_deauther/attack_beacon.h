@@ -184,7 +184,7 @@ void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uin
         ssid_list.begin();
 
         while (ssid_list.available()) {
-            debugF("  \"");
+            debugF("- \"");
             debug(ssid_list.iterate());
             debugln('"');
         }

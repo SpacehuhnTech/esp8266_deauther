@@ -124,7 +124,7 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
         ssid_list.begin();
 
         while (ssid_list.available()) {
-            debugF("  \"");
+            debugF("- \"");
             debug(ssid_list.iterate());
             debugln('"');
         }
