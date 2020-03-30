@@ -466,9 +466,9 @@ namespace cli {
                     cmd += " -ssid " + strh::escape(res);
                 }
 
-                { // To
+                { // Receiver
                     do {
-                        debuglnF("Who is the receiver?\r\n"
+                        debuglnF("What is the receiver address?\r\n"
                                  "  MAC address: for example 00:20:91:aa:bb:5c\r\n"
                                  "  broadcast:   send to everyone\r\n"
                                  " [default=broadcast]");
@@ -931,7 +931,7 @@ namespace cli {
             Command cmd(c);
 
             SortedStringList ssid_list;
-            uint8_t to[6];
+            uint8_t receiver[6];
             uint8_t ch;
             unsigned long timeout = 0;
             bool silent;
@@ -941,9 +941,9 @@ namespace cli {
                 ssid_list.parse(ssids, ",");
             }
 
-            { // MAC to
-                String to_str = cmd.getArg("to").getValue();
-                parse_mac(to_str, to);
+            { // Receiver
+                String receiver_str = cmd.getArg("to").getValue();
+                parse_mac(receiver_str, receiver);
             }
 
             { // Channel
@@ -959,10 +959,10 @@ namespace cli {
                 silent = cmd.getArg("s").isSet();
             }
 
-            attack::startProbe(ssid_list, to, ch, timeout, silent);
+            attack::startProbe(ssid_list, receiver, ch, timeout, silent);
         });
         cmd_probe.addPosArg("ssid/s");
-        cmd_probe.addArg("to,macto", "broadcast");
+        cmd_probe.addArg("receiver,to", "broadcast");
         cmd_probe.addArg("ch/annel", "1");
         cmd_probe.addArg("t/ime/out", "5min");
         cmd_probe.addFlagArg("s/ilent");

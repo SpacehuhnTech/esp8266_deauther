@@ -37,7 +37,7 @@ uint8_t probe_pkt[] = {
 // ========== ATTACK DATA ========== //
 typedef struct probe_attack_data_t {
     SortedStringList ssids;
-    uint8_t          to[6];
+    uint8_t          receiver[6];
     uint8_t          ch;
     unsigned long    timeout;
     unsigned long    start_time;
@@ -52,7 +52,7 @@ typedef struct probe_attack_data_t {
 probe_attack_data_t probe_data;
 
 // ========== SEND FUNCTION ========== //
-bool send_probe(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid) {
+bool send_probe(uint8_t ch, uint8_t* sender, uint8_t* receiver, const char* ssid) {
     size_t ssid_len = strlen(ssid);
 
     if (ssid_len > 32) ssid_len = 32;
@@ -62,9 +62,9 @@ bool send_probe(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid) {
 
     // MAC header
     memcpy(&frame[0], &probe_pkt[0], 4);
-    memcpy(&frame[4], to, 6);
-    memcpy(&frame[10], from, 6);
-    memcpy(&frame[16], to, 6);
+    memcpy(&frame[4], receiver, 6);
+    memcpy(&frame[10], sender, 6);
+    memcpy(&frame[16], receiver, 6);
     pkt_len += 4 + 6 + 6 + 6;
 
     // Fixed parameters
@@ -85,14 +85,14 @@ bool send_probe(uint8_t ch, uint8_t* from, uint8_t* to, const char* ssid) {
 }
 
 // ========== ATTACK FUNCTIONS ========== //
-void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long timeout, bool silent) {
+void startProbe(StringList& ssid_list, uint8_t* receiver, uint8_t ch, unsigned long timeout, bool silent) {
     { // Error checks
         if (ssid_list.size() == 0) {
             debuglnF("ERROR: No SSIDs specified");
             return;
         }
 
-        if (!to) {
+        if (!receiver) {
             debuglnF("ERROR: MAC address not specified");
             return;
         }
@@ -109,7 +109,7 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
         debuglnF("[ ===== Probe Attack ===== ]");
 
         debugF("Receiver: ");
-        debugln(strh::mac(to));
+        debugln(strh::mac(receiver));
 
         debugF("Channel:  ");
         debugln(ch);
@@ -135,7 +135,7 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
     }
 
     probe_data.ssids.moveFrom(ssid_list);
-    memcpy(probe_data.to, to, 6);
+    memcpy(probe_data.receiver, receiver, 6);
     probe_data.ch              = ch;
     probe_data.timeout         = timeout;
     probe_data.start_time      = millis();
@@ -171,13 +171,13 @@ void updateProbe() {
             b.pkt_time = millis();
             b.ssids.begin();
 
-            uint8_t from[6];
-            vendor::randomize(from);
+            uint8_t sender[6];
+            vendor::randomize(sender);
 
             for (int i = 0; i<b.ssids.size(); ++i) {
                 String ssid = b.ssids.iterate();
 
-                b.pkts_per_second += send_probe(b.ch, from, b.to, ssid.c_str());
+                b.pkts_per_second += send_probe(b.ch, sender, b.receiver, ssid.c_str());
                 delay(1);
             }
         }

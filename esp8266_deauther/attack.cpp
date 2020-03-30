@@ -13,16 +13,6 @@
 #include "packetinjector.h"
 #include "vendor.h"
 
-/*
-   namespace packetinjector {
-    bool send_probe(uint8_t ch, uint8_t* from, const char* ssid) {
-        memcpy(&probe_pkt[10], from, 6);
-        // probe_pkt[25] = strlen(ssid);
-        memset(&probe_pkt[26], 0, 32);
-        return send(ch, probe_pkt, sizeof(probe_pkt));
-    }
-   }*/
-
 namespace attack {
     #include "attack_deauth.h"
     #include "attack_beacon.h"
