@@ -10,19 +10,19 @@
 #include <stdlib.h>
 
 // ========== Target =========== //
-Target::Target(const uint8_t* from, const uint8_t* to, uint8_t ch) {
-    memcpy(this->from, from, 6);
-    memcpy(this->to, to, 6);
+Target::Target(const uint8_t* sender, const uint8_t* receiver, uint8_t ch) {
+    memcpy(this->sender, sender, 6);
+    memcpy(this->receiver, receiver, 6);
     this->ch   = ch;
     this->next = nullptr;
 }
 
-const uint8_t* Target::getFrom() const {
-    return from;
+const uint8_t* Target::getSender() const {
+    return sender;
 }
 
-const uint8_t* Target::getTo() const {
-    return to;
+const uint8_t* Target::getReceiver() const {
+    return receiver;
 }
 
 uint8_t Target::getCh() const {
@@ -41,11 +41,11 @@ void Target::setNext(Target* next) {
 
 int TargetList::compare(const Target* a, const Target* b) const {
     if (a == b) return 0;
-    else if ((memcmp(a->getFrom(), b->getFrom(), 6) < 0) ||
-             (memcmp(a->getTo(), b->getTo(), 6) < 0) ||
+    else if ((memcmp(a->getSender(), b->getSender(), 6) < 0) ||
+             (memcmp(a->getReceiver(), b->getReceiver(), 6) < 0) ||
              (a->getCh() < b->getCh())) return -1;
-    else if ((memcmp(a->getFrom(), b->getFrom(), 6) > 0) ||
-             (memcmp(a->getTo(), b->getTo(), 6) > 0) ||
+    else if ((memcmp(a->getSender(), b->getSender(), 6) > 0) ||
+             (memcmp(a->getReceiver(), b->getReceiver(), 6) > 0) ||
              (a->getCh() > b->getCh())) return 1;
     else return 0;
 }
@@ -84,11 +84,11 @@ void TargetList::moveFrom(TargetList& t) {
     t.list_pos   = 0;
 }
 
-bool TargetList::push(const uint8_t* from, const uint8_t* to, const uint8_t ch) {
+bool TargetList::push(const uint8_t* sender, const uint8_t* to, const uint8_t ch) {
     if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
 
     // Create new target
-    Target* new_target = new Target(from, to, ch);
+    Target* new_target = new Target(sender, to, ch);
 
     // Empty list -> insert first element
     if (!list_begin) {

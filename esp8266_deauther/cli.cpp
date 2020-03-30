@@ -382,7 +382,7 @@ namespace cli {
                         cmd += " "+res;
                     } else if (res == "mac") {
                         debuglnF("Target(s) to attack\r\n"
-                                 "  MacFrom-MacTo-Channel for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'");
+                                 "  Sender-Receiver-Channel for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'");
                         CLI_READ_RES();
 
                         cmd += " "+res;
@@ -859,19 +859,19 @@ namespace cli {
 
                     if (target_data.size() != 3) continue;
 
-                    String mac_from_str = target_data.iterate();
-                    String mac_to_str   = target_data.iterate();
-                    String ch_str       = target_data.iterate();
+                    String sender_mac_str   = target_data.iterate();
+                    String receiver_mac_str = target_data.iterate();
+                    String ch_str           = target_data.iterate();
 
-                    uint8_t mac_from[6];
-                    uint8_t mac_to[6];
+                    uint8_t sender_mac[6];
+                    uint8_t receiver_mac[6];
                     uint8_t ch;
 
-                    parse_mac(mac_from_str, mac_from);
-                    parse_mac(mac_to_str, mac_to);
+                    parse_mac(sender_mac_str, sender_mac);
+                    parse_mac(receiver_mac_str, receiver_mac);
                     ch = ch_str.toInt();
 
-                    targets.push(mac_from, mac_to, ch);
+                    targets.push(sender_mac, receiver_mac, ch);
                 }
             }
 
@@ -919,7 +919,7 @@ namespace cli {
             "  Deauthenticate (disconnect) selected WiFi connections\r\n"
             "  -ap:  access point IDs to attack\r\n"
             "  -st:  station IDs to attack\r\n"
-            "  -mac: manual target selection [MacFrom-MacTo-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\r\n"
+            "  -mac: manual target selection [Sender-Receiver-Channel] for example:'aa:bb:cc:dd:ee:ff-00:11:22:33:44:55-7'\r\n"
             "  -t:   attack timeout (default=5min)\r\n"
             "  -n:   packet limit [>1] (default=0)\r\n"
             "  -r:   packets per second (default=20)\r\n"

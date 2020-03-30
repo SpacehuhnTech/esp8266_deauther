@@ -19,16 +19,16 @@ class Target;
 
 class Target {
     private:
-        uint8_t from[6];
-        uint8_t to[6];
+        uint8_t sender[6];
+        uint8_t receiver[6];
         uint8_t ch;
         Target* next;
 
     public:
-        Target(const uint8_t* from, const uint8_t* to, uint8_t ch);
+        Target(const uint8_t* sender, const uint8_t* receiver, uint8_t ch);
 
-        const uint8_t* getFrom() const;
-        const uint8_t* getTo() const;
+        const uint8_t* getSender() const;
+        const uint8_t* getReceiver() const;
         uint8_t getCh() const;
 
         Target* getNext();
@@ -55,7 +55,7 @@ class TargetList {
 
         void moveFrom(TargetList& t);
 
-        bool push(const uint8_t* from, const uint8_t* to, const uint8_t ch);
+        bool push(const uint8_t* sender, const uint8_t* receiver, const uint8_t ch);
 
         Target* get(int i);
 
