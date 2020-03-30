@@ -11,6 +11,7 @@
 #include "cli.h"
 #include "mac.h"
 #include "attack.h"
+#include "alias.h"
 
 #include <ESP8266WiFi.h>
 
@@ -36,6 +37,13 @@ extern "C" {
         ctrl = (wifi_pkt_rx_ctrl_t*)buf;\
     }
 
+typedef struct auth_buffer_t {
+    uint8_t mac[6];
+    uint8_t bssid[6];
+    int8_t  rssi;
+    bool    locked;
+} auth_buffer_t;
+
 typedef struct scan_data_t {
     bool          ap;
     bool          st;
@@ -59,6 +67,7 @@ typedef struct scan_data_t {
     AccessPointList ap_list;
     StationList     st_list;
     MACList         mac_filter;
+    auth_buffer_t   auth_buffer;
 } scan_data_t;
 
 typedef struct wifi_pkt_rx_ctrl_t {

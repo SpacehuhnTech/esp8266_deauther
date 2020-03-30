@@ -56,15 +56,6 @@ void new_probe(const uint8_t* sender, const char* ssid, uint8_t len, int rssi) {
     }
 }
 
-void new_auth(const uint8_t* sender, const uint8_t* receiver, int rssi) {
-    Station* st = new_pkt(sender, rssi);
-
-    if (st) {
-        st->setAccessPoint(nullptr);
-        if (st->addAuth(receiver[5]) && !data.silent) st->print();
-    }
-}
-
 void station_sniffer(uint8_t* buf, uint16_t len) {
     SNIFFER_PREAMBLE();
 
@@ -93,11 +84,6 @@ void station_sniffer(uint8_t* buf, uint16_t len) {
         const char* ssid = (const char*)&payload[26];
 
         new_probe(sender, ssid, len, rssi);
-    }
-
-    // authentication
-    else if (data.auth && (type == 0xb0) && (memcmp(receiver, data.bssid, 5) == 0)) {
-        new_auth(sender, receiver, rssi);
     }
     // anything else that isn't a broadcast frame
     else if (!mac::multicast(receiver)) {
