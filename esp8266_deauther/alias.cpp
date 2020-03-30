@@ -182,14 +182,7 @@ namespace alias {
         debugln(list.size);
         debuglnF("------------------");
 
-        debug(strh::right(3, "ID"));
-        debug(' ');
-        debug(strh::left(MAX_ALIAS_LEN, "Name"));
-        debug(' ');
-        debug(strh::left(17, "MAC-Address"));
-        debug(' ');
-        debug(strh::left(8, "Vendor"));
-        debugln();
+        debugF(" ID Name         MAC-Address       Vendor");
         debuglnF("===========================================");
 
         for (int i = 0; i<list.size; ++i) {

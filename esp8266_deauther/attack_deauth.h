@@ -71,7 +71,7 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
     { // Output
         debuglnF("[ ===== Deauth Attack ===== ]");
 
-        debug(strh::left(16, "Mode:"));
+        debugF("Mode:           ");
         if (deauth && disassoc) {
             debuglnF("deauthentication and disassociation");
         } else if (deauth) {
@@ -80,18 +80,18 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
             debuglnF("disassociation");
         }
 
-        debug(strh::left(16, "Packets/second:"));
+        debugF("Packets/second: ");
         debugln(rate);
 
-        debug(strh::left(16, "Timeout:"));
+        debugF("Timeout:        ");
         if (timeout > 0) debugln(strh::time(timeout));
-        else debugln("-");
+        else debugln('-');
 
-        debug(strh::left(16, "Max. packets:"));
+        debugF("Max. packets:   ");
         if (pkts > 0) debugln(pkts);
-        else debugln("-");
+        else debugln('-');
 
-        debug(strh::left(16, "Targets:"));
+        debugF("Targets:        ");
         debugln(targets.size());
 
         // Print MACs

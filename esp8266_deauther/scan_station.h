@@ -94,15 +94,15 @@ void station_sniffer(uint8_t* buf, uint16_t len) {
 void start_st_scan() {
     debuglnF("[ ===== Station Scan ===== ]");
 
-    debug(strh::left(14, "Scan time:"));
+    debugF("Scan time:    ");
     if (data.timeout > 0) debugln(strh::time(data.timeout));
     else debuglnF("-");
 
-    debug(strh::left(14, "Channel time:"));
+    debugF("Channel time: ");
     if (data.ch_time > 0) debugln(strh::time(data.ch_time));
     else debuglnF("-");
 
-    debug(strh::left(14, "Channels:"));
+    debugF("Channels:     ");
 
     for (uint8_t i = 0; i<14; ++i) {
         if ((data.channels >> (i)) & 0x01) {

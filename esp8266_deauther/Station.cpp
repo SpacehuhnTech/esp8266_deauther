@@ -261,23 +261,7 @@ bool StationList::full() const {
 }
 
 void StationList::printHeader() {
-    debug(strh::right(3, "ID"));
-    debug(' ');
-    debug(strh::right(4, "Pkts"));
-    debug(' ');
-    debug(strh::right(4, "RSSI"));
-    debug(' ');
-    debug(strh::left(8, "Vendor"));
-    debug(' ');
-    debug(strh::left(17, "MAC-Address"));
-    debug(' ');
-    debug(strh::left(34, "AccessPoint-SSID"));
-    debug(' ');
-    debug(strh::left(17, "AccessPoint-BSSID"));
-    debug(' ');
-    debug(strh::left(34, "Probe-Requests"));
-    debugln();
-
+    debuglnF(" ID Pkts RSSI Vendor   MAC-Address       AccessPoint-SSID                   AccessPoint-BSSID Probe-Requests");
     debuglnF("================================================================================================================================");
 }
 

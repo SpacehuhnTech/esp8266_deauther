@@ -108,17 +108,17 @@ void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long ti
     { // Output
         debuglnF("[ ===== Probe Attack ===== ]");
 
-        debug(strh::left(12, "Receiver:"));
+        debugF("Receiver: ");
         debugln(strh::mac(to));
 
-        debug(strh::left(12, "Channel:"));
+        debugF("Channel:  ");
         debugln(ch);
 
-        debug(strh::left(12, "Timeout:"));
+        debugF("Timeout:  ");
         if (timeout > 0) debugln(strh::time(timeout));
         else debuglnF("-");
 
-        debug(strh::left(12, "SSIDs:"));
+        debugF("SSIDs:    ");
         debugln(ssid_list.size());
 
         ssid_list.begin();

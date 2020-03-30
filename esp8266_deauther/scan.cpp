@@ -177,8 +177,6 @@ namespace scan {
             if (st) data.st_list.clear();
         }
 
-        if (ch_time == 0) ch_time = 284;
-
         unsigned long current_time = millis();
 
         data.ap              = ap;
@@ -191,6 +189,8 @@ namespace scan {
         data.start_time      = current_time;
         data.ch_update_time  = current_time;
 
+        if ((data.ch_time == 0) && (data.num_of_channels > 1)) data.ch_time = 284;
+
         if (ap) start_ap_scan();
         else if (st) start_st_scan();
     }
@@ -198,7 +198,6 @@ namespace scan {
     void startAuth(bool beacon, unsigned long timeout, uint16_t channels, unsigned long ch_time) {
         stop();
 
-        if (ch_time == 0) ch_time = 284;
         unsigned long current_time = millis();
 
         data.auth            = true;
@@ -209,6 +208,8 @@ namespace scan {
         data.timeout         = timeout;
         data.start_time      = current_time;
         data.ch_update_time  = current_time;
+
+        if ((data.ch_time == 0) && (data.num_of_channels > 1)) data.ch_time = 284;
 
         start_auth_scan();
     }

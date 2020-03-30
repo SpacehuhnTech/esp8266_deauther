@@ -261,21 +261,7 @@ void AccessPointList::print(const result_filter_t* filter) {
     debugln(size());
     debuglnF("-------------------------------");
 
-    debug(strh::right(3, "ID"));
-    debug(' ');
-    debug(strh::left(34, "SSID (Network Name)"));
-    debug(' ');
-    debug(strh::right(4, "RSSI"));
-    debug(' ');
-    debug(strh::left(4, "Mode"));
-    debug(' ');
-    debug(strh::right(2, "Ch"));
-    debug(' ');
-    debug(strh::left(17, "BSSID (MAC Addr.)"));
-    debug(' ');
-    debug(strh::left(8, "Vendor"));
-    debugln();
-
+    debuglnF(" ID SSID (Network Name)                RSSI Mode Ch BSSID (MAC Addr.) Vendor");
     debuglnF("==============================================================================");
 
     begin();
