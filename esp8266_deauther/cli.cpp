@@ -279,9 +279,9 @@ namespace cli {
                     cmd += " -ssid " + strh::escape(res);
                 }
 
-                { // From
+                { // BSSID
                     do {
-                        debuglnF("Who is the transmitter/sender?\r\n"
+                        debuglnF("What is the transmitter or sender address? (BSSID)\r\n"
                                  "  MAC address: for example '00:20:91:aa:bb:5c\r\n"
                                  "  random:      generate random MAC address\r\n"
                                  " [default=random]");
@@ -290,9 +290,9 @@ namespace cli {
                     if (res != "random") cmd += " -from " + res;
                 }
 
-                { // To
+                { // Receiver
                     do {
-                        debuglnF("Who is the receiver?\r\n"
+                        debuglnF("What is the receiver address?\r\n"
                                  "  MAC address: for example 00:20:91:aa:bb:5cc\r\n"
                                  "  broadcast:   send to everyone\r\n"
                                  " [default=broadcast]");
@@ -737,8 +737,8 @@ namespace cli {
             Command cmd(c);
 
             SortedStringList ssid_list;
-            uint8_t from[6];
-            uint8_t to[6];
+            uint8_t bssid[6];
+            uint8_t receiver[6];
             int enc = ENCRYPTION_OPEN;
             uint8_t ch;
             unsigned long timeout = 0;
@@ -750,14 +750,14 @@ namespace cli {
                 ssid_list.parse(ssids, ",");
             }
 
-            { // MAC from
-                String from_str = cmd.getArg("from").getValue();
-                parse_mac(from_str, from);
+            { // BSSID
+                String bssid_str = cmd.getArg("from").getValue();
+                parse_mac(bssid_str, bssid);
             }
 
-            { // MAC to
-                String to_str = cmd.getArg("to").getValue();
-                parse_mac(to_str, to);
+            { // Receiver
+                String receiver_str = cmd.getArg("to").getValue();
+                parse_mac(receiver_str, receiver);
             }
 
             { // Encryption
@@ -778,12 +778,12 @@ namespace cli {
                 scan = cmd.getArg("scan").isSet();
             }
 
-            attack::startBeacon(ssid_list, from, to, enc, ch, timeout);
+            attack::startBeacon(ssid_list, bssid, receiver, enc, ch, timeout);
             if (scan) scan::startAuth(true, timeout, ch, 0);
         });
         cmd_beacon.addPosArg("ssid/s");
-        cmd_beacon.addArg("from,mac/from,bssid", "random");
-        cmd_beacon.addArg("to,macto", "broadcast");
+        cmd_beacon.addArg("bssid,from", "random");
+        cmd_beacon.addArg("receiver,to", "broadcast");
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("t/ime/out", "5min");
@@ -791,7 +791,7 @@ namespace cli {
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
-            "  -from: sender MAC address (default=random)\r\n"
+            "  -from: BSSID or sender MAC address (default=random)\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   channel (default=1)\r\n"
