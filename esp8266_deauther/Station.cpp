@@ -56,10 +56,6 @@ String Station::getVendor() const {
     return vendor::search(mac);
 }
 
-uint32_t Station::getAuths() const {
-    return auths;
-}
-
 SortedStringList& Station::getProbes() {
     return probes;
 }
@@ -72,25 +68,12 @@ void Station::setAccessPoint(AccessPoint* ap) {
     this->ap = ap;
 }
 
-void Station::setAuth(uint8_t auths) {
-    this->auths = auths;
-}
-
 void Station::setNext(Station* next) {
     this->next = next;
 }
 
 bool Station::addProbe(const char* ssid, uint8_t len) {
     return probes.push(ssid, len);
-}
-
-bool Station::addAuth(uint8_t num) {
-    if ((auths >> num) & 0x01) {
-        return false;
-    } else {
-        auths |= (uint32_t(1) << num);
-        return true;
-    }
 }
 
 void Station::newPkt(int8_t rssi) {
