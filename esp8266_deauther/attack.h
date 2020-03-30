@@ -18,7 +18,7 @@
 #include "TargetList.h"
 
 namespace attack {
-    void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout, bool silent);
+    void startBeacon(StringList& ssid_list, uint8_t* from, uint8_t* to, int enc, uint8_t ch, unsigned long timeout);
     void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts, bool silent);
     void startProbe(StringList& ssid_list, uint8_t* to, uint8_t ch, unsigned long timeout, bool silent);
 
@@ -32,5 +32,6 @@ namespace attack {
     void updateProbe();
     void update();
 
+    bool beaconBSSID(uint8_t* bssid);
     String getBeacon(uint8_t num);
 }

@@ -99,7 +99,8 @@ void start_st_scan() {
     else debuglnF("-");
 
     debug(strh::left(14, "Channel time:"));
-    debugln(strh::time(data.ch_time));
+    if (data.ch_time > 0) debugln(strh::time(data.ch_time));
+    else debuglnF("-");
 
     debug(strh::left(14, "Channels:"));
 
@@ -152,9 +153,6 @@ void update_st_scan() {
         } else if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
             next_ch();
             data.ch_update_time = current_time;
-        } else if (!data.silent && (current_time - data.output_time >= 1000)) {
-            // print infos
-            data.output_time = current_time;
         }
     }
 }

@@ -333,17 +333,6 @@ namespace cli {
                     if (res != "300") cmd += " -t " + res;
                 }
 
-                { // Silent
-                    do {
-                        debuglnF("Enable silent mode (mute output)?\r\n"
-                                 "  y: Yes\r\n"
-                                 "  n: No\r\n"
-                                 " [default=n]");
-                        CLI_READ_RES_DEFAULT("n");
-                    } while (!(res == String('y') || res == String('n')));
-                    if (res == String('y')) cmd += " -s";
-                }
-
                 { // Scan
                     do {
                         debuglnF("Scan for authentication requests?\r\n"
@@ -785,16 +774,12 @@ namespace cli {
                 timeout         = parse_time(time_str, 1000);
             }
 
-            { // Silent
-                silent = cmd.getArg("s").isSet();
-            }
-
             { // Scan
                 scan = cmd.getArg("scan").isSet();
             }
 
-            attack::startBeacon(ssid_list, from, to, enc, ch, timeout, silent);
-            if (scan) scan::startAuth(from, timeout, silent);
+            attack::startBeacon(ssid_list, from, to, enc, ch, timeout);
+            if (scan) scan::startAuth(true, timeout, ch, 0);
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("from,mac/from,bssid", "random");
@@ -802,7 +787,6 @@ namespace cli {
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("t/ime/out", "5min");
-        cmd_beacon.addFlagArg("s/ilent");
         cmd_beacon.addFlagArg("scan");
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\r\n"
@@ -812,7 +796,6 @@ namespace cli {
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   channel (default=1)\r\n"
             "  -t:    attack timeout (default=5min)\r\n"
-            "  -s:    silent mode (mute output)\r\n"
             "  -scan: scan for authentications"
             );
 
@@ -1081,8 +1064,8 @@ namespace cli {
         cmd_ram.setDescription("  Print memory usage");
 
         Command cmd_stop = cli.addCommand("stop", [](cmd* c) {
-            attack::stop();
             scan::stop();
+            attack::stop();
         });
         cmd_stop.setDescription("  Stop all attacks");
 

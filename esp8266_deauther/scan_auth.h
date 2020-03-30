@@ -29,14 +29,36 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
 }
 
 void start_auth_scan() {
-    debugF("Scanning for authentications on ");
-    debugln(strh::mac(data.bssid));
+    debuglnF("[ ===== Authentication Scan ===== ]");
+
+    debug(strh::left(14, "Scan time:"));
+    if (data.timeout > 0) debugln(strh::time(data.timeout));
+    else debuglnF("-");
+
+    debug(strh::left(14, "Channel time:"));
+    if (data.ch_time > 0) debugln(strh::time(data.ch_time));
+    else debuglnF("-");
+
+    debug(strh::left(14, "Channels:"));
+
+    for (uint8_t i = 0; i<14; ++i) {
+        if ((data.channels >> (i)) & 0x01) {
+            debug(i+1);
+            debug(',');
+        }
+    }
     debugln();
 
-    data.auth_buffer.locked = false;
+    debugln();
+    debuglnF("Type 'stop' to stop the scan");
+    debugln();
 
-    debuglnF("RSSI Vendor   MAC-Address       SSID                             BSSID");
-    debuglnF("==================================================================================");
+    debuglnF("RSSI Vendor   MAC-Address       SSID                               BSSID");
+    debuglnF("====================================================================================");
+
+    next_ch();
+
+    data.auth_buffer.locked = false;
 
     wifi_set_promiscuous_rx_cb(auth_sniffer);
     wifi_promiscuous_enable(true);
@@ -47,7 +69,9 @@ void stop_auth_scan() {
         wifi_promiscuous_enable(false);
         data.auth = false;
 
-        debuglnF("Stopped beacon authentication scan");
+        debuglnF("====================================================================================");
+        debugln();
+        debuglnF("Stopped authentication scan");
         debugln();
     }
 }
@@ -62,7 +86,9 @@ void update_auth_scan() {
             auth_buffer_t tmp = data.auth_buffer;
             data.auth_buffer.locked = false;
 
-            // print st rssi, mac, vendor
+            // Don't print unrelated auths when attacking
+            if (data.beacon && !attack::beaconBSSID(tmp.bssid)) return;
+
             debug(strh::right(4, String(tmp.rssi)));
             debug(' ');
             debug(strh::left(8, vendor::search(tmp.mac)));
@@ -71,8 +97,8 @@ void update_auth_scan() {
             debug(' ');
 
             // Part of beacon attack
-            if (memcmp(tmp.bssid, data.bssid, 5) == 0) {
-                debug(strh::left(32, attack::getBeacon(tmp.bssid[5])));
+            if (attack::beaconBSSID(tmp.bssid)) {
+                debug(strh::left(34, '"'+attack::getBeacon(tmp.bssid[5])+'"'));
                 debug(' ');
                 debugln(strh::left(17, alias::get(tmp.bssid)));
                 return;

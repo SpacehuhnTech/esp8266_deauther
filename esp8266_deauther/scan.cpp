@@ -45,24 +45,22 @@ typedef struct auth_buffer_t {
 } auth_buffer_t;
 
 typedef struct scan_data_t {
-    bool          ap;
-    bool          st;
-    bool          auth;
-    bool          rssi;
-    uint16_t      channels;
+    bool ap;
+    bool st;
+    bool auth;
+    bool rssi;
+    bool silent;
+    bool beacon;
+
+    uint16_t channels;
+    uint8_t  num_of_channels;
+
     unsigned long ch_time;
     unsigned long timeout;
-    uint8_t       bssid[6];
-    bool          silent;
-    rssi_cb_f     rssi_cb;
-
-    uint8_t       num_of_channels;
     unsigned long start_time;
-    unsigned long output_time;
-    unsigned long pkt_time;
     unsigned long ch_update_time;
-    unsigned long pkts_received;
-    unsigned long pkts_per_second;
+
+    rssi_cb_f rssi_cb;
 
     AccessPointList ap_list;
     StationList     st_list;
@@ -121,6 +119,16 @@ namespace scan {
     // ===== PRIVATE ===== //
     scan_data_t data;
 
+    uint8_t count_channels(uint16_t channels) {
+        uint8_t num_of_channels = 0;
+
+        for (uint8_t i = 0; i<14; ++i) {
+            num_of_channels += ((channels >> i) & 0x01);
+        }
+
+        return num_of_channels;
+    }
+
     void next_ch() {
         if (data.num_of_channels == 0) return;
 
@@ -169,33 +177,40 @@ namespace scan {
             if (st) data.st_list.clear();
         }
 
-        uint8_t num_of_channels = 0;
-
-        for (uint8_t i = 0; i<14; ++i) {
-            num_of_channels += ((channels >> i) & 0x01);
-        }
-
         if (ch_time == 0) ch_time = 284;
-
-        data.ap       = ap;
-        data.st       = st;
-        data.channels = channels;
-        data.ch_time  = ch_time;
-        data.timeout  = timeout;
-        data.silent   = silent;
 
         unsigned long current_time = millis();
 
-        data.num_of_channels = num_of_channels;
+        data.ap              = ap;
+        data.st              = st;
+        data.silent          = silent;
+        data.channels        = channels;
+        data.num_of_channels = count_channels(channels);
+        data.ch_time         = ch_time;
+        data.timeout         = timeout;
         data.start_time      = current_time;
-        data.output_time     = current_time;
-        data.pkt_time        = current_time;
         data.ch_update_time  = current_time;
-        data.pkts_received   = 0;
-        data.pkts_per_second = 0;
 
         if (ap) start_ap_scan();
         else if (st) start_st_scan();
+    }
+
+    void startAuth(bool beacon, unsigned long timeout, uint16_t channels, unsigned long ch_time) {
+        stop();
+
+        if (ch_time == 0) ch_time = 284;
+        unsigned long current_time = millis();
+
+        data.auth            = true;
+        data.beacon          = beacon;
+        data.channels        = channels;
+        data.num_of_channels = count_channels(channels);
+        data.ch_time         = ch_time;
+        data.timeout         = timeout;
+        data.start_time      = current_time;
+        data.ch_update_time  = current_time;
+
+        start_auth_scan();
     }
 
     void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels, unsigned long ch_time) {
@@ -227,25 +242,9 @@ namespace scan {
         data.rssi            = true;
         data.num_of_channels = num_of_channels;
         data.start_time      = current_time;
-        data.output_time     = current_time;
-        data.pkt_time        = current_time;
         data.ch_update_time  = current_time;
-        data.pkts_received   = 0;
-        data.pkts_per_second = 0;
 
         start_rssi_scan();
-    }
-
-    void startAuth(uint8_t* mac, unsigned long timeout, bool silent) {
-        stop();
-
-        data.auth       = true;
-        data.timeout    = timeout;
-        data.silent     = silent;
-        data.start_time = millis();
-        memcpy(data.bssid, mac, 6);
-
-        start_auth_scan();
     }
 
     void stop() {
