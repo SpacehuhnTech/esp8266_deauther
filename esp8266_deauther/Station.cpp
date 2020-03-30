@@ -300,7 +300,7 @@ void StationList::printHeader() {
 
 void StationList::printFooter() {
     debuglnF("================================================================================================================================");
-    debuglnF("Pkts = Recorded Packets");
+    debuglnF("Pkts = Recorded packets , RSSI = Average signal strength");
     debuglnF("================================================================================================================================");
 
     debugln();

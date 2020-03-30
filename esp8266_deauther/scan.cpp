@@ -112,18 +112,6 @@ namespace scan {
     // ===== PRIVATE ===== //
     scan_data_t data;
 
-    void print_ch(uint8_t ch) {
-        /*
-           if (!data.silent) {
-              debugF("Sniff on channel ");
-              debug(strh::right(2, String(ch)));
-              debugF(" (");
-              debug(strh::time(data.ch_time));
-              debugln(')');
-           }
-         */
-    }
-
     void next_ch() {
         if (data.num_of_channels == 0) return;
 
@@ -133,282 +121,23 @@ namespace scan {
             if (++ch > 14) ch = 1;
         } while (!((data.channels >> (ch-1)) & 0x01));
 
-        print_ch(ch);
+        /*
+           if (!data.silent) {
+              debugF("Sniff on channel ");
+              debug(strh::right(2, String(ch)));
+              debugF(" (");
+              debug(strh::time(data.ch_time));
+              debugln(')');
+           }
+         */
+
         wifi_set_channel(ch);
     }
 
-    // Register a packet from a station
-    Station* new_pkt(const uint8_t* station_mac, int8_t rssi) {
-        // Find station in list
-        Station* st = data.st_list.search(station_mac);
-
-        // Not listed yet
-        // Push to list
-        if (!st && data.st_list.push(station_mac)) {
-            // Find station in list
-            st = data.st_list.search(station_mac);
-        }
-
-        if (st) {
-            st->newPkt(rssi);
-        }
-
-        return st;
-    }
-
-    // Register a frame sent from a station to a known AP or vice versa
-    void new_transmission(const uint8_t* sender, const uint8_t* receiver, int8_t rssi) {
-        AccessPoint* ap;
-
-        // From station to access point
-        ap = data.ap_list.search(receiver);
-        if (ap) {
-            Station* st = new_pkt(sender, rssi);
-            st->setAccessPoint(ap);
-            if (st->getPackets() == 1) st->print();
-            return;
-        }
-
-        // From access point to station
-        ap = data.ap_list.search(sender);
-        if (ap) {
-            Station* st = new_pkt(receiver, rssi);
-            st->setAccessPoint(ap);
-            if ((st->getPackets() == 1) && !data.silent) st->print();
-            return;
-        }
-    }
-
-    void new_probe(const uint8_t* sender, const char* ssid, uint8_t len, int rssi) {
-        Station* st = new_pkt(sender, rssi);
-
-        if (st) {
-            if (st->addProbe(ssid, len) && !data.silent) st->print();
-        }
-    }
-
-    void new_auth(const uint8_t* sender, const uint8_t* receiver, int rssi) {
-        Station* st = new_pkt(sender, rssi);
-
-        if (st) {
-            st->setAccessPoint(nullptr);
-            if (st->addAuth(receiver[5]) && !data.silent) st->print();
-        }
-    }
-
-    void station_sniffer(uint8_t* buf, uint16_t len) {
-        SNIFFER_PREAMBLE();
-
-        if (payload_len == 0) return;
-
-        uint8_t type = payload[0]; // buf[12];
-
-        // drop ... frames
-        if (
-            (type == 0xc0) || // deauthentication
-            (type == 0xa0) || // disassociation
-            (type == 0x80) || // beacon frames
-            (type == 0x50)    // probe response
-            ) return;
-
-        // only allow data frames
-        // if(buf[12] != 0x08 && buf[12] != 0x88) return;
-
-        const uint8_t* receiver = &payload[4];  // &buf[16]; // To (Receiver)
-        const uint8_t* sender   = &payload[10]; // &buf[22]; // From (Transmitter)
-        const int8_t   rssi     = ctrl->rssi;
-
-        // broadcast probe request
-        if ((type == 0x40) && (payload[25] > 0)) {
-            uint8_t len      = payload[25];
-            const char* ssid = (const char*)&payload[26];
-
-            new_probe(sender, ssid, len, rssi);
-        }
-
-        // authentication
-        else if (data.auth && (type == 0xb0) && (memcmp(receiver, data.bssid, 5) == 0)) {
-            new_auth(sender, receiver, rssi);
-        }
-        // anything else that isn't a broadcast frame
-        else if (!mac::multicast(receiver)) {
-            new_transmission(sender, receiver, rssi);
-        }
-    }
-
-    void rssi_sniffer(uint8_t* buf, uint16_t len) {
-        SNIFFER_PREAMBLE();
-
-        if (payload_len == 0) return;
-
-        const uint8_t  type     = payload[0];
-        const uint8_t* receiver = &payload[4];
-        const uint8_t* sender   = &payload[10];
-        const int8_t   rssi     = ctrl->rssi;
-
-        if ((data.mac_filter.size() == 0) || data.mac_filter.contains(sender)) {
-            data.rssi_cb(rssi);
-        }
-    }
-
-    void clearAPresults() {
-        data.ap_list.clear();
-    }
-
-    void clearSTresults() {
-        data.st_list.clear();
-    }
-
-    void startAPsearch() {
-        debuglnF("[ ===== Access Point Scan ===== ]");
-
-        WiFi.mode(WIFI_STA);
-        WiFi.disconnect();
-
-        WiFi.scanNetworks(true, true);
-    }
-
-    void startSTsearch() {
-        debuglnF("[ ===== Station Scan ===== ]");
-
-        debug(strh::left(14, "Scan time:"));
-        if (data.timeout > 0) debugln(strh::time(data.timeout));
-        else debuglnF("-");
-
-        debug(strh::left(14, "Channel time:"));
-        debugln(strh::time(data.ch_time));
-
-        debug(strh::left(14, "Channels:"));
-
-        for (uint8_t i = 0; i<14; ++i) {
-            if ((data.channels >> (i)) & 0x01) {
-                debug(i+1);
-                debug(',');
-            }
-        }
-        debugln();
-
-        debugln();
-        debuglnF("Type 'stop' to stop the scan");
-        debugln();
-
-        next_ch();
-
-        data.start_time     = millis();
-        data.ch_update_time = data.start_time;
-
-        wifi_set_promiscuous_rx_cb(station_sniffer);
-        wifi_promiscuous_enable(true);
-
-        if (!data.silent) data.st_list.printHeader();
-    }
-
-    void stopAPsearch() {
-        if (data.ap) {
-            WiFi.scanDelete();
-            data.ap = false;
-
-            debuglnF("Stopped access point scan");
-            debugln();
-
-            printAPs();
-
-            if (data.st) startSTsearch();
-        }
-    }
-
-    void stopSTsearch() {
-        if (data.st) {
-            wifi_promiscuous_enable(false);
-            data.st = false;
-
-            // if (!data.silent) data.st_list.printFooter();
-
-            debuglnF("Stopped station scan");
-            debugln();
-
-            printSTs();
-        }
-    }
-
-    void stopRSSI() {
-        if (data.rssi) {
-            wifi_promiscuous_enable(false);
-            data.rssi = false;
-
-            data.mac_filter.clear();
-
-            debuglnF("Stopped RSSI scanner");
-            debugln();
-        }
-    }
-
-    void stopAuthSearch() {
-        if (data.auth) {
-            wifi_promiscuous_enable(false);
-            data.auth = false;
-
-            debuglnF("Stopped beacon authentication scan");
-            debugln();
-
-            printSTs();
-        }
-    }
-
-    void updateAPsearch() {
-        if (data.ap && (WiFi.scanComplete() >= 0)) {
-            int n = WiFi.scanComplete();
-
-            for (int i = 0; i < n; ++i) {
-                if (((data.channels >> (WiFi.channel(i)-1)) & 0x01)) {
-                    data.ap_list.push(
-                        WiFi.isHidden(i),
-                        WiFi.SSID(i).c_str(),
-                        WiFi.BSSID(i),
-                        WiFi.RSSI(i),
-                        WiFi.encryptionType(i),
-                        WiFi.channel(i)
-                        );
-                }
-            }
-
-            stopAPsearch();
-        }
-    }
-
-    void updateSTsearch() {
-        if (!data.ap && data.st) {
-            unsigned long current_time = millis();
-
-            if (data.st_list.full()) {
-                debuglnF("Station list full");
-                stopSTsearch();
-            } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
-                stopSTsearch();
-            } else if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-                next_ch();
-                data.ch_update_time = current_time;
-            } else if (!data.silent && (current_time - data.output_time >= 1000)) {
-                // print infos
-                data.output_time = current_time;
-            }
-        }
-    }
-
-    void updateAuthSearch() {
-        if (data.auth && (data.timeout > 0) && (millis() - data.start_time >= data.timeout)) {
-            stopAuthSearch();
-        }
-    }
-
-    void updateRSSI() {
-        unsigned long current_time = millis();
-
-        if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-            next_ch();
-            data.ch_update_time = current_time;
-        }
-    }
+#include "scan_station.h"
+#include "scan_ap.h"
+#include "scan_rssi.h"
+#include "scan_auth.h"
 
     // ===== PUBLIC ===== //
     void start(bool ap, bool st, unsigned long timeout, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
@@ -427,8 +156,8 @@ namespace scan {
         stop();
 
         if (!retain) {
-            if (ap) clearAPresults();
-            if (st) clearSTresults();
+            if (ap) data.ap_list.clear();
+            if (st) data.st_list.clear();
         }
 
         uint8_t num_of_channels = 0;
@@ -456,8 +185,8 @@ namespace scan {
         data.pkts_received   = 0;
         data.pkts_per_second = 0;
 
-        if (ap) startAPsearch();
-        else if (st) startSTsearch();
+        if (ap) start_ap_scan();
+        else if (st) start_st_scan();
     }
 
     void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels, unsigned long ch_time) {
@@ -495,23 +224,7 @@ namespace scan {
         data.pkts_received   = 0;
         data.pkts_per_second = 0;
 
-        debugF("Scanning for RSSI on ");
-        debug(data.num_of_channels);
-        debugF(" different channels");
-        debugln();
-        debuglnF("Type 'stop' to stop the scan");
-
-        uint8_t ch = 1;
-        wifi_set_channel(ch);
-
-        if ((data.channels >> (ch-1)) & 0x01) {
-            print_ch(ch);
-        } else {
-            next_ch();
-        }
-
-        wifi_set_promiscuous_rx_cb(rssi_sniffer);
-        wifi_promiscuous_enable(true);
+        start_rssi_scan();
     }
 
     void startAuth(uint8_t* mac, unsigned long timeout, bool silent) {
@@ -523,27 +236,14 @@ namespace scan {
         data.start_time = millis();
         memcpy(data.bssid, mac, 6);
 
-        debugF("Scanning for authentications on ");
-        debugln(strh::mac(data.bssid));
-        debugln();
-
-        // Reset authentications
-        data.st_list.begin();
-
-        while (data.st_list.available()) {
-            Station* tmp = data.st_list.iterate();
-            tmp->setAuth(0);
-        }
-
-        wifi_set_promiscuous_rx_cb(station_sniffer);
-        wifi_promiscuous_enable(true);
+        start_auth_scan();
     }
 
     void stop() {
-        stopAPsearch();
-        stopSTsearch();
-        stopRSSI();
-        stopAuthSearch();
+        stop_ap_scan();
+        stop_st_scan();
+        stop_rssi_scan();
+        stop_auth_scan();
     }
 
     void printAPs(const result_filter_t* filter) {
@@ -555,9 +255,10 @@ namespace scan {
     }
 
     void update() {
-        updateAPsearch();
-        updateSTsearch();
-        updateAuthSearch();
+        update_ap_scan();
+        update_st_scan();
+        update_auth_scan();
+        update_rssi_scan();
     }
 
     AccessPointList& getAccessPoints() {
