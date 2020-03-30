@@ -112,68 +112,88 @@ namespace scan {
     // ===== PRIVATE ===== //
     scan_data_t data;
 
-    void printChannel(uint8_t ch) {
-        if (!data.silent) {
-            debugF("Sniff on channel ");
-            debug(ch);
-
-            if (data.ch_time > 0) {
-                debugF(" (");
-                if (data.ch_time < 1000) {
-                    debug(data.ch_time);
-                    debugF(" ms)");
-                } else {
-                    debug(data.ch_time/1000);
-                    debugF(" s)");
-                }
-            }
-
-            debugln();
-        }
+    void print_ch(uint8_t ch) {
+        /*
+           if (!data.silent) {
+              debugF("Sniff on channel ");
+              debug(strh::right(2, String(ch)));
+              debugF(" (");
+              debug(strh::time(data.ch_time));
+              debugln(')');
+           }
+         */
     }
 
-    void setNextChannel() {
-        if (!data.num_of_channels > 0) return;
+    void next_ch() {
+        if (data.num_of_channels == 0) return;
 
         uint8_t ch = wifi_get_channel();
 
         do {
             if (++ch > 14) ch = 1;
-            if ((data.channels >> (ch-1)) & 0x01) {
-                printChannel(ch);
-                wifi_set_channel(ch);
-                break;
-            }
-        } while (true);
+        } while (!((data.channels >> (ch-1)) & 0x01));
+
+        print_ch(ch);
+        wifi_set_channel(ch);
     }
 
-    Station* register_station(const uint8_t* mac, AccessPoint* ap, int8_t rssi) {
-        Station* tmp = data.st_list.search(mac);
+    // Register a packet from a station
+    Station* new_pkt(const uint8_t* station_mac, int8_t rssi) {
+        // Find station in list
+        Station* st = data.st_list.search(station_mac);
 
-        if (!tmp && data.st_list.push(mac)) {
-            tmp = data.st_list.search(mac);
-
-            if (!data.silent && ap) {
-                // debug(strh::mac(mac));
-                // debuglnF(" new station");
-                // if (ap) {
-                debug(strh::mac(mac));
-                debugF(" connected to \"");
-                debug(ap->getSSID());
-                debugln('"');
-                // }
-            }
+        // Not listed yet
+        // Push to list
+        if (!st && data.st_list.push(station_mac)) {
+            // Find station in list
+            st = data.st_list.search(station_mac);
         }
 
-        if (!tmp) {
-            // Push error
-            return nullptr;
+        if (st) {
+            st->newPkt(rssi);
         }
 
-        if (ap) tmp->setAccessPoint(ap);
-        tmp->newPkt(rssi);
+        return st;
+    }
 
-        return tmp;
+    // Register a frame sent from a station to a known AP or vice versa
+    void new_transmission(const uint8_t* sender, const uint8_t* receiver, int8_t rssi) {
+        AccessPoint* ap;
+
+        // From station to access point
+        ap = data.ap_list.search(receiver);
+        if (ap) {
+            Station* st = new_pkt(sender, rssi);
+            st->setAccessPoint(ap);
+            if (st->getPackets() == 1) st->print();
+            return;
+        }
+
+        // From access point to station
+        ap = data.ap_list.search(sender);
+        if (ap) {
+            Station* st = new_pkt(receiver, rssi);
+            st->setAccessPoint(ap);
+            if ((st->getPackets() == 1) && !data.silent) st->print();
+            return;
+        }
+    }
+
+    void new_probe(const uint8_t* sender, const char* ssid, uint8_t len, int rssi) {
+        Station* st = new_pkt(sender, rssi);
+
+        if (st) {
+            if (st->addProbe(ssid, len) && !data.silent) st->print();
+        }
+    }
+
+    void new_auth(const uint8_t* sender, const uint8_t* receiver, int rssi) {
+        Station* st = new_pkt(sender, rssi);
+
+        if (st) {
+            st->setAccessPoint(nullptr);
+            if (st->addAuth(receiver[5]) && !data.silent) st->print();
+        }
     }
 
     void station_sniffer(uint8_t* buf, uint16_t len) {
@@ -194,53 +214,25 @@ namespace scan {
         // only allow data frames
         // if(buf[12] != 0x08 && buf[12] != 0x88) return;
 
-        const uint8_t* mac_to   = &payload[4];  // &buf[16]; // To (Receiver)
-        const uint8_t* mac_from = &payload[10]; // &buf[22]; // From (Transmitter)
+        const uint8_t* receiver = &payload[4];  // &buf[16]; // To (Receiver)
+        const uint8_t* sender   = &payload[10]; // &buf[22]; // From (Transmitter)
         const int8_t   rssi     = ctrl->rssi;
 
         // broadcast probe request
         if ((type == 0x40) && (payload[25] > 0)) {
+            uint8_t len      = payload[25];
             const char* ssid = (const char*)&payload[26];
-            uint8_t     len  = payload[25];
 
-            Station* st = register_station(mac_from, nullptr, rssi);
-
-            if (st && st->addProbe(ssid, len)) {
-                if (!data.silent) {
-                    debug(strh::mac(mac_from));
-                    debugF(" probe \"");
-
-                    for (uint8_t i = 0; i<len; ++i) debug(char(ssid[i]));
-                    debuglnF("\"");
-                }
-            }
+            new_probe(sender, ssid, len, rssi);
         }
-        // authentication
-        else if (data.auth && (type == 0xb0) && (memcmp(mac_to, data.bssid, 5) == 0)) {
-            Station* st = register_station(mac_from, nullptr, rssi);
 
-            if (st && st->addAuth(mac_to[5])) {
-                if (!data.silent) {
-                    debug(strh::mac(mac_from));
-                    debugF(" auth \"");
-                    // debugln(strh::mac(mac_to));
-                    debug(attack::getBeacon(mac_to[5]));
-                    debuglnF("\"");
-                }
-            }
+        // authentication
+        else if (data.auth && (type == 0xb0) && (memcmp(receiver, data.bssid, 5) == 0)) {
+            new_auth(sender, receiver, rssi);
         }
         // anything else that isn't a broadcast frame
-        else if (!mac::multicast(mac_to)) {
-            AccessPoint* ap = data.ap_list.search(mac_to);
-
-            if (ap) {
-                // From station to access point
-                register_station(mac_from, ap, rssi);
-            } else {
-                // From access point to station
-                ap = data.ap_list.search(mac_from);
-                if (ap) register_station(mac_to, ap, rssi);
-            }
+        else if (!mac::multicast(receiver)) {
+            new_transmission(sender, receiver, rssi);
         }
     }
 
@@ -279,41 +271,36 @@ namespace scan {
     void startSTsearch() {
         debuglnF("[ ===== Station Scan ===== ]");
 
-        debug(strh::left(10, "Scan time:"));
+        debug(strh::left(14, "Scan time:"));
         if (data.timeout > 0) debugln(strh::time(data.timeout));
         else debuglnF("-");
 
-        debug(strh::left(10, "Channels:"));
-        debugln(data.num_of_channels);
+        debug(strh::left(14, "Channel time:"));
+        debugln(strh::time(data.ch_time));
+
+        debug(strh::left(14, "Channels:"));
 
         for (uint8_t i = 0; i<14; ++i) {
             if ((data.channels >> (i)) & 0x01) {
-                debugF("- ");
-                debug(strh::right(2, String(i+1)));
-                debugF(" (");
-                debug(strh::time(data.ch_time));
-                debugln(')');
+                debug(i+1);
+                debug(',');
             }
         }
+        debugln();
 
         debugln();
         debuglnF("Type 'stop' to stop the scan");
         debugln();
 
-        uint8_t ch = 1;
-        wifi_set_channel(ch);
-
-        if ((data.channels >> (ch-1)) & 0x01) {
-            printChannel(ch);
-        } else {
-            setNextChannel();
-        }
+        next_ch();
 
         data.start_time     = millis();
         data.ch_update_time = data.start_time;
 
         wifi_set_promiscuous_rx_cb(station_sniffer);
         wifi_promiscuous_enable(true);
+
+        if (!data.silent) data.st_list.printHeader();
     }
 
     void stopAPsearch() {
@@ -334,6 +321,8 @@ namespace scan {
         if (data.st) {
             wifi_promiscuous_enable(false);
             data.st = false;
+
+            // if (!data.silent) data.st_list.printFooter();
 
             debuglnF("Stopped station scan");
             debugln();
@@ -397,7 +386,7 @@ namespace scan {
             } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
                 stopSTsearch();
             } else if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-                setNextChannel();
+                next_ch();
                 data.ch_update_time = current_time;
             } else if (!data.silent && (current_time - data.output_time >= 1000)) {
                 // print infos
@@ -416,7 +405,7 @@ namespace scan {
         unsigned long current_time = millis();
 
         if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-            setNextChannel();
+            next_ch();
             data.ch_update_time = current_time;
         }
     }
@@ -448,9 +437,7 @@ namespace scan {
             num_of_channels += ((channels >> i) & 0x01);
         }
 
-        if ((ch_time == 0) && (timeout > 0)) {
-            ch_time = timeout/num_of_channels;
-        }
+        if (ch_time == 0) ch_time = 284;
 
         data.ap       = ap;
         data.st       = st;
@@ -518,9 +505,9 @@ namespace scan {
         wifi_set_channel(ch);
 
         if ((data.channels >> (ch-1)) & 0x01) {
-            printChannel(ch);
+            print_ch(ch);
         } else {
-            setNextChannel();
+            next_ch();
         }
 
         wifi_set_promiscuous_rx_cb(rssi_sniffer);

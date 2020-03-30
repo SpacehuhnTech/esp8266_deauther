@@ -225,10 +225,10 @@ namespace cli {
                         do {
                             debuglnF("Scan for how long?\r\n"
                                      "  >1: Station scan time\r\n"
-                                     " [default=14s]");
-                            CLI_READ_RES_DEFAULT("14");
+                                     " [default=20s]");
+                            CLI_READ_RES_DEFAULT("20");
                         } while (!(res.toInt() > 0));
-                        if (res != "14") cmd += " -t " + res;
+                        if (res != "20") cmd += " -t " + res;
                     }
 
                     { // Scan on channel(s)
@@ -243,10 +243,10 @@ namespace cli {
                         do {
                             debuglnF("Stay on each channel for how long?\r\n"
                                      "  >1: Channel time in milliseconds\r\n"
-                                     " [default=auto]");
-                            CLI_READ_RES_DEFAULT("auto");
-                        } while (!(res.toInt() > 0) && res != "auto");
-                        if (res != "auto") cmd += " -ct " + res;
+                                     " [default=284]");
+                            CLI_READ_RES_DEFAULT("284");
+                        } while (!(res.toInt() > 0) && res != "284");
+                        if (res != "284") cmd += " -ct " + res;
                     }
 
                     { // Silent
@@ -674,15 +674,15 @@ namespace cli {
             scan::start(ap, st, time, channels, ch_time, silent, retain);
         });
         cmd_scan.addPosArg("m/ode", "ap+st");
-        cmd_scan.addArg("t/ime", "14s");
+        cmd_scan.addArg("t/ime", "20s");
         cmd_scan.addArg("ch/annel", "all");
-        cmd_scan.addArg("ct/ime", "auto");
+        cmd_scan.addArg("ct/ime", "284");
         cmd_scan.addFlagArg("s/ilent");
         cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\r\n"
             "  -m:  scan mode [ap,st,ap+st] (default=ap+st)\r\n"
-            "  -t:  station scan time (default=14s)\r\n"
+            "  -t:  station scan time (default=20s)\r\n"
             "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\r\n"
             "  -ct: channel scan time in milliseconds (default=auto)\r\n"
             "  -s:  silent mode (mute output)\r\n"

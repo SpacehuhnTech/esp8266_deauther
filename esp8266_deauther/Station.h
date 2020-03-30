@@ -53,7 +53,7 @@ class Station {
         bool addAuth(uint8_t num);
         void newPkt(int8_t rssi);
 
-        void print(int id, const result_filter_t* filter = nullptr);
+        void print(int id = -1, const result_filter_t* filter = nullptr);
 };
 
 // ========== StationList ========== //
@@ -87,5 +87,7 @@ class StationList {
         int size() const;
         bool full() const;
 
+        void printHeader();
+        void printFooter();
         void print(const result_filter_t* filter = nullptr);
 };

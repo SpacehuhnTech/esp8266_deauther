@@ -116,7 +116,7 @@ void Station::print(int id, const result_filter_t* f) {
         if (f->vendors && f->vendors->size() && !f->vendors->contains(getVendor())) return;
     }
 
-    debug(strh::right(3, String(id)));
+    debug(strh::right(3, id<0 ? String('-') : String(id)));
     debug(' ');
     debug(strh::right(4, String(getPackets())));
     debug(' ');
@@ -277,11 +277,7 @@ bool StationList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void StationList::print(const result_filter_t* filter) {
-    debugF("Station (Client) List: ");
-    debugln(size());
-    debuglnF("-------------------------");
-
+void StationList::printHeader() {
     debug(strh::right(3, "ID"));
     debug(' ');
     debug(strh::right(4, "Pkts"));
@@ -300,6 +296,22 @@ void StationList::print(const result_filter_t* filter) {
     debugln();
 
     debuglnF("================================================================================================================================");
+}
+
+void StationList::printFooter() {
+    debuglnF("================================================================================================================================");
+    debuglnF("Pkts = Recorded Packets");
+    debuglnF("================================================================================================================================");
+
+    debugln();
+}
+
+void StationList::print(const result_filter_t* filter) {
+    debugF("Station (Client) List: ");
+    debugln(size());
+    debuglnF("-------------------------");
+
+    printHeader();
 
     int i = 0;
     begin();
@@ -309,9 +321,5 @@ void StationList::print(const result_filter_t* filter) {
         ++i;
     }
 
-    debuglnF("================================================================================================================================");
-    debuglnF("Pkts = Recorded Packets");
-    debuglnF("================================================================================================================================");
-
-    debugln();
+    printFooter();
 }
