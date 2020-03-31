@@ -42,14 +42,7 @@ void start_auth_scan() {
     else debuglnF("-");
 
     debugF("Channels:     ");
-
-    for (uint8_t i = 0; i<14; ++i) {
-        if ((data.channels >> (i)) & 0x01) {
-            debug(i+1);
-            debug(',');
-        }
-    }
-    debugln();
+    debugln(strh::channels(data.channels));
 
     debugln();
     debuglnF("Type 'stop' to stop the scan");

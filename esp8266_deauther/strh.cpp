@@ -100,4 +100,16 @@ namespace strh {
 
         return str;
     }
+
+    String channels(uint16_t reg) {
+        String str;
+
+        for (uint8_t i = 0; i<14; ++i) {
+            if ((reg >> (i)) & 0x01) {
+                str += String(i+1);
+                str += String(',');
+            }
+        }
+        return str;
+    }
 }

@@ -15,4 +15,5 @@ namespace strh {
     String mac(const uint8_t* b);
     String escape(String str);
     String time(unsigned long time);
+    String channels(uint16_t reg);
 }
