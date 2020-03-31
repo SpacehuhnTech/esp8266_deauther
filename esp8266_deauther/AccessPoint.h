@@ -8,7 +8,7 @@
 
 #include <Arduino.h>
 #include "config.h"
-#include "scan_filter.h"
+#include "result_filter.h"
 
 #ifndef MAX_ACCESS_POINTS
 #define MAX_ACCESS_POINTS 0

@@ -17,7 +17,7 @@
 #include "attack.h"
 #include "alias.h"
 #include "config.h"
-#include "scan_filter.h"
+#include "result_filter.h"
 
 // ram usage
 extern "C" {

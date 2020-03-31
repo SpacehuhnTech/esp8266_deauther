@@ -8,7 +8,7 @@
 
 #include "AccessPoint.h"
 #include "Station.h"
-#include "scan_filter.h"
+#include "result_filter.h"
 
 typedef void (* rssi_cb_f)(int8_t);
 
