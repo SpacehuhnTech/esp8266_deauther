@@ -46,8 +46,6 @@ void stop_rssi_scan() {
         wifi_promiscuous_enable(false);
         data.rssi = false;
 
-        data.mac_filter.clear();
-
         debuglnF("Stopped RSSI scanner");
         debugln();
     }

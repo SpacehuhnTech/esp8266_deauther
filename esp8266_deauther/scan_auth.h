@@ -22,6 +22,8 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
     const uint8_t* sender   = &payload[10]; // &buf[22]; // From (Transmitter)
     const int8_t   rssi     = ctrl->rssi;
 
+    if ((data.mac_filter.size() > 0) && !data.mac_filter.contains(receiver)) return;
+
     memcpy(data.auth_buffer.mac, sender, 6);
     memcpy(data.auth_buffer.bssid, receiver, 6);
     data.auth_buffer.rssi   = rssi;

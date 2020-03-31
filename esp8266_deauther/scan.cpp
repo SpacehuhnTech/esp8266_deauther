@@ -19,55 +19,7 @@ extern "C" {
   #include "user_interface.h"
 }
 
-#define SNIFFER_PREAMBLE()\
-    wifi_pkt_rx_ctrl_t* ctrl { nullptr };\
-    uint8_t* payload { nullptr };\
-    size_t   payload_len { 0 };\
-    if (len == sizeof(wifi_pkt_mgmt_t)) {\
-        wifi_pkt_mgmt_t* pkt { (wifi_pkt_mgmt_t*)buf };\
-        ctrl        = &pkt->rx_ctrl;\
-        payload     = pkt->payload;\
-        payload_len = 112;\
-    } else if (len == sizeof(wifi_pkt_data_t)) {\
-        wifi_pkt_data_t* pkt { (wifi_pkt_data_t*)buf };\
-        ctrl        = &pkt->rx_ctrl;\
-        payload     = pkt->payload;\
-        payload_len = 36;\
-    } else if (len == sizeof(wifi_pkt_rx_ctrl_t)) {\
-        ctrl = (wifi_pkt_rx_ctrl_t*)buf;\
-    }
-
-typedef struct auth_buffer_t {
-    uint8_t mac[6];
-    uint8_t bssid[6];
-    int8_t  rssi;
-    bool    locked;
-} auth_buffer_t;
-
-typedef struct scan_data_t {
-    bool ap;
-    bool st;
-    bool auth;
-    bool rssi;
-    bool silent;
-    bool beacon;
-
-    uint16_t channels;
-    uint8_t  num_of_channels;
-
-    unsigned long ch_time;
-    unsigned long timeout;
-    unsigned long start_time;
-    unsigned long ch_update_time;
-
-    rssi_cb_f rssi_cb;
-
-    AccessPointList ap_list;
-    StationList     st_list;
-    MACList         mac_filter;
-    auth_buffer_t   auth_buffer;
-} scan_data_t;
-
+// ========== Sniffer types ========= //
 typedef struct wifi_pkt_rx_ctrl_t {
     signed   rssi          : 8;
     unsigned rate          : 4;
@@ -114,6 +66,64 @@ typedef struct wifi_pkt_data_t {
     uint16_t           cnt;
     wifi_pkt_lenseq_t  lenseq[1];
 } wifi_pkt_data_t;
+
+#define SNIFFER_PREAMBLE()\
+    wifi_pkt_rx_ctrl_t* ctrl { nullptr };\
+    uint8_t* payload { nullptr };\
+    size_t   payload_len { 0 };\
+    if (len == sizeof(wifi_pkt_mgmt_t)) {\
+        wifi_pkt_mgmt_t* pkt { (wifi_pkt_mgmt_t*)buf };\
+        ctrl        = &pkt->rx_ctrl;\
+        payload     = pkt->payload;\
+        payload_len = 112;\
+    } else if (len == sizeof(wifi_pkt_data_t)) {\
+        wifi_pkt_data_t* pkt { (wifi_pkt_data_t*)buf };\
+        ctrl        = &pkt->rx_ctrl;\
+        payload     = pkt->payload;\
+        payload_len = 36;\
+    } else if (len == sizeof(wifi_pkt_rx_ctrl_t)) {\
+        ctrl = (wifi_pkt_rx_ctrl_t*)buf;\
+    }
+
+// ========== Scan data ========= //
+typedef struct auth_buffer_t {
+    uint8_t mac[6];
+    uint8_t bssid[6];
+    int8_t  rssi;
+    bool    locked;
+} auth_buffer_t;
+
+typedef struct scan_data_t {
+    // Modes
+    bool ap;
+    bool st;
+    bool auth;
+    bool rssi;
+
+    // Mode Settings
+    bool silent;
+    bool beacon;
+
+    uint16_t channels;
+    uint8_t  num_of_channels;
+
+    unsigned long ch_time;
+    unsigned long timeout;
+
+    rssi_cb_f rssi_cb;
+
+    MACList mac_filter;
+
+    // Temp
+    unsigned long start_time;
+    unsigned long ch_update_time;
+
+    auth_buffer_t auth_buffer;
+
+    // Results
+    AccessPointList ap_list;
+    StationList     st_list;
+} scan_data_t;
 
 namespace scan {
     // ===== PRIVATE ===== //
@@ -189,13 +199,14 @@ namespace scan {
         data.start_time      = current_time;
         data.ch_update_time  = current_time;
 
+        if (data.num_of_channels == 0) data.ch_time = 0;
         if ((data.ch_time == 0) && (data.num_of_channels > 1)) data.ch_time = 284;
 
         if (ap) start_ap_scan();
         else if (st) start_st_scan();
     }
 
-    void startAuth(bool beacon, unsigned long timeout, uint16_t channels, unsigned long ch_time) {
+    void startAuth(bool beacon, MACList* receivers, unsigned long timeout, uint16_t channels, unsigned long ch_time) {
         stop();
 
         unsigned long current_time = millis();
@@ -209,7 +220,10 @@ namespace scan {
         data.start_time      = current_time;
         data.ch_update_time  = current_time;
 
-        if ((data.ch_time == 0) && (data.num_of_channels > 1)) data.ch_time = 284;
+        if (data.num_of_channels == 0) data.ch_time = 0;
+        if ((data.num_of_channels > 1) && (data.ch_time == 0)) data.ch_time = 284;
+
+        if (receivers) data.mac_filter.moveFrom(*receivers);
 
         start_auth_scan();
     }
@@ -253,6 +267,7 @@ namespace scan {
         stop_st_scan();
         stop_rssi_scan();
         stop_auth_scan();
+        data.mac_filter.clear();
     }
 
     void printAPs(const result_filter_t* filter) {

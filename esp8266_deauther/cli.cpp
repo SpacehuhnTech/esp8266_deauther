@@ -779,7 +779,7 @@ namespace cli {
             }
 
             attack::startBeacon(ssid_list, bssid, receiver, enc, ch, timeout);
-            if (scan) scan::startAuth(true, timeout, ch, 0);
+            if (scan) scan::startAuth(true, nullptr, timeout, ch, 0);
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("bssid,from", "random");

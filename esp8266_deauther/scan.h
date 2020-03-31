@@ -18,7 +18,7 @@ namespace scan {
 
     void start(bool ap = true, bool st = true, unsigned long timeout = 20000, uint16_t channels = 0x3FFF, unsigned long ch_time = 284, bool silent = false, bool retain = false);
 
-    void startAuth(bool beacon = false, unsigned long timeout = 20000, uint16_t channels = 0x3FFF, unsigned long ch_time = 284);
+    void startAuth(bool beacon = false, MACList* receivers = nullptr, unsigned long timeout = 20000, uint16_t channels = 0x3FFF, unsigned long ch_time = 284);
 
     void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels = 0x3FFF, unsigned long ch_time = 1000);
 
