@@ -610,12 +610,14 @@ namespace cli {
 
             { // Mode
                 String mode = cmd.getArg("m").getValue();
-                if (mode == "ap") {
+                if (mode == "ap+st") {
                     ap = true;
-                } else if (mode == "st") {
                     st = true;
-                } else if (mode == "ap+st") {
+                } else if (mode == "ap") {
                     ap = true;
+                    st = false;
+                } else if (mode == "st") {
+                    ap = false;
                     st = true;
                 }
             }
