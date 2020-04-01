@@ -86,119 +86,20 @@ typedef struct wifi_pkt_data_t {
         ctrl = (wifi_pkt_rx_ctrl_t*)buf;\
     }
 
-// ========== Scan data ========= //
-typedef struct auth_buffer_t {
-    uint8_t ch;
-    uint8_t mac[6];
-    uint8_t bssid[6];
-    int8_t  rssi;
-    bool    locked;
-} auth_buffer_t;
-
-typedef struct scan_data_t {
-    // Modes
-    bool ap;
-    bool st;
-    bool auth;
-    bool rssi;
-
-    // Mode Settings
-    bool silent;
-    bool beacon;
-
-    uint16_t channels;
-    uint8_t  num_of_channels;
-
-    unsigned long ch_time;
-    unsigned long timeout;
-
-    rssi_cb_f rssi_cb;
-
-    MACList mac_filter;
-
-    // Temp
-    unsigned long start_time;
-    unsigned long ch_update_time;
-
-    auth_buffer_t auth_buffer;
-
-    // Results
-    AccessPointList ap_list;
-    StationList     st_list;
-} scan_data_t;
-
 namespace scan {
     // ===== PRIVATE ===== //
-    scan_data_t data;
+    AccessPointList ap_list;
+    StationList     st_list;
 
-#include "scan_station.h"
 #include "scan_ap.h"
-#include "scan_rssi.h"
+#include "scan_st.h"
 #include "scan_auth.h"
+    // #include "scan_rssi.h"
 
     // ===== PUBLIC ===== //
-    void start(bool ap, bool st, unsigned long timeout, uint16_t channels, unsigned long ch_time, bool silent, bool retain) {
-        { // Error check
-            if (!ap && !st) {
-                debuglnF("ERROR: Invalid scan mode");
-                return;
-            }
 
-            if (st && (channels == 0)) {
-                debuglnF("ERROR: No channels specified");
-                return;
-            }
-        }
-
-        stop();
-
-        if (!retain) {
-            if (ap) data.ap_list.clear();
-            if (st) data.st_list.clear();
-        }
-
-        unsigned long current_time = millis();
-
-        data.ap              = ap;
-        data.st              = st;
-        data.silent          = silent;
-        data.channels        = channels;
-        data.num_of_channels = sysh::count_ch(channels);
-        data.ch_time         = ch_time;
-        data.timeout         = timeout;
-        data.start_time      = current_time;
-        data.ch_update_time  = current_time;
-
-        if (data.num_of_channels == 0) data.ch_time = 0;
-        if ((data.ch_time == 0) && (data.num_of_channels > 1)) data.ch_time = 284;
-
-        if (ap) start_ap_scan();
-        else if (st) start_st_scan();
-    }
-
-    void startAuth(bool beacon, MACList* receivers, unsigned long timeout, uint16_t channels, unsigned long ch_time) {
-        stop();
-
-        unsigned long current_time = millis();
-
-        data.auth            = true;
-        data.beacon          = beacon;
-        data.channels        = channels;
-        data.num_of_channels = sysh::count_ch(channels);
-        data.ch_time         = ch_time;
-        data.timeout         = timeout;
-        data.start_time      = current_time;
-        data.ch_update_time  = current_time;
-
-        if (data.num_of_channels == 0) data.ch_time = 0;
-        if ((data.num_of_channels > 1) && (data.ch_time == 0)) data.ch_time = 284;
-
-        if (receivers) data.mac_filter.moveFrom(*receivers);
-
-        start_auth_scan();
-    }
-
-    void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels, unsigned long ch_time) {
+    /*
+       void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels, unsigned long ch_time) {
         if (!rssi_cb) {
             // ERROR
             return;
@@ -206,12 +107,6 @@ namespace scan {
 
         data.rssi_cb = rssi_cb;
         data.mac_filter.moveFrom(mac_filter);
-
-        /*
-                if (data.mac_filter.size() == 0) {
-                    // ERROR
-                    return;
-                }*/
 
         data.channels = channels;
         data.ch_time  = ch_time;
@@ -230,36 +125,36 @@ namespace scan {
         data.ch_update_time  = current_time;
 
         start_rssi_scan();
-    }
-
+       }
+     */
     void stop() {
-        stop_ap_scan();
-        stop_st_scan();
-        stop_rssi_scan();
-        stop_auth_scan();
-        data.mac_filter.clear();
+        stopAP();
+        stopST();
+        stopAuth();
+
+        // stop_rssi_scan();
     }
 
     void printAPs(const result_filter_t* filter) {
-        data.ap_list.print(filter);
+        ap_list.print(filter);
     }
 
     void printSTs(const result_filter_t* filter) {
-        data.st_list.print(filter);
+        st_list.print(filter);
     }
 
     void update() {
         update_ap_scan();
         update_st_scan();
         update_auth_scan();
-        update_rssi_scan();
+        // update_rssi_scan();
     }
 
     AccessPointList& getAccessPoints() {
-        return data.ap_list;
+        return ap_list;
     }
 
     StationList& getStations() {
-        return data.st_list;
+        return st_list;
     }
 }

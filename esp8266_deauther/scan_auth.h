@@ -6,8 +6,32 @@
 
 #pragma once
 
+typedef struct auth_buffer_t {
+    uint8_t ch;
+    uint8_t mac[6];
+    uint8_t bssid[6];
+    int8_t  rssi;
+    bool    locked;
+} auth_buffer_t;
+
+typedef struct auth_data_t {
+    bool enabled;
+
+    // Settings
+    auth_scan_settings_t settings;
+
+    MACList receivers;
+
+    // Temp
+    unsigned long start_time;
+    unsigned long ch_update_time;
+} auth_data_t;
+
+auth_data_t   auth_data;
+auth_buffer_t auth_buffer;
+
 void auth_sniffer(uint8_t* buf, uint16_t len) {
-    if (data.auth_buffer.locked) return;
+    if (auth_buffer.locked) return;
 
     SNIFFER_PREAMBLE();
 
@@ -23,48 +47,75 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
     const int8_t   rssi     = ctrl->rssi;
     const uint8_t  ch       = wifi_get_channel(); // ctrl->channel;
 
-    if ((data.mac_filter.size() > 0) && !data.mac_filter.contains(receiver)) return;
+    if ((auth_data.receivers.size() > 0) && !auth_data.receivers.contains(receiver)) return;
 
-    data.auth_buffer.rssi = rssi;
-    data.auth_buffer.ch   = ch;
-    memcpy(data.auth_buffer.mac, sender, 6);
-    memcpy(data.auth_buffer.bssid, receiver, 6);
-    data.auth_buffer.locked = true;
+    auth_buffer.rssi = rssi;
+    auth_buffer.ch   = ch;
+    memcpy(auth_buffer.mac, sender, 6);
+    memcpy(auth_buffer.bssid, receiver, 6);
+    auth_buffer.locked = true;
 }
 
-void start_auth_scan() {
-    debuglnF("[ ===== Authentication Scan ===== ]");
+void startAuth(const auth_scan_settings_t& settings) {
+    { // Error checks
+        if ((settings.channels & 0x3FFF)== 0) {
+            debuglnF("ERROR: No channels specified");
+            return;
+        }
+    }
 
-    debugF("Scan time:    ");
-    if (data.timeout > 0) debugln(strh::time(data.timeout));
-    else debuglnF("-");
+    scan::stop();
 
-    debugF("Channels:     ");
-    debugln(strh::channels(data.channels));
+    unsigned long current_time = millis();
 
-    debugF("Channel time: ");
-    if (data.ch_time > 0) debugln(strh::time(data.ch_time));
-    else debuglnF("-");
+    auth_data.enabled        = true;
+    auth_data.settings       = settings;
+    auth_data.start_time     = current_time;
+    auth_data.ch_update_time = current_time;
 
-    debugln();
-    debuglnF("Type 'stop' to stop the scan");
-    debugln();
+    if (settings.receivers) auth_data.receivers.moveFrom(*settings.receivers);
 
-    debuglnF("RSSI Ch Vendor   MAC-Address       SSID                               BSSID");
-    debuglnF("=======================================================================================");
+    auth_buffer.locked = false;
 
-    if (!data.beacon) sysh::set_next_ch(data.channels);
+    { // Auto correct
+        if (sysh::count_ch(auth_data.settings.channels) <= 1) auth_data.settings.ch_time = 0;
+        else if (auth_data.settings.ch_time == 0) auth_data.settings.ch_time = 284;
+    }
 
-    data.auth_buffer.locked = false;
+    { // Output
+        debuglnF("[ ===== Authentication Scan ===== ]");
+
+        debugF("Scan time:    ");
+        if (auth_data.settings.timeout > 0) debugln(strh::time(auth_data.settings.timeout));
+        else debuglnF("-");
+
+        debugF("Channels:     ");
+        debugln(strh::channels(auth_data.settings.channels));
+
+        debugF("Channel time: ");
+        if (auth_data.settings.ch_time > 0) debugln(strh::time(auth_data.settings.ch_time));
+        else debuglnF("-");
+
+        debugln();
+        debuglnF("Type 'stop' to stop the scan");
+        debugln();
+
+        debuglnF("RSSI Ch Vendor   MAC-Address       SSID                               BSSID");
+        debuglnF("=======================================================================================");
+    }
+
+    if (!auth_data.settings.beacon) sysh::set_next_ch(auth_data.settings.channels);
 
     wifi_set_promiscuous_rx_cb(auth_sniffer);
     wifi_promiscuous_enable(true);
 }
 
-void stop_auth_scan() {
-    if (data.auth) {
+void stopAuth() {
+    if (auth_data.enabled) {
         wifi_promiscuous_enable(false);
-        data.auth = false;
+        auth_data.enabled = false;
+
+        auth_data.receivers.clear();
 
         debuglnF("=======================================================================================");
         debuglnF("Ch = 2.4 GHz Channel    ,    RSSI = Signal strength    ,    BSSID = Network MAC address");
@@ -76,17 +127,17 @@ void stop_auth_scan() {
 }
 
 void update_auth_scan() {
-    if (data.auth) {
+    if (auth_data.enabled) {
         unsigned long current_time = millis();
 
         // Print scan results if something is in the buffer
-        if (data.auth_buffer.locked) {
+        if (auth_buffer.locked) {
             // Copy data and unlock the buffer
-            auth_buffer_t tmp = data.auth_buffer;
-            data.auth_buffer.locked = false;
+            auth_buffer_t tmp = auth_buffer;
+            auth_buffer.locked = false;
 
             // Don't print unrelated auths when attacking
-            if (data.beacon && !attack::beaconBSSID(tmp.bssid)) return;
+            if (auth_data.settings.beacon && !attack::beaconBSSID(tmp.bssid)) return;
 
             debug(strh::right(4, String(tmp.rssi)));
             debug(' ');
@@ -106,7 +157,7 @@ void update_auth_scan() {
             }
 
             // Part of AP list
-            AccessPoint* ap = data.ap_list.search(tmp.bssid);
+            AccessPoint* ap = ap_list.search(tmp.bssid);
             if (ap) {
                 debug(strh::left(32, ap->getSSIDString()));
                 debug(' ');
@@ -120,13 +171,13 @@ void update_auth_scan() {
             debugln(strh::left(17, alias::get(tmp.bssid)));
         }
 
-        if ((data.ch_time > 0) && (!data.beacon) && (current_time - data.ch_update_time >= data.ch_time)) {
+        if ((auth_data.settings.ch_time > 0) && (!auth_data.settings.beacon) && (current_time - auth_data.ch_update_time >= auth_data.settings.ch_time)) {
             debug("AUTH update ");
-            sysh::set_next_ch(data.channels);
+            sysh::set_next_ch(auth_data.settings.channels);
             debugln();
-            data.ch_update_time = current_time;
-        } else if ((data.timeout > 0) && (millis() - data.start_time >= data.timeout)) {
-            stop_auth_scan();
+            auth_data.ch_update_time = current_time;
+        } else if ((auth_data.settings.timeout > 0) && (millis() - auth_data.start_time >= auth_data.settings.timeout)) {
+            stopAuth();
         }
     }
 }

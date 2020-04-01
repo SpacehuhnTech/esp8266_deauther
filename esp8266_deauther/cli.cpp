@@ -617,9 +617,9 @@ namespace cli {
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
-            unsigned long time    = 0;
-            unsigned long ch_time = 0;
-            uint16_t channels     = 0;
+            unsigned long timeout;
+            unsigned long ch_time;
+            uint16_t channels;
             bool silent;
 
             bool retain;
@@ -628,7 +628,7 @@ namespace cli {
 
             { // Station scan time
                 String time_str = cmd.getArg("t").getValue();
-                time            = parse_time(time_str, 1000);
+                timeout         = parse_time(time_str, 1000);
             }
 
             { // Channels
@@ -661,7 +661,19 @@ namespace cli {
                 }
             }
 
-            scan::start(ap, st, time, channels, ch_time, silent, retain);
+            ap_scan_settings_t scan_settings;
+
+            scan_settings.channels = channels;
+            scan_settings.retain   = retain;
+            scan_settings.st       = st;
+
+            scan_settings.st_settings.channels = channels;
+            scan_settings.st_settings.ch_time  = ch_time;
+            scan_settings.st_settings.timeout  = timeout;
+            scan_settings.st_settings.retain   = retain;
+
+            if (ap) scan::startAP(scan_settings);
+            else if (st) scan::startST(scan_settings.st_settings);
         });
         cmd_scan.addPosArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "20s");
@@ -679,19 +691,20 @@ namespace cli {
             "  -r:  keep previous scan results"
             );
 
-        Command cmd_rssi = cli.addCommand("rssi", [](cmd* c) {
-            Command cmd(c);
-            String mac_str = cmd.getArg("mac").getValue();
+        /*
+                Command cmd_rssi = cli.addCommand("rssi", [](cmd* c) {
+                    Command cmd(c);
+                    String mac_str = cmd.getArg("mac").getValue();
 
-            MACList macs(mac_str, ",");
+                    MACList macs(mac_str, ",");
 
-            scan::startRSSI(&rssi_meter_cb, macs);
-        });
-        cmd_rssi.addPosArg("mac", "");
-        cmd_rssi.setDescription(
-            "  RSSI meter\r\n"
-            "  -mac: MAC addresses");
-
+                    scan::startRSSI(&rssi_meter_cb, macs);
+                });
+                cmd_rssi.addPosArg("mac", "");
+                cmd_rssi.setDescription(
+                    "  RSSI meter\r\n"
+                    "  -mac: MAC addresses");
+         */
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             Command cmd(c);
             String mode = cmd.getArg("t").getValue();
@@ -790,7 +803,17 @@ namespace cli {
             }
 
             attack::startBeacon(ssid_list, bssid, receiver, enc, channels, pkt_rate, timeout);
-            if (scan) scan::startAuth(true, nullptr, timeout, channels, 1000/pkt_rate);
+            if (scan) {
+                auth_scan_settings_t auth_settings;
+
+                auth_settings.channels  = channels;
+                auth_settings.ch_time   = 1000/pkt_rate;
+                auth_settings.timeout   = timeout;
+                auth_settings.beacon    = true;
+                auth_settings.receivers = nullptr;
+
+                scan::startAuth(auth_settings);
+            }
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("bssid,from", "random");

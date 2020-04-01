@@ -10,18 +10,47 @@
 #include "Station.h"
 #include "result_filter.h"
 
-typedef void (* rssi_cb_f)(int8_t);
+// typedef void (* rssi_cb_f)(int8_t);
+
+typedef struct st_scan_settings_t {
+    uint16_t      channels;
+    unsigned long ch_time;
+    unsigned long timeout;
+    bool          retain;
+} st_scan_settings_t;
+
+typedef struct ap_scan_settings_t {
+    uint16_t           channels;
+    bool               retain;
+    bool               st;
+    st_scan_settings_t st_settings;
+} ap_scan_settings_t;
+
+typedef struct auth_scan_settings_t {
+    uint16_t      channels;
+    unsigned long ch_time;
+    unsigned long timeout;
+    bool          beacon;
+    MACList     * receivers;
+} auth_scan_settings_t;
+
+const st_scan_settings_t   ST_SCAN_DEFAULT { 0x3FFF, 284, 20000, false };
+const ap_scan_settings_t   AP_SCAN_DEFAULT { 0x3FFF, false, false, ST_SCAN_DEFAULT };
+const auth_scan_settings_t AUTH_SCAN_DEFAULT { 0x3FFF, 284, 20000, false, nullptr };
 
 namespace scan {
     void clearAPresults();
     void clearSTresults();
 
-    void start(bool ap = true, bool st = true, unsigned long timeout = 20000, uint16_t channels = 0x3FFF, unsigned long ch_time = 284, bool silent = false, bool retain = false);
+    void startAP(const ap_scan_settings_t& settings     = AP_SCAN_DEFAULT);
+    void startST(const st_scan_settings_t& settings     = ST_SCAN_DEFAULT);
+    void startAuth(const auth_scan_settings_t& settings = AUTH_SCAN_DEFAULT);
 
-    void startAuth(bool beacon = false, MACList* receivers = nullptr, unsigned long timeout = 20000, uint16_t channels = 0x3FFF, unsigned long ch_time = 284);
+    // void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels = 0x3FFF, unsigned long ch_time = 1000);
 
-    void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels = 0x3FFF, unsigned long ch_time = 1000);
-
+    void stopAP();
+    void stopST();
+    void stopAuth();
     void stop();
 
     void printAPs(const result_filter_t* filter = nullptr);

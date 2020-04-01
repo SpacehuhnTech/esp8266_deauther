@@ -6,8 +6,34 @@
 
 #pragma once
 
-void start_ap_scan() {
-    debuglnF("[ ===== Access Point Scan ===== ]");
+typedef struct ap_data_t {
+    bool               enabled;
+    ap_scan_settings_t settings;
+} ap_data_t;
+
+ap_data_t ap_data;
+
+void startAP(const ap_scan_settings_t& settings) {
+    { // Error check
+        if ((settings.channels & 0x3FFF)== 0) {
+            debuglnF("ERROR: No channels specified");
+            return;
+        }
+    }
+
+    scan::stop();
+
+    if (!settings.retain) ap_list.clear();
+
+    ap_data.enabled  = true;
+    ap_data.settings = settings;
+
+    { // Auto correct
+    }
+
+    { // Output
+        debuglnF("[ ===== Access Point Scan ===== ]");
+    }
 
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
@@ -15,27 +41,27 @@ void start_ap_scan() {
     WiFi.scanNetworks(true, true);
 }
 
-void stop_ap_scan() {
-    if (data.ap) {
+void stopAP() {
+    if (ap_data.enabled) {
         WiFi.scanDelete();
-        data.ap = false;
+        ap_data.enabled = false;
 
         debuglnF("Stopped access point scan");
         debugln();
 
         printAPs();
 
-        if (data.st) start_st_scan();
+        if (ap_data.settings.st) startST(ap_data.settings.st_settings);
     }
 }
 
 void update_ap_scan() {
-    if (data.ap && (WiFi.scanComplete() >= 0)) {
+    if (ap_data.enabled && (WiFi.scanComplete() >= 0)) {
         int n = WiFi.scanComplete();
 
         for (int i = 0; i < n; ++i) {
-            if (((data.channels >> (WiFi.channel(i)-1)) & 0x01)) {
-                data.ap_list.push(
+            if (((ap_data.settings.channels >> (WiFi.channel(i)-1)) & 0x01)) {
+                ap_list.push(
                     WiFi.isHidden(i),
                     WiFi.SSID(i).c_str(),
                     WiFi.BSSID(i),
@@ -46,6 +72,6 @@ void update_ap_scan() {
             }
         }
 
-        stop_ap_scan();
+        stopAP();
     }
 }

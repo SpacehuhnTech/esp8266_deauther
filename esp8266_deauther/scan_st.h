@@ -6,16 +6,29 @@
 
 #pragma once
 
+typedef struct scan_data_t {
+    bool enabled;
+
+    // Settings
+    st_scan_settings_t settings;
+
+    // Temp
+    unsigned long start_time;
+    unsigned long ch_update_time;
+} st_data_t;
+
+st_data_t st_data;
+
 // Register a packet from a station
 Station* new_pkt(const uint8_t* station_mac, int8_t rssi) {
     // Find station in list
-    Station* st = data.st_list.search(station_mac);
+    Station* st = st_list.search(station_mac);
 
     // Not listed yet
     // Push to list
-    if (!st && data.st_list.push(station_mac)) {
+    if (!st && st_list.push(station_mac)) {
         // Find station in list
-        st = data.st_list.search(station_mac);
+        st = st_list.search(station_mac);
     }
 
     if (st) {
@@ -30,7 +43,7 @@ void new_transmission(const uint8_t* sender, const uint8_t* receiver, int8_t rss
     AccessPoint* ap;
 
     // From station to access point
-    ap = data.ap_list.search(receiver);
+    ap = ap_list.search(receiver);
     if (ap) {
         Station* st = new_pkt(sender, rssi);
         st->setAccessPoint(ap);
@@ -39,20 +52,21 @@ void new_transmission(const uint8_t* sender, const uint8_t* receiver, int8_t rss
     }
 
     // From access point to station
-    ap = data.ap_list.search(sender);
+    ap = ap_list.search(sender);
     if (ap) {
         Station* st = new_pkt(receiver, rssi);
         st->setAccessPoint(ap);
-        if ((st->getPackets() == 1) && !data.silent) st->print();
+        if (st->getPackets() == 1) st->print();
         return;
     }
 }
 
+// Register a new probe frame
 void new_probe(const uint8_t* sender, const char* ssid, uint8_t len, int rssi) {
     Station* st = new_pkt(sender, rssi);
 
     if (st) {
-        if (st->addProbe(ssid, len) && !data.silent) st->print();
+        if (st->addProbe(ssid, len)) st->print();
     }
 }
 
@@ -91,41 +105,63 @@ void station_sniffer(uint8_t* buf, uint16_t len) {
     }
 }
 
-void start_st_scan() {
-    debuglnF("[ ===== Station Scan ===== ]");
+void startST(const st_scan_settings_t& settings) {
+    { // Error checks
+        if ((settings.channels & 0x3FFF)== 0) {
+            debuglnF("ERROR: No channels specified");
+            return;
+        }
+    }
 
-    debugF("Scan time:    ");
-    if (data.timeout > 0) debugln(strh::time(data.timeout));
-    else debuglnF("-");
+    scan::stop();
 
-    debugF("Channel time: ");
-    if (data.ch_time > 0) debugln(strh::time(data.ch_time));
-    else debuglnF("-");
+    if (!st_data.settings.retain) st_list.clear();
 
-    debugF("Channels:     ");
-    debugln(strh::channels(data.channels));
+    unsigned long current_time = millis();
 
-    debugln();
-    debuglnF("Type 'stop' to stop the scan");
-    debugln();
+    st_data.enabled        = true;
+    st_data.settings       = settings;
+    st_data.start_time     = current_time;
+    st_data.ch_update_time = current_time;
 
-    sysh::set_next_ch(data.channels);
+    { // Auto correct
+        if (sysh::count_ch(st_data.settings.channels) <= 1) st_data.settings.ch_time = 0;
+        else if (st_data.settings.ch_time == 0) st_data.settings.ch_time = 284;
+    }
 
-    data.start_time     = millis();
-    data.ch_update_time = data.start_time;
+    { // Output
+        debuglnF("[ ===== Station Scan ===== ]");
+
+        debugF("Scan time:    ");
+        if (st_data.settings.timeout > 0) debugln(strh::time(st_data.settings.timeout));
+        else debuglnF("-");
+
+        debugF("Channel time: ");
+        if (st_data.settings.ch_time > 0) debugln(strh::time(st_data.settings.ch_time));
+        else debuglnF("-");
+
+        debugF("Channels:     ");
+        debugln(strh::channels(st_data.settings.channels));
+
+        debugln();
+        debuglnF("Type 'stop' to stop the scan");
+        debugln();
+
+        st_list.printHeader();
+    }
+
+    sysh::set_next_ch(st_data.settings.channels);
 
     wifi_set_promiscuous_rx_cb(station_sniffer);
     wifi_promiscuous_enable(true);
-
-    if (!data.silent) data.st_list.printHeader();
 }
 
-void stop_st_scan() {
-    if (data.st) {
+void stopST() {
+    if (st_data.enabled) {
         wifi_promiscuous_enable(false);
-        data.st = false;
+        st_data.enabled = false;
 
-        if (!data.silent) data.st_list.printFooter();
+        st_list.printFooter();
 
         debuglnF("Stopped station scan");
         debugln();
@@ -135,17 +171,17 @@ void stop_st_scan() {
 }
 
 void update_st_scan() {
-    if (!data.ap && data.st) {
+    if (st_data.enabled) {
         unsigned long current_time = millis();
 
-        if (data.st_list.full()) {
+        if (st_list.full()) {
             debuglnF("Station list full");
-            stop_st_scan();
-        } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
-            stop_st_scan();
-        } else if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-            sysh::set_next_ch(data.channels);
-            data.ch_update_time = current_time;
+            stopST();
+        } else if ((st_data.settings.timeout > 0) && (current_time - st_data.start_time >= st_data.settings.timeout)) {
+            stopST();
+        } else if ((st_data.settings.ch_time > 0) && (current_time - st_data.ch_update_time >= st_data.settings.ch_time)) {
+            sysh::set_next_ch(st_data.settings.channels);
+            st_data.ch_update_time = current_time;
         }
     }
 }
