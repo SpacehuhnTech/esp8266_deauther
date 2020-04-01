@@ -584,31 +584,28 @@ namespace cli {
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
             Command cmd(c);
 
-            unsigned long timeout;
-            unsigned long ch_time;
-            uint16_t channels;
+            bool ap;
+            bool st;
 
-            bool retain;
-            bool ap = false;
-            bool st = false;
+            ap_scan_settings_t scan_settings;
 
             { // Station scan time
-                String time_str = cmd.getArg("t").getValue();
-                timeout         = parse_time(time_str, 1000);
+                String time_str                   = cmd.getArg("t").getValue();
+                scan_settings.st_settings.timeout = parse_time(time_str, 1000);
             }
 
             { // Channels
-                String ch_str = cmd.getArg("ch").getValue();
-                channels      = parse_channels(ch_str);
+                String ch_str          = cmd.getArg("ch").getValue();
+                scan_settings.channels = scan_settings.st_settings.channels = parse_channels(ch_str);
             }
 
             { // Channel scan time
-                String time_str = cmd.getArg("ct").getValue();
-                ch_time         = parse_time(time_str, 1);
+                String time_str                   = cmd.getArg("ct").getValue();
+                scan_settings.st_settings.ch_time = parse_time(time_str, 1);
             }
 
             { // Retain results
-                retain = cmd.getArg("r").isSet();
+                scan_settings.retain = scan_settings.st_settings.retain = cmd.getArg("r").isSet();
             }
 
             { // Mode
@@ -623,16 +620,7 @@ namespace cli {
                 }
             }
 
-            ap_scan_settings_t scan_settings;
-
-            scan_settings.channels = channels;
-            scan_settings.retain   = retain;
-            scan_settings.st       = st;
-
-            scan_settings.st_settings.channels = channels;
-            scan_settings.st_settings.ch_time  = ch_time;
-            scan_settings.st_settings.timeout  = timeout;
-            scan_settings.st_settings.retain   = retain;
+            scan_settings.st = st;
 
             if (ap) scan::startAP(scan_settings);
             else if (st) scan::startST(scan_settings.st_settings);
@@ -711,13 +699,9 @@ namespace cli {
             Command cmd(c);
 
             SortedStringList ssid_list;
-            uint8_t bssid[6];
-            uint8_t receiver[6];
-            int enc = ENCRYPTION_OPEN;
-            uint16_t channels;
-            uint16_t pkt_rate;
-            unsigned long timeout;
             bool scan;
+
+            beacon_attack_settings_t beacon_settings;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
@@ -726,59 +710,53 @@ namespace cli {
 
             { // BSSID
                 String bssid_str = cmd.getArg("from").getValue();
+                uint8_t bssid[6];
                 parse_mac(bssid_str, bssid);
+                memcpy(beacon_settings.bssid, bssid, 6);
             }
 
             { // Receiver
                 String receiver_str = cmd.getArg("to").getValue();
+                uint8_t receiver[6];
                 parse_mac(receiver_str, receiver);
+                memcpy(beacon_settings.receiver, receiver, 6);
             }
 
             { // Encryption
                 String enc_str = cmd.getArg("enc").getValue();
-                if (enc_str == "wpa2") enc = ENCRYPTION_WPA2;
+                if (enc_str == "wpa2") beacon_settings.enc = ENCRYPTION_WPA2;
+                else beacon_settings.enc = ENCRYPTION_OPEN;
             }
 
             { // Channels
-                String ch_str = cmd.getArg("ch").getValue();
-                channels      = parse_channels(ch_str);
+                String ch_str            = cmd.getArg("ch").getValue();
+                beacon_settings.channels = parse_channels(ch_str);
             }
 
             { // Packet rate
-                String pkt_rate_str = cmd.getArg("r").getValue();
-                pkt_rate            = pkt_rate_str.toInt();
-
-                if (pkt_rate == 0) pkt_rate = 1;
-                if (pkt_rate > 1000) pkt_rate = 1000;
+                String pkt_rate_str      = cmd.getArg("r").getValue();
+                beacon_settings.pkt_rate = pkt_rate_str.toInt();
             }
 
             { // Time
-                String time_str = cmd.getArg("t").getValue();
-                timeout         = parse_time(time_str, 1000);
+                String time_str         = cmd.getArg("t").getValue();
+                beacon_settings.timeout = parse_time(time_str, 1000);
             }
 
             { // Scan
                 scan = cmd.getArg("mon").isSet();
             }
 
-            beacon_attack_settings_t beacon_settings;
-
             beacon_settings.ssids = &ssid_list;
-            memcpy(beacon_settings.bssid, bssid, 6);
-            memcpy(beacon_settings.receiver, receiver, 6);
-            beacon_settings.enc      = enc;
-            beacon_settings.channels = channels;
-            beacon_settings.pkt_rate = pkt_rate;
-            beacon_settings.timeout  = timeout;
 
             attack::startBeacon(beacon_settings);
 
             if (scan) {
                 auth_scan_settings_t auth_settings;
 
-                auth_settings.channels  = channels;
-                auth_settings.ch_time   = 1000/pkt_rate;
-                auth_settings.timeout   = timeout;
+                auth_settings.channels  = beacon_settings.channels;
+                auth_settings.ch_time   = 1000/beacon_settings.pkt_rate;
+                auth_settings.timeout   = beacon_settings.timeout;
                 auth_settings.beacon    = true;
                 auth_settings.receivers = nullptr;
 
@@ -810,13 +788,7 @@ namespace cli {
 
             TargetList targets;
 
-            unsigned long timeout = 0;
-
-            unsigned long max_pkts;
-            unsigned long pkt_rate;
-
-            bool deauth   = false;
-            bool disassoc = false;
+            deauth_attack_settings_t deauth_settings;
 
             { // Read Access Point MACs
                 String ap_str         = cmd.getArg("ap").getValue();
@@ -880,39 +852,34 @@ namespace cli {
             }
 
             { // Time
-                String time_str = cmd.getArg("t").getValue();
-                timeout         = parse_time(time_str, 1000);
+                String time_str         = cmd.getArg("t").getValue();
+                deauth_settings.timeout = parse_time(time_str, 1000);
             }
 
             { // Number
-                max_pkts = cmd.getArg("n").getValue().toInt();
+                deauth_settings.max_pkts = cmd.getArg("n").getValue().toInt();
             }
 
             { // Rate
-                pkt_rate = cmd.getArg("r").getValue().toInt();
+                deauth_settings.pkt_rate = cmd.getArg("r").getValue().toInt();
             }
 
             { // Mode
                 String mode = cmd.getArg("m").getValue();
 
                 if (mode == "deauth+disassoc") {
-                    deauth   = true;
-                    disassoc = true;
+                    deauth_settings.deauth   = true;
+                    deauth_settings.disassoc = true;
                 } else if (mode == "deauth") {
-                    deauth = true;
+                    deauth_settings.deauth   = true;
+                    deauth_settings.disassoc = false;
                 } else if (mode == "disassoc") {
-                    disassoc = true;
+                    deauth_settings.deauth   = false;
+                    deauth_settings.disassoc = true;
                 }
             }
 
-            deauth_attack_settings_t deauth_settings;
-
-            deauth_settings.targets  = &targets;
-            deauth_settings.deauth   = deauth;
-            deauth_settings.disassoc = disassoc;
-            deauth_settings.pkt_rate = pkt_rate;
-            deauth_settings.timeout  = timeout;
-            deauth_settings.max_pkts = max_pkts;
+            deauth_settings.targets = &targets;
 
             attack::startDeauth(deauth_settings);
         });
@@ -938,9 +905,8 @@ namespace cli {
             Command cmd(c);
 
             SortedStringList ssid_list;
-            uint8_t receiver[6];
-            uint16_t channels;
-            unsigned long timeout = 0;
+
+            probe_attack_settings_t probe_settings;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
@@ -949,25 +915,22 @@ namespace cli {
 
             { // Receiver
                 String receiver_str = cmd.getArg("to").getValue();
+                uint8_t receiver[6];
                 parse_mac(receiver_str, receiver);
+                memcpy(probe_settings.receiver, receiver, 6);
             }
 
             { // Channel
-                String ch_str = cmd.getArg("ch").getValue();
-                channels      = parse_channels(ch_str);
+                String ch_str           = cmd.getArg("ch").getValue();
+                probe_settings.channels = parse_channels(ch_str);
             }
 
             { // Time
-                String time_str = cmd.getArg("t").getValue();
-                timeout         = parse_time(time_str, 1000);
+                String time_str        = cmd.getArg("t").getValue();
+                probe_settings.timeout = parse_time(time_str, 1000);
             }
 
-            probe_attack_settings_t probe_settings;
-
             probe_settings.ssids = &ssid_list;
-            memcpy(probe_settings.receiver, receiver, 6);
-            probe_settings.channels = channels;
-            probe_settings.timeout  = timeout;
 
             attack::startProbe(probe_settings);
         });
