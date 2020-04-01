@@ -12,6 +12,7 @@
 #include "mac.h"
 #include "attack.h"
 #include "alias.h"
+#include "sysh.h"
 
 #include <ESP8266WiFi.h>
 
@@ -87,6 +88,7 @@ typedef struct wifi_pkt_data_t {
 
 // ========== Scan data ========= //
 typedef struct auth_buffer_t {
+    uint8_t ch;
     uint8_t mac[6];
     uint8_t bssid[6];
     int8_t  rssi;
@@ -129,38 +131,6 @@ namespace scan {
     // ===== PRIVATE ===== //
     scan_data_t data;
 
-    uint8_t count_channels(uint16_t channels) {
-        uint8_t num_of_channels = 0;
-
-        for (uint8_t i = 0; i<14; ++i) {
-            num_of_channels += ((channels >> i) & 0x01);
-        }
-
-        return num_of_channels;
-    }
-
-    void next_ch() {
-        if (data.num_of_channels == 0) return;
-
-        uint8_t ch = wifi_get_channel();
-
-        do {
-            if (++ch > 14) ch = 1;
-        } while (!((data.channels >> (ch-1)) & 0x01));
-
-        /*
-           if (!data.silent) {
-              debugF("Sniff on channel ");
-              debug(strh::right(2, String(ch)));
-              debugF(" (");
-              debug(strh::time(data.ch_time));
-              debugln(')');
-           }
-         */
-
-        wifi_set_channel(ch);
-    }
-
 #include "scan_station.h"
 #include "scan_ap.h"
 #include "scan_rssi.h"
@@ -193,7 +163,7 @@ namespace scan {
         data.st              = st;
         data.silent          = silent;
         data.channels        = channels;
-        data.num_of_channels = count_channels(channels);
+        data.num_of_channels = sysh::count_ch(channels);
         data.ch_time         = ch_time;
         data.timeout         = timeout;
         data.start_time      = current_time;
@@ -214,7 +184,7 @@ namespace scan {
         data.auth            = true;
         data.beacon          = beacon;
         data.channels        = channels;
-        data.num_of_channels = count_channels(channels);
+        data.num_of_channels = sysh::count_ch(channels);
         data.ch_time         = ch_time;
         data.timeout         = timeout;
         data.start_time      = current_time;

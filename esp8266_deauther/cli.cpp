@@ -27,7 +27,7 @@ extern "C" {
 #define CLI_READ_RES()\
     res = String();\
     while (!read(res));\
-    if (res == "exit" || res == "stop") {\
+    if (res == String(F("exit")) || res == String(F("stop"))) {\
         debuglnF("Ok byeee");\
         return;\
     }
@@ -35,7 +35,7 @@ extern "C" {
 #define CLI_READ_RES_DEFAULT(_DEFAULT)\
     res = String();\
     while (!read(res, _DEFAULT));\
-    if (res == "exit" || res == "stop") {\
+    if (res == String(F("exit")) || res == String(F("stop"))) {\
         debuglnF("Ok byeee");\
         return;\
     }
@@ -69,7 +69,8 @@ namespace cli {
         unsigned long value = str.toInt();
 
         if (value > 0) {
-            if (str.endsWith("s") || str.endsWith("sec")) value *= 1000;
+            if (str.endsWith("ms")) value *= 1;
+            else if (str.endsWith("s") || str.endsWith("sec")) value *= 1000;
             else if (str.endsWith("m") || str.endsWith("min")) value *= 60*1000;
             else if (str.endsWith("h")) value *= 60*60*1000;
             else value *= defaultMultiplicator;
@@ -740,8 +741,9 @@ namespace cli {
             uint8_t bssid[6];
             uint8_t receiver[6];
             int enc = ENCRYPTION_OPEN;
-            uint8_t ch;
-            unsigned long timeout = 0;
+            uint16_t channels;
+            uint16_t pkt_rate;
+            unsigned long timeout;
             bool silent;
             bool scan;
 
@@ -765,8 +767,17 @@ namespace cli {
                 if (enc_str == "wpa2") enc = ENCRYPTION_WPA2;
             }
 
-            { // Channel
-                ch = cmd.getArg("ch").getValue().toInt();
+            { // Channels
+                String ch_str = cmd.getArg("ch").getValue();
+                channels      = parse_channels(ch_str);
+            }
+
+            { // Packet rate
+                String pkt_rate_str = cmd.getArg("r").getValue();
+                pkt_rate            = pkt_rate_str.toInt();
+
+                if (pkt_rate == 0) pkt_rate = 1;
+                if (pkt_rate > 1000) pkt_rate = 1000;
             }
 
             { // Time
@@ -775,19 +786,20 @@ namespace cli {
             }
 
             { // Scan
-                scan = cmd.getArg("scan").isSet();
+                scan = cmd.getArg("mon").isSet();
             }
 
-            attack::startBeacon(ssid_list, bssid, receiver, enc, ch, timeout);
-            if (scan) scan::startAuth(true, nullptr, timeout, ch, 0);
+            attack::startBeacon(ssid_list, bssid, receiver, enc, channels, pkt_rate, timeout);
+            if (scan) scan::startAuth(true, nullptr, timeout, channels, 1000/pkt_rate);
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("bssid,from", "random");
         cmd_beacon.addArg("receiver,to", "broadcast");
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
+        cmd_beacon.addArg("r/ate", "10");
         cmd_beacon.addArg("t/ime/out", "5min");
-        cmd_beacon.addFlagArg("scan");
+        cmd_beacon.addFlagArg("scan,auth,mon/itor");
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
@@ -795,8 +807,9 @@ namespace cli {
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   channel (default=1)\r\n"
+            "  -r:    packets per second per SSID (default=10)\r\n"
             "  -t:    attack timeout (default=5min)\r\n"
-            "  -scan: scan for authentications"
+            "  -mon:  scan for authentications"
             );
 
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {

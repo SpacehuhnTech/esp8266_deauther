@@ -29,12 +29,12 @@ void start_rssi_scan() {
     debuglnF("Type 'stop' to stop the scan");
 
     uint8_t ch = 1;
-    wifi_set_channel(ch);
+    sysh::channel(ch);
 
     if ((data.channels >> (ch-1)) & 0x01) {
         // print_ch(ch);
     } else {
-        next_ch();
+        sysh::set_next_ch(data.channels);
     }
 
     wifi_set_promiscuous_rx_cb(rssi_sniffer);
@@ -51,11 +51,11 @@ void stop_rssi_scan() {
     }
 }
 
-void update_rssi_scan() {
-    unsigned long current_time = millis();
+void update_rssi_scan() { /*
+                             unsigned long current_time = millis();
 
-    if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-        next_ch();
-        data.ch_update_time = current_time;
-    }
+                             if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
+                             sysh::set_next_ch(data.channels);
+                             data.ch_update_time = current_time;
+                             }*/
 }

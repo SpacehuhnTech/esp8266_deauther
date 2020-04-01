@@ -42,7 +42,7 @@ bool send_deauth(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
     memcpy(&deauth_pkt[10], sender, 6);
     memcpy(&deauth_pkt[16], sender, 6);
     memcpy(&deauth_pkt[4], receiver, 6);
-    return send(ch, deauth_pkt, sizeof(deauth_pkt));
+    return sysh::send(ch, deauth_pkt, sizeof(deauth_pkt));
 }
 
 bool send_disassoc(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
@@ -50,7 +50,7 @@ bool send_disassoc(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
     memcpy(&deauth_pkt[10], sender, 6);
     memcpy(&deauth_pkt[16], sender, 6);
     memcpy(&deauth_pkt[4], receiver, 6);
-    return send(ch, deauth_pkt, sizeof(deauth_pkt));
+    return sysh::send(ch, deauth_pkt, sizeof(deauth_pkt));
 }
 
 // ========== ATTACK FUNCTIONS ========== //

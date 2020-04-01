@@ -81,7 +81,7 @@ bool send_probe(uint8_t ch, uint8_t* sender, uint8_t* receiver, const char* ssid
     memcpy(&frame[pkt_len], &probe_pkt[58], 10);
     pkt_len += 10;
 
-    return send(ch, frame, pkt_len);
+    return sysh::send(ch, frame, pkt_len);
 }
 
 // ========== ATTACK FUNCTIONS ========== //

@@ -10,7 +10,7 @@
 #include "cli.h"
 #include "strh.h"
 
-#include "packetinjector.h"
+#include "sysh.h"
 #include "vendor.h"
 
 namespace attack {

@@ -109,7 +109,7 @@ void start_st_scan() {
     debuglnF("Type 'stop' to stop the scan");
     debugln();
 
-    next_ch();
+    sysh::set_next_ch(data.channels);
 
     data.start_time     = millis();
     data.ch_update_time = data.start_time;
@@ -144,7 +144,7 @@ void update_st_scan() {
         } else if ((data.timeout > 0) && (current_time - data.start_time >= data.timeout)) {
             stop_st_scan();
         } else if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-            next_ch();
+            sysh::set_next_ch(data.channels);
             data.ch_update_time = current_time;
         }
     }

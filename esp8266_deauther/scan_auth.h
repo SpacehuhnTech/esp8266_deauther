@@ -18,15 +18,17 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
     // drop everything that isn't an authentication frame
     if (type != 0xb0) return;
 
-    const uint8_t* receiver = &payload[4];  // &buf[16]; // To (Receiver)
-    const uint8_t* sender   = &payload[10]; // &buf[22]; // From (Transmitter)
+    const uint8_t* receiver = &payload[4];        // &buf[16]; // To (Receiver)
+    const uint8_t* sender   = &payload[10];       // &buf[22]; // From (Transmitter)
     const int8_t   rssi     = ctrl->rssi;
+    const uint8_t  ch       = wifi_get_channel(); // ctrl->channel;
 
     if ((data.mac_filter.size() > 0) && !data.mac_filter.contains(receiver)) return;
 
+    data.auth_buffer.rssi = rssi;
+    data.auth_buffer.ch   = ch;
     memcpy(data.auth_buffer.mac, sender, 6);
     memcpy(data.auth_buffer.bssid, receiver, 6);
-    data.auth_buffer.rssi   = rssi;
     data.auth_buffer.locked = true;
 }
 
@@ -37,21 +39,21 @@ void start_auth_scan() {
     if (data.timeout > 0) debugln(strh::time(data.timeout));
     else debuglnF("-");
 
+    debugF("Channels:     ");
+    debugln(strh::channels(data.channels));
+
     debugF("Channel time: ");
     if (data.ch_time > 0) debugln(strh::time(data.ch_time));
     else debuglnF("-");
-
-    debugF("Channels:     ");
-    debugln(strh::channels(data.channels));
 
     debugln();
     debuglnF("Type 'stop' to stop the scan");
     debugln();
 
-    debuglnF("RSSI Vendor   MAC-Address       SSID                               BSSID");
-    debuglnF("====================================================================================");
+    debuglnF("RSSI Ch Vendor   MAC-Address       SSID                               BSSID");
+    debuglnF("=======================================================================================");
 
-    next_ch();
+    if (!data.beacon) sysh::set_next_ch(data.channels);
 
     data.auth_buffer.locked = false;
 
@@ -64,7 +66,9 @@ void stop_auth_scan() {
         wifi_promiscuous_enable(false);
         data.auth = false;
 
-        debuglnF("====================================================================================");
+        debuglnF("=======================================================================================");
+        debuglnF("Ch = 2.4 GHz Channel    ,    RSSI = Signal strength    ,    BSSID = Network MAC address");
+        debuglnF("=======================================================================================");
         debugln();
         debuglnF("Stopped authentication scan");
         debugln();
@@ -85,6 +89,8 @@ void update_auth_scan() {
             if (data.beacon && !attack::beaconBSSID(tmp.bssid)) return;
 
             debug(strh::right(4, String(tmp.rssi)));
+            debug(' ');
+            debug(strh::right(2, String(tmp.ch)));
             debug(' ');
             debug(strh::left(8, vendor::search(tmp.mac)));
             debug(' ');
@@ -114,8 +120,10 @@ void update_auth_scan() {
             debugln(strh::left(17, alias::get(tmp.bssid)));
         }
 
-        if ((data.ch_time > 0) && (current_time - data.ch_update_time >= data.ch_time)) {
-            next_ch();
+        if ((data.ch_time > 0) && (!data.beacon) && (current_time - data.ch_update_time >= data.ch_time)) {
+            debug("AUTH update ");
+            sysh::set_next_ch(data.channels);
+            debugln();
             data.ch_update_time = current_time;
         } else if ((data.timeout > 0) && (millis() - data.start_time >= data.timeout)) {
             stop_auth_scan();
