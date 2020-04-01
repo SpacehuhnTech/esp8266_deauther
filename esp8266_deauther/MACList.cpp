@@ -11,6 +11,7 @@
 
 #include "StringList.h"
 #include "mac.h"
+#include "alias.h"
 
 // ========== MAC =========== //
 
@@ -75,10 +76,12 @@ void MACList::parse(const String& input, String delimiter) {
     while (str_list.available()) {
         uint8_t mac[6];
         String  mac_str = str_list.iterate();
-        if (mac_str.length() == 17) {
+
+        if (!alias::resolve(mac_str, mac) && (mac_str.length() == 17)) {
             mac::fromStr(mac_str.c_str(), mac);
-            push(mac);
         }
+
+        push(mac);
     }
 }
 

@@ -146,7 +146,6 @@ void startBeacon(StringList& ssid_list, uint8_t* bssid, uint8_t* receiver, int e
 
     stopBeacon();
 
-
     { // Output
         debuglnF("[ ===== Beacon Attack ===== ]");
 
