@@ -149,12 +149,13 @@ void update_deauth_attack() {
         if (millis() - deauth_data.output_time >= 1000) {
             deauth_data.pkts_sent += deauth_data.pkts_per_second;
 
-            debugF("[Deauth attack: ");
-            debug(deauth_data.pkts_per_second);
-            debugF(" pkts/s, ");
-            debug(deauth_data.pkts_sent);
-            debuglnF(" total]");
-
+            /*
+               debugF("[Deauth attack: ");
+               debug(deauth_data.pkts_per_second);
+               debugF(" pkts/s, ");
+               debug(deauth_data.pkts_sent);
+               debuglnF(" total]");
+             */
             deauth_data.output_time = millis();
 
             deauth_data.pkts_per_second = 0;

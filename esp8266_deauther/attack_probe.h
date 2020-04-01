@@ -186,12 +186,13 @@ void update_probe_attack() {
         if (millis() - probe_data.output_time >= 1000) {
             probe_data.pkts_sent += probe_data.pkts_per_second;
 
-            debugF("[Probe attack: ");
-            debug(probe_data.pkts_per_second);
-            debugF(" pkts/s, ");
-            debug(probe_data.pkts_sent);
-            debuglnF(" total]");
-
+            /*
+                        debugF("[Probe attack: ");
+                        debug(probe_data.pkts_per_second);
+                        debugF(" pkts/s, ");
+                        debug(probe_data.pkts_sent);
+                        debuglnF(" total]");
+             */
             probe_data.output_time = millis();
 
             probe_data.pkts_per_second = 0;

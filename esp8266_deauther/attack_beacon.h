@@ -68,6 +68,7 @@ typedef struct beacon_attack_data_t {
     SortedStringList ssids;
 
     unsigned long start_time;
+    unsigned long output_time;
     unsigned long pkts_sent;
     unsigned long pkts_per_second;
     unsigned long pkt_time;
@@ -149,6 +150,7 @@ void startBeacon(const beacon_attack_settings_t& settings) {
     beacon_data.settings = settings;
     beacon_data.ssids.moveFrom(*settings.ssids);
     beacon_data.start_time      = current_time;
+    beacon_data.output_time     = current_time;
     beacon_data.pkts_sent       = 0;
     beacon_data.pkts_per_second = 0;
     beacon_data.pkt_time        = current_time;
@@ -231,6 +233,21 @@ void update_beacon_attack() {
         if (((beacon_data.settings.timeout > 0) && (millis() - beacon_data.start_time > beacon_data.settings.timeout))) {
             stopBeacon();
             return;
+        }
+
+        if (millis() - beacon_data.output_time >= 1000) {
+            beacon_data.pkts_sent += beacon_data.pkts_per_second;
+
+            /*
+               debugF("[Beacon attack: ");
+               debug(beacon_data.pkts_per_second);
+               debugF(" pkts/s, ");
+               debug(beacon_data.pkts_sent);
+               debuglnF(" total]");
+             */
+            beacon_data.output_time = millis();
+
+            beacon_data.pkts_per_second = 0;
         }
 
         if (millis() - beacon_data.pkt_time >= beacon_data.pkt_interval) {
