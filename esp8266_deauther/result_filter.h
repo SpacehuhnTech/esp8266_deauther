@@ -7,11 +7,11 @@
 #pragma once
 
 #include "StringList.h"
-#include "MACList.h"
+#include "MacArr.h"
 
 typedef struct result_filter_t {
     uint16_t          channels;
     const StringList* ssids;
-    const MACList   * bssid;
+    MacArr            bssids;
     const StringList* vendors;
 } result_filter_t;

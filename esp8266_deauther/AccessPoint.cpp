@@ -107,7 +107,7 @@ void AccessPoint::print(int id, const result_filter_t* f) {
     if (f) {
         if (((f->channels >> (getChannel()-1)) & 1) == 0) return;
         if (f->ssids && f->ssids->size() && !f->ssids->contains(getSSID())) return;
-        if (f->bssid && f->bssid->size() && !f->bssid->contains(getBSSID())) return;
+        if ((f->bssids.size() > 0) && !f->bssids.contains(getBSSID())) return;
         if (f->vendors && f->vendors->size() && !f->vendors->contains(getVendor())) return;
     }
 

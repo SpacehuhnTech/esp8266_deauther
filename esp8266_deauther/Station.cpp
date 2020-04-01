@@ -88,12 +88,12 @@ void Station::print(int id, const result_filter_t* f) {
         if (ap) {
             if ((((f->channels >> (ap->getChannel()-1)) & 1) == 0)) return;
             if (f->ssids && f->ssids->size() && !f->ssids->contains(ap->getSSID())) return;
-            if (f->bssid && f->bssid->size() && !f->bssid->contains(ap->getBSSID())) return;
+            if ((f->bssids.size() > 0) && !f->bssids.contains(ap->getBSSID())) return;
         } else {
             // IF (no ap) AND (channel filter OR ssid filter OR bssid filter) return;
             if (f->channels != 0x3FFF) return;
             if (f->ssids && f->ssids->size()) return;
-            if (f->bssid && f->bssid->size()) return;
+            if (f->bssids.size() > 0) return;
         }
 
         if (f->vendors && f->vendors->size() && !f->vendors->contains(getVendor())) return;

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define VERSION "Version 3.0.0 dev 2020-04-01#7"
+#define VERSION "Version 3.0.0 dev 2020-04-01#8"
 
 // ===== Serial Communication ===== //
 #define ENABLE_DEBUG      // Enable serial logging
@@ -14,7 +14,7 @@
 #define DEBUG_BAUD 115200 // Serial baud rate
 
 // ===== Command Line History ===== //
-#define ENABLE_HISTORY
+// #define ENABLE_HISTORY
 #define HISTORY_SIZE 10      // CLI command history
 
 // ===== List Max Sizes ===== //

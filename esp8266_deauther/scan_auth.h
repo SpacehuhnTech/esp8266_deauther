@@ -20,7 +20,7 @@ typedef struct auth_data_t {
     // Settings
     auth_scan_settings_t settings;
 
-    MACList receivers;
+    MacArr receivers;
 
     // Temp
     unsigned long start_time;
@@ -47,7 +47,7 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
     const int8_t   rssi     = ctrl->rssi;
     const uint8_t  ch       = wifi_get_channel(); // ctrl->channel;
 
-    if ((auth_data.receivers.size() > 0) && !auth_data.receivers.contains(receiver)) return;
+    if ((auth_data.settings.receivers.size() > 0) && !auth_data.settings.receivers.contains(receiver)) return;
 
     auth_buffer.rssi = rssi;
     auth_buffer.ch   = ch;
@@ -72,8 +72,6 @@ void startAuth(const auth_scan_settings_t& settings) {
     auth_data.settings       = settings;
     auth_data.start_time     = current_time;
     auth_data.ch_update_time = current_time;
-
-    if (settings.receivers) auth_data.receivers.moveFrom(*settings.receivers);
 
     auth_buffer.locked = false;
 
@@ -115,7 +113,7 @@ void stopAuth() {
         wifi_promiscuous_enable(false);
         auth_data.enabled = false;
 
-        auth_data.receivers.clear();
+        auth_data.settings.receivers.clear();
 
         debuglnF("=======================================================================================");
         debuglnF("Ch = 2.4 GHz Channel    ,    RSSI = Signal strength    ,    BSSID = Network MAC address");

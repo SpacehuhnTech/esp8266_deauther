@@ -659,18 +659,18 @@ namespace cli {
 
             String ch_str     = cmd.getArg("ch").getValue();
             String ssid_str   = cmd.getArg("ssid").getValue();
-            String mac_str    = cmd.getArg("bssid").getValue();
+            String bssid_str  = cmd.getArg("bssid").getValue();
             String vendor_str = cmd.getArg("vendor").getValue();
 
             uint16_t channels = parse_channels(ch_str);
             StringList ssids(ssid_str, ",");
-            MACList macs(mac_str, ",");
             StringList vendors(vendor_str, ",");
 
             result_filter_t filter;
+
             filter.channels = channels;
             filter.ssids    = &ssids;
-            filter.bssid    = &macs;
+            filter.bssids   = MacArr { bssid_str, "," };
             filter.vendors  = &vendors;
 
             if (mode == "ap") {
@@ -758,7 +758,7 @@ namespace cli {
                 auth_settings.ch_time   = 1000/beacon_settings.pkt_rate;
                 auth_settings.timeout   = beacon_settings.timeout;
                 auth_settings.beacon    = true;
-                auth_settings.receivers = nullptr;
+                auth_settings.receivers = MacArr{};
 
                 scan::startAuth(auth_settings);
             }

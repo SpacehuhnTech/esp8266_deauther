@@ -20,6 +20,7 @@ class StringList {
         int list_size     = 0;
         int list_max_size;
 
+        str_t* list_p = nullptr;
         str_t* list_h = nullptr;
         int list_pos  = 0;
 
@@ -47,6 +48,7 @@ class StringList {
 
         void begin();
         String iterate();
+        void remove();
 
         bool contains(const String& str) const;
         virtual bool contains(const char* str) const;

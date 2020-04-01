@@ -31,12 +31,12 @@ typedef struct auth_scan_settings_t {
     unsigned long ch_time;
     unsigned long timeout;
     bool          beacon;
-    MACList     * receivers;
+    MacArr        receivers;
 } auth_scan_settings_t;
 
 const st_scan_settings_t   ST_SCAN_DEFAULT { 0x3FFF, 284, 20000, false };
 const ap_scan_settings_t   AP_SCAN_DEFAULT { 0x3FFF, false, false, ST_SCAN_DEFAULT };
-const auth_scan_settings_t AUTH_SCAN_DEFAULT { 0x3FFF, 284, 20000, false, nullptr };
+const auth_scan_settings_t AUTH_SCAN_DEFAULT { 0x3FFF, 284, 20000, false, MacArr {} };
 
 namespace scan {
     void clearAPresults();

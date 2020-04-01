@@ -40,9 +40,31 @@ namespace mac {
         return true;
     }
 
-    void fromStr(const char* str, uint8_t* mac) {
-        if (strlen(str) != 17) return;
+    bool valid(const char* str, unsigned int len) {
+        if (len != 17) return false;
 
+        for (int i = 0; i<6; ++i) {
+            char first_char     = str[i*3];
+            char second_char    = str[i*3+1];
+            char delimiter_char = (i<5) ? str[i*3+2] : ':';
+
+            bool first = (((first_char >= '0') && (first_char <= '9')) ||
+                          ((first_char >= 'A') && (first_char <= 'Z')) ||
+                          ((first_char >= 'a') && (first_char <= 'z')));
+
+            bool second = (((second_char >= '0') && (second_char <= '9')) ||
+                           ((second_char >= 'A') && (second_char <= 'Z')) ||
+                           ((second_char >= 'a') && (second_char <= 'z')));
+
+            bool delimiter = (/*i==5 || */ delimiter_char == ':');
+
+            if (!first || !second || !delimiter) return false;
+        }
+
+        return true;
+    }
+
+    void fromStr(const char* str, uint8_t* mac) {
         for (int i = 0; i<6; ++i) {
             mac[i] = hex_to_int(&str[i*3], 2);
         }

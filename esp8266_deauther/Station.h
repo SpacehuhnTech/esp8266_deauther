@@ -9,7 +9,7 @@
 #include "AccessPoint.h"
 #include "StringList.h"
 #include "config.h"
-#include "MACList.h"
+#include "MacArr.h"
 
 #ifndef MAX_STATIONS
 #define MAX_STATIONS 0

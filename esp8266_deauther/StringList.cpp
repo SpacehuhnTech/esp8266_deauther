@@ -49,6 +49,7 @@ void StringList::moveFrom(StringList& sl) {
         if (!list_begin) {
             list_begin = ih;
             list_end   = ih;
+            list_p     = nullptr;
             list_h     = list_begin;
         } else {
             list_end->next = ih;
@@ -63,6 +64,7 @@ void StringList::moveFrom(StringList& sl) {
     sl.list_begin = nullptr;
     sl.list_end   = nullptr;
     sl.list_size  = 0;
+    sl.list_p     = nullptr;
     sl.list_h     = nullptr;
     sl.list_pos   = 0;
 }
@@ -82,6 +84,7 @@ bool StringList::push(const char* str, unsigned long len) {
     if (!list_begin) {
         list_begin = new_str;
         list_end   = new_str;
+        list_p     = nullptr;
         list_h     = list_begin;
     } else {
         list_end->next = new_str;
@@ -143,11 +146,27 @@ String StringList::iterate() {
     String res(list_h ? list_h->ptr : "");
 
     if (list_h) {
+        list_p = list_h;
         list_h = list_h->next;
         ++list_pos;
     }
 
     return res;
+}
+
+void StringList::remove() {
+    if (list_h) {
+        if (list_p) {
+            list_p->next = list_h->next;
+            delete list_h;
+            list_h = list_p->next;
+        } else {
+            list_begin = list_h->next;
+            delete list_h;
+            list_h = list_begin;
+        }
+        --list_size;
+    }
 }
 
 bool StringList::contains(const String& str) const {
@@ -190,6 +209,7 @@ void StringList::clear() {
     list_end   = nullptr;
     list_size  = 0;
 
+    list_p   = nullptr;
     list_h   = nullptr;
     list_pos = 0;
 }
