@@ -313,9 +313,9 @@ namespace cli {
                     if (res != "open") cmd += " -enc " + res;
                 }
 
-                { // Channel
+                { // Channels
                     do {
-                        debuglnF("Which channel should be used?\r\n"
+                        debuglnF("Which channel(s) should be used?\r\n"
                                  "  1-14: WiFi channel to send packets on\r\n"
                                  " [default=1]");
                         CLI_READ_RES_DEFAULT("1");
@@ -480,7 +480,7 @@ namespace cli {
 
                 { // Channel
                     do {
-                        debuglnF("Which channel should be used?\r\n"
+                        debuglnF("Which channel(s) should be used?\r\n"
                                  "  1-14: WiFi channel to send packets on\r\n"
                                  " [default=1]");
                         CLI_READ_RES_DEFAULT("1");
@@ -802,7 +802,18 @@ namespace cli {
                 scan = cmd.getArg("mon").isSet();
             }
 
-            attack::startBeacon(ssid_list, bssid, receiver, enc, channels, pkt_rate, timeout);
+            beacon_attack_settings_t beacon_settings;
+
+            beacon_settings.ssids = &ssid_list;
+            memcpy(beacon_settings.bssid, bssid, 6);
+            memcpy(beacon_settings.receiver, receiver, 6);
+            beacon_settings.enc      = enc;
+            beacon_settings.channels = channels;
+            beacon_settings.pkt_rate = pkt_rate;
+            beacon_settings.timeout  = timeout;
+
+            attack::startBeacon(beacon_settings);
+
             if (scan) {
                 auth_scan_settings_t auth_settings;
 
@@ -829,7 +840,7 @@ namespace cli {
             "  -from: BSSID or sender MAC address (default=random)\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
-            "  -ch:   channel (default=1)\r\n"
+            "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
             "  -r:    packets per second per SSID (default=10)\r\n"
             "  -t:    attack timeout (default=5min)\r\n"
             "  -mon:  scan for authentications"
@@ -941,7 +952,16 @@ namespace cli {
                 silent = cmd.getArg("s").isSet();
             }
 
-            attack::startDeauth(targets, deauth, disassoc, pkt_rate, timeout, max_pkts, silent);
+            deauth_attack_settings_t deauth_settings;
+
+            deauth_settings.targets  = &targets;
+            deauth_settings.deauth   = deauth;
+            deauth_settings.disassoc = disassoc;
+            deauth_settings.pkt_rate = pkt_rate;
+            deauth_settings.timeout  = timeout;
+            deauth_settings.max_pkts = max_pkts;
+
+            attack::startDeauth(deauth_settings);
         });
         cmd_deauth.addArg("ap", "");
         cmd_deauth.addArg("st/ation", "");
@@ -968,7 +988,7 @@ namespace cli {
 
             SortedStringList ssid_list;
             uint8_t receiver[6];
-            uint8_t ch;
+            uint16_t channels;
             unsigned long timeout = 0;
             bool silent;
 
@@ -983,7 +1003,8 @@ namespace cli {
             }
 
             { // Channel
-                ch = cmd.getArg("ch").getValue().toInt();
+                String ch_str = cmd.getArg("ch").getValue();
+                channels      = parse_channels(ch_str);
             }
 
             { // Time
@@ -995,18 +1016,25 @@ namespace cli {
                 silent = cmd.getArg("s").isSet();
             }
 
-            attack::startProbe(ssid_list, receiver, ch, timeout, silent);
+            probe_attack_settings_t probe_settings;
+
+            probe_settings.ssids = &ssid_list;
+            memcpy(probe_settings.receiver, receiver, 6);
+            probe_settings.channels = channels;
+            probe_settings.timeout  = timeout;
+
+            attack::startProbe(probe_settings);
         });
         cmd_probe.addPosArg("ssid/s");
         cmd_probe.addArg("receiver,to", "broadcast");
-        cmd_probe.addArg("ch/annel", "1");
+        cmd_probe.addArg("ch/annel/s", "1");
         cmd_probe.addArg("t/ime/out", "5min");
         cmd_probe.addFlagArg("s/ilent");
         cmd_probe.setDescription(
             "  Send probe requests for WiFi networks\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
-            "  -ch:   channel (default=1)\r\n"
+            "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
             "  -t:    attack timeout (default=5min)\r\n"
             "  -s:    silent mode (mute output)"
             );

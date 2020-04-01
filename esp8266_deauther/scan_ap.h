@@ -15,8 +15,8 @@ ap_data_t ap_data;
 
 void startAP(const ap_scan_settings_t& settings) {
     { // Error check
-        if ((settings.channels & 0x3FFF)== 0) {
-            debuglnF("ERROR: No channels specified");
+        if ((settings.channels & 0x3FFF) == 0) {
+            debuglnF("ERROR: No channel specified");
             return;
         }
     }

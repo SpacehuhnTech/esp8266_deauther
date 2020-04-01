@@ -36,17 +36,18 @@ uint8_t probe_pkt[] = {
 
 // ========== ATTACK DATA ========== //
 typedef struct probe_attack_data_t {
+    bool enabled;
+
+    probe_attack_settings_t settings;
+
     SortedStringList ssids;
-    uint8_t          receiver[6];
-    uint8_t          ch;
-    unsigned long    timeout;
-    unsigned long    start_time;
-    unsigned long    output_time;
-    unsigned long    pkts_sent;
-    unsigned long    pkts_per_second;
-    unsigned long    pkt_time;
-    unsigned long    pkt_interval;
-    bool             silent;
+
+    unsigned long start_time;
+    unsigned long output_time;
+    unsigned long pkts_sent;
+    unsigned long pkts_per_second;
+    unsigned long pkt_time;
+    unsigned long pkt_interval;
 } probe_attack_data_t;
 
 probe_attack_data_t probe_data;
@@ -85,47 +86,54 @@ bool send_probe(uint8_t ch, uint8_t* sender, uint8_t* receiver, const char* ssid
 }
 
 // ========== ATTACK FUNCTIONS ========== //
-void startProbe(StringList& ssid_list, uint8_t* receiver, uint8_t ch, unsigned long timeout, bool silent) {
+void startProbe(const probe_attack_settings_t& settings) {
     { // Error checks
-        if (ssid_list.size() == 0) {
+        if (!settings.ssids || (settings.ssids->size() == 0)) {
             debuglnF("ERROR: No SSIDs specified");
             return;
         }
-
-        if (!receiver) {
-            debuglnF("ERROR: MAC address not specified");
-            return;
-        }
-
-        if ((ch < 1) || (ch > 14)) {
-            debuglnF("ERROR: Invalid channel");
+        if ((settings.channels & 0x3FFF) == 0) {
+            debuglnF("ERROR: No channels specified");
             return;
         }
     }
 
     stopProbe();
 
+    unsigned long current_time = millis();
+
+    probe_data.enabled  = true;
+    probe_data.settings = settings;
+    probe_data.ssids.moveFrom(*settings.ssids);
+
+    probe_data.start_time      = current_time;
+    probe_data.output_time     = current_time;
+    probe_data.pkts_sent       = 0;
+    probe_data.pkts_per_second = 0;
+    probe_data.pkt_time        = current_time;
+    probe_data.pkt_interval    = 100;
+
     { // Output
         debuglnF("[ ===== Probe Attack ===== ]");
 
         debugF("Receiver: ");
-        debugln(strh::mac(receiver));
+        debugln(strh::mac(probe_data.settings.receiver));
 
         debugF("Channel:  ");
-        debugln(ch);
+        debugln(probe_data.settings.channels);
 
         debugF("Timeout:  ");
-        if (timeout > 0) debugln(strh::time(timeout));
+        if (probe_data.settings.timeout > 0) debugln(strh::time(probe_data.settings.timeout));
         else debuglnF("-");
 
         debugF("SSIDs:    ");
-        debugln(ssid_list.size());
+        debugln(probe_data.ssids.size());
 
-        ssid_list.begin();
+        probe_data.ssids.begin();
 
-        while (ssid_list.available()) {
+        while (probe_data.ssids.available()) {
             debugF("- \"");
-            debug(ssid_list.iterate());
+            debug(probe_data.ssids.iterate());
             debugln('"');
         }
 
@@ -133,67 +141,60 @@ void startProbe(StringList& ssid_list, uint8_t* receiver, uint8_t ch, unsigned l
         debuglnF("Type 'stop' to stop the attack");
         debugln();
     }
-
-    probe_data.ssids.moveFrom(ssid_list);
-    memcpy(probe_data.receiver, receiver, 6);
-    probe_data.ch              = ch;
-    probe_data.timeout         = timeout;
-    probe_data.start_time      = millis();
-    probe_data.output_time     = millis();
-    probe_data.pkts_sent       = 0;
-    probe_data.pkts_per_second = 0;
-    probe_data.pkt_time        = millis();
-    probe_data.pkt_interval    = 100;
-    probe_data.silent          = silent;
 }
 
 void stopProbe() {
-    if (probe_data.ssids.size() > 0) {
+    if (probe_data.enabled) {
+        probe_data.enabled    = false;
         probe_data.pkts_sent += probe_data.pkts_per_second;
         probe_data.ssids.clear();
 
-        debugF("Probe attack stopped. Sent ");
+        debugF("Stopped probe attack. Sent ");
         debug(probe_data.pkts_sent);
         debuglnF(" packets.");
     }
 }
 
-void updateProbe() {
-    probe_attack_data_t& b = probe_data;
-
-    if (b.ssids.size() > 0) {
-        if (((b.timeout > 0) && (millis() - b.start_time > b.timeout))) {
+void update_probe_attack() {
+    if (probe_data.enabled) {
+        if (((probe_data.settings.timeout > 0) && (millis() - probe_data.start_time > probe_data.settings.timeout))) {
             stopProbe();
             return;
         }
 
-        if (millis() - b.pkt_time >= b.pkt_interval) {
-            b.pkt_time = millis();
-            b.ssids.begin();
+        if (millis() - probe_data.pkt_time >= probe_data.pkt_interval) {
+            probe_data.pkt_time = millis();
+            probe_data.ssids.begin();
 
             uint8_t sender[6];
             vendor::randomize(sender);
 
-            for (int i = 0; i<b.ssids.size(); ++i) {
-                String ssid = b.ssids.iterate();
+            uint8_t ch = sysh::next_ch(probe_data.settings.channels);
 
-                b.pkts_per_second += send_probe(b.ch, sender, b.receiver, ssid.c_str());
+            for (int i = 0; i<probe_data.ssids.size(); ++i) {
+                String ssid = probe_data.ssids.iterate();
+
+                probe_data.pkts_per_second += send_probe(ch,
+                                                         sender,
+                                                         probe_data.settings.receiver,
+                                                         ssid.c_str());
+
                 delay(1);
             }
         }
 
-        if (!b.silent && (millis() - b.output_time >= 1000)) {
-            b.pkts_sent += b.pkts_per_second;
+        if (millis() - probe_data.output_time >= 1000) {
+            probe_data.pkts_sent += probe_data.pkts_per_second;
 
             debugF("[Probe attack: ");
-            debug(b.pkts_per_second);
+            debug(probe_data.pkts_per_second);
             debugF(" pkts/s, ");
-            debug(b.pkts_sent);
+            debug(probe_data.pkts_sent);
             debuglnF(" total]");
 
-            b.output_time = millis();
+            probe_data.output_time = millis();
 
-            b.pkts_per_second = 0;
+            probe_data.pkts_per_second = 0;
         }
     }
 }

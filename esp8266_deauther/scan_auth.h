@@ -58,8 +58,8 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
 
 void startAuth(const auth_scan_settings_t& settings) {
     { // Error checks
-        if ((settings.channels & 0x3FFF)== 0) {
-            debuglnF("ERROR: No channels specified");
+        if ((settings.channels & 0x3FFF) == 0) {
+            debuglnF("ERROR: No channel specified");
             return;
         }
     }

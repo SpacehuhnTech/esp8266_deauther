@@ -17,19 +17,42 @@
 
 #include "TargetList.h"
 
+typedef struct beacon_attack_settings_t {
+    StringList  * ssids;
+    uint8_t       bssid[6];
+    uint8_t       receiver[6];
+    int           enc;
+    uint16_t      channels;
+    uint16_t      pkt_rate;
+    unsigned long timeout;
+} beacon_attack_settings_t;
+
+typedef struct deauth_attack_settings_t {
+    TargetList  * targets;
+    bool          deauth;
+    bool          disassoc;
+    unsigned long pkt_rate;
+    unsigned long timeout;
+    unsigned long max_pkts;
+} deauth_attack_settings_t;
+
+typedef struct probe_attack_settings_t {
+    StringList  * ssids;
+    uint8_t       receiver[6];
+    uint16_t      channels;
+    unsigned long timeout;
+} probe_attack_settings_t;
+
 namespace attack {
-    void startBeacon(StringList& ssid_list, uint8_t* bssid, uint8_t* receiver, int enc, uint16_t channels, uint16_t pkt_rate, unsigned long timeout);
-    void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts, bool silent);
-    void startProbe(StringList& ssid_list, uint8_t* receiver, uint8_t ch, unsigned long timeout, bool silent);
+    void startBeacon(const beacon_attack_settings_t& settings);
+    void startDeauth(const deauth_attack_settings_t& settings);
+    void startProbe(const probe_attack_settings_t& settings);
 
     void stopBeacon();
     void stopDeauth();
     void stopProbe();
     void stop();
 
-    void updateBeacon();
-    void updateDeauth();
-    void updateProbe();
     void update();
 
     bool beaconBSSID(uint8_t* bssid);

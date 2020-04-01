@@ -25,8 +25,8 @@ namespace attack {
     }
 
     void update() {
-        updateBeacon();
-        updateDeauth();
-        updateProbe();
+        update_beacon_attack();
+        update_deauth_attack();
+        update_probe_attack();
     }
 }
