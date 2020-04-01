@@ -249,17 +249,6 @@ namespace cli {
                         } while (!(res.toInt() > 0) && res != "284");
                         if (res != "284") cmd += " -ct " + res;
                     }
-
-                    { // Silent
-                        do {
-                            debuglnF("Enable silent mode (mute output)?\r\n"
-                                     "  y: Yes\r\n"
-                                     "  n: No\r\n"
-                                     " [default=n]");
-                            CLI_READ_RES_DEFAULT("n");
-                        } while (!(res == String('y') || res == String('n')));
-                        if (res == String('y')) cmd += " -s";
-                    }
                 }
 
                 { // Retain scan results
@@ -448,17 +437,6 @@ namespace cli {
                     } while (!(res == "deauth" || res == "disassoc" || res == "deauth+disassoc"));
                     if (res != "deauth+disassoc") cmd += " -m " + res;
                 }
-
-                { // Silent
-                    do {
-                        debuglnF("Enable silent mode (mute output)?\r\n"
-                                 "  y: Yes\r\n"
-                                 "  n: No\r\n"
-                                 " [default=n]");
-                        CLI_READ_RES_DEFAULT("n");
-                    } while (!(res == String('y') || res == String('n')));
-                    if (res == String('y')) cmd += " -s";
-                }
             } else if (res == "probe") {
                 { // SSIDs
                     debuglnF("Which network names do you wish to request for?\r\n"
@@ -497,17 +475,6 @@ namespace cli {
                         CLI_READ_RES_DEFAULT("300");
                     } while (!(res.toInt() >= 0));
                     if (res != "300") cmd += " -t " + res;
-                }
-
-                { // Silent
-                    do {
-                        debuglnF("Enable silent mode (mute output)?\r\n"
-                                 "  y: Yes\r\n"
-                                 "  n: No\r\n"
-                                 " [default=n]");
-                        CLI_READ_RES_DEFAULT("n");
-                    } while (!(res == String('y') || res == String('n')));
-                    if (res == String('y')) cmd += " -s";
                 }
             } else if (res == "alias") {
                 { // Mode
@@ -620,7 +587,6 @@ namespace cli {
             unsigned long timeout;
             unsigned long ch_time;
             uint16_t channels;
-            bool silent;
 
             bool retain;
             bool ap = false;
@@ -639,10 +605,6 @@ namespace cli {
             { // Channel scan time
                 String time_str = cmd.getArg("ct").getValue();
                 ch_time         = parse_time(time_str, 1);
-            }
-
-            { // Silent
-                silent = cmd.getArg("s").isSet();
             }
 
             { // Retain results
@@ -679,7 +641,6 @@ namespace cli {
         cmd_scan.addArg("t/ime", "20s");
         cmd_scan.addArg("ch/annel", "all");
         cmd_scan.addArg("ct/ime", "284");
-        cmd_scan.addFlagArg("s/ilent");
         cmd_scan.addFlagArg("r/etain");
         cmd_scan.setDescription(
             "  Scan for WiFi devices\r\n"
@@ -687,7 +648,6 @@ namespace cli {
             "  -t:  station scan time (default=20s)\r\n"
             "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\r\n"
             "  -ct: channel scan time in milliseconds (default=auto)\r\n"
-            "  -s:  silent mode (mute output)\r\n"
             "  -r:  keep previous scan results"
             );
 
@@ -757,7 +717,6 @@ namespace cli {
             uint16_t channels;
             uint16_t pkt_rate;
             unsigned long timeout;
-            bool silent;
             bool scan;
 
             { // SSIDs
@@ -859,8 +818,6 @@ namespace cli {
             bool deauth   = false;
             bool disassoc = false;
 
-            bool silent;
-
             { // Read Access Point MACs
                 String ap_str         = cmd.getArg("ap").getValue();
                 SortedStringList list = parse_int_list(ap_str);
@@ -948,10 +905,6 @@ namespace cli {
                 }
             }
 
-            { // Silent
-                silent = cmd.getArg("s").isSet();
-            }
-
             deauth_attack_settings_t deauth_settings;
 
             deauth_settings.targets  = &targets;
@@ -970,7 +923,6 @@ namespace cli {
         cmd_deauth.addArg("n/um/ber", "0");
         cmd_deauth.addArg("r/ate", "20");
         cmd_deauth.addArg("m/ode", "deauth+disassoc");
-        cmd_deauth.addFlagArg("s/ilent");
         cmd_deauth.setDescription(
             "  Deauthenticate (disconnect) selected WiFi connections\r\n"
             "  -ap:  access point IDs to attack\r\n"
@@ -979,8 +931,7 @@ namespace cli {
             "  -t:   attack timeout (default=5min)\r\n"
             "  -n:   packet limit [>1] (default=0)\r\n"
             "  -r:   packets per second (default=20)\r\n"
-            "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)\r\n"
-            "  -s:   silent mode (mute output)"
+            "  -m:   packet types [deauth,disassoc,deauth+disassoc] (default=deauth+disassoc)"
             );
 
         Command cmd_probe = cli.addCommand("probe", [](cmd* c) {
@@ -990,7 +941,6 @@ namespace cli {
             uint8_t receiver[6];
             uint16_t channels;
             unsigned long timeout = 0;
-            bool silent;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
@@ -1012,10 +962,6 @@ namespace cli {
                 timeout         = parse_time(time_str, 1000);
             }
 
-            { // Silent
-                silent = cmd.getArg("s").isSet();
-            }
-
             probe_attack_settings_t probe_settings;
 
             probe_settings.ssids = &ssid_list;
@@ -1029,14 +975,12 @@ namespace cli {
         cmd_probe.addArg("receiver,to", "broadcast");
         cmd_probe.addArg("ch/annel/s", "1");
         cmd_probe.addArg("t/ime/out", "5min");
-        cmd_probe.addFlagArg("s/ilent");
         cmd_probe.setDescription(
             "  Send probe requests for WiFi networks\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
-            "  -t:    attack timeout (default=5min)\r\n"
-            "  -s:    silent mode (mute output)"
+            "  -t:    attack timeout (default=5min)"
             );
 
         Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
