@@ -744,7 +744,11 @@ namespace cli {
             }
 
             { // Scan
-                beacon_settings.scan = cmd.getArg("mon").isSet();
+                beacon_settings.scan = cmd.getArg("scan").isSet();
+            }
+
+            { // Save
+                beacon_settings.save_scan = cmd.getArg("save").isSet();
             }
 
             attack::startBeacon(beacon_settings);
@@ -757,6 +761,7 @@ namespace cli {
         cmd_beacon.addArg("r/ate", "10");
         cmd_beacon.addArg("t/ime/out", "5min");
         cmd_beacon.addFlagArg("scan,auth,mon/itor");
+        cmd_beacon.addFlagArg("save");
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
@@ -766,7 +771,8 @@ namespace cli {
             "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
             "  -r:    packets per second per SSID (default=10)\r\n"
             "  -t:    attack timeout (default=5min)\r\n"
-            "  -mon:  scan for authentications"
+            "  -mon:  scan for authentications\r\n"
+            "  -save: save probe requests from auth. scan"
             );
 
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {

@@ -68,6 +68,7 @@ StringList::StringList(StringList&& sl) {
         sl.list.size  = 0;
         sl.list.p     = nullptr;
         sl.list.h     = nullptr;
+        sl.list.pos   = 0;
     }
 }
 
@@ -105,6 +106,7 @@ StringList& StringList::operator=(StringList&& sl) {
         sl.list.size  = 0;
         sl.list.p     = nullptr;
         sl.list.h     = nullptr;
+        sl.list.pos   = 0;
     }
 
     return *this;
@@ -124,6 +126,7 @@ void StringList::clear() {
     list.size  = 0;
     list.p     = nullptr;
     list.h     = nullptr;
+    list.pos   = 0;
 }
 
 void StringList::parse(const String& input, String delimiter) {
@@ -159,7 +162,7 @@ bool StringList::push(const char* str, unsigned long len) {
     if (empty()) {
         list.begin = new_str;
         list.end   = new_str;
-        list.h     = new_str;
+        begin();
     } else {
         list.end->next = new_str;
         list.end       = new_str;
@@ -172,23 +175,24 @@ bool StringList::push(const char* str, unsigned long len) {
     return true;
 }
 
-String StringList::get(unsigned int pos) const {
+String StringList::get(unsigned int pos) {
+    if (empty() || (pos >= list.size)) return String{};
+
     debuglnF("[StringList] get");
 
-    if (empty() || (pos > list.size)) return String{};
+    if (list.pos > pos) begin();
 
-    str_t* tmp = list.begin;
-
-    for (unsigned int i = 0; i<pos; ++i) {
-        tmp = tmp->next;
+    while (list.pos < pos) {
+        iterate();
     }
 
-    return String{ tmp->ptr };
+    return String{ list.h->ptr };
 }
 
 void StringList::begin() {
-    list.p = nullptr;
-    list.h = list.begin;
+    list.p   = nullptr;
+    list.h   = list.begin;
+    list.pos = 0;
 }
 
 String StringList::iterate() {
@@ -198,6 +202,7 @@ String StringList::iterate() {
     if (list.h) {
         list.p = list.h;
         list.h = list.h->next;
+        ++list.pos;
         return String{ list.p->ptr };
     }
 
@@ -259,6 +264,7 @@ bool StringList::contains(const char* str) const {
 
 bool SortedStringList::push(const char* str, unsigned long len) {
     debugF("[SortedStringList] push...");
+    debug(str);
 
     if (full()) {
         debuglnF("full");
@@ -271,26 +277,31 @@ bool SortedStringList::push(const char* str, unsigned long len) {
     if (empty()) {
         list.begin = new_str;
         list.end   = new_str;
+        debugF("empty list...");
     } else {
         // Insert at start
-        if (strcmp(list.begin->ptr, str) > 0) {
+        if (strcmp(list.begin->ptr, new_str->ptr) > 0) {
             new_str->next = list.begin;
             list.begin    = new_str;
+            debugF("insert at start...");
         }
         // Insert at end
-        else if (strcmp(list.end->ptr, str) < 0) {
+        else if (strcmp(list.end->ptr, new_str->ptr) < 0) {
             list.end->next = new_str;
             list.end       = new_str;
+            debugF("insert at end...");
         }
         // Insert somewhere inbetween (insertion sort)
         else {
             begin();
 
-            int res = strcmp(list.h->ptr, str);
+            unsigned int i = 0;
+            int res        = strcmp(list.h->ptr, new_str->ptr);
 
             while (available() && res < 0) {
                 iterate();
-                res = strcmp(list.h->ptr, str);
+                res = strcmp(list.h->ptr, new_str->ptr);
+                ++i;
             }
 
             // Skip duplicates
@@ -303,6 +314,10 @@ bool SortedStringList::push(const char* str, unsigned long len) {
 
             new_str->next = list.h;
             list.p->next  = new_str;
+
+            debugF("insert at ");
+            debug(i);
+            debugF("...");
         }
     }
 

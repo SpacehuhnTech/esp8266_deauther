@@ -120,9 +120,9 @@ void Station::print(int id, const result_filter_t* f) {
     while (getProbes().available()) {
         if (!first) {
             debugln();
-            debugF("                                                                                         ");
+            debug(strh::whitespace(94));
         }
-        debug(/*strh::left(32, */ '"' + getProbes().iterate() + '"');
+        debug('"' + getProbes().iterate() + '"');
         first = false;
     }
 

@@ -37,15 +37,24 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
 
     if (payload_len == 0) return;
 
-    uint8_t type = payload[0]; // buf[12];
+    const uint8_t  type     = payload[0];   // buf[12];
+    const uint8_t* receiver = &payload[4];  // &buf[16]; // To (Receiver)
+    const uint8_t* sender   = &payload[10]; // &buf[22]; // From (Transmitter)
+    const int8_t   rssi     = ctrl->rssi;
+
+    if (auth_data.settings.save && (type == 0x40) && (payload[25] > 0)) {
+        // broadcast probe request
+        uint8_t len      = payload[25];
+        const char* ssid = (const char*)&payload[26];
+
+        Station* st = new_pkt(sender, rssi);
+        if (st) st->addProbe(ssid, len);
+    }
 
     // drop everything that isn't an authentication frame
     if (type != 0xb0) return;
 
-    const uint8_t* receiver = &payload[4];        // &buf[16]; // To (Receiver)
-    const uint8_t* sender   = &payload[10];       // &buf[22]; // From (Transmitter)
-    const int8_t   rssi     = ctrl->rssi;
-    const uint8_t  ch       = wifi_get_channel(); // ctrl->channel;
+    const uint8_t ch = wifi_get_channel(); // ctrl->channel;
 
     // Drop packets that aren't in the BSSID filter (if filter provided)
     if (!auth_data.settings.bssids.empty() &&
@@ -86,21 +95,24 @@ void startAuth(const auth_scan_settings_t& settings) {
     { // Output
         debuglnF("[ ===== Authentication Scan ===== ]");
 
-        debugF("Scan time:    ");
+        debugF("Scan time:     ");
         if (auth_data.settings.timeout > 0) debugln(strh::time(auth_data.settings.timeout));
         else debuglnF("-");
 
-        debugF("Channels:     ");
+        debugF("Channels:      ");
         debugln(strh::channels(auth_data.settings.channels));
 
-        debugF("Channel time: ");
+        debugF("Channel time:  ");
         if (auth_data.settings.ch_time > 0) debugln(strh::time(auth_data.settings.ch_time));
         else debuglnF("-");
 
-        debugF("Beacon Mode:  ");
+        debugF("Beacon Mode:   ");
         debugln(auth_data.settings.beacon ? F("On") : F("Off"));
 
-        debugF("BSSID filter: ");
+        debugF("Save stations: ");
+        debugln(auth_data.settings.save ? F("Yes") : F("No"));
+
+        debugF("BSSID filter:  ");
         debugln(auth_data.settings.bssids.size());
 
         if (!auth_data.settings.bssids.empty()) {
@@ -115,7 +127,6 @@ void startAuth(const auth_scan_settings_t& settings) {
 
             debuglnF("=================");
         }
-
 
         debugln();
         debuglnF("Type 'stop' to stop the scan");

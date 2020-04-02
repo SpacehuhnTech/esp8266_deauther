@@ -7,6 +7,19 @@
 #include "strh.h"
 
 namespace strh {
+    String whitespace(int len) {
+        String res;
+
+        res.reserve(len);
+
+        while (len > 0) {
+            res += ' ';
+            --len;
+        }
+
+        return res;
+    }
+
     String left(int len, String str) {
         int spaces = len - str.length();
 

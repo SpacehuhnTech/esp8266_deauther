@@ -26,6 +26,7 @@ typedef struct beacon_attack_settings_t {
     uint16_t         pkt_rate;
     unsigned long    timeout;
     bool             scan;
+    bool             save_scan;
 } beacon_attack_settings_t;
 
 typedef struct deauth_attack_settings_t {

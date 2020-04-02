@@ -24,9 +24,11 @@ class StringList {
 
             str_t* p;
             str_t* h;
+
+            unsigned int pos;
         } str_list_t;
 
-        str_list_t list { nullptr, nullptr, 0, 0, nullptr, nullptr };
+        str_list_t list { nullptr, nullptr, 0, 0, nullptr, nullptr, 0 };
 
         str_t* str_copy(const char* ptr, unsigned int len);
 
@@ -47,7 +49,7 @@ class StringList {
         bool push(const String& str);
         virtual bool push(const char* str, unsigned long len);
 
-        String get(unsigned int pos) const;
+        String get(unsigned int pos);
 
         void begin();
         String iterate();

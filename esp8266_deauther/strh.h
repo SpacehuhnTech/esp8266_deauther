@@ -9,6 +9,7 @@
 #include <Arduino.h> // String
 
 namespace strh {
+    String whitespace(int len);
     String left(int len, String str);
     String right(int len, String str);
     String center(int len, String str);

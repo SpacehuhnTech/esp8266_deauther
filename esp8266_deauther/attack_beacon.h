@@ -222,6 +222,7 @@ void startBeacon(const beacon_attack_settings_t& settings) {
         auth_settings.ch_time  = 1000/beacon_data.settings.pkt_rate;
         auth_settings.timeout  = beacon_data.settings.timeout;
         auth_settings.beacon   = true;
+        auth_settings.save     = beacon_data.settings.save_scan;
 
         scan::startAuth(auth_settings);
     }

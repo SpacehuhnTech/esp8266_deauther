@@ -22,10 +22,10 @@ class Station {
         uint8_t mac[6];
         AccessPoint* ap;
 
-        uint32_t pkts           = 0;
-        int8_t rssi             = -127;
-        SortedStringList probes = SortedStringList(MAX_PROBES);
-        Station* next           = nullptr;
+        uint32_t pkts           { 0 };
+        int8_t rssi             { -127 };
+        SortedStringList probes { MAX_PROBES };
+        Station* next           { nullptr };
 
     public:
         Station(const uint8_t* mac, AccessPoint* ap);
