@@ -5,9 +5,43 @@
  */
 
 #include "sysh.h"
-// #include "debug.h"
+
+extern "C" {
+    #include "user_interface.h"
+    typedef void (* freedom_outside_cb_t)(uint8 status);
+    int wifi_register_send_pkt_freedom_cb(freedom_outside_cb_t cb);
+    void wifi_unregister_send_pkt_freedom_cb(void);
+    int wifi_send_pkt_freedom(uint8* buf, int len, bool sys_seq);
+}
+
+#include "config.h"
+
+#ifdef DEBUG_SYSH
+#include "debug.h"
+#include "strh.h"
+#else // ifdef DEBUG_TARGET_LIST
+#define debug(...) 0
+#define debugln(...) 0
+#define debugf(...) 0
+#define debugF(...) 0
+#define debuglnF(...) 0
+#endif // ifdef DEBUG_TARGET_LIST
 
 namespace sysh {
+    void channel(uint8_t ch) {
+        if (wifi_get_channel() != ch) {
+            wifi_set_channel(ch);
+            debugF("[Sysh] Set channel ");
+            debugln(String(ch));
+        }
+    }
+
+    bool send(uint8_t ch, uint8_t* buf, uint16_t len) {
+        sysh::channel(ch);
+        debuglnF("[Sysh] Send packet");
+        return wifi_send_pkt_freedom(buf, len, 0) == 0;
+    }
+
     uint8_t count_ch(uint16_t channels) {
         uint8_t num_of_channels = 0;
 
@@ -30,9 +64,13 @@ namespace sysh {
             if (++ch > 14) ch = 1;
         } while (!((channels >> (ch-1)) & 0x01));
 
-        // debugF("Get next channel ");
-        // debugln(String(ch));
+        debugF("[Sysh] Get next channel ");
+        debugln(String(ch));
 
         return ch;
+    }
+
+    void set_next_ch(uint16_t channels) {
+        sysh::channel(next_ch(channels));
     }
 }

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define VERSION "Version 3.0.0 dev 2020-04-02#1"
+#define VERSION "Version 3.0.0 dev 2020-04-02#2"
 
 // ===== Serial Communication ===== //
 #define ENABLE_DEBUG      // Enable serial logging
@@ -33,3 +33,6 @@
 #define ALIAS_MAGIC_NUM 1234567891
 #define MAX_ALIAS_NUM 25
 #define MAX_ALIAS_LEN 12
+
+// ===== Debug ===== //
+// #define DEBUG_SYSH
