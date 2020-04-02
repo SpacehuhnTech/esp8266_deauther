@@ -35,8 +35,11 @@
 #define debug(...) 0
 #define debugln(...) 0
 #define debugf(...) 0
+#define debugF(...) 0
+#define debuglnF(...) 0
 
 #define debug_available() 0
-#define debug_read() ""
+#define debug_read() 0
+#define debug_peek() 0
 
 #endif /* ifdef ENABLE_DEBUG */

@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define VERSION "Version 3.0.0 dev 2020-04-01#9"
+#define VERSION "Version 3.0.0 dev 2020-04-02#1"
 
 // ===== Serial Communication ===== //
 #define ENABLE_DEBUG      // Enable serial logging
@@ -23,12 +23,12 @@
 #define MAX_TARGETS 32       // Deauth targets, Beacons, Probes
 #define MAX_PROBES 10        // Probes per station scan result
 
-// ======EEPROM Settings ===== //
+// ===== EEPROM Settings ===== //
 #define EEPROM_SIZE       4095
 #define EEPROM_BOOT_ADDR  3210
 #define BOOT_MAGIC_NUM    1234567890
 
-// ==== Alias List Settings ===== //
+// ===== Alias List Settings ===== //
 #define ALIAS_ADDR 100
 #define ALIAS_MAGIC_NUM 1234567891
 #define MAX_ALIAS_NUM 25
