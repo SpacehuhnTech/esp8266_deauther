@@ -132,6 +132,15 @@ MacArr& MacArr::operator=(MacArr&& ml) {
     return *this;
 }
 
+void MacArr::clear() {
+    if (list.data) {
+        delete[] list.data;
+        list.data = nullptr;
+    }
+    list.size = 0;
+    list.h    = 0;
+}
+
 void MacArr::parse(const String& input, String delimiter) {
     clear();
 
@@ -171,12 +180,6 @@ void MacArr::parse(const String& input, String delimiter) {
 
 bool MacArr::contains(const uint8_t* mac) const {
     return search(mac) >= 0;
-}
-
-void MacArr::clear() {
-    if (list.data) delete[] list.data;
-    list.size = 0;
-    list.h    = 0;
 }
 
 void MacArr::begin() {

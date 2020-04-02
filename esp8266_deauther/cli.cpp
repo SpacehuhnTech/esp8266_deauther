@@ -788,27 +788,38 @@ namespace cli {
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
             Command cmd(c);
 
-            TargetList targets;
-
             deauth_attack_settings_t deauth_settings;
 
             { // Read Access Point MACs
                 String ap_str         = cmd.getArg("ap").getValue();
                 SortedStringList list = parse_int_list(ap_str);
+
+                TargetArr ap_targets { list.size() };
+
                 list.begin();
 
                 while (list.available()) {
                     int id          = list.iterate().toInt();
                     AccessPoint* ap = scan::getAccessPoints().get(id);
+
                     if (ap) {
-                        targets.push(ap->getBSSID(), mac::BROADCAST, ap->getChannel());
+                        const uint8_t* sender   = ap->getBSSID();
+                        const uint8_t* receiver =  mac::BROADCAST;
+                        uint16_t channels       = 1 << (ap->getChannel()-1);
+
+                        ap_targets.add(sender, receiver, channels);
                     }
                 }
+
+                deauth_settings.targets += ap_targets;
             }
 
             { // Read Station MACs
                 String st_str         = cmd.getArg("st").getValue();
                 SortedStringList list = parse_int_list(st_str);
+
+                TargetArr st_targets { list.size() };
+
                 list.begin();
 
                 while (list.available()) {
@@ -816,7 +827,11 @@ namespace cli {
                     Station* st = scan::getStations().get(id);
                     if (st) {
                         if (st->getAccessPoint()) {
-                            targets.push(st->getAccessPoint()->getBSSID(), st->getMAC(), st->getAccessPoint()->getChannel());
+                            const uint8_t* sender   = st->getAccessPoint()->getBSSID();
+                            const uint8_t* receiver =  st->getMAC();
+                            uint16_t channels       = 1 << (st->getAccessPoint()->getChannel()-1);
+
+                            st_targets.add(sender, receiver, channels);
                         } else {
                             debugF("WARNING: Station ");
                             debug(id);
@@ -824,15 +839,20 @@ namespace cli {
                         }
                     }
                 }
+
+                deauth_settings.targets += st_targets;
             }
 
             { // Read custom MACs
                 String mac_str = cmd.getArg("mac").getValue();
+                StringList list(mac_str, ",");
 
-                StringList target_list(mac_str, ",");
+                TargetArr manual_targets { list.size() };
 
-                while (target_list.available()) {
-                    String target = target_list.iterate();
+                list.begin();
+
+                while (list.available()) {
+                    String target = list.iterate();
                     StringList target_data(target, "-");
 
                     if (target_data.size() != 3) continue;
@@ -841,16 +861,17 @@ namespace cli {
                     String receiver_mac_str = target_data.iterate();
                     String ch_str           = target_data.iterate();
 
-                    uint8_t sender_mac[6];
-                    uint8_t receiver_mac[6];
-                    uint8_t ch;
+                    uint8_t sender[6];
+                    uint8_t receiver[6];
+                    uint16_t channels = parse_channels(ch_str);
 
-                    parse_mac(sender_mac_str, sender_mac);
-                    parse_mac(receiver_mac_str, receiver_mac);
-                    ch = ch_str.toInt();
+                    parse_mac(sender_mac_str, sender);
+                    parse_mac(receiver_mac_str, receiver);
 
-                    targets.push(sender_mac, receiver_mac, ch);
+                    manual_targets.add(sender, receiver, channels);
                 }
+
+                deauth_settings.targets += manual_targets;
             }
 
             { // Time
@@ -880,8 +901,6 @@ namespace cli {
                     deauth_settings.disassoc = true;
                 }
             }
-
-            deauth_settings.targets = &targets;
 
             attack::startDeauth(deauth_settings);
         });

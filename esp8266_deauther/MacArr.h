@@ -39,10 +39,11 @@ class MacArr {
         MacArr& operator=(const MacArr& ml);
         MacArr& operator=(MacArr&& ml);
 
+        void clear();
+
         void parse(const String& input, String delimiter);
 
         bool contains(const uint8_t* mac) const;
-        void clear();
 
         void begin();
         const uint8_t* iterate();

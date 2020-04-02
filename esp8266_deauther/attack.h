@@ -15,7 +15,7 @@
 // #define ENCRYPTION_WPA_AUTO 4
 // #define ENCRYPTION_WPA3 5
 
-#include "TargetList.h"
+#include "TargetArr.h"
 
 typedef struct beacon_attack_settings_t {
     StringList  * ssids;
@@ -28,7 +28,7 @@ typedef struct beacon_attack_settings_t {
 } beacon_attack_settings_t;
 
 typedef struct deauth_attack_settings_t {
-    TargetList  * targets;
+    TargetArr     targets;
     bool          deauth;
     bool          disassoc;
     unsigned long pkt_rate;
