@@ -18,13 +18,13 @@
 #include "TargetArr.h"
 
 typedef struct beacon_attack_settings_t {
-    StringList  * ssids;
-    uint8_t       bssid[6];
-    uint8_t       receiver[6];
-    int           enc;
-    uint16_t      channels;
-    uint16_t      pkt_rate;
-    unsigned long timeout;
+    SortedStringList ssids;
+    uint8_t          bssid[6];
+    uint8_t          receiver[6];
+    int              enc;
+    uint16_t         channels;
+    uint16_t         pkt_rate;
+    unsigned long    timeout;
 } beacon_attack_settings_t;
 
 typedef struct deauth_attack_settings_t {
@@ -37,10 +37,10 @@ typedef struct deauth_attack_settings_t {
 } deauth_attack_settings_t;
 
 typedef struct probe_attack_settings_t {
-    StringList  * ssids;
-    uint8_t       receiver[6];
-    uint16_t      channels;
-    unsigned long timeout;
+    SortedStringList ssids;
+    uint8_t          receiver[6];
+    uint16_t         channels;
+    unsigned long    timeout;
 } probe_attack_settings_t;
 
 namespace attack {

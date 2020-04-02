@@ -50,4 +50,5 @@ class MacArr {
 
         bool available() const;
         int size() const;
+        bool empty() const;
 };

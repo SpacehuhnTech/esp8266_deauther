@@ -40,8 +40,6 @@ typedef struct probe_attack_data_t {
 
     probe_attack_settings_t settings;
 
-    SortedStringList ssids;
-
     unsigned long start_time;
     unsigned long output_time;
     unsigned long pkts_sent;
@@ -88,7 +86,7 @@ bool send_probe(uint8_t ch, uint8_t* sender, uint8_t* receiver, const char* ssid
 // ========== ATTACK FUNCTIONS ========== //
 void startProbe(const probe_attack_settings_t& settings) {
     { // Error checks
-        if (!settings.ssids || (settings.ssids->size() == 0)) {
+        if (settings.ssids.empty()) {
             debuglnF("ERROR: No SSIDs specified");
             return;
         }
@@ -104,7 +102,6 @@ void startProbe(const probe_attack_settings_t& settings) {
 
     probe_data.enabled  = true;
     probe_data.settings = settings;
-    probe_data.ssids.moveFrom(*settings.ssids);
 
     probe_data.start_time      = current_time;
     probe_data.output_time     = current_time;
@@ -127,13 +124,13 @@ void startProbe(const probe_attack_settings_t& settings) {
         else debuglnF("-");
 
         debugF("SSIDs:    ");
-        debugln(probe_data.ssids.size());
+        debugln(probe_data.settings.ssids.size());
 
-        probe_data.ssids.begin();
+        probe_data.settings.ssids.begin();
 
-        while (probe_data.ssids.available()) {
+        while (probe_data.settings.ssids.available()) {
             debugF("- \"");
-            debug(probe_data.ssids.iterate());
+            debug(probe_data.settings.ssids.iterate());
             debugln('"');
         }
 
@@ -147,7 +144,7 @@ void stopProbe() {
     if (probe_data.enabled) {
         probe_data.enabled    = false;
         probe_data.pkts_sent += probe_data.pkts_per_second;
-        probe_data.ssids.clear();
+        probe_data.settings.ssids.clear();
 
         debugF("Stopped probe attack. Sent ");
         debug(probe_data.pkts_sent);
@@ -164,15 +161,15 @@ void update_probe_attack() {
 
         if (millis() - probe_data.pkt_time >= probe_data.pkt_interval) {
             probe_data.pkt_time = millis();
-            probe_data.ssids.begin();
+            probe_data.settings.ssids.begin();
 
             uint8_t sender[6];
             vendor::randomize(sender);
 
             uint8_t ch = sysh::next_ch(probe_data.settings.channels);
 
-            for (int i = 0; i<probe_data.ssids.size(); ++i) {
-                String ssid = probe_data.ssids.iterate();
+            for (int i = 0; i<probe_data.settings.ssids.size(); ++i) {
+                String ssid = probe_data.settings.ssids.iterate();
 
                 probe_data.pkts_per_second += send_probe(ch,
                                                          sender,

@@ -60,8 +60,8 @@ TargetArr::TargetArr(TargetArr&& tl) {
 }
 
 TargetArr::~TargetArr() {
-    debuglnF("[TargetArr] destroyed");
     clear();
+    debuglnF("[TargetArr] destroyed");
 }
 
 TargetArr& TargetArr::operator=(const TargetArr& tl) {

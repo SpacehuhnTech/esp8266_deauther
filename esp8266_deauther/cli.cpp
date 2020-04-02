@@ -665,15 +665,14 @@ namespace cli {
             String vendor_str = cmd.getArg("vendor").getValue();
 
             uint16_t channels = parse_channels(ch_str);
-            StringList ssids(ssid_str, ",");
             StringList vendors(vendor_str, ",");
 
             result_filter_t filter;
 
             filter.channels = channels;
-            filter.ssids    = &ssids;
-            filter.bssids   = MacArr { bssid_str, "," };
-            filter.vendors  = &vendors;
+            filter.ssids.parse(ssid_str, ",");
+            filter.bssids = MacArr { bssid_str, "," };
+            filter.vendors.parse(vendor_str, ",");
 
             if (mode == "ap") {
                 scan::printAPs(&filter);
@@ -700,14 +699,13 @@ namespace cli {
         Command cmd_beacon = cli.addCommand("beacon", [](cmd* c) {
             Command cmd(c);
 
-            SortedStringList ssid_list;
             bool scan;
 
             beacon_attack_settings_t beacon_settings;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
-                ssid_list.parse(ssids, ",");
+                beacon_settings.ssids.parse(ssids, ",");
             }
 
             { // BSSID
@@ -748,8 +746,6 @@ namespace cli {
             { // Scan
                 scan = cmd.getArg("mon").isSet();
             }
-
-            beacon_settings.ssids = &ssid_list;
 
             attack::startBeacon(beacon_settings);
 
@@ -925,13 +921,11 @@ namespace cli {
         Command cmd_probe = cli.addCommand("probe", [](cmd* c) {
             Command cmd(c);
 
-            SortedStringList ssid_list;
-
             probe_attack_settings_t probe_settings;
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
-                ssid_list.parse(ssids, ",");
+                probe_settings.ssids.parse(ssids, ",");
             }
 
             { // Receiver
@@ -950,8 +944,6 @@ namespace cli {
                 String time_str        = cmd.getArg("t").getValue();
                 probe_settings.timeout = parse_time(time_str, 1000);
             }
-
-            probe_settings.ssids = &ssid_list;
 
             attack::startProbe(probe_settings);
         });
@@ -1238,7 +1230,11 @@ namespace cli {
             if (input.length() > 0) {
                 cli::parse(input.c_str());
 #ifdef ENABLE_HISTORY
-                history.forcePush(input);
+                if (history.full()) {
+                    history.begin();
+                    history.remove();
+                }
+                history.push(input);
 #endif // ifdef ENABLE_HISTORY
             }
         }

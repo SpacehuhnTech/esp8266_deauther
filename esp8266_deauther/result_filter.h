@@ -10,8 +10,8 @@
 #include "MacArr.h"
 
 typedef struct result_filter_t {
-    uint16_t          channels;
-    const StringList* ssids;
-    MacArr            bssids;
-    const StringList* vendors;
+    uint16_t         channels;
+    SortedStringList ssids;
+    MacArr           bssids;
+    SortedStringList vendors;
 } result_filter_t;

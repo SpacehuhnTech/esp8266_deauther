@@ -6,120 +6,133 @@
 
 #include "StringList.h"
 
+#include "config.h"
+
+#ifdef DEBUG_STRING_LIST
+#include "debug.h"
+#include "strh.h"
+#else // ifdef DEBUG_TARGET_LIST
+#define debug(...) 0
+#define debugln(...) 0
+#define debugf(...) 0
+#define debugF(...) 0
+#define debuglnF(...) 0
+#endif // ifdef DEBUG_TARGET_LIST
+
 // ========== StringList ========== //
 
-char* StringList::stringCopy(const char* str, unsigned long len) const {
-    char* newstr = new char[len+1];
+// ===== PRIVATE ===== //
 
-    memcpy(newstr, str, len);
-    newstr[len] = '\0';
+StringList::str_t* StringList::str_copy(const char* ptr, unsigned int len) {
+    StringList::str_t* new_str = new StringList::str_t;
 
-    return newstr;
+    new_str->ptr = new char[len+1];
+    memcpy(new_str->ptr, ptr, len);
+    new_str->ptr[len] = '\0';
+    new_str->next     = nullptr;
+
+    return new_str;
 }
 
-int StringList::compare(const str_t* a, const String& b) const {
-    return strcmp(a->ptr, b.c_str());
+// ===== PUBLIC ===== //
+
+StringList::StringList(unsigned int max) {
+    list.max = max;
 }
 
-int StringList::compare(const str_t* a, const str_t* b) const {
-    return strcmp(a->ptr, b->ptr);
-}
-
-int StringList::compare(const str_t* a, const char* b) const {
-    return strcmp(a->ptr, b);
-}
-
-StringList::StringList(int max) : list_max_size(max) {}
-
-StringList::StringList(const String& input, String delimiter, int max) : list_max_size(max) {
+StringList::StringList(const String& input, String delimiter) {
     parse(input, delimiter);
+}
+
+StringList::StringList(const StringList& sl) {
+    if (this != &sl) {
+        clear();
+
+        str_t* tmp = sl.list.begin;
+
+        while (tmp) {
+            push(tmp->ptr, strlen(tmp->ptr));
+            tmp = tmp->next;
+        }
+    }
+}
+
+StringList::StringList(StringList&& sl) {
+    if (this != &sl) {
+        clear();
+
+        list = sl.list;
+
+        sl.list.begin = nullptr;
+        sl.list.end   = nullptr;
+        sl.list.size  = 0;
+        sl.list.p     = nullptr;
+        sl.list.h     = nullptr;
+    }
 }
 
 StringList::~StringList() {
     clear();
+    debuglnF("[StringList] destroyed");
 }
 
-void StringList::moveFrom(StringList& sl) {
-    str_t* ih = sl.list_begin;
+StringList& StringList::operator=(const StringList& sl) {
+    debuglnF("[StringList] copy assignment");
 
-    while (ih) {
-        if ((list_max_size > 0) && (list_size >= list_max_size)) break;
+    if (this != &sl) {
+        clear();
 
-        // Push to list
-        if (!list_begin) {
-            list_begin = ih;
-            list_end   = ih;
-            list_p     = nullptr;
-            list_h     = list_begin;
-        } else {
-            list_end->next = ih;
-            list_end       = ih;
+        str_t* tmp = sl.list.begin;
+
+        while (tmp) {
+            push(tmp->ptr, strlen(tmp->ptr));
+            tmp = tmp->next;
         }
+    }
+    return *this;
+}
 
-        ++(list_size);
+StringList& StringList::operator=(StringList&& sl) {
+    debuglnF("[StringList] move assignment");
 
-        ih = ih->next;
+    if (this != &sl) {
+        clear();
+
+        list = sl.list;
+
+        sl.list.begin = nullptr;
+        sl.list.end   = nullptr;
+        sl.list.size  = 0;
+        sl.list.p     = nullptr;
+        sl.list.h     = nullptr;
     }
 
-    sl.list_begin = nullptr;
-    sl.list_end   = nullptr;
-    sl.list_size  = 0;
-    sl.list_p     = nullptr;
-    sl.list_h     = nullptr;
-    sl.list_pos   = 0;
+    return *this;
 }
 
-bool StringList::push(String str) {
-    return push(str.c_str(), str.length());
-}
+void StringList::clear() {
+    debuglnF("[StringList] clear");
 
-bool StringList::push(const char* str, unsigned long len) {
-    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+    begin();
 
-    str_t* new_str = new str_t();
-
-    new_str->ptr  = stringCopy(str, len);
-    new_str->next = nullptr;
-
-    if (!list_begin) {
-        list_begin = new_str;
-        list_end   = new_str;
-        list_p     = nullptr;
-        list_h     = list_begin;
-    } else {
-        list_end->next = new_str;
-        list_end       = new_str;
+    while (available()) {
+        remove();
     }
 
-    ++list_size;
-    return true;
-}
-
-bool StringList::forcePush(String str) {
-    return forcePush(str.c_str(), str.length());
-}
-
-bool StringList::forcePush(const char* str, unsigned long len) {
-    if (!push(str, len)) {
-        str_t* new_str = list_begin;
-
-        list_begin = list_begin->next;
-
-        delete[] new_str->ptr;
-        new_str->ptr  = stringCopy(str, len);
-        new_str->next = nullptr;
-
-        list_end->next = new_str;
-        list_end       = new_str;
-    }
-    return true;
+    list.begin = nullptr;
+    list.end   = nullptr;
+    list.size  = 0;
+    list.p     = nullptr;
+    list.h     = nullptr;
 }
 
 void StringList::parse(const String& input, String delimiter) {
-    int len           = input.length();
-    int delimiter_len = delimiter.length();
-    int j             = 0;
-    const char* ptr   = input.c_str();
+    debuglnF("[StringList] parsing input");
+
+    unsigned int len           = input.length();
+    unsigned int delimiter_len = delimiter.length();
+    unsigned int j             = 0;
+    const char * ptr           = input.c_str();
 
     for (int i = 0; i <= len; ++i) {
         if ((i-j > 0) && ((i == len) || (input.substring(i, i+delimiter_len) == delimiter))) {
@@ -129,44 +142,101 @@ void StringList::parse(const String& input, String delimiter) {
     }
 }
 
-String StringList::get(int i) {
-    if (i < list_pos) begin();
+bool StringList::push(const String& str) {
+    return push(str.c_str(), str.length());
+}
 
-    while (list_h && list_pos<i) iterate();
+bool StringList::push(const char* str, unsigned long len) {
+    debugF("[StringList] push...");
 
-    return String(list_h ? list_h->ptr : "");
+    if (full()) {
+        debuglnF("full");
+        return false;
+    }
+
+    str_t* new_str = str_copy(str, len);
+
+    if (empty()) {
+        list.begin = new_str;
+        list.end   = new_str;
+        list.h     = new_str;
+    } else {
+        list.end->next = new_str;
+        list.end       = new_str;
+    }
+
+    ++list.size;
+
+    debuglnF("OK");
+
+    return true;
+}
+
+String StringList::get(unsigned int pos) const {
+    debuglnF("[StringList] get");
+
+    if (empty() || (pos > list.size)) return String{};
+
+    str_t* tmp = list.begin;
+
+    for (unsigned int i = 0; i<pos; ++i) {
+        tmp = tmp->next;
+    }
+
+    return String{ tmp->ptr };
 }
 
 void StringList::begin() {
-    list_h   = list_begin;
-    list_pos = 0;
+    list.p = nullptr;
+    list.h = list.begin;
 }
 
 String StringList::iterate() {
-    String res(list_h ? list_h->ptr : "");
+    if (list.size == 0) return String{};
+    if (!available()) begin();
 
-    if (list_h) {
-        list_p = list_h;
-        list_h = list_h->next;
-        ++list_pos;
+    if (list.h) {
+        list.p = list.h;
+        list.h = list.h->next;
+        return String{ list.p->ptr };
     }
 
-    return res;
+    return String{};
 }
 
 void StringList::remove() {
-    if (list_h) {
-        if (list_p) {
-            list_p->next = list_h->next;
-            delete list_h;
-            list_h = list_p->next;
+    debuglnF("[StringList] remove");
+
+    if (list.h) {
+        if (list.p) {
+            list.p->next = list.h->next;
+            delete[] list.h->ptr;
+            delete list.h;
+            list.h = list.p->next;
         } else {
-            list_begin = list_h->next;
-            delete list_h;
-            list_h = list_begin;
+            list.begin = list.h->next;
+            delete[] list.h->ptr;
+            delete list.h;
+            list.h = list.begin;
         }
-        --list_size;
+        --list.size;
     }
+}
+
+bool StringList::available() const {
+    return list.h;
+}
+
+int StringList::size() const {
+    return list.size;
+}
+
+bool StringList::full() const {
+    return list.max > 0 && list.size >= list.max;
+}
+
+bool StringList::empty() const {
+    return list.size == 0;
 }
 
 bool StringList::contains(const String& str) const {
@@ -174,119 +244,92 @@ bool StringList::contains(const String& str) const {
 }
 
 bool StringList::contains(const char* str) const {
-    str_t* tmp = list_begin;
+    debuglnF("[StringList] contains");
 
-    while (tmp && compare(tmp, str) != 0) {
+    str_t* tmp = list.begin;
+
+    while (tmp && strcmp(str, tmp->ptr) != 0) {
         tmp = tmp->next;
     }
 
     return tmp;
 }
 
-bool StringList::available() const {
-    return list_h;
-}
-
-int StringList::size() const {
-    return list_size;
-}
-
-bool StringList::full() const {
-    return list_max_size > 0 && list_size >= list_max_size;
-}
-
-void StringList::clear() {
-    str_t* tmp = list_begin;
-
-    while (tmp) {
-        str_t* to_delete = tmp;
-        tmp = tmp->next;
-        delete[] to_delete->ptr;
-        delete to_delete;
-    }
-
-    list_begin = nullptr;
-    list_end   = nullptr;
-    list_size  = 0;
-
-    list_p   = nullptr;
-    list_h   = nullptr;
-    list_pos = 0;
-}
-
 // ========== SortedStringList ========== //
 
-SortedStringList::SortedStringList(int max) : StringList(max) {}
-
-SortedStringList::SortedStringList(const String& input, String delimiter, int max) : StringList(max) {
-    parse(input, delimiter);
-}
-
 bool SortedStringList::push(const char* str, unsigned long len) {
-    if ((list_max_size > 0) && (list_size >= list_max_size)) return false;
+    debugF("[SortedStringList] push...");
 
-    str_t* new_str = new str_t();
+    if (full()) {
+        debuglnF("full");
+        return false;
+    }
 
-    new_str->ptr  = stringCopy(str, len);
-    new_str->next = nullptr;
+    str_t* new_str = str_copy(str, len);
 
     // Empty list -> insert first element
-    if (!list_begin) {
-        list_begin = new_str;
-        list_end   = new_str;
-        list_h     = list_begin;
+    if (empty()) {
+        list.begin = new_str;
+        list.end   = new_str;
     } else {
         // Insert at start
-        if (compare(list_begin, new_str) > 0) {
-            new_str->next = list_begin;
-            list_begin    = new_str;
+        if (strcmp(list.begin->ptr, str) > 0) {
+            new_str->next = list.begin;
+            list.begin    = new_str;
         }
         // Insert at end
-        else if (compare(list_end, new_str) < 0) {
-            list_end->next = new_str;
-            list_end       = new_str;
+        else if (strcmp(list.end->ptr, str) < 0) {
+            list.end->next = new_str;
+            list.end       = new_str;
         }
         // Insert somewhere inbetween (insertion sort)
         else {
-            str_t* tmp_c = list_begin;
-            str_t* tmp_p = nullptr;
+            begin();
 
-            int res = compare(tmp_c, new_str);
+            int res = strcmp(list.h->ptr, str);
 
-            while (tmp_c->next && res < 0) {
-                tmp_p = tmp_c;
-                tmp_c = tmp_c->next;
-                res   = compare(tmp_c, new_str);
+            while (available() && res < 0) {
+                iterate();
+                res = strcmp(list.h->ptr, str);
             }
 
             // Skip duplicates
             if (res == 0) {
+                debuglnF("duplicate");
                 delete[] new_str->ptr;
                 delete new_str;
                 return false;
-            } else {
-                new_str->next = tmp_c;
-                tmp_p->next   = new_str;
             }
+
+            new_str->next = list.h;
+            list.p->next  = new_str;
         }
     }
 
-    ++list_size;
+    ++list.size;
+    begin();
+
+    debuglnF("OK");
+
     return true;
 }
 
 bool SortedStringList::contains(const char* str) const {
-    if ((list_size == 0) || (compare(list_begin, str) > 0) || (compare(list_end, str) < 0)) {
+    debuglnF("[SortedStringList] contains");
+
+    if (empty() ||
+        (strcmp(list.begin->ptr, str) > 0) ||
+        (strcmp(list.end->ptr, str) < 0)) {
         return false;
     }
 
-    str_t* tmp = list_begin;
+    str_t* tmp = list.begin;
 
-    int res = compare(tmp, str);
+    int res = strcmp(tmp->ptr, str);
 
     while (tmp->next && res < 0) {
         tmp = tmp->next;
-        res = compare(tmp, str);
+        res = strcmp(tmp->ptr, str);
     }
 
     return res == 0;

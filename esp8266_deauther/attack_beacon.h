@@ -65,8 +65,6 @@ typedef struct beacon_attack_data_t {
 
     beacon_attack_settings_t settings;
 
-    SortedStringList ssids;
-
     unsigned long start_time;
     unsigned long output_time;
     unsigned long pkts_sent;
@@ -132,7 +130,7 @@ bool send_beacon(uint8_t ch, uint8_t* bssid, uint8_t* receiver, const char* ssid
 // ========== ATTACK FUNCTIONS ========== //
 void startBeacon(const beacon_attack_settings_t& settings) {
     { // Error checks
-        if (!settings.ssids || (settings.ssids->size() == 0)) {
+        if (settings.ssids.empty()) {
             debuglnF("ERROR: No SSIDs specified");
             return;
         }
@@ -146,9 +144,8 @@ void startBeacon(const beacon_attack_settings_t& settings) {
 
     unsigned long current_time = millis();
 
-    beacon_data.enabled  = true;
-    beacon_data.settings = settings;
-    beacon_data.ssids.moveFrom(*settings.ssids);
+    beacon_data.enabled         = true;
+    beacon_data.settings        = settings;
     beacon_data.start_time      = current_time;
     beacon_data.output_time     = current_time;
     beacon_data.pkts_sent       = 0;
@@ -187,7 +184,7 @@ void startBeacon(const beacon_attack_settings_t& settings) {
         else debuglnF("-");
 
         debugF("SSIDs:           ");
-        debugln(beacon_data.ssids.size());
+        debugln(beacon_data.settings.ssids.size());
 
         debugln();
 
@@ -199,11 +196,11 @@ void startBeacon(const beacon_attack_settings_t& settings) {
 
         uint8_t last_byte = bssid[5];
 
-        beacon_data.ssids.begin();
+        beacon_data.settings.ssids.begin();
 
-        while (beacon_data.ssids.available()) {
+        while (beacon_data.settings.ssids.available()) {
             bssid[5] = last_byte++;
-            debug(strh::left(34, '"' + beacon_data.ssids.iterate() + '"'));
+            debug(strh::left(34, '"' + beacon_data.settings.ssids.iterate() + '"'));
             debug(' ');
             debugln(strh::mac(bssid));
         }
@@ -220,7 +217,7 @@ void stopBeacon() {
     if (beacon_data.enabled) {
         beacon_data.pkts_sent += beacon_data.pkts_per_second;
         beacon_data.enabled    = false;
-        beacon_data.ssids.clear();
+        beacon_data.settings.ssids.clear();
 
         debugF("Stopped beacon attack. Sent ");
         debug(beacon_data.pkts_sent);
@@ -252,7 +249,7 @@ void update_beacon_attack() {
 
         if (millis() - beacon_data.pkt_time >= beacon_data.pkt_interval) {
             beacon_data.pkt_time = millis();
-            beacon_data.ssids.begin();
+            beacon_data.settings.ssids.begin();
 
             uint8_t ch = sysh::next_ch(beacon_data.settings.channels);
 
@@ -261,10 +258,10 @@ void update_beacon_attack() {
 
             uint8_t last_byte = bssid[5];
 
-            for (int i = 0; i<beacon_data.ssids.size(); ++i) {
+            for (int i = 0; i<beacon_data.settings.ssids.size(); ++i) {
                 bssid[5] = last_byte++;
 
-                String ssid = beacon_data.ssids.iterate();
+                String ssid = beacon_data.settings.ssids.iterate();
 
                 beacon_data.pkts_per_second += send_beacon(ch,
                                                            bssid,
@@ -282,5 +279,5 @@ bool beaconBSSID(uint8_t* bssid) {
 }
 
 String getBeacon(uint8_t num) {
-    return beacon_data.ssids.get(beacon_data.settings.bssid[5] - num);
+    return beacon_data.settings.ssids.get(beacon_data.settings.bssid[5] - num);
 }

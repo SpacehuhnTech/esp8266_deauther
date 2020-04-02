@@ -15,58 +15,61 @@ class StringList {
             str_t* next;
         } str_t;
 
-        str_t* list_begin = nullptr;
-        str_t* list_end   = nullptr;
-        int list_size     = 0;
-        int list_max_size;
+        typedef struct str_list_t {
+            str_t* begin;
+            str_t* end;
 
-        str_t* list_p = nullptr;
-        str_t* list_h = nullptr;
-        int list_pos  = 0;
+            unsigned int size;
+            unsigned int max;
 
-        char* stringCopy(const char* str, unsigned long len) const;
-        int compare(const str_t* a, const String& b) const;
-        int compare(const str_t* a, const str_t* b) const;
-        int compare(const str_t* a, const char* b) const;
+            str_t* p;
+            str_t* h;
+        } str_list_t;
+
+        str_list_t list { nullptr, nullptr, 0, 0, nullptr, nullptr };
+
+        str_t* str_copy(const char* ptr, unsigned int len);
 
     public:
-        StringList(int max                                        = 0);
-        StringList(const String& input, String delimiter, int max = 0);
+        StringList(unsigned int max = 0);
+        StringList(const String& input, String delimiter);
+        StringList(const StringList& sl);
+        StringList(StringList&& sl);
         ~StringList();
 
-        void moveFrom(StringList& sl);
+        StringList& operator=(const StringList& sl);
+        StringList& operator=(StringList&& sl);
 
-        bool push(String str);
-        virtual bool push(const char* str, unsigned long len);
-
-        bool forcePush(String st);
-        bool forcePush(const char* str, unsigned long len);
+        void clear();
 
         void parse(const String& input, String delimiter);
 
-        String get(int i);
+        bool push(const String& str);
+        virtual bool push(const char* str, unsigned long len);
+
+        String get(unsigned int pos) const;
 
         void begin();
         String iterate();
         void remove();
 
-        bool contains(const String& str) const;
-        virtual bool contains(const char* str) const;
-
         bool available() const;
         int size() const;
         bool full() const;
+        bool empty() const;
 
-        void clear();
+        bool contains(const String& str) const;
+        virtual bool contains(const char* str) const;
 };
 
 class SortedStringList : public StringList {
     public:
-        SortedStringList(int max                                        = 0);
-        SortedStringList(const String& input, String delimiter, int max = 0);
+        using StringList::StringList;
 
         using StringList::push;
         bool push(const char* str, unsigned long len) override;
+
+        using StringList::get;
 
         using StringList::contains;
         bool contains(const char* str) const override;

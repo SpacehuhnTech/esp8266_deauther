@@ -20,7 +20,7 @@ void MacArr::add(const uint8_t* mac) {
     mac_t* a = nullptr;
 
     // Empty list
-    if (list.size == 0) {
+    if (empty()) {
         a = &list.data[0];
     }
     // Insert at end
@@ -50,7 +50,7 @@ void MacArr::add(const uint8_t* mac) {
 
 int MacArr::search(const uint8_t* mac) const {
     // null-pointer or empty list
-    if (!mac || (list.size == 0)) return -1;
+    if (!mac || (empty())) return -1;
 
     // Search remaining list
     return bin_search(mac, 0, list.size-1);
@@ -187,16 +187,20 @@ void MacArr::begin() {
 }
 
 const uint8_t* MacArr::iterate() {
-    if (list.size == 0) return nullptr;
+    if (empty()) return nullptr;
     if (!available()) begin();
 
     return list.data[list.h++].mac;
 }
 
 bool MacArr::available() const {
-    return list.h < list.h;
+    return list.h < list.size;
 }
 
 int MacArr::size() const {
     return list.size;
+}
+
+bool MacArr::empty() const {
+    return list.size == 0;
 }
