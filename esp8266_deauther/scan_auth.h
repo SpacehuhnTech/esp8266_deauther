@@ -20,7 +20,7 @@ typedef struct auth_data_t {
     // Settings
     auth_scan_settings_t settings;
 
-    MacArr receivers;
+    MacArr bssids;
 
     // Temp
     unsigned long start_time;
@@ -47,7 +47,10 @@ void auth_sniffer(uint8_t* buf, uint16_t len) {
     const int8_t   rssi     = ctrl->rssi;
     const uint8_t  ch       = wifi_get_channel(); // ctrl->channel;
 
-    if ((auth_data.settings.receivers.size() > 0) && !auth_data.settings.receivers.contains(receiver)) return;
+    // Drop packets that aren't in the BSSID filter (if filter provided)
+    if (!auth_data.settings.bssids.empty() &&
+        !auth_data.settings.bssids.contains(receiver))
+        return;
 
     auth_buffer.rssi = rssi;
     auth_buffer.ch   = ch;
@@ -94,6 +97,26 @@ void startAuth(const auth_scan_settings_t& settings) {
         if (auth_data.settings.ch_time > 0) debugln(strh::time(auth_data.settings.ch_time));
         else debuglnF("-");
 
+        debugF("Beacon Mode:  ");
+        debugln(auth_data.settings.beacon ? F("On") : F("Off"));
+
+        debugF("BSSID filter: ");
+        debugln(auth_data.settings.bssids.size());
+
+        if (!auth_data.settings.bssids.empty()) {
+            debuglnF("BSSID");
+            debuglnF("=================");
+
+            auth_data.settings.bssids.begin();
+
+            while (auth_data.settings.bssids.available()) {
+                debugln(strh::mac(auth_data.settings.bssids.iterate()));
+            }
+
+            debuglnF("=================");
+        }
+
+
         debugln();
         debuglnF("Type 'stop' to stop the scan");
         debugln();
@@ -113,7 +136,7 @@ void stopAuth() {
         wifi_promiscuous_enable(false);
         auth_data.enabled = false;
 
-        auth_data.settings.receivers.clear();
+        auth_data.settings.bssids.clear();
 
         debuglnF("=======================================================================================");
         debuglnF("Ch = 2.4 GHz Channel    ,    RSSI = Signal strength    ,    BSSID = Network MAC address");

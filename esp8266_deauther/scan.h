@@ -31,7 +31,7 @@ typedef struct auth_scan_settings_t {
     unsigned long ch_time;
     unsigned long timeout;
     bool          beacon;
-    MacArr        receivers;
+    MacArr        bssids;
 } auth_scan_settings_t;
 
 const st_scan_settings_t   ST_SCAN_DEFAULT { 0x3FFF, 284, 20000, false };
