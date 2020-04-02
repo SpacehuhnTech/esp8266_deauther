@@ -156,19 +156,19 @@ void startBeacon(const beacon_attack_settings_t& settings) {
     { // Output
         debuglnF("[ ===== Beacon Attack ===== ]");
 
-        debugF("BSSID:           ");
+        debugF("BSSID:               ");
         debugln(strh::mac(beacon_data.settings.bssid));
 
-        debugF("Receiver:        ");
+        debugF("Receiver:            ");
         debugln(strh::mac(beacon_data.settings.receiver));
 
-        debugF("Channels:        ");
+        debugF("Channels:            ");
         debugln(strh::channels(beacon_data.settings.channels));
 
-        debugF("Pkts/s per SSID: ");
+        debugF("Packets/s per SSID:  ");
         debugln(beacon_data.settings.pkt_rate);
 
-        debugF("Encryption:      ");
+        debugF("Encryption:          ");
 
         switch (beacon_data.settings.enc) {
             case ENCRYPTION_OPEN:
@@ -179,11 +179,14 @@ void startBeacon(const beacon_attack_settings_t& settings) {
                 break;
         }
 
-        debugF("Timeout:         ");
+        debugF("Timeout:             ");
         if (beacon_data.settings.timeout > 0) debugln(strh::time(beacon_data.settings.timeout));
         else debuglnF("-");
 
-        debugF("SSIDs:           ");
+        debugF("Authentication Scan: ");
+        debugln(beacon_data.settings.scan ? F("On") : F("Off"));
+
+        debugF("SSIDs:               ");
         debugln(beacon_data.settings.ssids.size());
 
         debugln();
@@ -211,10 +214,25 @@ void startBeacon(const beacon_attack_settings_t& settings) {
         debuglnF("Type 'stop' receiver stop the attack");
         debugln();
     }
+
+    if (beacon_data.settings.scan) {
+        auth_scan_settings_t auth_settings;
+
+        auth_settings.channels = beacon_data.settings.channels;
+        auth_settings.ch_time  = 1000/beacon_data.settings.pkt_rate;
+        auth_settings.timeout  = beacon_data.settings.timeout;
+        auth_settings.beacon   = true;
+
+        scan::startAuth(auth_settings);
+    }
 }
 
 void stopBeacon() {
     if (beacon_data.enabled) {
+        if (beacon_data.settings.scan) {
+            scan::stopAuth();
+        }
+
         beacon_data.pkts_sent += beacon_data.pkts_per_second;
         beacon_data.enabled    = false;
         beacon_data.settings.ssids.clear();

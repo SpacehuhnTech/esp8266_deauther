@@ -25,6 +25,7 @@ typedef struct beacon_attack_settings_t {
     uint16_t         channels;
     uint16_t         pkt_rate;
     unsigned long    timeout;
+    bool             scan;
 } beacon_attack_settings_t;
 
 typedef struct deauth_attack_settings_t {

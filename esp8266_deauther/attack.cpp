@@ -9,9 +9,9 @@
 #include "debug.h"
 #include "cli.h"
 #include "strh.h"
-
 #include "sysh.h"
 #include "vendor.h"
+#include "scan.h"
 
 namespace attack {
     #include "attack_deauth.h"

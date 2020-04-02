@@ -744,21 +744,10 @@ namespace cli {
             }
 
             { // Scan
-                scan = cmd.getArg("mon").isSet();
+                beacon_settings.scan = cmd.getArg("mon").isSet();
             }
 
             attack::startBeacon(beacon_settings);
-
-            if (scan) {
-                auth_scan_settings_t auth_settings;
-
-                auth_settings.channels = beacon_settings.channels;
-                auth_settings.ch_time  = 1000/beacon_settings.pkt_rate;
-                auth_settings.timeout  = beacon_settings.timeout;
-                auth_settings.beacon   = true;
-
-                scan::startAuth(auth_settings);
-            }
         });
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("bssid,from", "random");
