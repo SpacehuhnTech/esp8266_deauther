@@ -116,23 +116,27 @@ void startProbe(const probe_attack_settings_t& settings) {
         debugF("Receiver: ");
         debugln(strh::mac(probe_data.settings.receiver));
 
-        debugF("Channel:  ");
-        debugln(probe_data.settings.channels);
+        debugF("Channels: ");
+        debugln(strh::channels(probe_data.settings.channels));
 
         debugF("Timeout:  ");
         if (probe_data.settings.timeout > 0) debugln(strh::time(probe_data.settings.timeout));
         else debuglnF("-");
 
-        debugF("SSIDs:    ");
+        debugF("SSID:     ");
         debugln(probe_data.settings.ssids.size());
+
+        // Print SSID List
+        debugln();
+        debuglnF("SSID");
+        debuglnF("==================================");
 
         probe_data.settings.ssids.begin();
 
         while (probe_data.settings.ssids.available()) {
-            debugF("- \"");
-            debug(probe_data.settings.ssids.iterate());
-            debugln('"');
+            debugln(strh::left(32, '"'+probe_data.settings.ssids.iterate()+'"'));
         }
+        debuglnF("==================================");
 
         debugln();
         debuglnF("Type 'stop' to stop the attack");

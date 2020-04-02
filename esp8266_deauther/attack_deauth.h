@@ -104,18 +104,23 @@ void startDeauth(const deauth_attack_settings_t& settings) {
         debugF("Targets:        ");
         debugln(deauth_data.settings.targets.size());
 
-        // Print MACs
+        // Print Target Data
+        debugln();
+        debuglnF("Sender MAC        Receiver MAC      Channels");
+        debuglnF("====================================================================");
+
         deauth_data.settings.targets.begin();
 
         while (deauth_data.settings.targets.available()) {
             const target_t* t = deauth_data.settings.targets.iterate();
-            debugF("- transmitter ");
             debug(strh::mac(t->sender));
-            debugF(", receiver ");
+            debug(' ');
             debug(strh::mac(t->receiver));
-            debugF(", channels ");
+            debug(' ');
             debugln(strh::channels(t->channels));
         }
+
+        debuglnF("====================================================================");
 
         debugln();
         debuglnF("Type 'stop' to stop the attack");
