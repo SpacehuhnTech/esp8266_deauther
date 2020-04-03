@@ -211,7 +211,7 @@ void startBeacon(const beacon_attack_settings_t& settings) {
         debuglnF("====================================================");
 
         debugln();
-        debuglnF("Type 'stop' receiver stop the attack");
+        debuglnF("Type 'stop beacon' receiver stop the attack");
         debugln();
     }
 

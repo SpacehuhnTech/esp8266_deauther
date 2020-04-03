@@ -130,7 +130,7 @@ void startAuth(const auth_scan_settings_t& settings) {
         }
 
         debugln();
-        debuglnF("Type 'stop' to stop the scan");
+        debuglnF("Type 'stop auth' to stop the scan");
         debugln();
 
         debuglnF("RSSI Ch Vendor   MAC-Address       SSID                               BSSID");

@@ -80,7 +80,7 @@ namespace cli {
     }
 
     SortedStringList parse_int_list(const String& str) {
-        StringList values(str, ",");
+        StringList values { str };
 
         SortedStringList list;
 
@@ -691,7 +691,7 @@ namespace cli {
 
             { // Read BSSIDs
                 String bssid_str { cmd.getArg("bssid").getValue() };
-                auth_settings.bssids += MacArr { bssid_str, "," };
+                auth_settings.bssids += MacArr { bssid_str };
             }
 
             { // Timeout
@@ -734,14 +734,14 @@ namespace cli {
             String vendor_str = cmd.getArg("vendor").getValue();
 
             uint16_t channels = parse_channels(ch_str);
-            StringList vendors(vendor_str, ",");
+            StringList vendors { vendor_str };
 
             result_filter_t filter;
 
             filter.channels = channels;
-            filter.ssids.parse(ssid_str, ",");
-            filter.bssids = MacArr { bssid_str, "," };
-            filter.vendors.parse(vendor_str, ",");
+            filter.ssids.parse(ssid_str);
+            filter.bssids.parse(bssid_str);
+            filter.vendors.parse(vendor_str);
 
             if (mode == "ap") {
                 scan::printAPs(&filter);
@@ -774,7 +774,7 @@ namespace cli {
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
-                beacon_settings.ssids.parse(ssids, ",");
+                beacon_settings.ssids.parse(ssids);
             }
 
             { // BSSID
@@ -904,7 +904,7 @@ namespace cli {
 
             { // Read custom MACs
                 String mac_str = cmd.getArg("mac").getValue();
-                StringList list(mac_str, ",");
+                StringList list { mac_str };
 
                 TargetArr manual_targets { list.size() };
 
@@ -988,7 +988,7 @@ namespace cli {
 
             { // SSIDs
                 String ssids = cmd.getArg("ssid").getValue();
-                probe_settings.ssids.parse(ssids, ",");
+                probe_settings.ssids.parse(ssids);
             }
 
             { // Receiver
@@ -1111,10 +1111,39 @@ namespace cli {
         cmd_ram.setDescription("  Print memory usage");
 
         Command cmd_stop = cli.addCommand("stop", [](cmd* c) {
-            scan::stop();
-            attack::stop();
+            Command cmd(c);
+
+            String mode_str { cmd.getArg("mode").getValue() };
+
+            if (mode_str == "all") {
+                scan::stop();
+                attack::stop();
+            } else {
+                SortedStringList mode_list { mode_str };
+                mode_list.begin();
+
+                while (mode_list.available()) {
+                    String mode { mode_list.iterate() };
+                    if (mode == "scan") {
+                        scan::stopAP();
+                        scan::stopST();
+                    } else if (mode == "auth") {
+                        scan::stopAuth();
+                    } else if (mode == "attack") {
+                        attack::stop();
+                    } else if (mode == "beacon") {
+                        attack::stopBeacon();
+                    } else if (mode == "deauth") {
+                        attack::stopDeauth();
+                    } else if (mode == "probe") {
+                        attack::stopProbe();
+                    }
+                }
+            }
         });
-        cmd_stop.setDescription("  Stop all attacks");
+        cmd_stop.addPosArg("mode", "all");
+        cmd_stop.setDescription("  Stop scans or attacks\r\n"
+                                "  -mode: all,scan,auth,attack,beacon,deauth,probe (default=all)");
 
 #ifdef ENABLE_HISTORY
         Command cmd_history = cli.addCommand("history", [](cmd* c) {

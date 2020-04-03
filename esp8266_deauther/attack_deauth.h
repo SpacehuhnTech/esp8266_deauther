@@ -123,7 +123,7 @@ void startDeauth(const deauth_attack_settings_t& settings) {
         debuglnF("====================================================================");
 
         debugln();
-        debuglnF("Type 'stop' to stop the attack");
+        debuglnF("Type 'stop deauth' to stop the attack");
         debugln();
     }
 }

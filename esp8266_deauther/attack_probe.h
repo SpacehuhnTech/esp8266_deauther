@@ -139,7 +139,7 @@ void startProbe(const probe_attack_settings_t& settings) {
         debuglnF("==================================");
 
         debugln();
-        debuglnF("Type 'stop' to stop the attack");
+        debuglnF("Type 'stop probe' to stop the attack");
         debugln();
     }
 }

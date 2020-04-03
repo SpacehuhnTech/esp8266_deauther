@@ -33,7 +33,7 @@ class MacArr {
         MacArr(int size = 0);
         MacArr(const MacArr& ml);
         MacArr(MacArr&& ml);
-        MacArr(const String& input, String delimiter);
+        MacArr(const String& input, String delimiter = ",");
         ~MacArr();
 
         MacArr& operator=(const MacArr& ml);
@@ -43,7 +43,7 @@ class MacArr {
 
         void clear();
 
-        void parse(const String& input, String delimiter);
+        void parse(const String& input, String delimiter = ",");
 
         bool add(const uint8_t* mac);
 

@@ -33,10 +33,12 @@ class StringList {
         str_t* str_copy(const char* ptr, unsigned int len);
 
     public:
-        StringList(unsigned int max = 0);
-        StringList(const String& input, String delimiter);
+        StringList(unsigned int max                      = 0);
+        StringList(const String& input, String delimiter = ",");
+
         StringList(const StringList& sl);
         StringList(StringList&& sl);
+
         ~StringList();
 
         StringList& operator=(const StringList& sl);
@@ -44,7 +46,7 @@ class StringList {
 
         void clear();
 
-        void parse(const String& input, String delimiter);
+        void parse(const String& input, String delimiter = ",");
 
         bool push(const String& str);
         virtual bool push(const char* str, unsigned long len);

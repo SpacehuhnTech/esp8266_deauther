@@ -147,7 +147,7 @@ void startST(const st_scan_settings_t& settings) {
         debugln(strh::channels(st_data.settings.channels));
 
         debugln();
-        debuglnF("Type 'stop' to stop the scan");
+        debuglnF("Type 'stop scan' to stop the scan");
         debugln();
 
         st_list.printHeader();
