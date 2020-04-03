@@ -22,9 +22,9 @@ class Station {
         uint8_t mac[6];
         AccessPoint* ap;
 
-        bool printed_flag { false };
+        bool printed_flag       { false };
         uint32_t pkts           { 0 };
-        int8_t rssi             { -127 };
+        double rssi             { -127 };
         SortedStringList probes { MAX_PROBES };
         Station* next           { nullptr };
 

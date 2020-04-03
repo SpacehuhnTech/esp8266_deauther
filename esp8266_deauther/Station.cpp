@@ -87,7 +87,7 @@ bool Station::addProbe(const char* ssid, uint8_t len) {
 
 void Station::newPkt(int8_t rssi) {
     ++pkts;
-    this->rssi = rssi;
+    this->rssi += ((double)rssi - this->rssi) / (double)pkts;
 }
 
 void Station::print(int id, const result_filter_t* f) {
