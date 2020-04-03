@@ -1226,6 +1226,23 @@ namespace cli {
                    "                                                             `/+-\r\n");
         });
         cmd_chicken.setDescription("  Needs more chicken!");
+
+        Command cmd_vendor = cli.addCommand("vendor", [](cmd* c) {
+            Command cmd(c);
+
+            String input { cmd.getArg("mac").getValue() };
+
+            if (mac::valid(input.c_str(), input.length())) {
+                uint8_t mac[6];
+                mac::fromStr(input.c_str(), mac);
+                debugln(vendor::search(mac));
+            } else {
+                vendor::search(input);
+            }
+        });
+        cmd_vendor.addPosArg("mac");
+        cmd_vendor.setDescription("  Vendor (manufacturer) lookup\r\n"
+                                  "  -mac: MAC address(es)");
     }
 
     void parse(const char* input) {

@@ -7,12 +7,15 @@
 #include "vendor.h"
 #include "vendor_list.h"
 
+#include "debug.h"
+#include "strh.h"
+
 namespace vendor {
     // ===== Private ===== //
     int bin_search(const uint8_t* bytes, int low_end, int up_end) {
         uint8_t list_bytes[3];
         int     res;
-        int     mid = (low_end + up_end) / 2;
+        int     mid { (low_end + up_end) / 2 };
 
         {
             // Check if bigger than list end
@@ -55,18 +58,18 @@ namespace vendor {
 
     // ===== Public ===== //
     String search(const uint8_t* mac) {
-        if (!mac) return String();
+        if (!mac) return String{};
 
         int pos_mac = bin_search(mac, 0, sizeof(vendor_macs) / 5 - 1);
 
-        if (pos_mac < 0) return String();
+        if (pos_mac < 0) return String{};
 
         int pos_name = pgm_read_byte_near(vendor_macs + pos_mac*5 + 3) |
                        pgm_read_byte_near(vendor_macs + pos_mac*5 + 4) << 8;
         String name;
         char   tmp;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; ++i) {
             tmp = (char)pgm_read_byte_near(vendor_names + pos_name*8 + i);
 
             if (tmp != '\0') name += tmp;
@@ -82,8 +85,39 @@ namespace vendor {
         int num = random(sizeof(vendor_names) / 11 - 1);
         uint8_t i;
 
-        for (i = 0; i < 3; i++) mac[i] = pgm_read_byte_near(vendor_macs + num * 5 + i);
+        for (i = 0; i < 3; ++i) mac[i] = pgm_read_byte_near(vendor_macs + num * 5 + i);
 
-        for (i = 3; i < 6; i++) mac[i] = random(256);
+        for (i = 3; i < 6; ++i) mac[i] = random(256);
+    }
+
+    void search(String name) {
+        name = name.substring(0, 8);
+
+        int len = sizeof(vendor_macs);
+
+        int pos_name;
+        uint8_t prefix[6] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        char    vendor[9];
+        vendor[8] = '\0';
+
+        debuglnF("searching");
+
+        for (int i = 0; i<len; i += 5) {
+            pos_name = pgm_read_byte_near(vendor_macs + i + 3) | pgm_read_byte_near(vendor_macs + i + 4) << 8;
+
+            for (int j = 0; j < 8; ++j) {
+                vendor[j] = (char)pgm_read_byte_near(vendor_names + pos_name*8 + j);
+            }
+
+            if (String(vendor).equalsIgnoreCase(name)) {
+                for (int j = 0; j < 3; ++j) {
+                    prefix[j] = pgm_read_byte_near(vendor_macs + i + j);
+                }
+
+                debugln(strh::mac(prefix));
+            }
+        }
+
+        debuglnF("done");
     }
 }

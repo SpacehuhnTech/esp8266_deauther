@@ -187,16 +187,19 @@ void MacArr::parse(const String& input, String delimiter) {
     debuglnF("[MacArr] parse");
     clear();
 
-    SortedStringList str_list(input, delimiter);
-    unsigned int     num = 0;
+    SortedStringList str_list { input, delimiter };
+    unsigned int     num { 0 };
 
     str_list.begin();
 
     while (str_list.available()) {
-        String mac_str = str_list.iterate();
+        String mac_str { str_list.iterate() };
         if (mac::valid(mac_str.c_str(), mac_str.length()) || (alias::search(mac_str)>=0)) {
             ++num;
         } else {
+            debugF("[MacArr] invalid MAC string \"");
+            debug(mac_str);
+            debuglnF("\"");
             str_list.remove();
         }
     }
@@ -204,6 +207,7 @@ void MacArr::parse(const String& input, String delimiter) {
     if (num == 0) return;
 
     list.data = new mac_t[num];
+    list.max  = num;
 
     str_list.begin();
 

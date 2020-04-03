@@ -11,4 +11,5 @@
 namespace vendor {
     void getRandomMac(uint8_t* mac);
     String search(const uint8_t* mac);
+    void search(String name);
 };
