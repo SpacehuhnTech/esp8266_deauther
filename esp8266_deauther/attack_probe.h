@@ -168,7 +168,7 @@ void update_probe_attack() {
             probe_data.settings.ssids.begin();
 
             uint8_t sender[6];
-            vendor::randomize(sender);
+            vendor::getRandomMac(sender);
 
             uint8_t ch = sysh::next_ch(probe_data.settings.channels);
 

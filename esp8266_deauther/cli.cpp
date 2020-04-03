@@ -56,7 +56,7 @@ namespace cli {
         // if in alias list, copy
         if (!alias::resolve(str, mac)) {
             if (str == "random") {
-                vendor::randomize(mac);
+                vendor::getRandomMac(mac);
             } else if (str == "broadcast") {
                 memcpy(mac, mac::BROADCAST, 6);
             } else if (str.length() == 17) {
