@@ -9,16 +9,18 @@
 #include <string.h>
 #include <stdlib.h>
 
-#ifdef DEBUG_TARGET_LIST
+#include "config.h"
+
+#ifdef DEBUG_TARGET_ARR
 #include "debug.h"
 #include "strh.h"
-#else // ifdef DEBUG_TARGET_LIST
+#else // ifdef DEBUG_TARGET_ARR
 #define debug(...) 0
 #define debugln(...) 0
 #define debugf(...) 0
 #define debugF(...) 0
 #define debuglnF(...) 0
-#endif // ifdef DEBUG_TARGET_LIST
+#endif // ifdef DEBUG_TARGET_ARR
 
 // ===== PRIVATE ===== //
 
@@ -33,11 +35,11 @@ bool TargetArr::contains(const target_t& t) {
 
 // ===== PUBLIC ===== //
 
-TargetArr::TargetArr() {}
-
 TargetArr::TargetArr(int size) {
-    list.data = new target_t[size];
-    list.max  = size;
+    if (size > 0) {
+        list.data = new target_t[size];
+        list.max  = size;
+    }
 }
 
 TargetArr::TargetArr(const TargetArr& tl) {

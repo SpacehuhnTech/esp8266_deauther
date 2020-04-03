@@ -637,7 +637,7 @@ namespace cli {
             "  -m:  scan mode [ap,st,ap+st] (default=ap+st)\r\n"
             "  -t:  station scan time (default=20s)\r\n"
             "  -ch: 2.4 GHz channels for station scan [1-14] (default=all)\r\n"
-            "  -ct: channel scan time in milliseconds (default=auto)\r\n"
+            "  -ct: channel scan time in milliseconds (default=284)\r\n"
             "  -r:  keep previous scan results"
             );
 
@@ -655,6 +655,75 @@ namespace cli {
                     "  RSSI meter\r\n"
                     "  -mac: MAC addresses");
          */
+        Command cmd_auth = cli.addCommand("auth", [](cmd* c) {
+            Command cmd(c);
+
+            auth_scan_settings_t auth_settings;
+
+            { // Channels
+                String ch_str          = cmd.getArg("ch").getValue();
+                auth_settings.channels = parse_channels(ch_str);
+            }
+
+            { // Read Access Point MACs
+                String ap_str         = cmd.getArg("ap").getValue();
+                SortedStringList list = parse_int_list(ap_str);
+
+                if (list.size() > 0) {
+                    auth_settings.channels = 0;
+                    MacArr ap_bssids { list.size() };
+
+                    list.begin();
+
+                    while (list.available()) {
+                        int id          = list.iterate().toInt();
+                        AccessPoint* ap = scan::getAccessPoints().get(id);
+
+                        if (ap) {
+                            ap_bssids.add(ap->getBSSID());
+                            auth_settings.channels |= 1 << (ap->getChannel()-1);
+                        }
+                    }
+
+                    auth_settings.bssids += ap_bssids;
+                }
+            }
+
+            { // Read BSSIDs
+                String bssid_str { cmd.getArg("bssid").getValue() };
+                auth_settings.bssids += MacArr { bssid_str, "," };
+            }
+
+            { // Timeout
+                String time_str       = cmd.getArg("t").getValue();
+                auth_settings.timeout = parse_time(time_str, 1000);
+            }
+
+            { // Channel scan time
+                String time_str       = cmd.getArg("ct").getValue();
+                auth_settings.ch_time = parse_time(time_str, 1);
+            }
+
+            { // Save
+                auth_settings.save = cmd.getArg("save").isSet();
+            }
+
+            scan::startAuth(auth_settings);
+        });
+        cmd_auth.addPosArg("bssid", "");
+        cmd_auth.addArg("ap", "");
+        cmd_auth.addArg("t/ime", "0");
+        cmd_auth.addArg("ch/annel", "all");
+        cmd_auth.addArg("ct/ime", "284");
+        cmd_auth.addFlagArg("save");
+        cmd_auth.setDescription("  Authentication scan\r\n"
+                                "  -bssid: filter by BSSID(s)\r\n"
+                                "  -ap:    filter by access point ID(s)\r\n"
+                                "  -ch:    2.4 GHz channels for auth. scan [1-14] (default=all)\r\n"
+                                "  -ct:    channel scan time in milliseconds (default=284)\r\n"
+                                "  -t:     scan timeout (default=none)\r\n"
+                                "  -save:  save recorded probe requests");
+
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             Command cmd(c);
             String mode = cmd.getArg("t").getValue();
@@ -690,7 +759,7 @@ namespace cli {
         cmd_results.addArg("vendor/s", "");
         cmd_results.setDescription(
             "  Print list of scan results [access points (networks) and stations (clients)]\r\n"
-            "  -t:      type of results [ap,st,ap+st] (default=ap+st)\r\n"
+            "  -type:   type of results [ap,st,ap+st] (default=ap+st)\r\n"
             "  -ch:     filter by channel(s)\r\n"
             "  -ssid:   filter by SSID(s)\r\n"
             "  -bssid:  filter by BSSID(s)\r\n"

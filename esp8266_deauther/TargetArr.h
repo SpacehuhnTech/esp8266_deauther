@@ -30,8 +30,7 @@ class TargetArr {
         bool contains(const target_t& t);
 
     public:
-        TargetArr();
-        TargetArr(int size);
+        TargetArr(int size = 0);
         TargetArr(const TargetArr& ml);
         TargetArr(TargetArr&& ml);
         ~TargetArr();

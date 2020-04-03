@@ -116,6 +116,7 @@ void startAuth(const auth_scan_settings_t& settings) {
         debugln(auth_data.settings.bssids.size());
 
         if (!auth_data.settings.bssids.empty()) {
+            debugln();
             debuglnF("BSSID");
             debuglnF("=================");
 
@@ -191,22 +192,20 @@ void update_auth_scan() {
             // Part of AP list
             AccessPoint* ap = ap_list.search(tmp.bssid);
             if (ap) {
-                debug(strh::left(32, ap->getSSIDString()));
+                debug(strh::left(34, ap->getSSIDString()));
                 debug(' ');
                 debugln(strh::left(17, ap->getBSSIDString()));
                 return;
             }
 
             // Unknown AP
-            debug(strh::left(32, "*UNKNOWN*"));
+            debug(strh::left(34, "*UNKNOWN*"));
             debug(' ');
             debugln(strh::left(17, alias::get(tmp.bssid)));
         }
 
         if ((auth_data.settings.ch_time > 0) && (!auth_data.settings.beacon) && (current_time - auth_data.ch_update_time >= auth_data.settings.ch_time)) {
-            debug("AUTH update ");
             sysh::set_next_ch(auth_data.settings.channels);
-            debugln();
             auth_data.ch_update_time = current_time;
         } else if ((auth_data.settings.timeout > 0) && (millis() - auth_data.start_time >= auth_data.settings.timeout)) {
             stopAuth();

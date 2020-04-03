@@ -19,18 +19,18 @@ class MacArr {
 
         typedef struct mac_list_t {
             mac_t      * data;
+            unsigned int max;
             unsigned int size;
             unsigned int h;
         } mac_list_t;
 
-        mac_list_t list { nullptr, 0 };
+        mac_list_t list { nullptr, 0, 0, 0 };
 
-        void add(const uint8_t* mac);
         int search(const uint8_t* mac) const;
         int bin_search(const uint8_t* mac, int low_end, int up_end) const;
 
     public:
-        MacArr();
+        MacArr(int size = 0);
         MacArr(const MacArr& ml);
         MacArr(MacArr&& ml);
         MacArr(const String& input, String delimiter);
@@ -39,9 +39,13 @@ class MacArr {
         MacArr& operator=(const MacArr& ml);
         MacArr& operator=(MacArr&& ml);
 
+        MacArr& operator+=(const MacArr& ml);
+
         void clear();
 
         void parse(const String& input, String delimiter);
+
+        bool add(const uint8_t* mac);
 
         bool contains(const uint8_t* mac) const;
 
@@ -50,5 +54,6 @@ class MacArr {
 
         bool available() const;
         int size() const;
+        bool full() const;
         bool empty() const;
 };

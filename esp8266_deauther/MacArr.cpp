@@ -13,40 +13,22 @@
 #include "mac.h"
 #include "alias.h"
 
+#include "config.h"
+
+#ifdef DEBUG_MAC_ARR
+#include "debug.h"
+#include "strh.h"
+#else // ifdef DEBUG_MAC_ARR
+#define debug(...) 0
+#define debugln(...) 0
+#define debugf(...) 0
+#define debugF(...) 0
+#define debuglnF(...) 0
+#endif // ifdef DEBUG_MAC_ARR
+
 // ========== MacArr =========== //
 
 // ===== PRIVATE ===== //
-void MacArr::add(const uint8_t* mac) {
-    mac_t* a = nullptr;
-
-    // Empty list
-    if (empty()) {
-        a = &list.data[0];
-    }
-    // Insert at end
-    else if (memcmp(list.data[list.size-1].mac, mac, 6) < 0) {
-        a = &list.data[list.size];
-    } else {
-        // Insert somewhere at start or in beween (insertion sort)
-        unsigned int i = 0;
-
-        while (i<list.size && memcmp(list.data[i].mac, mac, 6) < 0) {
-            ++i;
-        }
-
-        a = &list.data[i];
-
-        // Copy/move everything
-        for (int j = list.size; j>i; --j) {
-            mac_t* c = &list.data[j];
-            mac_t* p = &list.data[j-1];
-            memcpy(c->mac, p->mac, 6);
-        }
-    }
-
-    memcpy(a->mac, mac, 6);
-    ++list.size;
-}
 
 int MacArr::search(const uint8_t* mac) const {
     // null-pointer or empty list
@@ -78,18 +60,31 @@ int MacArr::bin_search(const uint8_t* mac, int low_end, int up_end) const {
 }
 
 // ===== PUBLIC ===== //
-MacArr::MacArr() {}
+
+MacArr::MacArr(int size) {
+    if (size > 0) {
+        debuglnF("[MacArr] size constructor");
+        list.data = new mac_t[size];
+        list.max  = size;
+        list.h    = 0;
+    }
+}
 
 MacArr::MacArr(const MacArr& ml) {
     if (ml.list.size > 0) {
+        debuglnF("[MacArr] copy constructor");
+
         list.data = new mac_t[ml.list.size];
 
         memcpy(list.data, ml.list.data, sizeof(mac_t)*ml.list.size);
         list.size = ml.list.size;
+        list.max  = ml.list.size;
     }
 }
 
 MacArr::MacArr(MacArr&& ml) {
+    debuglnF("[MacArr] move constructor");
+
     list = ml.list;
 
     ml.list.data = nullptr;
@@ -97,14 +92,18 @@ MacArr::MacArr(MacArr&& ml) {
 }
 
 MacArr::MacArr(const String& input, String delimiter) {
+    debuglnF("[MacArr] parse constructor");
     parse(input, delimiter);
 }
 
 MacArr::~MacArr() {
+    debuglnF("[MacArr] destructor");
     clear();
 }
 
 MacArr& MacArr::operator=(const MacArr& ml) {
+    debuglnF("[MacArr] copy assignment");
+
     if (this != &ml) {
         clear();
 
@@ -113,6 +112,7 @@ MacArr& MacArr::operator=(const MacArr& ml) {
 
             memcpy(list.data, ml.list.data, sizeof(mac_t)*ml.list.size);
             list.size = ml.list.size;
+            list.max  = ml.list.size;
         }
     }
 
@@ -120,6 +120,8 @@ MacArr& MacArr::operator=(const MacArr& ml) {
 }
 
 MacArr& MacArr::operator=(MacArr&& ml) {
+    debuglnF("[MacArr] move assignment");
+
     if (this != &ml) {
         clear();
 
@@ -132,7 +134,47 @@ MacArr& MacArr::operator=(MacArr&& ml) {
     return *this;
 }
 
+MacArr& MacArr::operator+=(const MacArr& ml) {
+    debuglnF("[MacArr] += operator begin");
+
+    if ((this != &ml) && (ml.list.size > 0)) {
+        // New list without data and max set to current size
+        mac_list_t new_list { nullptr, list.size, 0, 0 };
+
+        // Count new data
+        for (unsigned int i = 0; i<ml.list.size; ++i) {
+            if (!contains(ml.list.data[i].mac)) {
+                ++new_list.max;
+            }
+        }
+
+        // Create new buffer
+        new_list.data = new mac_t[new_list.max];
+
+        // Copy current data
+        memcpy(new_list.data, list.data, sizeof(mac_t)*list.size);
+        new_list.size = list.size;
+
+        // Delete current data
+        clear();
+
+        // Replace list with new list
+        list = new_list;
+
+        // Copy new data
+        for (unsigned int i = 0; i<ml.list.size; ++i) {
+            add(ml.list.data[i].mac);
+        }
+    }
+
+    debuglnF("[MacArr] += operator end");
+
+    return *this;
+}
+
 void MacArr::clear() {
+    debuglnF("[MacArr] clear");
+
     if (list.data) {
         delete[] list.data;
         list.data = nullptr;
@@ -142,6 +184,7 @@ void MacArr::clear() {
 }
 
 void MacArr::parse(const String& input, String delimiter) {
+    debuglnF("[MacArr] parse");
     clear();
 
     SortedStringList str_list(input, delimiter);
@@ -178,15 +221,69 @@ void MacArr::parse(const String& input, String delimiter) {
     }
 }
 
+bool MacArr::add(const uint8_t* mac) {
+    debugF("[MacArr] add...");
+
+    if (full()) {
+        debuglnF("full");
+        return false;
+    }
+
+    mac_t* a = nullptr;
+
+    // Empty list
+    if (empty()) {
+        a = &list.data[0];
+    }
+    // Insert at end
+    else if (memcmp(list.data[list.size-1].mac, mac, 6) < 0) {
+        a = &list.data[list.size];
+    }
+    // Insert somewhere at start or in beween (insertion sort)
+    else {
+        unsigned int i = 0;
+        int res        = memcmp(list.data[i].mac, mac, 6);
+
+        while (i<list.size && res < 0) {
+            ++i;
+            res = memcmp(list.data[i].mac, mac, 6);
+        }
+
+        // Ignore duplicates
+        if (res == 0) {
+            debuglnF("duplicate");
+            return false;
+        }
+
+        a = &list.data[i];
+
+        // Copy/move everything
+        for (int j = list.size; j>i; --j) {
+            mac_t* c = &list.data[j];
+            mac_t* p = &list.data[j-1];
+            memcpy(c->mac, p->mac, 6);
+        }
+    }
+
+    memcpy(a->mac, mac, 6);
+    ++list.size;
+
+    debuglnF("OK");
+    return true;
+}
+
 bool MacArr::contains(const uint8_t* mac) const {
     return search(mac) >= 0;
 }
 
 void MacArr::begin() {
+    debuglnF("[MacArr] begin");
     list.h = 0;
 }
 
 const uint8_t* MacArr::iterate() {
+    debuglnF("[MacArr] iterate");
+
     if (empty()) return nullptr;
     if (!available()) begin();
 
@@ -199,6 +296,10 @@ bool MacArr::available() const {
 
 int MacArr::size() const {
     return list.size;
+}
+
+bool MacArr::full() const {
+    return list.size >= list.max;
 }
 
 bool MacArr::empty() const {

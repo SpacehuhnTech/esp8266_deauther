@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define VERSION "Version 3.0.0 dev 2020-04-02#8"
+#define VERSION "Version 3.0.0 dev 2020-04-03#1"
 
 // ===== Serial Communication ===== //
 #define ENABLE_DEBUG      // Enable serial logging
@@ -36,5 +36,6 @@
 
 // ===== Debug ===== //
 // #define DEBUG_SYSH
-// #define DEBUG_TARGET_LIST
+// #define DEBUG_TARGET_ARR
 // #define DEBUG_STRING_LIST
+// #define DEBUG_MAC_ARR

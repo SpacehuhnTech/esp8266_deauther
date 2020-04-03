@@ -11,13 +11,13 @@
 #ifdef DEBUG_STRING_LIST
 #include "debug.h"
 #include "strh.h"
-#else // ifdef DEBUG_TARGET_LIST
+#else // ifdef DEBUG_STRING_LIST
 #define debug(...) 0
 #define debugln(...) 0
 #define debugf(...) 0
 #define debugF(...) 0
 #define debuglnF(...) 0
-#endif // ifdef DEBUG_TARGET_LIST
+#endif // ifdef DEBUG_STRING_LIST
 
 // ========== StringList ========== //
 
