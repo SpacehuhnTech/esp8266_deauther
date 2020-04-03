@@ -17,6 +17,10 @@ Station::Station(const uint8_t* mac, AccessPoint* ap) {
     this->ap = ap;
 }
 
+bool Station::printed() const {
+    return printed_flag;
+}
+
 const uint8_t* Station::getMAC() const {
     return mac;
 }
@@ -73,7 +77,12 @@ void Station::setNext(Station* next) {
 }
 
 bool Station::addProbe(const char* ssid, uint8_t len) {
-    return probes.push(ssid, len);
+    if (probes.push(ssid, len)) {
+        printed_flag = false;
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void Station::newPkt(int8_t rssi) {
@@ -127,6 +136,8 @@ void Station::print(int id, const result_filter_t* f) {
     }
 
     debugln();
+
+    printed_flag = true;
 }
 
 // ========== StationList ========== //
@@ -289,4 +300,15 @@ void StationList::print(const result_filter_t* filter) {
     }
 
     printFooter();
+}
+
+void StationList::printBuffer() {
+    begin();
+
+    Station* tmp;
+
+    while (available()) {
+        tmp = iterate();
+        if (!tmp->printed()) tmp->print();
+    }
 }

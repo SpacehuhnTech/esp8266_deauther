@@ -15,6 +15,7 @@ typedef struct scan_data_t {
     // Temp
     unsigned long start_time;
     unsigned long ch_update_time;
+    unsigned long output_time;
 } st_data_t;
 
 st_data_t st_data;
@@ -47,7 +48,7 @@ void new_transmission(const uint8_t* sender, const uint8_t* receiver, int8_t rss
     if (ap) {
         Station* st = new_pkt(sender, rssi);
         st->setAccessPoint(ap);
-        if (st->getPackets() == 1) st->print();
+        // if (st->getPackets() == 1) st->print();
         return;
     }
 
@@ -56,7 +57,7 @@ void new_transmission(const uint8_t* sender, const uint8_t* receiver, int8_t rss
     if (ap) {
         Station* st = new_pkt(receiver, rssi);
         st->setAccessPoint(ap);
-        if (st->getPackets() == 1) st->print();
+        // if (st->getPackets() == 1) st->print();
         return;
     }
 }
@@ -66,7 +67,8 @@ void new_probe(const uint8_t* sender, const char* ssid, uint8_t len, int rssi) {
     Station* st = new_pkt(sender, rssi);
 
     if (st) {
-        if (st->addProbe(ssid, len)) st->print();
+        // if (st->addProbe(ssid, len)) st->print();
+        st->addProbe(ssid, len);
     }
 }
 
@@ -123,6 +125,7 @@ void startST(const st_scan_settings_t& settings) {
     st_data.settings       = settings;
     st_data.start_time     = current_time;
     st_data.ch_update_time = current_time;
+    st_data.output_time    = current_time;
 
     { // Auto correct
         if (sysh::count_ch(st_data.settings.channels) <= 1) st_data.settings.ch_time = 0;
@@ -174,14 +177,17 @@ void update_st_scan() {
     if (st_data.enabled) {
         unsigned long current_time = millis();
 
-        if (st_list.full()) {
-            debuglnF("Station list full");
-            stopST();
-        } else if ((st_data.settings.timeout > 0) && (current_time - st_data.start_time >= st_data.settings.timeout)) {
-            stopST();
-        } else if ((st_data.settings.ch_time > 0) && (current_time - st_data.ch_update_time >= st_data.settings.ch_time)) {
+        if ((st_data.settings.ch_time > 0) && (current_time - st_data.ch_update_time >= st_data.settings.ch_time)) {
             sysh::set_next_ch(st_data.settings.channels);
             st_data.ch_update_time = current_time;
+        } else if (current_time - st_data.output_time >= 1000) {
+            st_data.output_time = current_time;
+            st_list.printBuffer();
+        } else if ((st_data.settings.timeout > 0) && (current_time - st_data.start_time >= st_data.settings.timeout)) {
+            stopST();
+        } else if (st_list.full()) {
+            debuglnF("Station list full");
+            stopST();
         }
     }
 }

@@ -22,6 +22,7 @@ class Station {
         uint8_t mac[6];
         AccessPoint* ap;
 
+        bool printed_flag { false };
         uint32_t pkts           { 0 };
         int8_t rssi             { -127 };
         SortedStringList probes { MAX_PROBES };
@@ -30,6 +31,7 @@ class Station {
     public:
         Station(const uint8_t* mac, AccessPoint* ap);
 
+        bool printed() const;
         const uint8_t* getMAC() const;
         String getMACString() const;
         const AccessPoint* getAccessPoint() const;
@@ -85,4 +87,5 @@ class StationList {
         void printHeader();
         void printFooter();
         void print(const result_filter_t* filter = nullptr);
+        void printBuffer();
 };
