@@ -176,7 +176,7 @@ void update_auth_scan() {
             debug(' ');
             debug(strh::right(2, String(tmp.ch)));
             debug(' ');
-            debug(strh::left(8, vendor::search(tmp.mac)));
+            debug(strh::left(8, vendor::getName(tmp.mac)));
             debug(' ');
             debug(strh::left(17, alias::get(tmp.mac)));
             debug(' ');

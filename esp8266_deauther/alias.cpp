@@ -192,7 +192,7 @@ namespace alias {
             debug(' ');
             debug(strh::left(17, strh::mac(list.data[i].mac)));
             debug(' ');
-            debug(strh::left(8, vendor::search(list.data[i].mac)));
+            debug(strh::left(8, vendor::getName(list.data[i].mac)));
             debugln();
         }
         debuglnF("===========================================");

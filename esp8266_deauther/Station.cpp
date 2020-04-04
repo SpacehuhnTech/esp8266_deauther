@@ -57,7 +57,7 @@ String Station::getBSSIDString() const {
 }
 
 String Station::getVendor() const {
-    return vendor::search(mac);
+    return vendor::getName(mac);
 }
 
 SortedStringList& Station::getProbes() {

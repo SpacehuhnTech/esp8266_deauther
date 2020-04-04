@@ -57,7 +57,7 @@ namespace vendor {
     }
 
     // ===== Public ===== //
-    String search(const uint8_t* mac) {
+    String getName(const uint8_t* mac) {
         if (!mac) return String{};
 
         int pos_mac = bin_search(mac, 0, sizeof(vendor_macs) / 5 - 1);
@@ -90,8 +90,14 @@ namespace vendor {
         for (i = 3; i < 6; ++i) mac[i] = random(256);
     }
 
-    void search(String name) {
+    void getMAC(String name, bool substring, search_cb_f cb) {
+        if (!cb) return;
+
+        name.trim();
         name = name.substring(0, 8);
+        name.toLowerCase();
+
+        if (name.length() < 2) return;
 
         int len = sizeof(vendor_macs);
 
@@ -100,8 +106,6 @@ namespace vendor {
         char    vendor[9];
         vendor[8] = '\0';
 
-        debuglnF("searching");
-
         for (int i = 0; i<len; i += 5) {
             pos_name = pgm_read_byte_near(vendor_macs + i + 3) | pgm_read_byte_near(vendor_macs + i + 4) << 8;
 
@@ -109,15 +113,16 @@ namespace vendor {
                 vendor[j] = (char)pgm_read_byte_near(vendor_names + pos_name*8 + j);
             }
 
-            if (String(vendor).equalsIgnoreCase(name)) {
+            String vendor_str { vendor };
+            vendor_str.toLowerCase();
+
+            if (substring ? (vendor_str.indexOf(name)>=0) : (name == vendor_str)) {
                 for (int j = 0; j < 3; ++j) {
                     prefix[j] = pgm_read_byte_near(vendor_macs + i + j);
                 }
 
-                debugln(strh::mac(prefix));
+                cb(prefix, vendor);
             }
         }
-
-        debuglnF("done");
     }
 }

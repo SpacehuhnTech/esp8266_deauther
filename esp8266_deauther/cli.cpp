@@ -1231,18 +1231,30 @@ namespace cli {
             Command cmd(c);
 
             String input { cmd.getArg("mac").getValue() };
+            bool substring { cmd.getArg("similar").isSet() };
 
-            if (mac::valid(input.c_str(), input.length())) {
-                uint8_t mac[6];
-                mac::fromStr(input.c_str(), mac);
-                debugln(vendor::search(mac));
+            debuglnF("MAC      Vendor");
+            debuglnF("=================");
+
+            if (mac::valid(input.c_str(), input.length(), 3)) {
+                uint8_t mac[3];
+                mac::fromStr(input.c_str(), mac, 3);
+                debug(' ');
+                debugln(vendor::getName(mac));
             } else {
-                vendor::search(input);
+                vendor::getMAC(input, substring, [](const uint8_t* mac, const char* name) {
+                    debug(strh::mac(mac, 3));
+                    debug(' ');
+                    debugln(name);
+                });
             }
+            debuglnF("=================");
         });
         cmd_vendor.addPosArg("mac");
+        cmd_vendor.addFlagArg("s/imilar");
         cmd_vendor.setDescription("  Vendor (manufacturer) lookup\r\n"
-                                  "  -mac: MAC address(es)");
+                                  "  -mac: MAC address(es)\r\n"
+                                  "  -s: list similar names");
     }
 
     void parse(const char* input) {

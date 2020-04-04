@@ -92,7 +92,7 @@ bool AccessPoint::isHidden() const {
 }
 
 String AccessPoint::getVendor() const {
-    return vendor::search(bssid);
+    return vendor::getName(bssid);
 }
 
 AccessPoint* AccessPoint::getNext() {

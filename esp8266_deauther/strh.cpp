@@ -58,14 +58,14 @@ namespace strh {
         return str;
     }
 
-    String mac(const uint8_t* b) {
+    String mac(const uint8_t* b, unsigned int len) {
+        len = len - (len % 3);
         String str;
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < len; i++) {
+            if (i>0) str += ':';
             if (b[i] < 0x10) str += '0';
             str += String(b[i], HEX);
-
-            if (i < 5) str += ':';
         }
 
         return str;
