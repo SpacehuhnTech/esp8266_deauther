@@ -144,14 +144,15 @@ void startBeacon(const beacon_attack_settings_t& settings) {
 
     unsigned long current_time = millis();
 
-    beacon_data.enabled         = true;
-    beacon_data.settings        = settings;
+    beacon_data.enabled  = true;
+    beacon_data.settings = settings;
+    if (beacon_data.settings.pkt_rate == 0) beacon_data.settings.pkt_rate = 1;
     beacon_data.start_time      = current_time;
     beacon_data.output_time     = current_time;
     beacon_data.pkts_sent       = 0;
     beacon_data.pkts_per_second = 0;
     beacon_data.pkt_time        = current_time;
-    beacon_data.pkt_interval    = 1000/(settings.pkt_rate > 0 ? settings.pkt_rate : 1);
+    beacon_data.pkt_interval    = 1000/beacon_data.settings.pkt_rate;
 
     { // Output
         debuglnF("[ ===== Beacon Attack ===== ]");

@@ -40,8 +40,10 @@ typedef struct deauth_attack_settings_t {
 
 typedef struct probe_attack_settings_t {
     SortedStringList ssids;
+    uint8_t          sender[6];
     uint8_t          receiver[6];
     uint16_t         channels;
+    unsigned long    pkt_rate;
     unsigned long    timeout;
 } probe_attack_settings_t;
 

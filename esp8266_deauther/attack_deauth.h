@@ -70,13 +70,13 @@ void startDeauth(const deauth_attack_settings_t& settings) {
     deauth_data.enabled = true;
 
     deauth_data.settings = settings;
-
+    if (deauth_data.settings.pkt_rate == 0) deauth_data.settings.pkt_rate = 1;
     deauth_data.start_time      = current_time;
     deauth_data.output_time     = current_time;
     deauth_data.pkts_sent       = 0;
     deauth_data.pkts_per_second = 0;
     deauth_data.pkt_time        = current_time;
-    deauth_data.pkt_interval    = (1000/deauth_data.settings.pkt_rate) * (settings.deauth+settings.disassoc);
+    deauth_data.pkt_interval    = 1000/(deauth_data.settings.pkt_rate * (settings.deauth+settings.disassoc));
 
     { // Output
         debuglnF("[ ===== Deauth Attack ===== ]");

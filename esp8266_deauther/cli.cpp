@@ -773,42 +773,38 @@ namespace cli {
             beacon_attack_settings_t beacon_settings;
 
             { // SSIDs
-                String ssids = cmd.getArg("ssid").getValue();
+                String ssids { cmd.getArg("ssid").getValue() };
                 beacon_settings.ssids.parse(ssids);
             }
 
             { // BSSID
-                String bssid_str = cmd.getArg("from").getValue();
-                uint8_t bssid[6];
-                parse_mac(bssid_str, bssid);
-                memcpy(beacon_settings.bssid, bssid, 6);
+                String bssid_str { cmd.getArg("from").getValue() };
+                parse_mac(bssid_str, beacon_settings.bssid);
             }
 
             { // Receiver
-                String receiver_str = cmd.getArg("to").getValue();
-                uint8_t receiver[6];
-                parse_mac(receiver_str, receiver);
-                memcpy(beacon_settings.receiver, receiver, 6);
+                String receiver_str { cmd.getArg("to").getValue() };
+                parse_mac(receiver_str, beacon_settings.receiver);
             }
 
             { // Encryption
-                String enc_str = cmd.getArg("enc").getValue();
+                String enc_str { cmd.getArg("enc").getValue() };
                 if (enc_str == "wpa2") beacon_settings.enc = ENCRYPTION_WPA2;
                 else beacon_settings.enc = ENCRYPTION_OPEN;
             }
 
             { // Channels
-                String ch_str            = cmd.getArg("ch").getValue();
+                String ch_str { cmd.getArg("ch").getValue() };
                 beacon_settings.channels = parse_channels(ch_str);
             }
 
             { // Packet rate
-                String pkt_rate_str      = cmd.getArg("r").getValue();
+                String pkt_rate_str { cmd.getArg("r").getValue() };
                 beacon_settings.pkt_rate = pkt_rate_str.toInt();
             }
 
             { // Time
-                String time_str         = cmd.getArg("t").getValue();
+                String time_str { cmd.getArg("t").getValue() };
                 beacon_settings.timeout = parse_time(time_str, 1000);
             }
 
@@ -828,9 +824,9 @@ namespace cli {
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("r/ate", "10");
-        cmd_beacon.addArg("t/ime/out", "5min");
         cmd_beacon.addFlagArg("scan,auth,mon/itor");
         cmd_beacon.addFlagArg("save");
+        cmd_beacon.addArg("t/ime/out", "5min");
         cmd_beacon.setDescription(
             "  Send WiFi network advertisement beacons\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
@@ -839,9 +835,9 @@ namespace cli {
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
             "  -r:    packets per second per SSID (default=10)\r\n"
-            "  -t:    attack timeout (default=5min)\r\n"
             "  -mon:  scan for authentications\r\n"
-            "  -save: save probe requests from auth. scan"
+            "  -save: save probe requests from auth. scan\r\n"
+            "  -t:    attack timeout (default=5min)"
             );
 
         Command cmd_deauth = cli.addCommand("deauth", [](cmd* c) {
@@ -850,21 +846,24 @@ namespace cli {
             deauth_attack_settings_t deauth_settings;
 
             { // Read Access Point MACs
-                String ap_str         = cmd.getArg("ap").getValue();
+                String ap_str { cmd.getArg("ap").getValue() };
                 SortedStringList list = parse_int_list(ap_str);
 
                 TargetArr ap_targets { list.size() };
 
                 list.begin();
 
+                int id;
+                AccessPoint* ap;
+
                 while (list.available()) {
-                    int id          = list.iterate().toInt();
-                    AccessPoint* ap = scan::getAccessPoints().get(id);
+                    id = list.iterate().toInt();
+                    ap = scan::getAccessPoints().get(id);
 
                     if (ap) {
-                        const uint8_t* sender   = ap->getBSSID();
-                        const uint8_t* receiver =  mac::BROADCAST;
-                        uint16_t channels       = 1 << (ap->getChannel()-1);
+                        const uint8_t* sender { ap->getBSSID() };
+                        const uint8_t* receiver { mac::BROADCAST };
+                        uint16_t channels = 1 << (ap->getChannel()-1);
 
                         ap_targets.add(sender, receiver, channels);
                     }
@@ -874,21 +873,24 @@ namespace cli {
             }
 
             { // Read Station MACs
-                String st_str         = cmd.getArg("st").getValue();
+                String st_str { cmd.getArg("st").getValue() };
                 SortedStringList list = parse_int_list(st_str);
 
                 TargetArr st_targets { list.size() };
 
                 list.begin();
+                int id;
+                Station* st;
 
                 while (list.available()) {
-                    int id      = list.iterate().toInt();
-                    Station* st = scan::getStations().get(id);
+                    id = list.iterate().toInt();
+                    st = scan::getStations().get(id);
+
                     if (st) {
                         if (st->getAccessPoint()) {
-                            const uint8_t* sender   = st->getAccessPoint()->getBSSID();
-                            const uint8_t* receiver =  st->getMAC();
-                            uint16_t channels       = 1 << (st->getAccessPoint()->getChannel()-1);
+                            const uint8_t* sender   { st->getAccessPoint()->getBSSID() };
+                            const uint8_t* receiver { st->getMAC() };
+                            uint16_t channels = 1 << (st->getAccessPoint()->getChannel()-1);
 
                             st_targets.add(sender, receiver, channels);
                         } else {
@@ -903,7 +905,7 @@ namespace cli {
             }
 
             { // Read custom MACs
-                String mac_str = cmd.getArg("mac").getValue();
+                String mac_str { cmd.getArg("mac").getValue() };
                 StringList list { mac_str };
 
                 TargetArr manual_targets { list.size() };
@@ -916,9 +918,9 @@ namespace cli {
 
                     if (target_data.size() != 3) continue;
 
-                    String sender_mac_str   = target_data.iterate();
-                    String receiver_mac_str = target_data.iterate();
-                    String ch_str           = target_data.iterate();
+                    String sender_mac_str   { target_data.iterate() };
+                    String receiver_mac_str { target_data.iterate() };
+                    String ch_str           { target_data.iterate() };
 
                     uint8_t sender[6];
                     uint8_t receiver[6];
@@ -934,7 +936,7 @@ namespace cli {
             }
 
             { // Time
-                String time_str         = cmd.getArg("t").getValue();
+                String time_str { cmd.getArg("t").getValue() };
                 deauth_settings.timeout = parse_time(time_str, 1000);
             }
 
@@ -947,7 +949,7 @@ namespace cli {
             }
 
             { // Mode
-                String mode = cmd.getArg("m").getValue();
+                String mode { cmd.getArg("m").getValue() };
 
                 if (mode == "deauth+disassoc") {
                     deauth_settings.deauth   = true;
@@ -987,38 +989,49 @@ namespace cli {
             probe_attack_settings_t probe_settings;
 
             { // SSIDs
-                String ssids = cmd.getArg("ssid").getValue();
+                String ssids { cmd.getArg("ssid").getValue() };
                 probe_settings.ssids.parse(ssids);
             }
 
+            { // Sender
+                String sender { cmd.getArg("from").getValue() };
+                parse_mac(sender, probe_settings.sender);
+            }
+
             { // Receiver
-                String receiver_str = cmd.getArg("to").getValue();
-                uint8_t receiver[6];
-                parse_mac(receiver_str, receiver);
-                memcpy(probe_settings.receiver, receiver, 6);
+                String receiver_str { cmd.getArg("to").getValue() };
+                parse_mac(receiver_str, probe_settings.receiver);
             }
 
             { // Channel
-                String ch_str           = cmd.getArg("ch").getValue();
+                String ch_str {  cmd.getArg("ch").getValue() };
                 probe_settings.channels = parse_channels(ch_str);
             }
 
+            { // Packet rate
+                probe_settings.pkt_rate = cmd.getArg("r").getValue().toInt();
+            }
+
             { // Time
-                String time_str        = cmd.getArg("t").getValue();
+                String time_str { cmd.getArg("t").getValue() };
                 probe_settings.timeout = parse_time(time_str, 1000);
             }
 
             attack::startProbe(probe_settings);
         });
         cmd_probe.addPosArg("ssid/s");
+        cmd_probe.addArg("sender,from", "random");
         cmd_probe.addArg("receiver,to", "broadcast");
         cmd_probe.addArg("ch/annel/s", "1");
+        cmd_probe.addArg("r/ate", "10");
         cmd_probe.addArg("t/ime/out", "5min");
         cmd_probe.setDescription(
             "  Send probe requests for WiFi networks\r\n"
             "  -ssid: network names (SSIDs) for example: \"test A\",\"test B\"\r\n"
+            "  -from: sender MAC address (default=random)\r\n"
             "  -to:   receiver MAC address (default=broadcast)\r\n"
             "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
+            "  -r:    packets per second per SSID (default=10)\r\n"
             "  -t:    attack timeout (default=5min)"
             );
 

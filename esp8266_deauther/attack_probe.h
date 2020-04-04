@@ -102,28 +102,33 @@ void startProbe(const probe_attack_settings_t& settings) {
 
     probe_data.enabled  = true;
     probe_data.settings = settings;
-
+    if (probe_data.settings.pkt_rate == 0) probe_data.settings.pkt_rate = 1;
     probe_data.start_time      = current_time;
     probe_data.output_time     = current_time;
     probe_data.pkts_sent       = 0;
     probe_data.pkts_per_second = 0;
     probe_data.pkt_time        = current_time;
-    probe_data.pkt_interval    = 100;
+    probe_data.pkt_interval    = 1000/probe_data.settings.pkt_rate;
 
     { // Output
         debuglnF("[ ===== Probe Attack ===== ]");
+        debugF("Sender:             ");
+        debugln(strh::mac(probe_data.settings.sender));
 
-        debugF("Receiver: ");
+        debugF("Receiver:           ");
         debugln(strh::mac(probe_data.settings.receiver));
 
-        debugF("Channels: ");
+        debugF("Channels:           ");
         debugln(strh::channels(probe_data.settings.channels));
 
-        debugF("Timeout:  ");
+        debugF("Packets/s per SSID: ");
+        debugln(probe_data.settings.pkt_rate);
+
+        debugF("Timeout:            ");
         if (probe_data.settings.timeout > 0) debugln(strh::time(probe_data.settings.timeout));
         else debuglnF("-");
 
-        debugF("SSID:     ");
+        debugF("SSID:               ");
         debugln(probe_data.settings.ssids.size());
 
         // Print SSID List
@@ -167,16 +172,13 @@ void update_probe_attack() {
             probe_data.pkt_time = millis();
             probe_data.settings.ssids.begin();
 
-            uint8_t sender[6];
-            vendor::getRandomMac(sender);
-
             uint8_t ch = sysh::next_ch(probe_data.settings.channels);
 
             for (int i = 0; i<probe_data.settings.ssids.size(); ++i) {
                 String ssid = probe_data.settings.ssids.iterate();
 
                 probe_data.pkts_per_second += send_probe(ch,
-                                                         sender,
+                                                         probe_data.settings.sender,
                                                          probe_data.settings.receiver,
                                                          ssid.c_str());
 
