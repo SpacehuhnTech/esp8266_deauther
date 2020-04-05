@@ -1259,6 +1259,7 @@ namespace cli {
             if (mac::valid(input.c_str(), input.length(), 3)) {
                 uint8_t mac[3];
                 mac::fromStr(input.c_str(), mac, 3);
+                debug(strh::mac(mac, 3));
                 debug(' ');
                 debugln(vendor::getName(mac));
             } else {
