@@ -1038,17 +1038,17 @@ namespace cli {
         Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
             Command cmd(c);
 
-            String mode = cmd.getArg("mode").getValue();
+            String mode { cmd.getArg("mode").getValue() };
+
+            String name { cmd.getArg("name").getValue() };
+            String mac_str { cmd.getArg("mac").getValue() };
 
             if (mode == "list") {
                 alias::print();
                 return;
             }
 
-            String name    = cmd.getArg("name").getValue();
-            String mac_str = cmd.getArg("mac").getValue();
-
-            if (mode == "add") {
+            else if (mode == "add") {
                 // No valid mac? Try switching arg values!
                 if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
                     String tmp = name;
@@ -1071,7 +1071,7 @@ namespace cli {
                 return;
             }
 
-            if (mode == "remove") {
+            else if (mode == "remove") {
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 parse_mac(name, mac);
 
@@ -1086,6 +1086,13 @@ namespace cli {
                     debugln(mac_str);
                 }
                 return;
+            }
+
+            else {
+                debugF("Unknown mode \"");
+                debug(mode);
+                debuglnF("\".");
+                debuglnF("Try \"alias list\", \"alias add [...]\" or \"alias remove [...]\".");
             }
         });
         cmd_alias.addPosArg("m/ode", "list");

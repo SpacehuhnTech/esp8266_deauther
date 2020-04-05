@@ -182,7 +182,7 @@ namespace alias {
         debugln(list.size);
         debuglnF("------------------");
 
-        debugF(" ID Name         MAC-Address       Vendor");
+        debuglnF(" ID Name         MAC-Address       Vendor");
         debuglnF("===========================================");
 
         for (int i = 0; i<list.size; ++i) {
