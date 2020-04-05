@@ -7,7 +7,7 @@
 #pragma once
 
 // ========== PROBE PACKET ========== //
-uint8_t probe_pkt[] = {
+const uint8_t probe_pkt[] = {
     /*  0 - 1  */ 0x40, 0x00,                         // Type: Probe Request
     /*  2 - 3  */ 0x00, 0x00,                         // Duration: 0 microseconds
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Destination: Broadcast

