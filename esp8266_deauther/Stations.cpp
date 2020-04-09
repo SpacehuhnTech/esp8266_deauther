@@ -254,10 +254,9 @@ void Stations::deselect(int num) {
 void Stations::remove(int num) {
     if (!check(num)) return;
 
+    internal_remove(num);
     prnt(ST_REMOVED_STATION);
     prntln(num);
-    
-    internal_remove(num);
     changed = true;
 }
 
