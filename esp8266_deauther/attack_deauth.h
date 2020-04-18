@@ -46,7 +46,7 @@ bool send_deauth(uint8_t ch, const uint8_t* sender, const uint8_t* receiver) {
     memcpy(&pkt[4], receiver, 6);
     memcpy(&pkt[10], sender, 6);
     memcpy(&pkt[16], sender, 6);
-    memcpy(&pkt[21], &deauth_pkt[21], 4);
+    memcpy(&pkt[22], &deauth_pkt[22], 4);
 
     return sysh::send(ch, pkt, 26);
 }
