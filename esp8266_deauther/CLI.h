@@ -30,7 +30,9 @@ extern DisplayUI displayUI;
 extern uint32_t  currentTime;
 extern uint32_t  autosaveTime;
 
-extern String macToStr(uint8_t* mac);
+extern String macToStr(const uint8_t* mac);
+extern bool strToMac(String macStr, uint8_t* mac);
+extern bool strToIP(String ipStr, uint8_t* ip);
 extern void strToColor(String str, uint8_t* buf);
 extern void readFileToSerial(String path, bool showLineNum);
 extern bool readFile(String path, String& buf);
@@ -69,8 +71,8 @@ class CLI {
     private:
         bool enabled = false;
 
-        SimpleList<String>* list;
-        SimpleList<String>* queue;
+        SimpleList<String>*list;
+        SimpleList<String>*queue;
 
         bool delayed            = false;
         uint32_t delayTime      = 0;

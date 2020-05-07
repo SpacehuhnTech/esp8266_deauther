@@ -15,7 +15,7 @@ extern Names names;
 extern String searchVendor(uint8_t* mac);
 extern String leftRight(String a, String b, int len);
 extern String fixUtf8(String str);
-extern String bytesToStr(uint8_t* b, uint32_t size);
+extern String bytesToStr(const uint8_t* b, uint32_t size);
 
 struct AP {
     uint8_t id;

@@ -23,7 +23,7 @@ function draw(){
 			}else if(typeof settingsJson[key] == "number"){
 				html += "<input type='number' name='"+key+"' value="+settingsJson[key]+" onchange='save(\""+key+"\",parseInt(this.value))'>";
 			}else if(typeof settingsJson[key] == "string"){
-				html += "<input type='text' name='"+key+"' value="+settingsJson[key]+" "+(key=="version"?"readonly":"")+" onchange='save(\""+key+"\",this.value)'>";
+				html += "<input type='text' name='"+key+"' value='"+settingsJson[key].toString()+"' "+(key=="version"?"readonly":"")+" onchange='save(\""+key+"\",this.value)'>";
 			}
 			
 			html += "</div>"

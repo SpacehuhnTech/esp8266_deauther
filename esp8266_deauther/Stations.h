@@ -20,7 +20,7 @@ extern String searchVendor(uint8_t* mac);
 extern bool macMulticast(uint8_t* mac);
 extern bool macValid(uint8_t* mac);
 extern bool macBroadcast(uint8_t* mac);
-extern String bytesToStr(uint8_t* b, uint32_t size);
+extern String bytesToStr(const uint8_t* b, uint32_t size);
 
 class Stations {
     public:

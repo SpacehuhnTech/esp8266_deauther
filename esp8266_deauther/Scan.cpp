@@ -126,7 +126,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
     else if (mode == SCAN_MODE_OFF) {
         wifi_promiscuous_enable(false);
 
-        if (settings.getWebInterface()) resumeAP();
+        if (settings.getWebSettings().enabled) resumeAP();
         prntln(SC_STOPPED);
         save(true);
 
@@ -181,7 +181,7 @@ void Scan::update() {
         }
 
         // channel hopping
-        if (channelHop && (currentTime - snifferChannelTime > settings.getChTime())) {
+        if (channelHop && (currentTime - snifferChannelTime > settings.getSnifferSettings().channel_time)) {
             snifferChannelTime = currentTime;
 
             if (scanMode == SCAN_MODE_STATIONS) nextChannel();  // go to next channel an AP is on
@@ -410,23 +410,23 @@ uint32_t Scan::getPackets(int i) {
 
 String Scan::getMode() {
     switch (scanMode) {
-    case SCAN_MODE_OFF:
-        return str(SC_MODE_OFF);
+        case SCAN_MODE_OFF:
+            return str(SC_MODE_OFF);
 
-    case SCAN_MODE_APS:
-        return str(SC_MODE_AP);
+        case SCAN_MODE_APS:
+            return str(SC_MODE_AP);
 
-    case SCAN_MODE_STATIONS:
-        return str(SC_MODE_ST);
+        case SCAN_MODE_STATIONS:
+            return str(SC_MODE_ST);
 
-    case SCAN_MODE_ALL:
-        return str(SC_MODE_ALL);
+        case SCAN_MODE_ALL:
+            return str(SC_MODE_ALL);
 
-    case SCAN_MODE_SNIFFER:
-        return str(SC_MODE_SNIFFER);
+        case SCAN_MODE_SNIFFER:
+            return str(SC_MODE_SNIFFER);
 
-    default:
-        return String();
+        default:
+            return String();
     }
 }
 
