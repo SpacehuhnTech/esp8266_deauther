@@ -1,16 +1,18 @@
-var settingsJson = {};
+let settingsJson = {};
 
-function load(){
-	getFile("settings.json",function(res){
+const load = () => {
+	getFile("settings.json", res => {
 		settingsJson = JSON.parse(res);
 		draw();
 	});
 }
 
-function draw(){
-	var html = "";
+const draw = () => {
+	let html = "";
+
 	for (var key in settingsJson) {
 		key = esc(key);
+
 		if (settingsJson.hasOwnProperty(key)) {
 			html += "<div class='row'>"
 				+ "<div class='col-6'>"
@@ -39,13 +41,11 @@ function draw(){
 	getE("settingsList").innerHTML = html;
 }
 
-function save(key, value){
-	if(key){
+const save = (key, value) => {
+	if (key) {
 		settingsJson[key] = value;
-		getFile("run?cmd=set "+key+" \""+value+"\"");
-	}else{
-		getFile("run?cmd=save settings",function(res){
-			load();
-		});
+		getFile(`run?cmd=set ${key} "${value}"`);
+	} else {
+		getFile("run?cmd=save settings", load);
 	}
 }
