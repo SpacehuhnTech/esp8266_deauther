@@ -15,6 +15,10 @@ Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">pa
 Also available: <a href="https://www.tindie.com/products/Spacehuhn/spacehuhn-stickers/">Stickers</a></b>!
 </p>
 
+# [👉 Wiki](https://github.com/SpacehuhnTech/esp8266_deauther/wiki)
+# [👉 Binaries](https://github.com/SpacehuhnTech/esp8266_deauther/releases)
+# [👉 Development Boards](https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Supported-Devices)
+
 ## What is New
 [Here is a quick video about what is new](https://youtu.be/6oRmm3xfp6U)  
 Version 2.0:
