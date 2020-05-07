@@ -1,111 +1,105 @@
-let ssidJson = {
-	"random": false,
-	"ssids": []
-};
-
-const load = () => {
-	getFile("run?cmd=save ssids", () =>
-		getFile("ssids.json", res => {
+var ssidJson = {"random":false,"ssids":[]};
+				
+function load(){
+	getFile("run?cmd=save ssids", function(){
+		getFile("ssids.json",function(res){
 			ssidJson = JSON.parse(res);
 			draw();
-		})
-	);
+		});
+	});
 }
 
-const draw = () => {
-	let html = `
-		<tr>
-			<th class="id"></th>
-			<th class="ssid"></th>
-			<th class="lock"></th>
-			<th class="save"></th>
-			<th class="remove"></th>
-		</tr>
-	`;
-
-	ssidJson.ssids.map((item, i) => {
-		html += `
-			<tr>
-				<td class="id">${i}</td>
-				<td class="ssid" contenteditable="true" id="ssid_${i}">${esc(ssidJson.ssids[i][0].substring(0, ssidJson.ssids[i][2]))}</td>
-				<td class="lock clickable" onclick="changeEnc(${i})" id="enc_${i}">${ssidJson.ssids[i][1] ? "&#x1f512;" : "-"}</td>
-				<td class="save">
-					<button class="green" onclick="save(${i})">${lang("save")}</button>
-				</td>
-				<td class="remove">
-					<button class="red" onclick="remove(${i})">X</button>
-				</td>
-			</tr>
-		`;
-	})
-
-	getE("randomBtn").innerHTML = lang(ssidJson.random ? "disable_random" : "enable_random");
+function draw(){
+	var html;
+	
+	html = "<tr>"
+		+ "<th class='id'></th>"
+		+ "<th class='ssid'></th>"
+		+ "<th class='lock'></th>"
+		+ "<th class='save'></th>"
+		+ "<th class='remove'></th>"
+		+ "</tr>";
+	
+	for(var i=0;i<ssidJson.ssids.length;i++){
+		html += "<tr>"
+			+ "<td class='id'>"+i+"</td>" // ID
+			+ "<td class='ssid' contenteditable='true' id='ssid_"+i+"'>"+esc(ssidJson.ssids[i][0].substring(0,ssidJson.ssids[i][2]))+"</td>" // SSID
+			+ "<td class='lock clickable' onclick='changeEnc("+i+")' id='enc_"+i+"'>"+(ssidJson.ssids[i][1] ? "&#x1f512;" : "-")+"</td>" // Enc
+			+ "<td class='save'><button class='green' onclick='save("+i+")'>"+lang("save")+"</button></td>" // Save
+			+ "<td class='remove'><button class='red' onclick='remove("+i+")'>X</button></td>" // Remove
+			+ "</tr>";
+	}
+	
+	getE("randomBtn").innerHTML = ssidJson.random ? lang("disable_random") : lang("enable_random");
+	
 	getE("ssidTable").innerHTML = html;
 }
 
-const remove = id => {
+function remove(id){
 	ssidJson.ssids.splice(id, 1);
-	getFile(`run?cmd=remove ssid ${id}`);
+	getFile("run?cmd=remove ssid "+id);
 	draw();
 }
 
-const add = () => {
-	const ssidStr = getE("ssid").value;
-
-	if (ssidStr.length > 0) {
-		const wpa2 = getE("enc").checked;
-		const clones = getE("ssidNum").value;
-		const force = getE("overwrite").checked;
-
-		const cmdStr = `add ssid "${ssidStr}" ${force ? "-f" : ""} -cl ${clones} ${wpa2 ? -wpa2 : ""}`;
-
-		getFile(`run?cmd=${cmdStr}`);
-
-		for (let i = 0; i < clones; i++) {
-			if (ssidJson.ssids.length >= 60) ssidJson.ssids.splice(0,1);
-			ssidJson.ssids.push([ssidStr, wpa2]);
+function add(){
+	var ssidStr = getE("ssid").value;
+	var wpa2 = getE("enc").checked;
+	var clones = getE("ssidNum").value;
+	var force = getE("overwrite").checked;
+	
+	if(ssidStr.length > 0){
+		var cmdStr = "add ssid \""+ssidStr+"\""+(force ? " -f":" ")+" -cl "+clones;
+		if(wpa2) cmdStr += " -wpa2";
+		
+		getFile("run?cmd="+cmdStr);
+		
+		for(var i=0;i<clones;i++){
+			if(ssidJson.ssids.length >= 60) ssidJson.ssids.splice(0,1);
+			ssidJson.ssids.push([ssidStr,wpa2]);
 		}
-
+		
 		draw();
 	}
 }
 
-const enableRandom = () => {
-	if (ssidJson.random) {
-		getFile("run?cmd=disable random", load);
-	} else {
-		getFile(`run?cmd=enable random ${getE("interval").value}`, load);
+function enableRandom(){
+	if(ssidJson.random){
+		getFile("run?cmd=disable random",function(){
+			load();
+		});
+	}else{
+		getFile("run?cmd=enable random "+getE("interval").value,function(){
+			load();
+		});
 	}
-
+	
 }
 
-const disableRandom = () => {
-
+function disableRandom(){
+	
 }
 
-const addSelected = () => {
-	getFile(`run?cmd=add ssid -s ${getE("overwrite").checked ? "-f":""}`);
+function addSelected(){
+	getFile("run?cmd=add ssid -s"+(getE("overwrite").checked ? " -f":""));
 }
 
-const changeEnc = id => {
+function changeEnc(id){
 	ssidJson.ssids[id][1] = !ssidJson.ssids[id][1];
-
 	draw();
 	save(id);
 }
 
-const removeAll = () => {
+function removeAll(){
 	ssidJson.ssids = [];
-
 	getFile("run?cmd=remove ssids");
 	draw();
 }
 
-const save = id => {
-	const name = getE(`ssid_${id}`).innerHTML.replace("<br>", "").substring(0, 32);
-	const wpa2 = ssidJson.ssids[id][1];
-	ssidJson.ssids[id] = [name, wpa2];
-
-	getFile(`run?cmd=replace ssid ${id} -n "${name}" ${wpa2 ? "-wpa2" : ""}`);
+function save(id){
+	var name = getE("ssid_"+id).innerHTML.replace("<br>","").substring(0,32);
+	var wpa2 = ssidJson.ssids[id][1];
+	ssidJson.ssids[id] = [name,wpa2];
+	
+	getFile("run?cmd=replace ssid "+id+" -n \""+name+"\" "+(wpa2 ? "-wpa2" : ""));
 }
 
