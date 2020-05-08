@@ -1,7 +1,7 @@
 # ESP8266 Deauther
 Deauthentication attack and other exploits using an ESP8266!
 
-<img width="100%" alt="esp8266 deauther with smartphone" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/smartphone_and_deauther.jpg">
+<img width="100%" alt="esp8266 deauther with smartphone" src="https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/smartphone_and_deauther.jpg">
 
 <p align="center">
 🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
@@ -126,13 +126,13 @@ If it's not working, you can try using the Arduino as descriped below.
 
 **6** Select version `2.0.0` and click on `Install` (**must be version 2.0.0!**)
 
-![screenshot of arduino, selecting the right version](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_1.JPG)
+![screenshot of arduino, selecting the right version](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/arduino_screenshot_1.JPG)
 
 **7** Go to `File` > `Preferences`
 
 **8** Open the folder path under `More preferences can be edited directly in the file`
 
-![screenshot of arduino, opening folder path](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/arduino_screenshot_2.JPG)
+![screenshot of arduino, opening folder path](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/arduino_screenshot_2.JPG)
 
 **9** Go to `packages` > `esp8266` > `hardware` > `esp8266` > `2.0.0` > `tools` > `sdk` > `include`
 
@@ -147,7 +147,7 @@ void wifi_unregister_send_pkt_freedom_cb(void);
 int wifi_send_pkt_freedom(uint8 *buf, int len, bool sys_seq);
 ```  
 
-![screenshot of notepad, copy paste the right code](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/notepad_screenshot_1.JPG)
+![screenshot of notepad, copy paste the right code](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/notepad_screenshot_1.JPG)
 
 **don't forget to save!**  
 
@@ -187,7 +187,7 @@ python update_manuf.py -o ../esp8266_deauther/oui.h
 
 ### Adding an OLED display
 
-![image of the esp8266 deauther with an OLED and three buttons](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/esp8266_with_oled.jpg)
+![image of the esp8266 deauther with an OLED and three buttons](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/esp8266_with_oled.jpg)
 
 I included 2 extra .bin files for the display version on the release page.  
 One for the 0.96" SSD1306 OLED and one for the 1.3" SH1106 OLED.  
@@ -232,15 +232,15 @@ Scan for Wi-Fi networks and connect to `pwned`. The password is `deauther`.
 Once connected, you can open up your browser and go to `192.168.4.1`.  
 
 You can now scan for networks...
-![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_1.JPG)
+![webinterface AP scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/web_screenshot_1.JPG)
 
 scan for client devices... 
-![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_2.JPG)
+![webinterface client scanner](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/web_screenshot_2.JPG)
 
 Note: While scanning the ESP8266 will shut down its access point, so you may have to go to your settings and reconnect to the Wi-Fi network manually!
 
 ...and start different attacks.
-![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/master/screenshots/web_screenshot_3.JPG)
+![webinterface attack menu](https://raw.githubusercontent.com/spacehuhn/esp8266_deauther/v1/screenshots/web_screenshot_3.JPG)
 
 For more information please read the [FAQ](https://github.com/spacehuhn/esp8266_deauther/wiki/FAQ).  
 
