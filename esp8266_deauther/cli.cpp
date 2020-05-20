@@ -66,14 +66,25 @@ namespace cli {
     }
 
     unsigned long parse_time(const String& str, unsigned long defaultMultiplicator) {
-        unsigned long value = str.toInt();
+        StringList list(str, "+");
 
-        if (value > 0) {
-            if (str.endsWith("ms")) value *= 1;
-            else if (str.endsWith("s") || str.endsWith("sec")) value *= 1000;
-            else if (str.endsWith("m") || str.endsWith("min")) value *= 60*1000;
-            else if (str.endsWith("h")) value *= 60*60*1000;
-            else value *= defaultMultiplicator;
+        list.begin();
+
+        unsigned long value { 0 };
+
+        while (list.available()) {
+            String str { list.iterate() };
+            unsigned long str_value { str.toInt() };
+
+            if (str_value > 0) {
+                if (str.endsWith("ms")) str_value *= 1;
+                else if (str.endsWith("s") || str.endsWith("sec")) str_value *= 1000;
+                else if (str.endsWith("m") || str.endsWith("min")) str_value *= 60*1000;
+                else if (str.endsWith("h")) str_value *= 60*60*1000;
+                else str_value *= defaultMultiplicator;
+
+                value += str_value;
+            }
         }
 
         return value;

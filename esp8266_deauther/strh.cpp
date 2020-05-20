@@ -92,24 +92,26 @@ namespace strh {
         if (time >= hour_ms) {
             unsigned long hours = time/hour_ms;
             time -= hours*hour_ms;
-            str  += String(hours)+"h";
+            str  += String(hours)+"h+";
         }
 
         if (time >= minute_ms) {
             unsigned long minutes = time/minute_ms;
             time -= minutes*minute_ms;
-            str  += String(minutes)+"min";
+            str  += String(minutes)+"min+";
         }
 
         if (time >= second_ms) {
             unsigned long seconds = time/second_ms;
             time -= seconds*second_ms;
-            str  += String(seconds)+"s";
+            str  += String(seconds)+"s+";
         }
 
         if (time > 0) {
-            str += String(time)+"ms";
+            str += String(time)+"ms+";
         }
+
+        str.remove(str.length()-1);
 
         return str;
     }

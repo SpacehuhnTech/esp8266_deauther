@@ -1,2 +1,4 @@
-
-save-commands.json
+.vscode/*
+build/*
+*.elf
+*.bin
