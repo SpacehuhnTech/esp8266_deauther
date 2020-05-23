@@ -195,14 +195,16 @@ namespace cli {
         cmd_help.setDescription("  Print the list of commands that you see right now");
 
         Command cmd_start = cli.addCommand("start", [](cmd* c) {
-            String res;
+            Command command { c };
+
+            String res { command.getArg("cmd").getValue() };
             String cmd;
 
             debuglnF("Good morning friend!");
             debugln();
 
             { // Command
-                do {
+                while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias" || res == "results")) {
                     debuglnF("What can I do for you today?\r\n"
                              "  scan:    Search for WiFi networks and clients\r\n"
                              "  ---------\r\n"
@@ -214,7 +216,7 @@ namespace cli {
                              "  results: Display and filter scan results\r\n"
                              "Remember that you can always escape by typing 'exit'");
                     CLI_READ_RES();
-                } while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias" || res == "results"));
+                }
                 cmd += res;
             }
 
@@ -645,6 +647,7 @@ namespace cli {
 
             cli::parse(cmd.c_str());
         });
+        cmd_start.addPosArg("cmd", "");
         cmd_start.setDescription("  Start a guided tour through the functions of this device");
 
         Command cmd_scan = cli.addCommand("scan", [](cmd* c) {
@@ -1106,22 +1109,22 @@ namespace cli {
         Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
             Command cmd(c);
 
-            Argument mac_arg { cmd.getArg("mac") };
-            Argument ap_arg { cmd.getArg("ap") };
-            Argument st_arg { cmd.getArg("st") };
+            Argument arg_mac { cmd.getArg("mac") };
+            Argument arg_ap { cmd.getArg("ap") };
+            Argument arg_st { cmd.getArg("st") };
 
             String mode { cmd.getArg("mode").getValue() };
             String name { cmd.getArg("name").getValue() };
             String mac_str;
 
-            if (mac_arg.isSet()) {
-                mac_str = mac_arg.getValue();
-            } else if (ap_arg.isSet()) {
-                int id { ap_arg.getValue().toInt() };
+            if (arg_mac.isSet()) {
+                mac_str = arg_mac.getValue();
+            } else if (arg_ap.isSet()) {
+                int id { arg_ap.getValue().toInt() };
                 AccessPoint* ap { scan::getAccessPoints().get(id) };
                 if (ap) mac_str = ap->getBSSIDString();
-            } else if (st_arg.isSet()) {
-                int id = st_arg.getValue().toInt();
+            } else if (arg_st.isSet()) {
+                int id = arg_st.getValue().toInt();
                 Station* st { scan::getStations().get(id) };
                 if (st) mac_str = st->getMACString();
             }
