@@ -42,7 +42,7 @@ namespace mac {
 
     bool valid(const char* str, unsigned int str_len, unsigned int len) {
         len = len - (len % 3);
-        if (str_len < (len*2)+(len-1)) return false;
+        if (str_len != (len*2)+(len-1)) return false;
 
         for (int i = 0; i<len; ++i) {
             char first_char     = str[i*3];

@@ -51,6 +51,7 @@ namespace alias {
     void clear() {
         list.size      = 0;
         list.magic_num = ALIAS_MAGIC_NUM;
+        save();
     }
 
     void load() {
@@ -86,6 +87,8 @@ namespace alias {
     }
 
     bool add(const uint8_t* mac, const String& name) {
+        if (name.length() == 0) return false;
+
         if ((list.size >= MAX_ALIAS_NUM) ||
             (search(mac) > 0) ||
             (search(name) > 0)) return false;

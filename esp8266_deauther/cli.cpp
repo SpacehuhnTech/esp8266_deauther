@@ -74,7 +74,7 @@ namespace cli {
 
         while (list.available()) {
             String str { list.iterate() };
-            unsigned long str_value { str.toInt() };
+            long   str_value { str.toInt() };
 
             if (str_value > 0) {
                 if (str.endsWith("ms")) str_value *= 1;
@@ -494,26 +494,81 @@ namespace cli {
                                  "  list:   Print list of existing MAC address aliases\r\n"
                                  "  add:    Add new MAC address alias to list\r\n"
                                  "  remove: Remove an exisiting MAC address alias\r\n"
+                                 "  clear:  Remove all saved aliases\r\n"
                                  " [default=list]");
                         CLI_READ_RES_DEFAULT("list");
-                    } while (!(res == "list" || res == "add" || res == "remove"));
+                    } while (!(res == "list" || res == "add" || res == "remove" || res == "clear"));
                     if (res != "list") cmd += " -mode " + res;
                 }
 
-                if (res != "list") {
+                // Add
+                if (res == "add") {
+                    do {
+                        debuglnF("Selector\r\n"
+                                 "  mac: Enter MAC address manually\r\n"
+                                 "  ap:  Use the BSSID of an access point\r\n"
+                                 "  st:  Use the MAC of a station\r\n"
+                                 " [default=mac]");
+                        CLI_READ_RES_DEFAULT("mac");
+                    } while (!(res == "mac" || res == "ap" || res == "st"));
+
+                    { // Name
+                        if (res == "mac") {
+                            do {
+                                debuglnF("Enter a valid MAC address");
+                                CLI_READ_RES();
+                            } while(!mac::valid(res.c_str(), res.length()));
+
+                            cmd += " -mac " + res;
+                        }
+
+                        else if (res == "ap") {
+                            if (scan::getAccessPoints().size() == 0) {
+                                debuglnF("ERROR: No access points in scan results.\r\n"
+                                         "Type 'scan -m ap' to search for access points");
+                                return;
+                            }
+
+                            scan::printAPs();
+
+                            do {
+                                debuglnF("Enter access point ID");
+                                CLI_READ_RES();
+                            } while (!res.toInt() < 0);
+                            cmd += " -ap " + res;
+                        }
+
+                        else if (res == "st") {
+                            if (scan::getStations().size() == 0) {
+                                debuglnF("ERROR: No stations in scan results.\r\n"
+                                         "Type 'scan -m st' to search for stations");
+                                return;
+                            }
+
+                            scan::printSTs();
+
+                            do {
+                                debuglnF("Enter station ID");
+                                CLI_READ_RES();
+                            } while (!res.toInt() < 0);
+                            cmd += " -st " + res;
+                        }
+                    }
+
                     { // Name
                         debuglnF("Alias (name):");
                         CLI_READ_RES();
 
                         if (res.length() > 0) cmd += " -name " + strh::escape(res);
                     }
+                }
 
-                    { // MAC
-                        debuglnF("MAC address:");
-                        CLI_READ_RES();
-
-                        if (res.length() > 0) cmd += " -mac " + res;
-                    }
+                // Remove
+                else if (res == "remove") {
+                    alias::print();
+                    debuglnF("Enter ID, name or MAC address of alias you want to remove");
+                    CLI_READ_RES();
+                    cmd += " " + res;
                 }
             } else if (res == "results") {
                 { // Type
@@ -1051,10 +1106,25 @@ namespace cli {
         Command cmd_alias = cli.addCommand("alias", [](cmd* c) {
             Command cmd(c);
 
-            String mode { cmd.getArg("mode").getValue() };
+            Argument mac_arg { cmd.getArg("mac") };
+            Argument ap_arg { cmd.getArg("ap") };
+            Argument st_arg { cmd.getArg("st") };
 
+            String mode { cmd.getArg("mode").getValue() };
             String name { cmd.getArg("name").getValue() };
-            String mac_str { cmd.getArg("mac").getValue() };
+            String mac_str;
+
+            if (mac_arg.isSet()) {
+                mac_str = mac_arg.getValue();
+            } else if (ap_arg.isSet()) {
+                int id { ap_arg.getValue().toInt() };
+                AccessPoint* ap { scan::getAccessPoints().get(id) };
+                if (ap) mac_str = ap->getBSSIDString();
+            } else if (st_arg.isSet()) {
+                int id = st_arg.getValue().toInt();
+                Station* st { scan::getStations().get(id) };
+                if (st) mac_str = st->getMACString();
+            }
 
             if (mode == "list") {
                 alias::print();
@@ -1063,11 +1133,12 @@ namespace cli {
 
             else if (mode == "add") {
                 // No valid mac? Try switching arg values!
-                if ((mac_str.length() != 17) || (mac_str.charAt(2) != ':')) {
+                if (!mac::valid(mac_str.c_str(), mac_str.length())) {
                     String tmp = name;
                     name       = mac_str;
                     mac_str    = tmp;
                 }
+
                 uint8_t mac[6] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                 parse_mac(mac_str, mac);
 
@@ -1079,7 +1150,7 @@ namespace cli {
                     debuglnF(" saved");
                 } else {
                     debuglnF("Something went wrong :(");
-                    debuglnF("Invalid MAC address or already in list");
+                    debuglnF("Name or address already in list or invalid");
                 }
                 return;
             }
@@ -1101,21 +1172,30 @@ namespace cli {
                 return;
             }
 
+            else if (mode == "clear") {
+                alias::clear();
+                debuglnF("Cleared alias list");
+            }
+
             else {
                 debugF("Unknown mode \"");
                 debug(mode);
                 debuglnF("\".");
-                debuglnF("Try \"alias list\", \"alias add [...]\" or \"alias remove [...]\".");
+                debuglnF("Try \"alias list\", \"alias add [...]\", \"alias remove [...]\" or \"alias clear\".");
             }
         });
         cmd_alias.addPosArg("m/ode", "list");
         cmd_alias.addPosArg("name", "");
         cmd_alias.addPosArg("mac", "");
+        cmd_alias.addArg("ap", "");
+        cmd_alias.addArg("st", "");
         cmd_alias.setDescription(
             "  Manage alias for MAC address\r\n"
-            "  -mode: add,remove or list (default=list)\r\n"
+            "  -mode: list,add,remove or clear (default=list)\r\n"
             "  -name: alias name\r\n"
-            "  -mac:  MAC address");
+            "  -mac:  MAC address\r\n"
+            "  -ap:   access point ID\r\n"
+            "  -st:   station ID");
 
         Command cmd_clear = cli.addCommand("clear", [](cmd* c) {
             for (uint8_t i = 0; i<100; ++i) {
