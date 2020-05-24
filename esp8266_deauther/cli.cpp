@@ -485,7 +485,7 @@ namespace cli {
                         if (res == "mac") {
                             CLI_READ_UNTIL("Enter a valid MAC address:",
                                            (mac::valid(res.c_str(), res.length())));
-                            cmd += " " + res;
+                            cmd += " " + res.substring(0, 17);
                         }
 
                         else if (res == "ap") {
