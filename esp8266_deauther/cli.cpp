@@ -1298,19 +1298,25 @@ namespace cli {
             Command cmd(c);
 
             String input { cmd.getArg("mac").getValue() };
-            bool substring { cmd.getArg("similar").isSet() };
+            bool exact { cmd.getArg("e").isSet() };
 
             debuglnF("MAC      Vendor");
             debuglnF("=================");
 
-            if (mac::valid(input.c_str(), input.length(), 3)) {
+            if (alias::search(input) >= 0) {
+                uint8_t mac[6];
+                alias::resolve(input, mac);
+                debug(strh::mac(mac, 3));
+                debug(' ');
+                debugln(vendor::getName(mac));
+            } else if (mac::valid(input.c_str(), input.length(), 3)) {
                 uint8_t mac[3];
                 mac::fromStr(input.c_str(), mac, 3);
                 debug(strh::mac(mac, 3));
                 debug(' ');
                 debugln(vendor::getName(mac));
             } else {
-                vendor::getMAC(input, substring, [](const uint8_t* mac, const char* name) {
+                vendor::getMAC(input, !exact, [](const uint8_t* mac, const char* name) {
                     debug(strh::mac(mac, 3));
                     debug(' ');
                     debugln(name);
@@ -1319,10 +1325,10 @@ namespace cli {
             debuglnF("=================");
         });
         cmd_vendor.addPosArg("mac");
-        cmd_vendor.addFlagArg("s/imilar");
+        cmd_vendor.addFlagArg("e/xact");
         cmd_vendor.setDescription("  Vendor (manufacturer) lookup\r\n"
                                   "  -mac: MAC address(es)\r\n"
-                                  "  -s: list similar names");
+                                  "  -e:   list only exact matchess");
     }
 
     void parse(const char* input) {
