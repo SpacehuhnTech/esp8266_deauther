@@ -5,11 +5,7 @@
  */
 
 #include "TargetArr.h"
-
-#include <string.h>
-#include <stdlib.h>
-
-#include "config.h"
+#include "mac.h"
 
 #ifdef DEBUG_TARGET_ARR
 #include "debug.h"
@@ -176,6 +172,16 @@ bool TargetArr::add(const uint8_t* sender, const uint8_t* receiver, uint16_t cha
         ++list.size;
         return true;
     }
+}
+
+bool TargetArr::add(const AccessPoint* ap) {
+    if (!ap) return false;
+
+    const uint8_t* sender { ap->getBSSID() };
+    const uint8_t* receiver { mac::BROADCAST };
+    uint16_t channels = 1 << (ap->getChannel()-1);
+
+    return add(sender, receiver, channels);
 }
 
 void TargetArr::begin() {

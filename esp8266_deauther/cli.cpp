@@ -118,14 +118,17 @@ namespace cli {
             String h = values.iterate();
 
             int hyphen = h.indexOf("-", 1);
+
             if ((hyphen >= 0) && (hyphen < h.length()-1)) {
                 int start = h.substring(0, hyphen).toInt();
                 int end   = h.substring(hyphen+1).toInt();
 
+                if (start < 0) start = 0;
+
                 for (int i = start; i<=end; ++i) {
                     list.push(String(i));
                 }
-            } else {
+            } else if ((h.charAt(0) >= '0') && (h.charAt(0) <= '9')) {
                 list.push(String(h.toInt()));
             }
         }
@@ -869,25 +872,45 @@ namespace cli {
 
             { // Read Access Point MACs
                 String ap_str { cmd.getArg("ap").getValue() };
-                SortedStringList list = parse_int_list(ap_str);
+                SortedStringList list { ap_str };
 
-                TargetArr ap_targets { list.size() };
+                AccessPointList& aps = scan::getAccessPoints();
+
+                TargetArr ap_targets { aps.size() };
 
                 list.begin();
 
-                int id;
-                AccessPoint* ap;
-
                 while (list.available()) {
-                    id = list.iterate().toInt();
-                    ap = scan::getAccessPoints().get(id);
+                    String value { list.iterate() };
 
-                    if (ap) {
-                        const uint8_t* sender { ap->getBSSID() };
-                        const uint8_t* receiver { mac::BROADCAST };
-                        uint16_t channels = 1 << (ap->getChannel()-1);
+                    if (mac::valid(value.c_str(), value.length())) { // MAC address
+                        uint8_t mac[6];
+                        mac::fromStr(value.c_str(), mac);
+                        ap_targets.add(aps.search(mac));
+                    } else if (alias::search(value) >= 0) { // Alias
+                        uint8_t mac[6];
+                        alias::resolve(value, mac);
+                        ap_targets.add(aps.search(mac));
+                    } else {                  // ID(s) or SSID
+                        SortedStringList ids { parse_int_list(value) };
 
-                        ap_targets.add(sender, receiver, channels);
+                        if (ids.size() > 0) { // ID(s)
+                            ids.begin();
+
+                            while (ids.available()) {
+                                int id { ids.iterate().toInt() };
+                                ap_targets.add(aps.get(id));
+                            }
+                        } else { // SSID
+                            aps.begin();
+
+                            while (aps.available()) {
+                                AccessPoint* ap { aps.iterate() };
+                                if (String(ap->getSSID()) == value) {
+                                    ap_targets.add(ap);
+                                }
+                            }
+                        }
                     }
                 }
 

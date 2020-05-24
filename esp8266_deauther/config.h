@@ -6,7 +6,7 @@
 
 #pragma once
 
-#define VERSION "Version 3.0.0 dev 2020-05-25#2"
+#define VERSION "Version 3.0.0 dev 2020-05-25#3"
 
 // ===== Serial Communication ===== //
 #define ENABLE_DEBUG      // Enable serial logging
