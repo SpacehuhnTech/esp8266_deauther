@@ -76,8 +76,6 @@ namespace cli {
                 vendor::getRandomMac(mac);
             } else if (str == "broadcast") {
                 memcpy(mac, mac::BROADCAST, 6);
-            } else if (str.length() == 17) {
-                mac::fromStr(str.c_str(), mac);
             }
         }
     }
@@ -873,42 +871,36 @@ namespace cli {
             { // Read Access Point MACs
                 String ap_str { cmd.getArg("ap").getValue() };
                 SortedStringList list { ap_str };
-
                 AccessPointList& aps = scan::getAccessPoints();
-
                 TargetArr ap_targets { aps.size() };
 
                 list.begin();
 
                 while (list.available()) {
                     String value { list.iterate() };
+                    SortedStringList ids { parse_int_list(value) };
+                    uint8_t mac[6];
+                    AccessPoint* ap;
 
-                    if (mac::valid(value.c_str(), value.length())) { // MAC address
-                        uint8_t mac[6];
-                        mac::fromStr(value.c_str(), mac);
-                        ap_targets.add(aps.search(mac));
-                    } else if (alias::search(value) >= 0) { // Alias
-                        uint8_t mac[6];
-                        alias::resolve(value, mac);
-                        ap_targets.add(aps.search(mac));
-                    } else {                  // ID(s) or SSID
-                        SortedStringList ids { parse_int_list(value) };
+                    if (alias::resolve(value, mac)) { // MAC address (or alias)
+                        ap = aps.search(mac);
+                        ap_targets.add(ap);
+                    } else if (ids.size() > 0) {      // ID(s)
+                        int id;
+                        ids.begin();
 
-                        if (ids.size() > 0) { // ID(s)
-                            ids.begin();
+                        while (ids.available()) {
+                            id = ids.iterate().toInt();
+                            ap = aps.get(id);
+                            ap_targets.add(ap);
+                        }
+                    } else { // SSID
+                        aps.begin();
 
-                            while (ids.available()) {
-                                int id { ids.iterate().toInt() };
-                                ap_targets.add(aps.get(id));
-                            }
-                        } else { // SSID
-                            aps.begin();
-
-                            while (aps.available()) {
-                                AccessPoint* ap { aps.iterate() };
-                                if (String(ap->getSSID()) == value) {
-                                    ap_targets.add(ap);
-                                }
+                        while (aps.available()) {
+                            ap = aps.iterate();
+                            if (String(ap->getSSID()) == value) {
+                                ap_targets.add(ap);
                             }
                         }
                     }
@@ -919,29 +911,37 @@ namespace cli {
 
             { // Read Station MACs
                 String st_str { cmd.getArg("st").getValue() };
-                SortedStringList list = parse_int_list(st_str);
-
-                TargetArr st_targets { list.size() };
+                SortedStringList list { st_str };
+                StationList& sts = scan::getStations();
+                TargetArr st_targets { sts.size() };
 
                 list.begin();
-                int id;
-                Station* st;
 
                 while (list.available()) {
-                    id = list.iterate().toInt();
-                    st = scan::getStations().get(id);
+                    String value { list.iterate() };
+                    SortedStringList ids { parse_int_list(value) };
+                    uint8_t mac[6];
+                    Station* st;
 
-                    if (st) {
-                        if (st->getAccessPoint()) {
-                            const uint8_t* sender   { st->getAccessPoint()->getBSSID() };
-                            const uint8_t* receiver { st->getMAC() };
-                            uint16_t channels = 1 << (st->getAccessPoint()->getChannel()-1);
-
-                            st_targets.add(sender, receiver, channels);
-                        } else {
+                    if (alias::resolve(value, mac)) { // MAC address (or alias)
+                        st = sts.search(mac);
+                        if (!st_targets.add(st)) {
                             debugF("WARNING: Station ");
-                            debug(id);
-                            debuglnF(" is not connected to an AP, therefor can't be deauthed.");
+                            debug(value);
+                            debuglnF(" not found, not connected to an AP or already in list.");
+                        }
+                    } else if (ids.size() > 0) { // ID(s)
+                        int id;
+                        ids.begin();
+
+                        while (ids.available()) {
+                            id = ids.iterate().toInt();
+                            st = sts.get(id);
+                            if (!st_targets.add(st)) {
+                                debugF("WARNING: Station ");
+                                debug(id);
+                                debuglnF(" not found, not connected to an AP or already in list.");
+                            }
                         }
                     }
                 }
@@ -1323,18 +1323,12 @@ namespace cli {
             String input { cmd.getArg("mac").getValue() };
             bool exact { cmd.getArg("e").isSet() };
 
+            uint8_t mac[3];
+
             debuglnF("MAC      Vendor");
             debuglnF("=================");
 
-            if (alias::search(input) >= 0) {
-                uint8_t mac[6];
-                alias::resolve(input, mac);
-                debug(strh::mac(mac, 3));
-                debug(' ');
-                debugln(vendor::getName(mac));
-            } else if (mac::valid(input.c_str(), input.length(), 3)) {
-                uint8_t mac[3];
-                mac::fromStr(input.c_str(), mac, 3);
+            if (alias::resolve(input, mac, 3)) {
                 debug(strh::mac(mac, 3));
                 debug(' ');
                 debugln(vendor::getName(mac));

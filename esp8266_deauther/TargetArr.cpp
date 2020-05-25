@@ -184,6 +184,20 @@ bool TargetArr::add(const AccessPoint* ap) {
     return add(sender, receiver, channels);
 }
 
+bool TargetArr::add(const Station* st) {
+    if (!st) return false;
+
+    const AccessPoint* ap { st->getAccessPoint() };
+
+    if (!ap) return false;
+
+    const uint8_t* sender   { ap->getBSSID() };
+    const uint8_t* receiver { st->getMAC() };
+    uint16_t channels = 1 << (ap->getChannel()-1);
+
+    return add(sender, receiver, channels);
+}
+
 void TargetArr::begin() {
     list.h = 0;
 }

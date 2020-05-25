@@ -18,7 +18,7 @@ namespace alias {
     bool add(const uint8_t* mac, const String& name);
 
     String get(const uint8_t* mac);
-    bool resolve(const String& name, uint8_t* buffer);
+    bool resolve(const String& name, uint8_t* buffer, unsigned int len = 6);
 
     String getName(int id);
 
