@@ -256,26 +256,36 @@ bool AccessPointList::full() const {
     return list_max_size > 0 && list_size >= list_max_size;
 }
 
-void AccessPointList::print(const result_filter_t* filter) {
-    debugF("Access Point (Network) List: ");
-    debugln(size());
-    debuglnF("-------------------------------");
-
+void AccessPointList::printHeader() {
+    debuglnF("[ ===== Access Points ===== ]");
     debuglnF(" ID SSID (Network Name)                RSSI Mode Ch BSSID (MAC Addr.) Vendor");
     debuglnF("==============================================================================");
+}
 
-    begin();
-    int i = 0;
-
-    while (available()) {
-        iterate()->print(i, filter);
-        ++i;
-    }
-
+void AccessPointList::printFooter() {
     debuglnF("==============================================================================");
     debuglnF("Ch = 2.4 GHz Channel  ,  RSSI = Signal strengh  ,  WPA* = WPA & WPA2 auto mode");
     debuglnF("WPA(2) Enterprise networks are recognized as Open");
     debuglnF("==============================================================================");
 
     debugln();
+}
+
+void AccessPointList::print(const result_filter_t* filter) {
+    if (size() == 0) {
+        debuglnF("No access points found. Type 'scan ap' to search.");
+        debugln();
+    } else {
+        printHeader();
+
+        int i = 0;
+        begin();
+
+        while (available()) {
+            iterate()->print(i, filter);
+            ++i;
+        }
+
+        printFooter();
+    }
 }

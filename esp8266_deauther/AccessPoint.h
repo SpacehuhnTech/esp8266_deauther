@@ -79,5 +79,7 @@ class AccessPointList {
         int size() const;
         bool full() const;
 
+        void printHeader();
+        void printFooter();
         void print(const result_filter_t* filter = nullptr);
 };
