@@ -586,9 +586,8 @@ namespace cli {
 
 
             // Result
-            for (int i = 0; i<cmd.length()+4 || i<21; ++i) debug('#');
+            debuglnF("> Exiting start command");
             debugln();
-            debuglnF("Exiting start command");
 
             for (int i = 0; i<cmd.length()+4 || i<21; ++i) debug('#');
             debugln();

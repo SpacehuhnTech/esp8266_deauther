@@ -166,7 +166,7 @@ void stopST() {
 
         st_list.printFooter();
 
-        debuglnF("Stopped station scan");
+        debuglnF("> Stopped station scan");
         debugln();
 
         printSTs();

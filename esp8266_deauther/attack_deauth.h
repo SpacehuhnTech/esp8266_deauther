@@ -150,7 +150,7 @@ void stopDeauth() {
         deauth_data.pkts_sent += deauth_data.pkts_per_second;
         deauth_data.settings.targets.clear();
 
-        debugF("Stopped deauth attack. Sent ");
+        debugF("> Stopped deauth attack. Sent ");
         debug(deauth_data.pkts_sent);
         debuglnF(" packets.");
     }

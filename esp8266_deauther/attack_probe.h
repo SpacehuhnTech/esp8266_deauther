@@ -155,7 +155,7 @@ void stopProbe() {
         probe_data.pkts_sent += probe_data.pkts_per_second;
         probe_data.settings.ssids.clear();
 
-        debugF("Stopped probe attack. Sent ");
+        debugF("> Stopped probe attack. Sent ");
         debug(probe_data.pkts_sent);
         debuglnF(" packets.");
     }

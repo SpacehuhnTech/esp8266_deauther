@@ -53,7 +53,7 @@ void stopAP() {
         WiFi.scanDelete();
         ap_data.enabled = false;
 
-        debuglnF("Stopped access point scan");
+        debuglnF("> Stopped access point scan");
         debugln();
 
         printAPs();

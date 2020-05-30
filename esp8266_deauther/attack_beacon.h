@@ -239,7 +239,7 @@ void stopBeacon() {
         beacon_data.enabled    = false;
         beacon_data.settings.ssids.clear();
 
-        debugF("Stopped beacon attack. Sent ");
+        debugF("> Stopped beacon attack. Sent ");
         debug(beacon_data.pkts_sent);
         debuglnF(" packets.");
     }
