@@ -162,14 +162,14 @@ namespace cli {
         debuglnF(VERSION);
 
         debuglnF("\r\n"
-                 "[=================== DISCLAIMER ===================]\r\n"
+                 "[ ================== DISCLAIMER ================== ]\r\n"
                  "  This is a tool.\r\n"
                  "  It's neither good nor bad.\r\n"
                  "  Use it to study and test.\r\n"
                  "  Never use it to create harm or damage!\r\n"
                  "\r\n"
                  "  The continuation of this project counts on you!\r\n"
-                 "[==================================================]\r\n");
+                 "[ ================================================ ]\r\n");
 
         debuglnF("Type \"help\" to see all commands.\r\n"
                  "Type \"start\" to go through the functionalities step by step.");
@@ -613,14 +613,11 @@ namespace cli {
 
             // Result
             debuglnF("> Exiting start command");
-            debugln();
-
-            for (int i = 0; i<cmd.length()+4 || i<21; ++i) debug('#');
-            debugln();
 
             debugln();
             debugF("# ");
             debugln(cmd);
+            debugln();
 
             cli::parse(cmd.c_str());
         });
