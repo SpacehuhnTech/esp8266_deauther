@@ -14,4 +14,6 @@ typedef struct result_filter_t {
     SortedStringList ssids;
     MacArr           bssids;
     SortedStringList vendors;
+    bool             aps;
+    bool             sts;
 } result_filter_t;

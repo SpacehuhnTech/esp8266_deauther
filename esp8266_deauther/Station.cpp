@@ -285,21 +285,24 @@ void StationList::printFooter() {
 }
 
 void StationList::print(const result_filter_t* filter) {
-    debugF("Station (Client) List: ");
-    debugln(size());
-    debuglnF("-------------------------");
+    debuglnF("[ ===== Stations ===== ]");
 
-    printHeader();
+    if (size() == 0) {
+        debuglnF("No stations found. Type 'scan st' to search.");
+        debugln();
+    } else {
+        printHeader();
 
-    int i = 0;
-    begin();
+        int i = 0;
+        begin();
 
-    while (available()) {
-        iterate()->print(i, filter);
-        ++i;
+        while (available()) {
+            iterate()->print(i, filter);
+            ++i;
+        }
+
+        printFooter();
     }
-
-    printFooter();
 }
 
 void StationList::printBuffer() {

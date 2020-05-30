@@ -54,11 +54,12 @@ namespace scan {
     void stopAuth();
     void stop();
 
+    void print(const result_filter_t* filter    = nullptr);
     void printAPs(const result_filter_t* filter = nullptr);
     void printSTs(const result_filter_t* filter = nullptr);
 
     void update();
 
     AccessPointList& getAccessPoints();
-    StationList    & getStations();
+    StationList& getStations();
 }

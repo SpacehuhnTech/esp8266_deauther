@@ -356,7 +356,14 @@ namespace cli {
                                      "Type 'scan -m ap' to search for access points");
                             return;
                         }
-                        scan::printAPs();
+
+                        result_filter_t filter;
+
+                        filter.channels = 0x3FFF;
+                        filter.aps      = true;
+                        filter.sts      = false;
+
+                        scan::print(&filter);
 
                         CLI_READ_RES("Select access point(s) to attack\r\n"
                                      "  >=0: ID(s) to select for the attack");
@@ -367,7 +374,14 @@ namespace cli {
                                      "Type 'scan -m st' to search for stations");
                             return;
                         }
-                        scan::printSTs();
+
+                        result_filter_t filter;
+
+                        filter.channels = 0x3FFF;
+                        filter.aps      = false;
+                        filter.sts      = true;
+
+                        scan::print(&filter);
 
                         CLI_READ_RES("Select station(s) to attack\r\n"
                                      "  >=0: ID(s) to select for the attack");
@@ -496,7 +510,13 @@ namespace cli {
                                 return;
                             }
 
-                            scan::printAPs();
+                            result_filter_t filter;
+
+                            filter.channels = 0x3FFF;
+                            filter.aps      = false;
+                            filter.sts      = true;
+
+                            scan::print(&filter);
 
                             CLI_READ_UNTIL("Enter access point ID:",
                                            (res.toInt() >= 0));
@@ -510,7 +530,13 @@ namespace cli {
                                 return;
                             }
 
-                            scan::printSTs();
+                            result_filter_t filter;
+
+                            filter.channels = 0x3FFF;
+                            filter.aps      = false;
+                            filter.sts      = true;
+
+                            scan::print(&filter);
 
                             CLI_READ_UNTIL("Enter station ID:",
                                            (res.toInt() >= 0));
@@ -764,15 +790,10 @@ namespace cli {
             filter.ssids.parse(ssid_str);
             filter.bssids.parse(bssid_str);
             filter.vendors.parse(vendor_str);
+            filter.aps = (mode == "ap") || (mode == "ap+st");
+            filter.sts = (mode == "st") || (mode == "ap+st");
 
-            if (mode == "ap") {
-                scan::printAPs(&filter);
-            } else if (mode == "st") {
-                scan::printSTs(&filter);
-            } else if (mode == "ap+st") {
-                scan::printAPs(&filter);
-                scan::printSTs(&filter);
-            }
+            scan::print(&filter);
         });
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.addArg("ch/annel/s", "all");

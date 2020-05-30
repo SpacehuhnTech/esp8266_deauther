@@ -143,6 +143,14 @@ namespace scan {
         st_list.print(filter);
     }
 
+    void print(const result_filter_t* filter) {
+        debuglnF("[ ========== Scan Results ========== ]");
+        debugln();
+
+        if (!filter || filter->aps) printAPs(filter);
+        if (!filter || filter->sts) printSTs(filter);
+    }
+
     void update() {
         update_ap_scan();
         update_st_scan();

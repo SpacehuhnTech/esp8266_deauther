@@ -133,7 +133,7 @@ void startST(const st_scan_settings_t& settings) {
     }
 
     { // Output
-        debuglnF("[ ===== Station Scan ===== ]");
+        debuglnF("[ ===== Scan for Stations ===== ]");
 
         debugF("Scan time:    ");
         if (st_data.settings.timeout > 0) debugln(strh::time(st_data.settings.timeout));
@@ -169,7 +169,7 @@ void stopST() {
         debuglnF("> Stopped station scan");
         debugln();
 
-        printSTs();
+        print();
     }
 }
 
