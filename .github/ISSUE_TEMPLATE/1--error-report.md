@@ -16,7 +16,7 @@ A clear and concise description of what the problem is.
 What do you think causes it?
 
 ```
-Error Log / Output
+Error/Compile/Output Log
 ```
 
 **To Reproduce**
