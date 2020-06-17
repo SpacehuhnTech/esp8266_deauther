@@ -1,19 +1,24 @@
 # ESP8266 Deauther 3.0
 
-<p align="center"><img alt="PICTURE logo" src="https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/deauther_logo.png" width="200"></p>
+**This version is still in development!**  
 
-<p align="center">
-🐦 <a href="https://twitter.com/spacehuhn">Twitter</a>
-| 📺 <a href="https://www.youtube.com/channel/UCFmjA6dnjv-phqrFACyI8tw">YouTube</a>
-| 🌍 <a href="https://spacehuhn.de">spacehuhn.de</a><br>
-<br>
-<b>Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners!<br><br>
-Click <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Installation">here</a> for the installation tutorial.<br>
-  Click <a href="https://github.com/spacehuhn/esp8266_deauther/releases">here</a> for the .bin files.<br><br>
-Support the development of this project by purchasing one of the <a href="https://github.com/spacehuhn/esp8266_deauther/wiki/Supported-Devices">official deauther boards</a>.<br/>
-Or become a patron on <a href="https://patreon.com/spacehuhn" target="_blank">patreon.com/spacehuhn</a>.<br>
-Also available: <a href="https://www.tindie.com/products/Spacehuhn/spacehuhn-stickers/">Stickers</a></b>!
-</p>
+[Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
+
+Currently implemented:  
+- [x] Serial Command Line Interface
+- [ ] Web Interface
+- [ ] Display (OLED) Interface
+ 
+## Installation
+
+* Install Arduino IDE
+* Install the ESp8266 and Deauther boards as decribed [here](https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide)
+* Install [SimpleCLI Arduino library](https://github.com/spacehuhn/SimpleCLI#installation) (**also available in the Arduino library manager**)
+* Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it
+* Open `esp8266_deauther/esp8266_deauther.ino` with Arduino
+* Select an `ESP8266 Deauther` board in Arduino under `tools` -> `board`
+* Connect your device and select the serial port in Arduino under `tools` -> `port`
+* Click Upload button
 
 ## License
 
