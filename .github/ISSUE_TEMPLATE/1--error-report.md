@@ -1,10 +1,9 @@
 ---
-name: 1. Error report
+name: 1. Problem or error report
 about: I encountered a problem and need help to solve it
 title: ""
 labels: help wanted
 assignees: ''
-
 ---
 
 > Have you searched for existing (open and closed) issues describing the same problem?
