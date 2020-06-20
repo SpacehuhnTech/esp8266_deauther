@@ -11,14 +11,19 @@ Currently implemented:
  
 ## Installation
 
-* Install Arduino IDE
-* Install the ESp8266 and Deauther boards as decribed [here](https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide)
-* Install [SimpleCLI Arduino library](https://github.com/spacehuhn/SimpleCLI#installation) (**also available in the Arduino library manager**)
-* Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it
-* Open `esp8266_deauther/esp8266_deauther.ino` with Arduino
-* Select an `ESP8266 Deauther` board in Arduino under `tools` -> `board`
-* Connect your device and select the serial port in Arduino under `tools` -> `port`
-* Click Upload button
+1. Install Arduino IDE
+2. Install the ESp8266 and Deauther boards as decribed [here](https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide)
+3. Install [SimpleCLI Arduino library](https://github.com/spacehuhn/SimpleCLI#installation) (**also available in the Arduino library manager**)
+4. Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it
+5. Open `esp8266_deauther/esp8266_deauther.ino` with Arduino
+6. Select an `ESP8266 Deauther` board in Arduino under `tools` -> `board`
+7. Connect your device and select the serial port in Arduino under `tools` -> `port`
+8. Click Upload button
+
+## Usage
+
+We recommend using the [Huhnitor](https://github.com/spacehuhntech/huhnitor) for an easy way of interacting with the Deauther serial interface.  
+But you can of course use any other serial terminal with 115200baud too.  
 
 ## License
 
