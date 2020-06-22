@@ -1,5 +1,7 @@
 # ESP8266 Deauther 3.0
 
+![Build V3](https://github.com/SpacehuhnTech/nightly-deauther/workflows/Build%20V3/badge.svg)
+
 **This version is still in development!**  
 
 [Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
@@ -9,7 +11,16 @@ Currently implemented:
 - [ ] Web Interface
 - [ ] Display (OLED) Interface
  
-## Installation
+## Install using .bin file
+
+1. Download latest compiled .bin file from [nightly-deauther/releases](https://github.com/SpacehuhnTech/nightly-deauther/releases)
+2. Install [esptool](https://github.com/espressif/esptool/)
+3. Connect your ESP8266
+4. Flash it by running `esptool.py -p <PORT> -b 115200 write_flash 0 <BIN_FILE>`.  
+   Be sure to replace `<PORT>` with the serial port  
+   and `<BIN_FILE>` with the path of the previously download .bin file.
+
+## Install using Arduino IDE
 
 1. Install Arduino IDE
 2. Install the ESp8266 and Deauther boards as decribed [here](https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide)
