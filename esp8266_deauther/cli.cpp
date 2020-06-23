@@ -8,6 +8,10 @@
 
 #include <SimpleCLI.h> // SimpleCLI library
 
+#if SIMPLECLI_VERSION_MAJOR == 1 && SIMPLECLI_VERSION_MINOR < 1
+    #error "Please update SimpleCLI library"
+#endif
+
 #include "debug.h"
 #include "scan.h"
 #include "strh.h"
@@ -63,7 +67,9 @@ void rssi_meter_cb(int8_t rssi) {
 
 namespace cli {
     // ===== PRIVATE ===== //
-    SimpleCLI cli;                    // !< Instance of SimpleCLI library
+    SimpleCLI cli { 64, 64 };                    // !< Instance of SimpleCLI library
+
+    unsigned long timer = 0;          // !< Timestamp to wakeup, if sleep command was used
 
 #ifdef ENABLE_HISTORY
     StringList history(HISTORY_SIZE); // !< Command history
@@ -1368,6 +1374,16 @@ namespace cli {
             cli.pause();
         });
         cmd_wait.setDescription("  Wait until scan or attack has finished");
+
+        Command cmd_sleep = cli.addCommand("sleep", [](cmd* c){
+            Command cmd(c);
+
+            timer = millis() + parse_time(cmd.getArg("t").getValue(), 1);
+            cli.pause();
+        });
+        cmd_sleep.addPosArg("t/ime", "");
+        cmd_sleep.setDescription("  Sleep for specified amount of time\r\n"
+                                "  -t: time to sleep");
     }
 
     void parse(const char* input) {
@@ -1456,8 +1472,9 @@ namespace cli {
     }
 
     void update() {
-        if(cli.paused() && !scan::active() && !attack::active()) {
+        if(cli.paused() && ((timer == 0 && !scan::active() && !attack::active()) || (millis() > timer))) {
             cli.unpause();
+            timer = 0;
         }
 
         if (debug_available()) {
