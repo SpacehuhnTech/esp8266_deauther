@@ -232,7 +232,7 @@ namespace cli {
                                  "  ---------\r\n"
                                  "  alias:   Give MAC addresses an alias\r\n"
                                  "  results: Display and filter scan results\r\n"
-                                 "Remember that you can always escape by typing 'exit'");
+                                 "Remember that you can always escape by typing 'stop'");
                 }
                 cmd += res;
             }
