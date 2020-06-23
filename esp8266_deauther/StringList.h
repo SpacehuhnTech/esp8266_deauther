@@ -62,8 +62,8 @@ class StringList {
         bool full() const;
         bool empty() const;
 
-        bool contains(const String& str) const;
-        virtual bool contains(const char* str) const;
+        bool contains(const String& str, bool case_sensitive = true) const;
+        virtual bool contains(const char* str, bool case_sensitive = true) const;
 };
 
 class SortedStringList : public StringList {
@@ -76,5 +76,5 @@ class SortedStringList : public StringList {
         using StringList::get;
 
         using StringList::contains;
-        bool contains(const char* str) const override;
+        bool contains(const char* str, bool case_sensitive = true) const override;
 };

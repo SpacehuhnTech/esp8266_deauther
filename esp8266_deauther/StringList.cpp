@@ -244,16 +244,16 @@ bool StringList::empty() const {
     return list.size == 0;
 }
 
-bool StringList::contains(const String& str) const {
-    return contains(str.c_str());
+bool StringList::contains(const String& str, bool case_sensitive) const {
+    return contains(str.c_str(), case_sensitive);
 }
 
-bool StringList::contains(const char* str) const {
+bool StringList::contains(const char* str, bool case_sensitive) const {
     debuglnF("[StringList] contains");
 
     str_t* tmp = list.begin;
 
-    while (tmp && strcmp(str, tmp->ptr) != 0) {
+    while (tmp && (case_sensitive ? (strcmp(str, tmp->ptr) != 0) : (stricmp(str, tmp->ptr) != 0))) {
         tmp = tmp->next;
     }
 
@@ -329,22 +329,22 @@ bool SortedStringList::push(const char* str, unsigned long len) {
     return true;
 }
 
-bool SortedStringList::contains(const char* str) const {
+bool SortedStringList::contains(const char* str, bool case_sensitive) const {
     debuglnF("[SortedStringList] contains");
 
     if (empty() ||
-        (strcmp(list.begin->ptr, str) > 0) ||
-        (strcmp(list.end->ptr, str) < 0)) {
+        (stricmp(list.begin->ptr, str) > 0) ||
+        (stricmp(list.end->ptr, str) < 0)) {
         return false;
     }
 
     str_t* tmp = list.begin;
 
-    int res = strcmp(tmp->ptr, str);
+    int res = stricmp(tmp->ptr, str);
 
     while (tmp->next && res < 0) {
         tmp = tmp->next;
-        res = strcmp(tmp->ptr, str);
+        res = case_sensitive ? strcmp(tmp->ptr, str) : stricmp(tmp->ptr, str);
     }
 
     return res == 0;
