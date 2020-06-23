@@ -7,7 +7,8 @@ assignees: ''
 
 ---
 
-> Please search for existing (open and closed) issues first to avoid duplicates.
+**Do similar feature requests issues already exist (open and closed)?**
+If yes, please link them here:
 
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
