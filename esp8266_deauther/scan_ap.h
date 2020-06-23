@@ -85,3 +85,7 @@ void update_ap_scan() {
         stopAP();
     }
 }
+
+bool ap_scan_active() {
+    return ap_data.enabled;
+}

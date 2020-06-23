@@ -59,3 +59,7 @@ void update_rssi_scan() { /*
                              data.ch_update_time = current_time;
                              }*/
 }
+
+bool rssi_scan_active() {
+    return rssi_data.enabled;
+}

@@ -1363,6 +1363,11 @@ namespace cli {
         cmd_vendor.setDescription("  Vendor (manufacturer) lookup\r\n"
                                   "  -mac: MAC address(es)\r\n"
                                   "  -e:   list only exact matchess");
+
+        Command cmd_wait = cli.addCommand("wait", [](cmd* c){
+            cli.pause();
+        });
+        cmd_wait.setDescription("  Wait until scan or attack has finished");
     }
 
     void parse(const char* input) {
@@ -1451,6 +1456,10 @@ namespace cli {
     }
 
     void update() {
+        if(cli.paused() && !scan::active() && !attack::active()) {
+            cli.unpause();
+        }
+
         if (debug_available()) {
             //  String input = debug_read();
             String input;

@@ -212,3 +212,7 @@ void update_auth_scan() {
         }
     }
 }
+
+bool auth_scan_active() {
+    return auth_data.enabled;
+}

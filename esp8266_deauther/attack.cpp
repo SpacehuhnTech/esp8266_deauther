@@ -29,4 +29,8 @@ namespace attack {
         update_deauth_attack();
         update_probe_attack();
     }
+
+    bool active() {
+        return beacon_active() || deauth_active() || probe_active();
+    }
 }

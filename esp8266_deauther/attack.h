@@ -61,4 +61,6 @@ namespace attack {
 
     bool beaconBSSID(uint8_t* bssid);
     String getBeacon(uint8_t num);
+
+    bool active();
 }

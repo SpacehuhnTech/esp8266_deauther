@@ -202,3 +202,7 @@ void update_deauth_attack() {
         }
     }
 }
+
+bool deauth_active() {
+    return deauth_data.enabled;
+}

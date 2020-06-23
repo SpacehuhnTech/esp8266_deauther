@@ -62,4 +62,6 @@ namespace scan {
 
     AccessPointList& getAccessPoints();
     StationList& getStations();
+
+    bool active();
 }

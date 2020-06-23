@@ -202,3 +202,7 @@ void update_probe_attack() {
         }
     }
 }
+
+bool probe_active() {
+    return probe_data.enabled;
+}

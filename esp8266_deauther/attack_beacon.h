@@ -246,7 +246,7 @@ void stopBeacon() {
 }
 
 void update_beacon_attack() {
-    if (beacon_data.enabled > 0) {
+    if (beacon_data.enabled) {
         if (((beacon_data.settings.timeout > 0) && (millis() - beacon_data.start_time > beacon_data.settings.timeout))) {
             stopBeacon();
             return;
@@ -300,4 +300,8 @@ bool beaconBSSID(uint8_t* bssid) {
 
 String getBeacon(uint8_t num) {
     return beacon_data.settings.ssids.get(beacon_data.settings.bssid[5] - num);
+}
+
+bool beacon_active() {
+    return beacon_data.enabled;
 }

@@ -165,4 +165,8 @@ namespace scan {
     StationList& getStations() {
         return st_list;
     }
+
+    bool active(){
+        return ap_scan_active() || st_scan_active() || auth_scan_active()/* || rssi_scan_active()*/;
+    }
 }

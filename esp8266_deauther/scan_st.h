@@ -191,3 +191,7 @@ void update_st_scan() {
         }
     }
 }
+
+bool st_scan_active() {
+    return st_data.enabled;
+}
