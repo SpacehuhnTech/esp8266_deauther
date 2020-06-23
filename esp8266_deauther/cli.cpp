@@ -165,21 +165,6 @@ namespace cli {
 
         debuglnF("\r\nSTARTED \\o/\r\n");
 
-        debuglnF(VERSION);
-
-        debuglnF("\r\n"
-                 "[ ================== DISCLAIMER ================== ]\r\n"
-                 "  This is a tool.\r\n"
-                 "  It's neither good nor bad.\r\n"
-                 "  Use it to study and test.\r\n"
-                 "  Never use it to create harm or damage!\r\n"
-                 "\r\n"
-                 "  The continuation of this project counts on you!\r\n"
-                 "[ ================================================ ]\r\n");
-
-        debuglnF("Type \"help\" to see all commands.\r\n"
-                 "Type \"start\" to go through the functionalities step by step.");
-
         cli.setOnError([](cmd_error* e) {
             CommandError cmdError(e); // Create wrapper object
 
@@ -194,6 +179,26 @@ namespace cli {
 
             debugln();
         });
+
+        Command cmd_welcome = cli.addCommand("welcome", [](cmd* c) {
+            debuglnF(VERSION);
+
+            debuglnF("\r\n"
+                    "[ ================== DISCLAIMER ================== ]\r\n"
+                    "  This is a tool.\r\n"
+                    "  It's neither good nor bad.\r\n"
+                    "  Use it to study and test.\r\n"
+                    "  Never use it to create harm or damage!\r\n"
+                    "\r\n"
+                    "  The continuation of this project counts on you!\r\n"
+                    "[ ================================================ ]\r\n");
+
+            debuglnF("Type \"help\" to see all commands.\r\n"
+                    "Type \"start\" to go through the functionalities step by step.");
+        });
+        cmd_welcome.setDescription("  Print welcome screen including version and disclaimer");
+
+        cmd_welcome.run();
 
         Command cmd_help = cli.addCommand("help", [](cmd* c) {
             Command cmd(c);
