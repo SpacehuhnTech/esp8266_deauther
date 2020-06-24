@@ -17,4 +17,5 @@ namespace strh {
     String escape(String str);
     String time(unsigned long time);
     String channels(uint16_t reg);
+    String boolean(bool value);
 }

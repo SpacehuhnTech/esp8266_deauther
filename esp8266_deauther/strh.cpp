@@ -127,4 +127,12 @@ namespace strh {
         }
         return str;
     }
+
+    String boolean(bool value) {
+        if(value) {
+            return String(F("True"));
+        } else {
+            return String(F("False"));
+        }
+    }
 }

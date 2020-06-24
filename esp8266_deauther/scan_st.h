@@ -115,6 +115,7 @@ void startST(const st_scan_settings_t& settings) {
         }
     }
 
+    ap::pause();
     scan::stop();
 
     if (!st_data.settings.retain) st_list.clear();
@@ -170,6 +171,8 @@ void stopST() {
         debugln();
 
         print();
+
+        ap::resume();
     }
 }
 

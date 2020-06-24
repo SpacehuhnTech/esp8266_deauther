@@ -22,6 +22,7 @@
 #include "alias.h"
 #include "config.h"
 #include "result_filter.h"
+#include "ap.h"
 
 // ram usage
 extern "C" {
@@ -1236,6 +1237,7 @@ namespace cli {
             if (mode_str == "all") {
                 scan::stop();
                 attack::stop();
+                ap::stop();
             } else {
                 SortedStringList mode_list { mode_str };
                 mode_list.begin();
@@ -1255,13 +1257,15 @@ namespace cli {
                         attack::stopDeauth();
                     } else if (mode == "probe") {
                         attack::stopProbe();
+                    } else if (mode == "ap") {
+                        ap::stop();
                     }
                 }
             }
         });
         cmd_stop.addPosArg("mode", "all");
         cmd_stop.setDescription("  Stop scans or attacks\r\n"
-                                "  -mode: all,scan,auth,attack,beacon,deauth,probe (default=all)");
+                                "  -mode: all,scan,auth,attack,beacon,deauth,probe,ap (default=all)");
 
 #ifdef ENABLE_HISTORY
         Command cmd_history = cli.addCommand("history", [](cmd* c) {
@@ -1389,6 +1393,31 @@ namespace cli {
         cmd_sleep.addPosArg("t/ime", "");
         cmd_sleep.setDescription("  Sleep for specified amount of time\r\n"
                                 "  -t: time to sleep");
+
+        Command cmd_ap = cli.addCommand("ap", [](cmd* c) {
+            Command cmd(c);
+
+            String ssid { cmd.getArg("s").getValue() };
+            String pswd { cmd.getArg("p").getValue() };
+            bool hidden { cmd.getArg("h").isSet() };
+            uint8_t channel { (uint8_t)cmd.getArg("ch").getValue().toInt() };
+            uint8_t bssid[6];
+            String bssid_str {cmd.getArg("bssid").getValue()};
+            parse_mac(bssid_str, bssid);
+        
+            ap::start(ssid, pswd, hidden, channel, bssid);
+        });
+        cmd_ap.addPosArg("s/sid");
+        cmd_ap.addPosArg("p/assword","");
+        cmd_ap.addFlagArg("hidden");
+        cmd_ap.addArg("ch/annel","1");
+        cmd_ap.addArg("b/ssid","random");
+        cmd_ap.setDescription("  Start access point\r\n"
+                              "  -s:  SSID network name\r\n"
+                              "  -p:  Password with at least 8 characters\r\n"
+                              "  -h:  Hidden network\r\n"
+                              "  -ch: Channel (default=1)\r\n"
+                              "  -b:  BSSID MAC address (default=random)");
     }
 
     void parse(const char* input) {

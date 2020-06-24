@@ -13,6 +13,7 @@
 #include "attack.h"
 #include "alias.h"
 #include "sysh.h"
+#include "ap.h"
 
 #include <ESP8266WiFi.h>
 

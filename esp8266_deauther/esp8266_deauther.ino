@@ -10,6 +10,7 @@
 #include "attack.h"
 #include "eeprom.h"
 #include "alias.h"
+#include "ap.h"
 
 void setup() {
     cli::begin();
@@ -21,4 +22,5 @@ void loop() {
     cli::update();
     attack::update();
     scan::update();
+    ap::update();
 }
