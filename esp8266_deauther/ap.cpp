@@ -151,7 +151,7 @@ namespace ap {
 
         debugln();
 
-        debuglnF("> Type 'stop ap' to stop the access point");
+        debuglnF("Type 'stop ap' to stop the access point");
     }
 
     void stop() {
