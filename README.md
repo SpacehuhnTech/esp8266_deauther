@@ -6,10 +6,26 @@
 
 [Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
 
-Currently implemented:  
+## Currently implemented
+
 - [x] Serial Command Line Interface
 - [ ] Web Interface
 - [ ] Display (OLED) Interface
+
+## What's new
+
+- CLI
+  - Powerful new command line interface
+  - Support for the [Huhnitor](github.com/spacehuhntech/huhnitor) an easy to use, cross platform serial terminal
+  - User friendly `start` command to run complex commands step by step
+- Attack
+  - More options for specific targeting
+  - Advertise wifi networks using beacons to a single or a set of devices
+  - Deauth a device on multiple channels
+- Scan
+  - Discover probe requests from devices nearby, disclosing what networks they have previously connected to
+  - See MAC addresses of devices which try to connect to networks advertised by the beacon attack
+  - Alias MAC addresses to easily recognize known devices
  
 ## Install using .bin file
 
