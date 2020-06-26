@@ -1380,6 +1380,7 @@ namespace cli {
                                   "  -e:   list only exact matchess");
 
         Command cmd_wait = cli.addCommand("wait", [](cmd* c){
+            debugln("> Paused CLI");
             cli.pause();
         });
         cmd_wait.setDescription("  Wait until scan or attack has finished");
@@ -1506,7 +1507,8 @@ namespace cli {
     }
 
     void update() {
-        if(cli.paused() && ((timer == 0 && !scan::active() && !attack::active()) || (millis() > timer))) {
+        if(cli.paused() && ((timer == 0 && !scan::active() && !attack::active()) || (timer > 0 && millis() > timer))) {
+            debugln("> Resumed CLI");
             cli.unpause();
             timer = 0;
         }
