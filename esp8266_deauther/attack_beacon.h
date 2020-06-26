@@ -198,15 +198,13 @@ void startBeacon(const beacon_attack_settings_t& settings) {
         uint8_t bssid[6];
         memcpy(bssid, beacon_data.settings.bssid, 6);
 
-        uint8_t last_byte = bssid[5];
-
         beacon_data.settings.ssids.begin();
 
         while (beacon_data.settings.ssids.available()) {
-            bssid[5] = last_byte++;
             debug(strh::left(34, '"' + beacon_data.settings.ssids.iterate() + '"'));
             debug(' ');
             debugln(strh::mac(bssid));
+            bssid[5]++;
         }
 
         debuglnF("====================================================");
@@ -276,11 +274,7 @@ void update_beacon_attack() {
             uint8_t bssid[6];
             memcpy(bssid, beacon_data.settings.bssid, 6);
 
-            uint8_t last_byte = bssid[5];
-
             for (int i = 0; i<beacon_data.settings.ssids.size(); ++i) {
-                bssid[5] = last_byte++;
-
                 String ssid = beacon_data.settings.ssids.iterate();
 
                 beacon_data.pkts_per_second += send_beacon(ch,
@@ -289,6 +283,8 @@ void update_beacon_attack() {
                                                            ssid.c_str(),
                                                            beacon_data.settings.enc);
                 delay(1);
+
+                bssid[5]++;
             }
         }
     }
@@ -299,7 +295,7 @@ bool beaconBSSID(uint8_t* bssid) {
 }
 
 String getBeacon(uint8_t num) {
-    return beacon_data.settings.ssids.get(beacon_data.settings.bssid[5] - num);
+    return beacon_data.settings.ssids.get(num - beacon_data.settings.bssid[5]);
 }
 
 bool beacon_active() {
