@@ -860,8 +860,8 @@ namespace cli {
                 beacon_settings.timeout = parse_time(time_str, 1000);
             }
 
-            { // Scan
-                beacon_settings.scan = cmd.getArg("scan").isSet();
+            { // Monitor connection tries
+                beacon_settings.scan = cmd.getArg("m").isSet();
             }
 
             { // Save
