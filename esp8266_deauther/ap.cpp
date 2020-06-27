@@ -162,6 +162,7 @@ namespace ap {
         if (ap_settings.enabled || ap_settings.paused) {
             WiFi.persistent(false);
             WiFi.disconnect(true);
+            WiFi.mode(WIFI_STA);
             wifi_set_opmode(STATION_MODE);
 
             ap_settings.enabled = false;

@@ -156,6 +156,12 @@ void startST(const st_scan_settings_t& settings) {
 
     sysh::set_next_ch(st_data.settings.channels);
 
+    WiFi.persistent(false);
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_STA);
+    wifi_set_opmode(STATION_MODE);
+
+    wifi_promiscuous_enable(false);
     wifi_set_promiscuous_rx_cb(station_sniffer);
     wifi_promiscuous_enable(true);
 }
