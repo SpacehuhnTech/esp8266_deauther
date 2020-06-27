@@ -39,13 +39,49 @@
 ## Install using Arduino IDE
 
 1. Install Arduino IDE
-2. Install the ESp8266 and Deauther boards as decribed [here](https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Installation#compiling-using-arduino-ide)
-3. Install [SimpleCLI Arduino library](https://github.com/spacehuhn/SimpleCLI#installation) (**also available in the Arduino library manager**)
-4. Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it
-5. Open `esp8266_deauther/esp8266_deauther.ino` with Arduino
-6. Select an `ESP8266 Deauther` board in Arduino under `tools` -> `board`
-7. Connect your device and select the serial port in Arduino under `tools` -> `port`
-8. Click Upload button
+2. In Arduino go to `File` -> `Preferences` add both URLs to `Additional Boards Manager URLs`
+   `http://arduino.esp8266.com/stable/package_esp8266com_index.json`  
+   `https://raw.githubusercontent.com/wiki/tobozo/Arduino/package_deauther_index.json`  
+3. In Arduino go to `Tools` -> `Boar`d -> `Boards Manager`, search `esp8266` and install `esp8266` and `arduino-esp8266-deauther`
+4. In Arduino go to `Sketch` -> `Libraries` -> `Include Library` -> `Manage Libraries...`, search and install [`SimpleCLI`](https://github.com/spacehuhn/SimpleCLI#installation)  
+5. Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it  
+   or `git clone https://github.com/SpacehuhnTech/esp8266_deauther`, `cd esp8266` and `git checkout v3`
+6. Open `esp8266_deauther/esp8266_deauther.ino` with Arduino
+7. Select an `ESP8266 Deauther` board in Arduino under `tools` -> `board`
+8. Connect your device and select the serial port in Arduino under `tools` -> `port`
+9. Click Upload button
+
+## Install using Arduino-CLI
+
+1. [Install Arduino-CLI](https://arduino.github.io/arduino-cli/installation/)  
+   `brew install arduino-cli`
+2. Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and extracting it  
+   or `git clone https://github.com/SpacehuhnTech/esp8266_deauther`,  
+   `cd esp8266` and  
+   `git checkout v3`
+3. Update board URLs `arduino-cli core update-index`
+4. Install [EPS8266 Arduino Core](https://github.com/esp8266/Arduino)  
+   `arduino-cli core install esp8266:esp8266`
+5. Install [ESP8266 Deauther Core](https://github.com/tobozo/Arduino/)  
+   `arduino-cli core install deauther:esp8266`
+6. Install [SimpleCLI library](https://github.com/spacehuhn/simplecli)  
+   `arduino-cli lib update-index` and  
+   `arduino-cli lib install SimpleCLI`
+7. Connect and find port of ESP8266 dev board  
+  `arduino-cli board list`
+8. Compile  
+  `arduino-cli compile esp8266_deauther --fqbn deauther:esp8266:dstike`
+9. Upload  
+   `arduino-cli upload -p <PORT> --fqbn deauther:esp8266:dstike`
+
+## Debug Exceptions using Arduino IDE
+
+1. Install [EspExceptionDecoder](https://github.com/me-no-dev/EspExceptionDecoder) by [downloading](https://github.com/me-no-dev/EspExceptionDecoder/releases/download/1.1.0/EspExceptionDecoder-1.1.0.zip) and extracting it to `<home_dir>/Arduino/tools/`  
+  The resulting structure should look like this `<home_dir>/Arduino/tools/EspExceptionDecoder/tool/EspExceptionDecoder.jar`  
+2. Open Arduino IDE and press compile or upload
+3. Copy stack trace output
+4. In Arduino IDE open `Tools` -> `ESP Exception Decoder`
+5. Paste strack trace output
 
 ## Usage
 
