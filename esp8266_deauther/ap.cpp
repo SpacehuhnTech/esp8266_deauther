@@ -109,6 +109,7 @@ namespace ap {
             ch = 1;
         }
 
+        stop();
         scan::stopST();
 
         ap_settings.enabled = true;
