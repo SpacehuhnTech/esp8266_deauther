@@ -876,7 +876,7 @@ namespace cli {
         cmd_beacon.addPosArg("enc/ryption", "open");
         cmd_beacon.addArg("ch/annel", "1");
         cmd_beacon.addArg("r/ate", "10");
-        cmd_beacon.addFlagArg("scan,auth,mon/itor");
+        cmd_beacon.addFlagArg("auth,m/on/itor");
         cmd_beacon.addFlagArg("save");
         cmd_beacon.addArg("t/ime/out", "5min");
         cmd_beacon.setDescription(
@@ -887,7 +887,7 @@ namespace cli {
             "  -enc:  encryption [open,wpa2] (default=open)\r\n"
             "  -ch:   2.4 GHz channel(s) [1-14] (default=1)\r\n"
             "  -r:    packets per second per SSID (default=10)\r\n"
-            "  -mon:  scan for authentications\r\n"
+            "  -m:    scan for authentications\r\n"
             "  -save: save probe requests from auth. scan\r\n"
             "  -t:    attack timeout (default=5min)"
             );
