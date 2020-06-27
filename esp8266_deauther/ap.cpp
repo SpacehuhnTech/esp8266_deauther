@@ -7,6 +7,7 @@
 #include "ap.h"
 #include "debug.h"
 #include "strh.h"
+#include "scan.h"
 
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
@@ -108,6 +109,8 @@ namespace ap {
             ch = 1;
         }
 
+        scan::stopST();
+
         ap_settings.enabled = true;
         ap_settings.paused = false;
         strncpy(ap_settings.ssid, ssid.c_str(), 32);
@@ -155,14 +158,16 @@ namespace ap {
     }
 
     void stop() {
-        if (ap_settings.enabled) {
-            wifi_promiscuous_enable(0);
+        if (ap_settings.enabled || ap_settings.paused) {
             WiFi.persistent(false);
             WiFi.disconnect(true);
             wifi_set_opmode(STATION_MODE);
+
             ap_settings.enabled = false;
+            ap_settings.paused = false;
             
             debuglnF("> Stopped access point");
+            debugln();
         }
     }
     
@@ -181,6 +186,7 @@ namespace ap {
             ap_settings.paused = false;
             
             debuglnF("> Resumed access point");
+            debugln();
         }
     }
 

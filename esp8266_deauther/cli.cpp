@@ -1235,9 +1235,9 @@ namespace cli {
             String mode_str { cmd.getArg("mode").getValue() };
 
             if (mode_str == "all") {
-                scan::stop();
-                attack::stop();
                 ap::stop();
+                attack::stop();
+                scan::stop();
             } else {
                 SortedStringList mode_list { mode_str };
                 mode_list.begin();
