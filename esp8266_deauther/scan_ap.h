@@ -21,6 +21,7 @@ void startAP(const ap_scan_settings_t& settings) {
         }
     }
 
+    ap::pause();
     scan::stop();
 
     if (!settings.retain) ap_list.clear();
@@ -60,6 +61,7 @@ void stopAP() {
             printAPs();
             startST(ap_data.settings.st_settings);
         } else {
+            ap::resume();
             print();
         }
     }
