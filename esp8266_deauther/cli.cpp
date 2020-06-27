@@ -271,7 +271,7 @@ namespace cli {
                     }
 
                     { // Scan on channel(s)
-                        CLI_READ_RES_DEFAULT("Scan on wich channel(s)?\r\n"
+                        CLI_READ_RES_DEFAULT("Scan on which channel(s)?\r\n"
                                              "  1-14: WiFi channel(s) to search on (for example: 1,6,11)",
                                              "all");
                         if ((res != "all") && (res != "1-14")) cmd += " -ch " + res;
