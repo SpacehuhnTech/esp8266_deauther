@@ -42,7 +42,7 @@
 2. In Arduino go to `File` -> `Preferences` add both URLs to `Additional Boards Manager URLs`
    `http://arduino.esp8266.com/stable/package_esp8266com_index.json`  
    `https://raw.githubusercontent.com/wiki/tobozo/Arduino/package_deauther_index.json`  
-3. In Arduino go to `Tools` -> `Boar`d -> `Boards Manager`, search `esp8266` and install `esp8266` and `arduino-esp8266-deauther`
+3. In Arduino go to `Tools` -> `Board` -> `Boards Manager`, search `esp8266` and install `esp8266` and `arduino-esp8266-deauther`
 4. In Arduino go to `Sketch` -> `Libraries` -> `Include Library` -> `Manage Libraries...`, search and install [`SimpleCLI`](https://github.com/spacehuhn/SimpleCLI#installation)  
 5. Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it  
    or `git clone https://github.com/SpacehuhnTech/esp8266_deauther`, `cd esp8266` and `git checkout v3`
