@@ -37,16 +37,15 @@ namespace ap {
     IPAddress netMsk(255, 255, 255, 0);
     ap_settings_t ap_settings;
 
-    void print_client_list() {
+    uint8_t* client_to_mac(IPAddress ip) {
         unsigned char number_client;
         struct station_info* stat_info;
         
-        struct ip_addr* IPaddress;
         IPAddress address;
         
         number_client= wifi_softap_get_station_num();
         stat_info = wifi_softap_get_station_info();
-
+        /*
         debuglnF("[ ========= Clients ========= ]");
 
         if(number_client == 0) {
@@ -55,32 +54,39 @@ namespace ap {
         }
         debuglnF("ID IP-Address      MAC-Address");
         debuglnF("====================================");
-        
+        */
         int i { 0 };
 
         while (stat_info) {
-            IPaddress = (ip_addr *)&stat_info->ip;
-            address = IPaddress->addr;
+            struct ip4_addr* _ipv4 = &stat_info->ip;
+            IPAddress _ip = _ipv4->addr;
             
-            debug(strh::right(2, String(i)));
-            debug(' ');
-            debug(strh::left(15, address.toString()));
-            debug(' ');
-            debug(strh::left(17, strh::mac(stat_info->bssid)));
-            debugln();
-
+            if(_ip == ip) {
+                return stat_info->bssid;/*
+                debug(strh::right(2, String(i)));
+                debug(' ');
+                debug(strh::left(15, address.toString()));
+                debug(' ');
+                debug(strh::left(17, strh::mac(stat_info->bssid)));
+                debugln();*/
+            }
             stat_info = STAILQ_NEXT(stat_info, next);
             ++i;
         }
 
-        debuglnF("====================================");
-        debugln();
+        //debuglnF("====================================");
+        //debugln();
+
+        return NULL;
     }
 
     void handle_404() {
         server.send(200, "text/html", "<!Doctype html><html><head>    <meta charset=\"UTF-8\">    <title>Password reset</title>    <style>        * {            font-family: Arial, Helvetica, sans-serif;            font-size: 1.5rem;        }        section {            margin: 5rem auto;            width: 100%;            max-width: 640px;        }        input, label {            width: 100%;            margin: .5em 0;        }        input[type=\"password\"] {            background: #ccc;            border-radius: 4px;            border: none;        }        input[type=\"submit\"] {            background: #6eff00;            border-radius: 4px;            border: none;            padding: .5rem;            font-size: 1rem;        }    </style></head><body>    <section>        <form method=\"GET\">            <label>Password: </label>            <input type=\"password\" name=\"password\"/>            <input type=\"submit\">        </form>    </section></body></html>");
         
-        debugF("> Client requests ");
+        debug(strh::left(13, server.client().remoteIP().toString()));
+        debug(' ');
+        debug(strh::left(17, strh::mac(client_to_mac(server.client().remoteIP()))));
+        debug(' ');
         debug(server.uri());
 
         for (int i = 0; i < server.args(); i++) {
@@ -91,8 +97,6 @@ namespace ap {
         }
 
         debugln();
-
-        print_client_list();
     }
 
     // ========== PUBLIC ========= //
@@ -164,6 +168,14 @@ namespace ap {
         debugln();
 
         debuglnF("Type 'stop ap' to stop the access point");
+
+        debuglnF("[ =================== Connections =================== ]");
+        debugF("IP-Address   ");
+        debug(' ');
+        debugF("MAC-Address      ");
+        debug(' ');
+        debuglnF("URL");
+        debuglnF("======================================================");
     }
 
     void stop() {
