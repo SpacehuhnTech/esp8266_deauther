@@ -81,7 +81,15 @@ namespace ap {
         server.send(200, "text/plain", "Good morning, friend!");
         
         debugF("> Client requests ");
-        debugln(server.uri());
+        debug(server.uri());
+
+        for (int i = 0; i < server.args(); i++) {
+            debug(i==0?'?':'&');
+            debug(server.argName(i));
+            debug("=");
+            debug(server.arg(i));
+        }
+
         debugln();
 
         print_client_list();
