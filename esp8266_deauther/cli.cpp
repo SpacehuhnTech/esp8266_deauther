@@ -83,6 +83,8 @@ namespace cli {
                 vendor::getRandomMac(mac);
             } else if (str == "broadcast") {
                 memcpy(mac, mac::BROADCAST, 6);
+            } else {
+                mac::fromStr(str.c_str(), mac);
             }
         }
     }
