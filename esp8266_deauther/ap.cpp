@@ -59,7 +59,7 @@ namespace ap {
         int i { 0 };
 
         while (stat_info) {
-            IPaddress = &stat_info->ip;
+            IPaddress = (ip_addr *)&stat_info->ip;
             address = IPaddress->addr;
             
             debug(strh::right(2, String(i)));
