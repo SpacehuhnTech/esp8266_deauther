@@ -41,8 +41,6 @@ namespace ap {
         unsigned char number_client;
         struct station_info* stat_info;
         
-        IPAddress address;
-        
         number_client= wifi_softap_get_station_num();
         stat_info = wifi_softap_get_station_info();
         /*
@@ -56,12 +54,14 @@ namespace ap {
         debuglnF("====================================");
         */
         int i { 0 };
+        struct ip_addr* IPaddress;
+        IPAddress address;
 
         while (stat_info) {
-            struct ip4_addr* _ipv4 = &stat_info->ip;
-            IPAddress _ip = _ipv4->addr;
+            IPaddress = (ip_addr *)&stat_info->ip;
+            address = IPaddress->addr;
             
-            if(_ip == ip) {
+            if(address == ip) {
                 return stat_info->bssid;/*
                 debug(strh::right(2, String(i)));
                 debug(' ');
