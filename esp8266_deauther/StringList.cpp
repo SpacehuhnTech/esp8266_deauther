@@ -253,7 +253,7 @@ bool StringList::contains(const char* str, bool case_sensitive) const {
 
     str_t* tmp = list.begin;
 
-    while (tmp && (case_sensitive ? (strcmp(str, tmp->ptr) != 0) : (stricmp(str, tmp->ptr) != 0))) {
+    while (tmp && (case_sensitive ? (strcmp(str, tmp->ptr) != 0) : (strcasecmp(str, tmp->ptr) != 0))) {
         tmp = tmp->next;
     }
 
@@ -333,18 +333,18 @@ bool SortedStringList::contains(const char* str, bool case_sensitive) const {
     debuglnF("[SortedStringList] contains");
 
     if (empty() ||
-        (stricmp(list.begin->ptr, str) > 0) ||
-        (stricmp(list.end->ptr, str) < 0)) {
+        (strcasecmp(list.begin->ptr, str) > 0) ||
+        (strcasecmp(list.end->ptr, str) < 0)) {
         return false;
     }
 
     str_t* tmp = list.begin;
 
-    int res = stricmp(tmp->ptr, str);
+    int res = strcasecmp(tmp->ptr, str);
 
     while (tmp->next && res < 0) {
         tmp = tmp->next;
-        res = case_sensitive ? strcmp(tmp->ptr, str) : stricmp(tmp->ptr, str);
+        res = case_sensitive ? strcmp(tmp->ptr, str) : strcasecmp(tmp->ptr, str);
     }
 
     return res == 0;
