@@ -1,5 +1,6 @@
 #include "CLI.h"
 
+#include <LittleFS.h>
 #include "settings.h"
 
 /*
@@ -852,7 +853,7 @@ void CLI::runCommand(String input) {
         prntln(macToStr(mac));
 
         FSInfo fs_info;
-        SPIFFS.info(fs_info);
+        LittleFS.info(fs_info);
         sprintf(s, str(
                     CLI_SYSTEM_RAM_OUT).c_str(), fs_info.usedBytes, fs_info.usedBytes / (fs_info.totalBytes / 100), fs_info.totalBytes - fs_info.usedBytes,
                 (fs_info.totalBytes - fs_info.usedBytes) / (fs_info.totalBytes / 100), fs_info.totalBytes);
@@ -860,7 +861,7 @@ void CLI::runCommand(String input) {
         sprintf(s, str(CLI_SYSTEM_SPIFFS_OUT).c_str(), fs_info.blockSize, fs_info.pageSize);
         prnt(String(s));
         prntln(CLI_FILES);
-        Dir dir = SPIFFS.openDir(String(SLASH));
+        Dir dir = LittleFS.openDir(String(SLASH));
 
         while (dir.next()) {
             prnt(String(SPACE) + String(SPACE) + dir.fileName() + String(SPACE));
@@ -896,7 +897,7 @@ void CLI::runCommand(String input) {
     // format
     else if (eqlsCMD(0, CLI_FORMAT)) {
         prnt(CLI_FORMATTING_SPIFFS);
-        SPIFFS.format();
+        LittleFS.format();
         prntln(SETUP_OK);
     }
 

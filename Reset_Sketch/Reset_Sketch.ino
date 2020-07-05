@@ -1,5 +1,5 @@
 #include <EEPROM.h>
-#include <FS.h>
+#include <LittleFS.h>
 
 /*
   Upload this sketch to your ESP8266 to erase 
@@ -25,10 +25,10 @@ void setup() {
 
   Serial.println("EEPROM cleaned");
 
-  SPIFFS.begin();
+  LittleFS.begin();
   Serial.println("SPIFFS initialized");
 
-  SPIFFS.format();
+  LittleFS.format();
   Serial.println("SPIFFS cleaned");
   
   ESP.eraseConfig();

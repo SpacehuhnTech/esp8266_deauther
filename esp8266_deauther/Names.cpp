@@ -1,5 +1,7 @@
 #include "Names.h"
 
+#include <LittleFS.h>
+
 Names::Names() {
     list = new SimpleList<Device>;
 }

@@ -89,7 +89,7 @@ for file in html_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
+    copy_files_function += '  if(!LittleFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
     webserver_events += 'server.on(String(F("/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_HTML);\n});\n'
 
 for file in css_files:
@@ -117,7 +117,7 @@ for file in css_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
+    copy_files_function += '  if(!LittleFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
     webserver_events += 'server.on(String(F("/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_CSS);\n});\n'
 
 for file in js_files:
@@ -149,7 +149,7 @@ for file in js_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/js/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/js/' + base_file + '.gz")));\n'
+    copy_files_function += '  if(!LittleFS.exists(String(F("/web/js/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/js/' + base_file + '.gz")));\n'
     webserver_events += 'server.on(String(F("/js/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JS);\n});\n'
 
 for file in lang_files:
@@ -179,7 +179,7 @@ for file in lang_files:
         hex_formatted_content += "0x" + char + ", "
     hex_formatted_content = hex_formatted_content[:-2]
     progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-    copy_files_function += '  if(!SPIFFS.exists(String(F("/web/lang/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/lang/' + base_file + '.gz")));\n'
+    copy_files_function += '  if(!LittleFS.exists(String(F("/web/lang/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/lang/' + base_file + '.gz")));\n'
     webserver_events += 'server.on(String(F("/lang/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n});\n'
     if(len(load_lang) > 0):
         load_lang += '    else if(settings::getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
@@ -206,7 +206,7 @@ for char in hex_content:
     hex_formatted_content += "0x" + char + ", "
 hex_formatted_content = hex_formatted_content[:-2]
 progmem_definitions += "const char " + array_name + "[] PROGMEM = {" + hex_formatted_content + "};\n"
-copy_files_function += '    if(!SPIFFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
+copy_files_function += '    if(!LittleFS.exists(String(F("/web/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/' + base_file + '.gz")));\n'
 
 print("[+] Saving everything into webfiles.h...")
 f = open(arduino_file_path, 'w')

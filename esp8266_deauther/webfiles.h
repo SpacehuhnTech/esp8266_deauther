@@ -33,31 +33,31 @@ const char LICENSE[] PROGMEM = {0x1f, 0x8b, 0x08, 0x08, 0x7d, 0x98, 0xab, 0x5d, 
 
 void copyWebFiles(bool force){
 #ifdef USE_PROGMEM_WEB_FILES
-if(settings.getWebSettings().use_spiffs){
-  if(!SPIFFS.exists(String(F("/web/attack.html.gz"))) || force) progmemToSpiffs(attackhtml, sizeof(attackhtml), String(F("/web/attack.html.gz")));
-  if(!SPIFFS.exists(String(F("/web/index.html.gz"))) || force) progmemToSpiffs(indexhtml, sizeof(indexhtml), String(F("/web/index.html.gz")));
-  if(!SPIFFS.exists(String(F("/web/info.html.gz"))) || force) progmemToSpiffs(infohtml, sizeof(infohtml), String(F("/web/info.html.gz")));
-  if(!SPIFFS.exists(String(F("/web/scan.html.gz"))) || force) progmemToSpiffs(scanhtml, sizeof(scanhtml), String(F("/web/scan.html.gz")));
-  if(!SPIFFS.exists(String(F("/web/settings.html.gz"))) || force) progmemToSpiffs(settingshtml, sizeof(settingshtml), String(F("/web/settings.html.gz")));
-  if(!SPIFFS.exists(String(F("/web/ssids.html.gz"))) || force) progmemToSpiffs(ssidshtml, sizeof(ssidshtml), String(F("/web/ssids.html.gz")));
-  if(!SPIFFS.exists(String(F("/web/style.css.gz"))) || force) progmemToSpiffs(stylecss, sizeof(stylecss), String(F("/web/style.css.gz")));
-  if(!SPIFFS.exists(String(F("/web/js/attack.js.gz"))) || force) progmemToSpiffs(attackjs, sizeof(attackjs), String(F("/web/js/attack.js.gz")));
-  if(!SPIFFS.exists(String(F("/web/js/scan.js.gz"))) || force) progmemToSpiffs(scanjs, sizeof(scanjs), String(F("/web/js/scan.js.gz")));
-  if(!SPIFFS.exists(String(F("/web/js/settings.js.gz"))) || force) progmemToSpiffs(settingsjs, sizeof(settingsjs), String(F("/web/js/settings.js.gz")));
-  if(!SPIFFS.exists(String(F("/web/js/site.js.gz"))) || force) progmemToSpiffs(sitejs, sizeof(sitejs), String(F("/web/js/site.js.gz")));
-  if(!SPIFFS.exists(String(F("/web/js/ssids.js.gz"))) || force) progmemToSpiffs(ssidsjs, sizeof(ssidsjs), String(F("/web/js/ssids.js.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/cn.lang.gz"))) || force) progmemToSpiffs(cnlang, sizeof(cnlang), String(F("/web/lang/cn.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/cs.lang.gz"))) || force) progmemToSpiffs(cslang, sizeof(cslang), String(F("/web/lang/cs.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/de.lang.gz"))) || force) progmemToSpiffs(delang, sizeof(delang), String(F("/web/lang/de.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/en.lang.gz"))) || force) progmemToSpiffs(enlang, sizeof(enlang), String(F("/web/lang/en.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/es.lang.gz"))) || force) progmemToSpiffs(eslang, sizeof(eslang), String(F("/web/lang/es.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/fi.lang.gz"))) || force) progmemToSpiffs(filang, sizeof(filang), String(F("/web/lang/fi.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/fr.lang.gz"))) || force) progmemToSpiffs(frlang, sizeof(frlang), String(F("/web/lang/fr.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/it.lang.gz"))) || force) progmemToSpiffs(itlang, sizeof(itlang), String(F("/web/lang/it.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/ro.lang.gz"))) || force) progmemToSpiffs(rolang, sizeof(rolang), String(F("/web/lang/ro.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/ru.lang.gz"))) || force) progmemToSpiffs(rulang, sizeof(rulang), String(F("/web/lang/ru.lang.gz")));
-  if(!SPIFFS.exists(String(F("/web/lang/tlh.lang.gz"))) || force) progmemToSpiffs(tlhlang, sizeof(tlhlang), String(F("/web/lang/tlh.lang.gz")));
-    if(!SPIFFS.exists(String(F("/web/LICENSE.gz"))) || force) progmemToSpiffs(LICENSE, sizeof(LICENSE), String(F("/web/LICENSE.gz")));
+if(settings::getWebSettings().use_spiffs){
+  if(!LittleFS.exists(String(F("/web/attack.html.gz"))) || force) progmemToSpiffs(attackhtml, sizeof(attackhtml), String(F("/web/attack.html.gz")));
+  if(!LittleFS.exists(String(F("/web/index.html.gz"))) || force) progmemToSpiffs(indexhtml, sizeof(indexhtml), String(F("/web/index.html.gz")));
+  if(!LittleFS.exists(String(F("/web/info.html.gz"))) || force) progmemToSpiffs(infohtml, sizeof(infohtml), String(F("/web/info.html.gz")));
+  if(!LittleFS.exists(String(F("/web/scan.html.gz"))) || force) progmemToSpiffs(scanhtml, sizeof(scanhtml), String(F("/web/scan.html.gz")));
+  if(!LittleFS.exists(String(F("/web/settings.html.gz"))) || force) progmemToSpiffs(settingshtml, sizeof(settingshtml), String(F("/web/settings.html.gz")));
+  if(!LittleFS.exists(String(F("/web/ssids.html.gz"))) || force) progmemToSpiffs(ssidshtml, sizeof(ssidshtml), String(F("/web/ssids.html.gz")));
+  if(!LittleFS.exists(String(F("/web/style.css.gz"))) || force) progmemToSpiffs(stylecss, sizeof(stylecss), String(F("/web/style.css.gz")));
+  if(!LittleFS.exists(String(F("/web/js/attack.js.gz"))) || force) progmemToSpiffs(attackjs, sizeof(attackjs), String(F("/web/js/attack.js.gz")));
+  if(!LittleFS.exists(String(F("/web/js/scan.js.gz"))) || force) progmemToSpiffs(scanjs, sizeof(scanjs), String(F("/web/js/scan.js.gz")));
+  if(!LittleFS.exists(String(F("/web/js/settings.js.gz"))) || force) progmemToSpiffs(settingsjs, sizeof(settingsjs), String(F("/web/js/settings.js.gz")));
+  if(!LittleFS.exists(String(F("/web/js/site.js.gz"))) || force) progmemToSpiffs(sitejs, sizeof(sitejs), String(F("/web/js/site.js.gz")));
+  if(!LittleFS.exists(String(F("/web/js/ssids.js.gz"))) || force) progmemToSpiffs(ssidsjs, sizeof(ssidsjs), String(F("/web/js/ssids.js.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/cn.lang.gz"))) || force) progmemToSpiffs(cnlang, sizeof(cnlang), String(F("/web/lang/cn.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/cs.lang.gz"))) || force) progmemToSpiffs(cslang, sizeof(cslang), String(F("/web/lang/cs.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/de.lang.gz"))) || force) progmemToSpiffs(delang, sizeof(delang), String(F("/web/lang/de.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/en.lang.gz"))) || force) progmemToSpiffs(enlang, sizeof(enlang), String(F("/web/lang/en.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/es.lang.gz"))) || force) progmemToSpiffs(eslang, sizeof(eslang), String(F("/web/lang/es.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/fi.lang.gz"))) || force) progmemToSpiffs(filang, sizeof(filang), String(F("/web/lang/fi.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/fr.lang.gz"))) || force) progmemToSpiffs(frlang, sizeof(frlang), String(F("/web/lang/fr.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/it.lang.gz"))) || force) progmemToSpiffs(itlang, sizeof(itlang), String(F("/web/lang/it.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/ro.lang.gz"))) || force) progmemToSpiffs(rolang, sizeof(rolang), String(F("/web/lang/ro.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/ru.lang.gz"))) || force) progmemToSpiffs(rulang, sizeof(rulang), String(F("/web/lang/ru.lang.gz")));
+  if(!LittleFS.exists(String(F("/web/lang/tlh.lang.gz"))) || force) progmemToSpiffs(tlhlang, sizeof(tlhlang), String(F("/web/lang/tlh.lang.gz")));
+    if(!LittleFS.exists(String(F("/web/LICENSE.gz"))) || force) progmemToSpiffs(LICENSE, sizeof(LICENSE), String(F("/web/LICENSE.gz")));
 }
 #endif
 }

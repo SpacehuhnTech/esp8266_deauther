@@ -1,8 +1,6 @@
 #ifndef Names_h
 #define Names_h
 
-#include "Arduino.h"
-#include <FS.h>
 #include <ESP8266WiFi.h>
 extern "C" {
   #include "user_interface.h"

@@ -1,5 +1,6 @@
 #include "SSIDs.h"
 
+#include <LittleFS.h>
 #include "settings.h"
 
 SSIDs::SSIDs() {

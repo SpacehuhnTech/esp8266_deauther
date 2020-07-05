@@ -7,7 +7,7 @@
 #include <ESP8266WebServer.h>
 #include <DNSServer.h>
 #include <ESP8266mDNS.h>
-#include <FS.h>
+#include <LittleFS.h>
 extern "C" {
 #include "user_interface.h"
 }
@@ -139,10 +139,10 @@ bool handleFileRead(String path) {
 
     String contentType = getContentType(path);
 
-    if (!SPIFFS.exists(path)) {
-        if (SPIFFS.exists(path + str(W_DOT_GZIP))) path += str(W_DOT_GZIP);
-        else if (SPIFFS.exists(wifi_config_path + path)) path = wifi_config_path + path;
-        else if (SPIFFS.exists(wifi_config_path + path + str(W_DOT_GZIP))) path = wifi_config_path + path + str(
+    if (!LittleFS.exists(path)) {
+        if (LittleFS.exists(path + str(W_DOT_GZIP))) path += str(W_DOT_GZIP);
+        else if (LittleFS.exists(wifi_config_path + path)) path = wifi_config_path + path;
+        else if (LittleFS.exists(wifi_config_path + path + str(W_DOT_GZIP))) path = wifi_config_path + path + str(
                 W_DOT_GZIP);
         else {
             // prntln(W_NOT_FOUND);
@@ -150,7 +150,7 @@ bool handleFileRead(String path) {
         }
     }
 
-    File file = SPIFFS.open(path, "r");
+    File file = LittleFS.open(path, "r");
     server.streamFile(file, contentType);
     file.close();
     // prnt(SPACE);
@@ -167,7 +167,7 @@ void handleFileList() {
 
     String path = server.arg("dir");
     // Serial.println("handleFileList: " + path);
-    Dir dir = SPIFFS.openDir(path);
+    Dir dir = LittleFS.openDir(path);
 
     String output = String(OPEN_BRACKET); // {
     File   entry;
