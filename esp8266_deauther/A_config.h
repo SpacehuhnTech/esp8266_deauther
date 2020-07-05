@@ -1,10 +1,14 @@
 #ifndef config_h
 #define config_h
 
+#define ENABLE_DEBUG
+#define DEBUG_PORT Serial
+#define DEBUG_BAUD 115200
+
 #define DEFAULT_ESP8266
 
 /* ---------------------------------------------------------- */
-/* ===>> !!! Uncomment the board taht you're using: !!! <<=== */
+/* ===>> !!! Uncomment the board that you're using: !!! <<=== */
 /* ---------------------------------------------------------- */
 
 // #define NODEMCU
