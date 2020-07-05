@@ -65,8 +65,9 @@ void setup() {
 
     // start SPIFFS
     prnt(SETUP_MOUNT_SPIFFS);
-    bool spiffsError = !LittleFS.begin();
-    prntln(spiffsError ? SETUP_ERROR : SETUP_OK);
+    //bool spiffsError = !LittleFS.begin();
+    LittleFS.begin();
+    prntln(/*spiffsError ? SETUP_ERROR : */SETUP_OK);
 
     // Start EEPROM
     EEPROMHelper::begin(EEPROM_SIZE);
@@ -84,7 +85,7 @@ void setup() {
 #endif // ifdef FORMAT_EEPROM
 
     // Format SPIFFS when in boot-loop
-    if (spiffsError || !EEPROMHelper::checkBootNum(BOOT_COUNTER_ADDR)) {
+    if (/*spiffsError || */!EEPROMHelper::checkBootNum(BOOT_COUNTER_ADDR)) {
         prnt(SETUP_FORMAT_SPIFFS);
         LittleFS.format();
         prntln(SETUP_OK);

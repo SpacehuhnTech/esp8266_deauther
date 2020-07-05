@@ -332,7 +332,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
     });
 
     // aggressively caching static assets
-    server.serveStatic("/js", SPIFFS, String(wifi_config_path + "/js").c_str(), "max-age=86400");
+    server.serveStatic("/js", LittleFS, String(wifi_config_path + "/js").c_str(), "max-age=86400");
 
     // called when the url is not defined here
     // use it to load content from SPIFFS
