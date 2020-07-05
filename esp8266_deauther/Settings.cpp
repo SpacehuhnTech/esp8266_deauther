@@ -21,10 +21,13 @@ extern bool macValid(uint8_t* mac);
     str += String('"') + String(FPSTR(_NAME)) + String(F("\":")) + String(_VALUE?"true":"false") + String(',');
 
 #define JSON_VALUE(_NAME,_VALUE)\
+    str += String('"') + String(FPSTR(_NAME)) + String(F("\":\"")) + String(_VALUE) + String(F("\","));
+
+#define JSON_INT(_NAME,_VALUE)\
     str += String('"') + String(FPSTR(_NAME)) + String(F("\":")) + String(_VALUE) + String(',');
 
 #define JSON_HEX(_NAME,_BYTES,_LEN)\
-    str += String('"') + String(FPSTR(_NAME)) + String(F("\":"));\
+    str += String('"') + String(FPSTR(_NAME)) + String(F("\":\""));\
     for (int i = 0; i<_LEN; i++) {\
         if (i > 0) str += ':';\
         if (_BYTES[i] < 0x10) str += '0';\
@@ -33,7 +36,7 @@ extern bool macValid(uint8_t* mac);
     str += String(F("\","));
 
 #define JSON_DEC(_NAME,_BYTES,_LEN)\
-    str += String('"') + String(FPSTR(_NAME)) + String(F("\":"));\
+    str += String(F("\"")) + String(FPSTR(_NAME)) + String(F("\":\""));\
     for (int i = 0; i<_LEN; i++) {\
         if (i > 0) str += '.';\
         str += String(_BYTES[i]);\
@@ -59,25 +62,25 @@ namespace settings {
 
         // Autosave
         JSON_FLAG(S_JSON_AUTOSAVE, data.autosave.enabled);
-        JSON_VALUE(S_JSON_AUTOSAVETIME, data.autosave.time);
+        JSON_INT(S_JSON_AUTOSAVETIME, data.autosave.time);
 
         // Attack
         JSON_FLAG(S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
         JSON_FLAG(S_JSON_RANDOMTX, data.attack.random_tx);
-        JSON_VALUE(S_JSON_ATTACKTIMEOUT, data.attack.timeout);
-        JSON_VALUE(S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
-        JSON_VALUE(S_JSON_DEAUTHREASON, data.attack.deauth_reason);
+        JSON_INT(S_JSON_ATTACKTIMEOUT, data.attack.timeout);
+        JSON_INT(S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
+        JSON_INT(S_JSON_DEAUTHREASON, data.attack.deauth_reason);
         JSON_FLAG(S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
-        JSON_VALUE(S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
+        JSON_INT(S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
 
         // WiFi
-        JSON_VALUE(S_JSON_CHANNEL, data.wifi.channel);
+        JSON_INT(S_JSON_CHANNEL, data.wifi.channel);
         JSON_HEX(S_JSON_MACST, data.wifi.mac_st, 6);
         JSON_HEX(S_JSON_MACAP, data.wifi.mac_ap, 6);
 
         // Sniffer
-        JSON_VALUE(S_JSON_CHTIME, data.sniffer.channel_time);
-        JSON_VALUE(S_JSON_MIN_DEAUTHS, data.sniffer.min_deauth_frames);
+        JSON_INT(S_JSON_CHTIME, data.sniffer.channel_time);
+        JSON_INT(S_JSON_MIN_DEAUTHS, data.sniffer.min_deauth_frames);
 
         // Access Point
         JSON_VALUE(S_JSON_SSID, data.ap.ssid);
@@ -100,7 +103,7 @@ namespace settings {
 
         // Display
         JSON_FLAG(S_JSON_DISPLAYINTERFACE, data.display.enabled);
-        JSON_VALUE(S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
+        JSON_INT(S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
         
         str.setCharAt(str.length()-1, '}');
     }
@@ -120,13 +123,15 @@ namespace settings {
             data.version.minor = DEAUTHER_VERSION_MINOR;
             data.version.revision = DEAUTHER_VERSION_REVISION;
             debuglnF("OK");
+            save();
         } else {
             debuglnF("Invalid Hash");
-            debug(data.magic_num);
+            /*debug(data.magic_num);
             debugF(" != ");
-            debugln(MAGIC_NUM);
+            debugln(MAGIC_NUM);*/
 
             reset();
+            save();
         }
 
         // check and fix mac
@@ -176,6 +181,8 @@ namespace settings {
 
         data.display.enabled = USE_DISPLAY;
         data.display.timeout = DISPLAY_TIMEOUT;
+        
+        changed = true;
         
         debuglnF("Settings reset to default");
     }

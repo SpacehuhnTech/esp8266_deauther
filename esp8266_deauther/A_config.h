@@ -314,7 +314,7 @@
 #endif /* ifndef WEB_ENABLED */
 
 #ifndef WEB_CAPTIVE_PORTAL
-  #define WEB_CAPTIVE_PORTAL true
+  #define WEB_CAPTIVE_PORTAL false
 #endif /* ifndef WEB_CAPTIVE_PORTAL */
 
 #ifndef WEB_USE_SPIFFS
