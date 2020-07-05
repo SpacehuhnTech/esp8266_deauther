@@ -1,5 +1,7 @@
 #include "Scan.h"
 
+#include "settings.h"
+
 Scan::Scan() {
     list = new SimpleList<uint16_t>;
 }
@@ -126,7 +128,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
     else if (mode == SCAN_MODE_OFF) {
         wifi_promiscuous_enable(false);
 
-        if (settings.getWebSettings().enabled) resumeAP();
+        if (settings::getWebSettings().enabled) resumeAP();
         prntln(SC_STOPPED);
         save(true);
 
@@ -181,7 +183,7 @@ void Scan::update() {
         }
 
         // channel hopping
-        if (channelHop && (currentTime - snifferChannelTime > settings.getSnifferSettings().channel_time)) {
+        if (channelHop && (currentTime - snifferChannelTime > settings::getSnifferSettings().channel_time)) {
             snifferChannelTime = currentTime;
 
             if (scanMode == SCAN_MODE_STATIONS) nextChannel();  // go to next channel an AP is on

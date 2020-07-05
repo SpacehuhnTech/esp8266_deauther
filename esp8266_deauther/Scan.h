@@ -6,7 +6,6 @@
 #include "Stations.h"
 #include "Names.h"
 #include "SSIDs.h"
-#include "Settings.h"
 #include "language.h"
 #include "SimpleList.h"
 
@@ -23,7 +22,7 @@ extern Accesspoints accesspoints;
 extern Stations     stations;
 extern Names names;
 extern SSIDs ssids;
-extern Settings settings;
+
 extern uint8_t  wifiMode;
 
 extern void setWifiChannel(uint8_t ch);

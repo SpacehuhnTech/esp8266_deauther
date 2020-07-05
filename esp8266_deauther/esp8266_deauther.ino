@@ -25,7 +25,7 @@ extern "C" {
 #include "oui.h"
 #include "language.h"
 #include "functions.h"
-#include "Settings.h"
+#include "settings.h"
 #include "Names.h"
 #include "SSIDs.h"
 #include "Scan.h"
@@ -39,7 +39,6 @@ extern "C" {
 
 // Run-Time Variables //
 LED led;
-Settings settings;
 Names    names;
 SSIDs    ssids;
 Accesspoints accesspoints;
@@ -102,15 +101,15 @@ void setup() {
 
     // load settings
     #ifndef RESET_SETTINGS
-    settings.load();
+    settings::load();
     #else // ifndef RESET_SETTINGS
-    settings.reset();
-    settings.save();
+    settings::reset();
+    settings::save();
     #endif // ifndef RESET_SETTINGS
 
     // set mac address
-    wifi_set_macaddr(STATION_IF, (uint8_t*)settings.getWifiSettings().mac_st);
-    wifi_set_macaddr(SOFTAP_IF, (uint8_t*)settings.getWifiSettings().mac_ap);
+    wifi_set_macaddr(STATION_IF, (uint8_t*)settings::getWifiSettings().mac_st);
+    wifi_set_macaddr(SOFTAP_IF, (uint8_t*)settings::getWifiSettings().mac_ap);
 
     // start WiFi
     WiFi.mode(WIFI_OFF);
@@ -120,7 +119,7 @@ void setup() {
     });
 
     // start display
-    if (settings.getDisplaySettings().enabled) {
+    if (settings::getDisplaySettings().enabled) {
         displayUI.setup();
         displayUI.mode = displayUI.DISPLAY_MODE::INTRO;
     }
@@ -137,13 +136,13 @@ void setup() {
     scan.setup();
 
     // set channel
-    setWifiChannel(settings.getWifiSettings().channel);
+    setWifiChannel(settings::getWifiSettings().channel);
 
     // load Wifi settings: SSID, password,...
     loadWifiConfigDefaults();
 
     // dis/enable serial command interface
-    if (settings.getCLISettings().enabled) {
+    if (settings::getCLISettings().enabled) {
         cli.enable();
     } else {
         prntln(SETUP_SERIAL_WARNING);
@@ -152,7 +151,7 @@ void setup() {
     }
 
     // start access point/web interface
-    if (settings.getWebSettings().enabled) startAP();
+    if (settings::getWebSettings().enabled) startAP();
 
     // STARTED
     prntln(SETUP_STARTED);
@@ -176,12 +175,12 @@ void loop() {
     ssids.update();  // run random mode, if enabled
 
     // auto-save
-    if (settings.getAutosaveSettings().enabled
-        && (currentTime - autosaveTime > settings.getAutosaveSettings().time)) {
+    if (settings::getAutosaveSettings().enabled
+        && (currentTime - autosaveTime > settings::getAutosaveSettings().time)) {
         autosaveTime = currentTime;
         names.save(false);
         ssids.save(false);
-        settings.save(false);
+        settings::save(false);
     }
 
     if (!booted) {

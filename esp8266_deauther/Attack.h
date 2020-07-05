@@ -10,10 +10,8 @@ extern "C" {
 #include "Accesspoints.h"
 #include "Stations.h"
 #include "SSIDs.h"
-#include "Settings.h"
 #include "Scan.h"
 
-extern Settings settings;
 extern SSIDs    ssids;
 extern Accesspoints accesspoints;
 extern Stations     stations;

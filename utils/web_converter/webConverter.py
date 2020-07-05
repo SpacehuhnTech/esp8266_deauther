@@ -182,9 +182,9 @@ for file in lang_files:
     copy_files_function += '  if(!SPIFFS.exists(String(F("/web/lang/' + base_file + '.gz"))) || force) progmemToSpiffs(' + array_name + ', sizeof(' + array_name + '), String(F("/web/lang/' + base_file + '.gz")));\n'
     webserver_events += 'server.on(String(F("/lang/' + base_file + '")).c_str(), HTTP_GET, [](){\n  sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n});\n'
     if(len(load_lang) > 0):
-        load_lang += '    else if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
+        load_lang += '    else if(settings::getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
     else:
-        load_lang += '    if(settings.getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
+        load_lang += '    if(settings::getLang() == String(F("'+lang_name+'"))) sendProgmem(' + array_name + ', sizeof(' + array_name + '), W_JSON);\n'
 
 base_file = os.path.basename(license_file_path)
 new_file = str(os.path.join(str(compressed), str("LICENSE")))
@@ -222,7 +222,7 @@ f.write("#endif\n")
 f.write("\n")
 f.write("void copyWebFiles(bool force){\n")
 f.write("#ifdef USE_PROGMEM_WEB_FILES\n")
-f.write("if(settings.getWebSettings().use_spiffs){\n")
+f.write("if(settings::getWebSettings().use_spiffs){\n")
 f.write(copy_files_function)
 f.write("}\n")
 f.write("#endif\n")
@@ -234,17 +234,17 @@ f.close()
 print("\n[+] Done, happy uploading :)")
 print("Here are the updated functions for wifi.h, in case you added or removed files:")
 print();
-print('if(!settings.getWebSpiffs()){')
+print('if(!settings::getWebSpiffs()){')
 print('  server.on(String(SLASH).c_str(), HTTP_GET, [](){')
 print('  sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);')
 print('});')
 print(webserver_events)
 print('}')
 print("server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [](){")
-print("  if(!settings.getWebSpiffs()){")
+print("  if(!settings::getWebSpiffs()){")
 print(load_lang)
-print('    else handleFileRead(String(F("/web/lang/"))+settings.getLang()+String(F(".lang")));')
+print('    else handleFileRead(String(F("/web/lang/"))+settings::getLang()+String(F(".lang")));')
 print('  } else {')
-print('    handleFileRead(String(F("/web/lang/"))+settings.getLang()+String(F(".lang")));')
+print('    handleFileRead(String(F("/web/lang/"))+settings::getLang()+String(F(".lang")));')
 print('  }')
 print("});");

@@ -10,12 +10,11 @@ extern "C" {
 #include "ArduinoJson.h"
 #include "language.h"
 #include "SimpleList.h"
-#include "Settings.h"
 #include "Accesspoints.h"
 
 #define SSID_LIST_SIZE 60
 
-extern Settings settings;
+
 extern uint32_t currentTime;
 extern Accesspoints accesspoints;
 

@@ -3,7 +3,6 @@
 
 #include "language.h"
 #include "A_config.h"
-#include "Settings.h"
 #include "Names.h"
 #include "SSIDs.h"
 #include "Scan.h"
@@ -28,7 +27,7 @@
 
 using namespace simplebutton;
 
-extern Settings settings;
+
 extern Names    names;
 extern SSIDs    ssids;
 extern Accesspoints accesspoints;

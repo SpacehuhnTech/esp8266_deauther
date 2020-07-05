@@ -229,7 +229,7 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
     // ================================================================
     // post here the output of the webConverter.py
 #ifdef USE_PROGMEM_WEB_FILES
-    if (!settings.getWebSettings().use_spiffs) {
+    if (!settings::getWebSettings().use_spiffs) {
         server.on(String(SLASH).c_str(), HTTP_GET, [] () {
             sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
         });
@@ -301,21 +301,21 @@ void startAP(String path, String ssid, String password, uint8_t ch, bool hidden,
         });
     }
     server.on(str(W_DEFAULT_LANG).c_str(), HTTP_GET, [] () {
-        if (!settings.getWebSettings().use_spiffs) {
-            if (String(settings.getWebSettings().lang) == String(F("cn"))) sendProgmem(cnlang, sizeof(cnlang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("de"))) sendProgmem(delang, sizeof(delang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("en"))) sendProgmem(enlang, sizeof(enlang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("es"))) sendProgmem(eslang, sizeof(eslang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("fi"))) sendProgmem(filang, sizeof(filang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("it"))) sendProgmem(itlang, sizeof(itlang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("ru"))) sendProgmem(rulang, sizeof(rulang), W_JSON);
-            else if (String(settings.getWebSettings().lang) == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
+        if (!settings::getWebSettings().use_spiffs) {
+            if (String(settings::getWebSettings().lang) == String(F("cn"))) sendProgmem(cnlang, sizeof(cnlang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("cs"))) sendProgmem(cslang, sizeof(cslang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("de"))) sendProgmem(delang, sizeof(delang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("en"))) sendProgmem(enlang, sizeof(enlang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("es"))) sendProgmem(eslang, sizeof(eslang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("fi"))) sendProgmem(filang, sizeof(filang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("fr"))) sendProgmem(frlang, sizeof(frlang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("it"))) sendProgmem(itlang, sizeof(itlang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("ru"))) sendProgmem(rulang, sizeof(rulang), W_JSON);
+            else if (String(settings::getWebSettings().lang) == String(F("tlh"))) sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
 
-            else handleFileRead(String(F("/web/lang/")) + String(settings.getWebSettings().lang) + String(F(".lang")));
+            else handleFileRead(String(F("/web/lang/")) + String(settings::getWebSettings().lang) + String(F(".lang")));
         } else {
-            handleFileRead(String(F("/web/lang/")) + String(settings.getWebSettings().lang) + String(F(".lang")));
+            handleFileRead(String(F("/web/lang/")) + String(settings::getWebSettings().lang) + String(F(".lang")));
         }
     });
 #endif /* ifdef USE_PROGMEM_WEB_FILES */
@@ -393,10 +393,10 @@ void startAP(String path) {
 }
 
 void loadWifiConfigDefaults() {
-    wifi_config_hidden        = settings.getAccessPointSettings().hidden;
-    wifi_config_ssid          = settings.getAccessPointSettings().ssid;
-    wifi_config_password      = settings.getAccessPointSettings().password;
-    wifi_config_captivePortal = settings.getWebSettings().captive_portal;
+    wifi_config_hidden        = settings::getAccessPointSettings().hidden;
+    wifi_config_ssid          = settings::getAccessPointSettings().ssid;
+    wifi_config_password      = settings::getAccessPointSettings().password;
+    wifi_config_captivePortal = settings::getWebSettings().captive_portal;
     wifi_config_path          = str(W_WEBINTERFACE);
 }
 

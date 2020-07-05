@@ -1,5 +1,7 @@
 #include "DisplayUI.h"
 
+#include "settings.h"
+
 // ===== adjustable ===== //
 void DisplayUI::configInit() {
     // initialize display
@@ -395,7 +397,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackSettings().timeout * 1000);
+                             settings::getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // *BEACON 0/0
@@ -408,7 +410,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackSettings().timeout * 1000);
+                             settings::getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // *PROBE 0/0
@@ -421,7 +423,7 @@ void DisplayUI::setup() {
 
             if (attack.isRunning()) {
                 attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                             settings.getAttackSettings().timeout * 1000);
+                             settings::getAttackSettings().timeout * 1000);
             }
         });
         addMenuNode(&attackMenu, [this]() { // START
@@ -430,7 +432,7 @@ void DisplayUI::setup() {
         }, [this]() {
             if (attack.isRunning()) attack.stop();
             else attack.start(beaconSelected, deauthSelected, false, probeSelected, true,
-                              settings.getAttackSettings().timeout * 1000);
+                              settings::getAttackSettings().timeout * 1000);
         });
     });
 
@@ -461,7 +463,7 @@ void DisplayUI::update() {
 
     draw();
 
-    uint32_t timeout = settings.getDisplaySettings().timeout * 1000;
+    uint32_t timeout = settings::getDisplaySettings().timeout * 1000;
 
     if (currentTime > timeout) {
         if (!tempOff) {

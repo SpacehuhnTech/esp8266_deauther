@@ -2,13 +2,13 @@
 
 // ===== [Includes] ===== //
 // used for update()
-#include "Settings.h"
+#include "settings.h"
 #include "Attack.h"
 #include "Scan.h"
 
 // ===== [External] ===== //
 // used for update()
-extern Settings settings;
+
 extern Attack   attack;
 extern Scan     scan;
 
@@ -83,9 +83,9 @@ void LED::setup() {
 }
 
 void LED::update() {
-    if (!settings.getLEDSettings().enabled) {
+    if (!settings::getLEDSettings().enabled) {
         setMode(OFF);
-    } else if (scan.isScanning() && (scan.deauths < settings.getSnifferSettings().min_deauth_frames)) {
+    } else if (scan.isScanning() && (scan.deauths < settings::getSnifferSettings().min_deauth_frames)) {
         setMode(SCAN);
     } else if (attack.isRunning()) {
         setMode(ATTACK);

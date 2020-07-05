@@ -10,7 +10,6 @@ extern "C" {
 #include "language.h"
 #include "A_config.h"
 #include "SimpleList.h"
-#include "Settings.h"
 #include "Names.h"
 #include "SSIDs.h"
 #include "Scan.h"
@@ -19,7 +18,7 @@ extern "C" {
 #include "LED.h"
 
 extern LED led;
-extern Settings settings;
+
 extern Names    names;
 extern SSIDs    ssids;
 extern Accesspoints accesspoints;

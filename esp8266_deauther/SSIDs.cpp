@@ -1,5 +1,7 @@
 #include "SSIDs.h"
 
+#include "settings.h"
+
 SSIDs::SSIDs() {
     list = new SimpleList<SSID>;
 }

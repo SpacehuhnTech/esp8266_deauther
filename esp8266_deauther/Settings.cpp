@@ -1,7 +1,20 @@
-#include "Settings.h"
+/*
+   Copyright (c) 2020 Stefan Kremser (@Spacehuhn)
+   This software is licensed under the MIT License. See the license file for details.
+   Source: github.com/spacehuhn/esp8266_deauther
+ */
+ 
+#include "settings.h"
 
-#include <Hash.h>         // sha1() used in calcHash()
+#include <Hash.h>         // sha1() used in calc_hash()
+#include "A_config.h" // Default Settings
+#include "language.h" // prnt and prntln
 #include "EEPROMHelper.h" // To load and save settings_t
+#include "debug.h"
+
+extern bool writeFile(String path, String& buf);
+extern void getRandomMac(uint8_t* mac);
+extern bool macValid(uint8_t* mac);
 
 // ===== INTERNAL ===== //
 bool operator==(settings_hash_t a, settings_hash_t b) {
@@ -14,301 +27,302 @@ bool operator==(version_t a, version_t b) {
     return a.major == b.major && a.minor == b.minor && a.revision == b.revision;
 }
 
-void jsonStr(String& str, const char* name, const char* value) {
-    str += '"';
-    str += String(name);
-    str += '"';
-    str += ':';
-    str += '"';
-    str += String(value);
-    str += '"';
-    str += ',';
-}
+#define JSON_FLAG(_NAME,_VALUE)\
+    str += String('"') + str(_NAME) + String(F("\":")) + String(_VALUE?"true":"false") + String(',');
 
-void jsonFlag(String& str, const char* name, bool value) {
-    str += '"';
-    str += String(name);
-    str += '"';
-    str += ':';
-    str += value ? String(S_JSON_TRUE) : String(S_JSON_FALSE);
-    str += ',';
-}
+#define JSON_VALUE(_NAME,_VALUE)\
+    str += String('"') + str(_NAME) + String(F("\":")) + String(_VALUE) + String(',');
 
-void jsonValue(String& str, const char* name, int value) {
-    str += '"';
-    str += String(name);
-    str += '"';
-    str += ':';
-    str += String(value);
-    str += ',';
-}
+#define JSON_HEX(_NAME,_BYTES,_LEN)\
+    str += String('"') + str(_NAME) + String(F("\":"));\
+    for (int i = 0; i<_LEN; i++) {\
+        if (i > 0) str += ':';\
+        if (_BYTES[i] < 0x10) str += '0';\
+        str += String(_BYTES[i], HEX);\
+    }\
+    str += String(F("\","));
 
-void jsonHex(String& str, const char* name, uint8_t* byteArr, int len) {
-    str += '"';
-    str += String(name);
-    str += '"';
-    str += ':';
+#define JSON_DEC(_NAME,_BYTES,_LEN)\
+    str += String('"') + str(_NAME) + String(F("\":"));\
+    for (int i = 0; i<_LEN; i++) {\
+        if (i > 0) str += '.';\
+        str += String(_BYTES[i]);\
+    }\
+    str += String(F("\","));
 
-    str += '"';
 
-    for (int i = 0; i<len; i++) {
-        if (i > 0) str += ':';
-        if (byteArr[i] < 0x10) str += '0';
-        str += String(byteArr[i], HEX);
+namespace settings {
+    // ========== PRIVATE ========== //
+    const char* SETTINGS_PATH = "/settings.json";
+    
+    settings_t data;
+    bool changed = false;
+
+    settings_hash_t calc_hash(settings_t data) {
+        settings_hash_t hash;
+        sha1((uint8_t*)&data, sizeof(settings_t), hash.hash);
+
+        return hash;
     }
 
-    str += '"';
-    str += ',';
-}
+    void get_json(String& str) {
+        str = String();
+        str.reserve(600);
 
-void jsonDec(String& str, const char* name, uint8_t* byteArr, int len) {
-    str += '"';
-    str += String(name);
-    str += '"';
-    str += ':';
+        str += '{';
+        
+        // Version
+        JSON_VALUE(S_JSON_VERSION, DEAUTHER_VERSION);
 
-    str += '"';
+        // Autosave
+        JSON_FLAG(S_JSON_AUTOSAVE, data.autosave.enabled);
+        JSON_VALUE(S_JSON_AUTOSAVETIME, data.autosave.time);
 
-    for (int i = 0; i<len; i++) {
-        if (i > 0) str += '.';
-        str += String(byteArr[i]);
+        // Attack
+        JSON_FLAG(S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
+        JSON_FLAG(S_JSON_RANDOMTX, data.attack.random_tx);
+        JSON_VALUE(S_JSON_ATTACKTIMEOUT, data.attack.timeout);
+        JSON_VALUE(S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
+        JSON_VALUE(S_JSON_DEAUTHREASON, data.attack.deauth_reason);
+        JSON_FLAG(S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
+        JSON_VALUE(S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
+
+        // WiFi
+        JSON_VALUE(S_JSON_CHANNEL, data.wifi.channel);
+        JSON_HEX(S_JSON_MACST, data.wifi.mac_st, 6);
+        JSON_HEX(S_JSON_MACAP, data.wifi.mac_ap, 6);
+
+        // Sniffer
+        JSON_VALUE(S_JSON_CHTIME, data.sniffer.channel_time);
+        JSON_VALUE(S_JSON_MIN_DEAUTHS, data.sniffer.min_deauth_frames);
+
+        // Access Point
+        JSON_VALUE(S_JSON_SSID, data.ap.ssid);
+        JSON_VALUE(S_JSON_PASSWORD, data.ap.password);
+        JSON_FLAG(S_JSON_HIDDEN, data.ap.hidden);
+        JSON_DEC(S_JSON_IP, data.ap.ip, 4);
+
+        // Web Interface
+        JSON_FLAG(S_JSON_WEBINTERFACE, data.web.enabled);
+        JSON_FLAG(S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
+        JSON_FLAG(S_JSON_WEB_SPIFFS, data.web.use_spiffs);
+        JSON_VALUE(S_JSON_LANG, data.web.lang);
+
+        // CLI
+        JSON_FLAG(S_JSON_SERIALINTERFACE, data.cli.enabled);
+        JSON_FLAG(S_JSON_SERIAL_ECHO, data.cli.serial_echo);
+
+        // LED
+        JSON_FLAG(S_JSON_LEDENABLED, data.led.enabled);
+
+        // Display
+        JSON_FLAG(S_JSON_DISPLAYINTERFACE, data.display.enabled);
+        JSON_VALUE(S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
+        
+        str.setCharAt(str.length()-1, '}');
     }
 
-    str += '"';
-    str += ',';
-}
+    // ========== PUBLIC ========== //
+    void load() {
+        debugF("Loading settings...");
 
-// ========== PRIVATE ========== //
-settings_hash_t Settings::calcHash(settings_t data) {
-    settings_hash_t hash;
+        // read hash from eeprom
+        settings_hash_t hash; 
+        EEPROMHelper::getObject(SETTINGS_HASH_ADDR, hash);
 
-    sha1((uint8_t*)&data, sizeof(settings_t), &hash.hash[0]);
-    return hash;
-}
+        // read data from eeproms
+        settings_t newData;
+        EEPROMHelper::getObject(SETTINGS_ADDR, newData);
 
-String Settings::getJsonStr() {
-    String str((char*)0);
-
-    str.reserve(600);
-
-    str += '{';
-
-    // Version
-    jsonStr(str, S_JSON_VERSION, DEAUTHER_VERSION);
-
-    // Autosave
-    jsonFlag(str, S_JSON_AUTOSAVE, data.autosave.enabled);
-    jsonValue(str, S_JSON_AUTOSAVETIME, data.autosave.time);
-
-    // Attack
-    jsonFlag(str, S_JSON_BEACONCHANNEL, data.attack.attack_all_ch);
-    jsonFlag(str, S_JSON_RANDOMTX, data.attack.random_tx);
-    jsonValue(str, S_JSON_ATTACKTIMEOUT, data.attack.timeout);
-    jsonValue(str, S_JSON_DEAUTHSPERTARGET, data.attack.deauths_per_target);
-    jsonValue(str, S_JSON_DEAUTHREASON, data.attack.deauth_reason);
-    jsonFlag(str, S_JSON_BEACONINTERVAL, data.attack.beacon_interval == INTERVAL_1S);
-    jsonValue(str, S_JSON_PROBESPERSSID, data.attack.probe_frames_per_ssid);
-
-    // WiFi
-    jsonValue(str, S_JSON_CHANNEL, data.wifi.channel);
-    jsonHex(str, S_JSON_MACST, data.wifi.mac_st, 6);
-    jsonHex(str, S_JSON_MACAP, data.wifi.mac_ap, 6);
-
-    // Sniffer
-    jsonValue(str, S_JSON_CHTIME, data.sniffer.channel_time);
-    jsonValue(str, S_JSON_MIN_DEAUTHS, data.sniffer.min_deauth_frames);
-
-    // Access Point
-    jsonStr(str, S_JSON_SSID, data.ap.ssid);
-    jsonStr(str, S_JSON_PASSWORD, data.ap.password);
-    jsonFlag(str, S_JSON_HIDDEN, data.ap.hidden);
-    jsonDec(str, S_JSON_IP, data.ap.ip, 4);
-
-    // Web Interface
-    jsonFlag(str, S_JSON_WEBINTERFACE, data.web.enabled);
-    jsonFlag(str, S_JSON_CAPTIVEPORTAL, data.web.captive_portal);
-    jsonFlag(str, S_JSON_WEB_SPIFFS, data.web.use_spiffs);
-    jsonStr(str, S_JSON_LANG, data.web.lang);
-
-    // CLI
-    jsonFlag(str, S_JSON_SERIALINTERFACE, data.cli.enabled);
-    jsonFlag(str, S_JSON_SERIAL_ECHO, data.cli.serial_echo);
-
-    // LED
-    jsonFlag(str, S_JSON_LEDENABLED, data.led.enabled);
-
-    // Display
-    jsonFlag(str, S_JSON_DISPLAYINTERFACE, data.display.enabled);
-    jsonValue(str, S_JSON_DISPLAY_TIMEOUT, data.display.timeout);
-
-    str[str.length()-1] = '}';
-
-    return str;
-}
-
-// ========== PUBLIC ========== //
-void Settings::load() {
-    prnt(S_SETTINGS_LOADED);
-
-    // read hash from eeprom
-    settings_hash_t hash;
-
-    EEPROMHelper::getObject(SETTINGS_HASH_ADDR, hash);
-
-    // read data from eeproms
-    settings_t newData;
-    EEPROMHelper::getObject(SETTINGS_ADDR, newData);
-
-    // calc and check hash
-    if ((newData.version == data.version) && (calcHash(newData) == hash)) {
-        this->data = newData;
-        prntln(S_OK);
-    } else {
-        prntln(S_INVALID_HASH);
-    }
-
-    // check and fix mac
-    if (!macValid(data.wifi.mac_st)) getRandomMac(data.wifi.mac_st);
-    if (!macValid(data.wifi.mac_ap)) getRandomMac(data.wifi.mac_ap);
-
-    changed = true;
-}
-
-void Settings::reset() {
-    settings_t newData;
-
-    this->data = newData;
-
-    prntln(S_SETTINGS_RESETED);
-}
-
-void Settings::save(bool force) {
-    if (force || changed) {
-        EEPROMHelper::saveObject(SETTINGS_HASH_ADDR, calcHash(data));
-        EEPROMHelper::saveObject(SETTINGS_ADDR, data);
-
-        changed = false;
-
-        String buf = getJsonStr();
-        if (writeFile(SETTINGS_PATH, buf)) {
-            prnt(S_SETTINGS_SAVED);
+        // calc and check hash
+        if ((newData.version == data.version) && (calc_hash(newData) == hash)) {
+            data = newData;
+            debuglnF("OK");
         } else {
-            prnt(S_ERROR_SAVING);
+            debuglnF("Invalid Hash - reseted to default");
         }
-        prntln(SETTINGS_PATH);
+
+        // check and fix mac
+        if (!macValid(data.wifi.mac_st)) getRandomMac(data.wifi.mac_st);
+        if (!macValid(data.wifi.mac_ap)) getRandomMac(data.wifi.mac_ap);
+
+        changed = true;
     }
-}
 
-void Settings::print() {
-    String settingsJson = getJsonStr();
+    void reset() {
+        data.version.major = DEAUTHER_VERSION_MAJOR;
+        data.version.minor = DEAUTHER_VERSION_MINOR;
+        data.version.revision = DEAUTHER_VERSION_REVISION;
+        
+        data.attack.attack_all_ch = ATTACK_ALL_CH;
+        data.attack.random_tx = RANDOM_TX;
+        data.attack.timeout = ATTACK_TIMEOUT;
+        data.attack.deauths_per_target = DEAUTHS_PER_TARGET;
+        data.attack.deauth_reason = DEAUTH_REASON;
+        data.attack.beacon_interval = beacon_interval_t::INTERVAL_100MS;
+        data.attack.probe_frames_per_ssid = PROBE_FRAMES_PER_SSID;
+        
+        data.wifi.channel = 1;
+        getRandomMac(data.wifi.mac_st);
+        getRandomMac(data.wifi.mac_ap);
 
-    settingsJson.replace("\":", " = ");
-    settingsJson.replace("= 0\r\n", "= false\r\n");
-    settingsJson.replace("= 1\r\n", "= true\r\n");
-    settingsJson.replace("\"", "");
-    settingsJson.replace("{", "");
-    settingsJson.replace("}", "");
-    settingsJson.replace(",", "\r\n");
+        data.sniffer.channel_time = CH_TIME;
+        data.sniffer.min_deauth_frames = MIN_DEAUTH_FRAMES;
 
-    prntln(S_SETTINGS_HEADER);
-    prntln(settingsJson);
-}
+        strncpy(data.ap.ssid, AP_SSID, 32);
+        strncpy(data.ap.password, AP_PASSWD, 64);
+        data.ap.hidden = AP_HIDDEN;
+        uint8_t ip[4] = AP_IP_ADDR;
+        memcpy(data.ap.ip, ip, 4);
 
-// ===== GETTERS ===== //
+        data.web.enabled = WEB_ENABLED;
+        data.web.captive_portal = WEB_CAPTIVE_PORTAL;
+        data.web.use_spiffs = WEB_USE_SPIFFS;
+        memcpy(data.web.lang, DEFAULT_LANG, 3);
 
-const settings_t& Settings::getAllSettings() {
-    return data;
-}
+        data.cli.enabled = true;
+        data.cli.serial_echo = CLI_ECHO;
 
-const version_t& Settings::getVersion() {
-    return data.version;
-}
+        data.led.enabled = USE_LED;
 
-const autosave_settings_t& Settings::getAutosaveSettings() {
-    return data.autosave;
-}
+        data.display.enabled = USE_DISPLAY;
+        data.display.timeout = DISPLAY_TIMEOUT;
+        
+        debuglnF("Settings reset");
+    }
 
-const attack_settings_t& Settings::getAttackSettings() {
-    return data.attack;
-}
+    void save(bool force) {
+        if (force || changed) {
+            EEPROMHelper::saveObject(SETTINGS_HASH_ADDR, calc_hash(data));
+            EEPROMHelper::saveObject(SETTINGS_ADDR, data);
 
-const wifi_settings_t& Settings::getWifiSettings() {
-    return data.wifi;
-}
+            changed = false;
+            
+            String json_buffer;
+            get_json(json_buffer);
 
-const sniffer_settings_t& Settings::getSnifferSettings() {
-    return data.sniffer;
-}
+            if (writeFile(SETTINGS_PATH, json_buffer)) {
+                debugF("Settings saved in ");
+            } else {
+                debugF("ERROR: saving ");
+            }
 
-const access_point_settings_t& Settings::getAccessPointSettings() {
-    return data.ap;
-}
+            debugln(SETTINGS_PATH);
+        }
+    }
+    
+    void print() {
+        String json_buffer;
+        get_json(json_buffer);
 
-const web_settings_t& Settings::getWebSettings() {
-    return data.web;
-}
+        json_buffer.replace("\":", " = ");
+        json_buffer.replace("= 0\r\n", "= false\r\n");
+        json_buffer.replace("= 1\r\n", "= true\r\n");
+        json_buffer.replace("\"", "");
+        json_buffer.replace("{", "");
+        json_buffer.replace("}", "");
+        json_buffer.replace(",", "\r\n");
 
-const cli_settings_t& Settings::getCLISettings() {
-    return data.cli;
-}
+        debuglnF("[========== Settings ==========]");
+        debugln(json_buffer);
+    }
 
-const led_settings_t& Settings::getLEDSettings() {
-    return data.led;
-}
+    // ===== GETTERS ===== //
 
-const display_settings_t& Settings::getDisplaySettings() {
-    return data.display;
-}
+    const settings_t& getAllSettings() {
+        return data;
+    }
 
-// ===== SETTERS ===== //
+    const version_t& getVersion() {
+        return data.version;
+    }
 
-void Settings::setAllSettings(settings_t& newSettings) {
-    newSettings.version = this->data.version;
-    data                = newSettings;
-    changed             = true;
-}
+    const autosave_settings_t& getAutosaveSettings() {
+        return data.autosave;
+    }
 
-void Settings::setAutosaveSettings(const autosave_settings_t& autosave) {
-    data.autosave = autosave;
-    changed       = true;
-}
+    const attack_settings_t& getAttackSettings() {
+        return data.attack;
+    }
 
-void Settings::setAttackSettings(const attack_settings_t& attack) {
-    data.attack = attack;
-    changed     = true;
-}
+    const wifi_settings_t& getWifiSettings() {
+        return data.wifi;
+    }
 
-void Settings::setWifiSettings(const wifi_settings_t& wifi) {
-    data.wifi = wifi;
-    changed   = true;
-}
+    const sniffer_settings_t& getSnifferSettings() {
+        return data.sniffer;
+    }
 
-void Settings::setSnifferSettings(const sniffer_settings_t& sniffer) {
-    data.sniffer = sniffer;
-    changed      = true;
-}
+    const access_point_settings_t& getAccessPointSettings() {
+        return data.ap;
+    }
 
-void Settings::setAccessPointSettings(const access_point_settings_t& ap) {
-    data.ap = ap;
-    changed = true;
-}
+    const web_settings_t& getWebSettings() {
+        return data.web;
+    }
 
-void Settings::setWebSettings(const web_settings_t& web) {
-    data.web = web;
-    changed  = true;
-}
+    const cli_settings_t& getCLISettings() {
+        return data.cli;
+    }
 
-void Settings::setCLISettings(const cli_settings_t& cli) {
-    data.cli = cli;
-    changed  = true;
-}
+    const led_settings_t& getLEDSettings() {
+        return data.led;
+    }
 
-void Settings::setLEDSettings(const led_settings_t& led) {
-    data.led = led;
-    changed  = true;
-}
+    const display_settings_t& getDisplaySettings() {
+        return data.display;
+    }
+    
+    // ===== SETTERS ===== //
 
-void Settings::setDisplaySettings(const display_settings_t& display) {
-    data.display = display;
-    changed      = true;
+    void setAllSettings(settings_t& newSettings) {
+        newSettings.version = data.version;
+        data                = newSettings;
+        changed             = true;
+    }
+
+    void setAutosaveSettings(const autosave_settings_t& autosave) {
+        data.autosave = autosave;
+        changed       = true;
+    }
+
+    void setAttackSettings(const attack_settings_t& attack) {
+        data.attack = attack;
+        changed     = true;
+    }
+
+    void setWifiSettings(const wifi_settings_t& wifi) {
+        data.wifi = wifi;
+        changed   = true;
+    }
+
+    void setSnifferSettings(const sniffer_settings_t& sniffer) {
+        data.sniffer = sniffer;
+        changed      = true;
+    }
+
+    void setAccessPointSettings(const access_point_settings_t& ap) {
+        data.ap = ap;
+        changed = true;
+    }
+
+    void setWebSettings(const web_settings_t& web) {
+        data.web = web;
+        changed  = true;
+    }
+
+    void setCLISettings(const cli_settings_t& cli) {
+        data.cli = cli;
+        changed  = true;
+    }
+
+    void setLEDSettings(const led_settings_t& led) {
+        data.led = led;
+        changed  = true;
+    }
+
+    void setDisplaySettings(const display_settings_t& display) {
+        data.display = display;
+        changed      = true;
+    }
 }
