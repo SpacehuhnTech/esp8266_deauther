@@ -93,6 +93,7 @@ typedef struct display_settings_t {
 
 // ===== SETTINGS ===== //
 typedef struct settings_t {
+    uint32_t                magic_num;
     version_t               version;
     autosave_settings_t     autosave;
     attack_settings_t       attack;
@@ -104,11 +105,6 @@ typedef struct settings_t {
     led_settings_t          led;
     display_settings_t      display;
 } settings_t;
-
-// ===== CHECK SUM / HASH ====== //
-typedef struct settings_hash_t {
-    uint8_t hash[20];
-} settings_hash_t;
 
 namespace settings {
     void load();

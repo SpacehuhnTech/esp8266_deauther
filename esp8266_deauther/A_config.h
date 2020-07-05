@@ -453,8 +453,7 @@
 
 #define EEPROM_SIZE 4095
 #define BOOT_COUNTER_ADDR 1
-#define SETTINGS_HASH_ADDR BOOT_COUNTER_ADDR + sizeof(boot)
-#define SETTINGS_ADDR SETTINGS_HASH_ADDR + sizeof(settings_hash_t)
+#define SETTINGS_ADDR 100
 
 // ======== AVAILABLE SETTINGS ========== //
 

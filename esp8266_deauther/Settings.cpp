@@ -6,35 +6,25 @@
  
 #include "settings.h"
 
-#include <Hash.h>         // sha1() used in calc_hash()
 #include "A_config.h" // Default Settings
 #include "language.h" // prnt and prntln
 #include "EEPROMHelper.h" // To load and save settings_t
 #include "debug.h"
 
+#define MAGIC_NUM 3416245
+
 extern bool writeFile(String path, String& buf);
 extern void getRandomMac(uint8_t* mac);
 extern bool macValid(uint8_t* mac);
 
-// ===== INTERNAL ===== //
-bool operator==(settings_hash_t a, settings_hash_t b) {
-    for (int i = 0; i<20; i++)
-        if (a.hash[i] != b.hash[i]) return false;
-    return true;
-}
-
-bool operator==(version_t a, version_t b) {
-    return a.major == b.major && a.minor == b.minor && a.revision == b.revision;
-}
-
 #define JSON_FLAG(_NAME,_VALUE)\
-    str += String('"') + str(_NAME) + String(F("\":")) + String(_VALUE?"true":"false") + String(',');
+    str += String('"') + String(FPSTR(_NAME)) + String(F("\":")) + String(_VALUE?"true":"false") + String(',');
 
 #define JSON_VALUE(_NAME,_VALUE)\
-    str += String('"') + str(_NAME) + String(F("\":")) + String(_VALUE) + String(',');
+    str += String('"') + String(FPSTR(_NAME)) + String(F("\":")) + String(_VALUE) + String(',');
 
 #define JSON_HEX(_NAME,_BYTES,_LEN)\
-    str += String('"') + str(_NAME) + String(F("\":"));\
+    str += String('"') + String(FPSTR(_NAME)) + String(F("\":"));\
     for (int i = 0; i<_LEN; i++) {\
         if (i > 0) str += ':';\
         if (_BYTES[i] < 0x10) str += '0';\
@@ -43,7 +33,7 @@ bool operator==(version_t a, version_t b) {
     str += String(F("\","));
 
 #define JSON_DEC(_NAME,_BYTES,_LEN)\
-    str += String('"') + str(_NAME) + String(F("\":"));\
+    str += String('"') + String(FPSTR(_NAME)) + String(F("\":"));\
     for (int i = 0; i<_LEN; i++) {\
         if (i > 0) str += '.';\
         str += String(_BYTES[i]);\
@@ -57,13 +47,6 @@ namespace settings {
     
     settings_t data;
     bool changed = false;
-
-    settings_hash_t calc_hash(settings_t data) {
-        settings_hash_t hash;
-        sha1((uint8_t*)&data, sizeof(settings_t), hash.hash);
-
-        return hash;
-    }
 
     void get_json(String& str) {
         str = String();
@@ -126,20 +109,24 @@ namespace settings {
     void load() {
         debugF("Loading settings...");
 
-        // read hash from eeprom
-        settings_hash_t hash; 
-        EEPROMHelper::getObject(SETTINGS_HASH_ADDR, hash);
-
         // read data from eeproms
         settings_t newData;
         EEPROMHelper::getObject(SETTINGS_ADDR, newData);
 
         // calc and check hash
-        if ((newData.version == data.version) && (calc_hash(newData) == hash)) {
+        if (newData.magic_num == MAGIC_NUM) {
             data = newData;
+            data.version.major = DEAUTHER_VERSION_MAJOR;
+            data.version.minor = DEAUTHER_VERSION_MINOR;
+            data.version.revision = DEAUTHER_VERSION_REVISION;
             debuglnF("OK");
         } else {
-            debuglnF("Invalid Hash - reseted to default");
+            debuglnF("Invalid Hash");
+            debug(data.magic_num);
+            debugF(" != ");
+            debugln(MAGIC_NUM);
+
+            reset();
         }
 
         // check and fix mac
@@ -150,6 +137,8 @@ namespace settings {
     }
 
     void reset() {
+        data.magic_num = MAGIC_NUM;
+        
         data.version.major = DEAUTHER_VERSION_MAJOR;
         data.version.minor = DEAUTHER_VERSION_MINOR;
         data.version.revision = DEAUTHER_VERSION_REVISION;
@@ -180,7 +169,7 @@ namespace settings {
         data.web.use_spiffs = WEB_USE_SPIFFS;
         memcpy(data.web.lang, DEFAULT_LANG, 3);
 
-        data.cli.enabled = true;
+        data.cli.enabled = CLI_ENABLED;
         data.cli.serial_echo = CLI_ECHO;
 
         data.led.enabled = USE_LED;
@@ -188,12 +177,11 @@ namespace settings {
         data.display.enabled = USE_DISPLAY;
         data.display.timeout = DISPLAY_TIMEOUT;
         
-        debuglnF("Settings reset");
+        debuglnF("Settings reset to default");
     }
 
     void save(bool force) {
         if (force || changed) {
-            EEPROMHelper::saveObject(SETTINGS_HASH_ADDR, calc_hash(data));
             EEPROMHelper::saveObject(SETTINGS_ADDR, data);
 
             changed = false;
@@ -215,9 +203,9 @@ namespace settings {
         String json_buffer;
         get_json(json_buffer);
 
-        json_buffer.replace("\":", " = ");
-        json_buffer.replace("= 0\r\n", "= false\r\n");
-        json_buffer.replace("= 1\r\n", "= true\r\n");
+        json_buffer.replace("\":", ": ");
+        json_buffer.replace(": 0\r\n", ": false\r\n");
+        json_buffer.replace(": 1\r\n", ": true\r\n");
         json_buffer.replace("\"", "");
         json_buffer.replace("{", "");
         json_buffer.replace("}", "");
