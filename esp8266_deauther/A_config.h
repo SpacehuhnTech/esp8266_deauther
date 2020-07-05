@@ -336,7 +336,7 @@
 
 // =============== LED =============== //
 #if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB)
-  #define NEOPIXEL_LED
+  #define LED_NEOPIXEL
 #endif /* if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB) */
 
 #if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92)
