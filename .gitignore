@@ -3,3 +3,5 @@ build/*
 *.elf
 *.bin
 *.map
+
+.DS_Store

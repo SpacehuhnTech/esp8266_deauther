@@ -1,4 +1,4 @@
-name: Notfiy nightly-deauther to trigger build
+name: Trigger nightly build
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build message title
-        run: echo ::set-env name=TITLE::${{ github.event_name }} $(echo ${{ github.sha }} | cut -c -7)
+        run: echo ::set-env name=TITLE::Deauther V3 $(echo ${{ github.sha }} | cut -c -7)
           
       - name: Send message
         run: |
