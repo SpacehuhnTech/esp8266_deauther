@@ -1,6 +1,7 @@
 #include "Scan.h"
 
 #include "settings.h"
+#include "wifi.h"
 
 Scan::Scan() {
     list = new SimpleList<uint16_t>;
@@ -104,7 +105,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
         prntln();
 
         // enable sniffer
-        stopAP();
+        wifi::stopAP();
         wifi_promiscuous_enable(true);
     }
 
@@ -120,7 +121,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
         prntln(channelHop ? str(SC_ONE_TO) + (String)14 : (String)wifi_channel);
 
         // enable sniffer
-        stopAP();
+        wifi::stopAP();
         wifi_promiscuous_enable(true);
     }
 
@@ -128,7 +129,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
     else if (mode == SCAN_MODE_OFF) {
         wifi_promiscuous_enable(false);
 
-        if (settings::getWebSettings().enabled) resumeAP();
+        if (settings::getWebSettings().enabled) wifi::resumeAP();
         prntln(SC_STOPPED);
         save(true);
 

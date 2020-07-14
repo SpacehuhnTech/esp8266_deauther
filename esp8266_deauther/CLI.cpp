@@ -2,6 +2,7 @@
 
 #include <LittleFS.h>
 #include "settings.h"
+#include "wifi.h"
 
 /*
    Shitty code used less resources so I will keep this clusterfuck as it is,
@@ -869,7 +870,7 @@ void CLI::runCommand(String input) {
             prnt(int(f.size()));
             prntln(str(CLI_BYTES));
         }
-        printWifiStatus();
+        wifi::printStatus();
         prntln(CLI_SYSTEM_FOOTER);
     }
 
@@ -1093,7 +1094,7 @@ void CLI::runCommand(String input) {
             // ------- loop function ----- //
             currentTime = millis();
 
-            wifiUpdate();    // manage access point
+            wifi::update();    // manage access point
             scan.update();   // run scan
             attack.update(); // run attacks
             ssids.update();  // run random mode, if enabled
@@ -1217,12 +1218,12 @@ void CLI::runCommand(String input) {
             }
         }
 
-        startAP(path, ssid, password, ch, hidden, captivePortal);
+        wifi::startNewAP(path, ssid, password, ch, hidden, captivePortal);
     }
 
     // stopap
     else if (eqlsCMD(0, CLI_STOPAP)) {
-        stopAP();
+        wifi::stopAP();
     }
 
     // ===== SCREEN ===== //

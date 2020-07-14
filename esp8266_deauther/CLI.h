@@ -41,9 +41,6 @@ extern bool appendFile(String path, String& buf);
 extern bool removeLines(String path, int lineFrom, int lineTo);
 extern bool replaceLine(String path, int line, String& buf);
 extern bool equalsKeyword(const char* str, const char* keyword);
-extern void printWifiStatus();
-extern void startAP(String path, String ssid, String password, uint8_t ch, bool hidden, bool captivePortal);
-extern void wifiUpdate();
 
 class CLI {
     public:

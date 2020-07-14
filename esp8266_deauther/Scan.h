@@ -29,8 +29,6 @@ extern void setWifiChannel(uint8_t ch);
 extern bool appendFile(String path, String& buf);
 extern bool writeFile(String path, String& buf);
 extern void readFileToSerial(const String path);
-extern void resumeAP();
-extern void stopAP();
 extern String escape(String str);
 
 class Scan {

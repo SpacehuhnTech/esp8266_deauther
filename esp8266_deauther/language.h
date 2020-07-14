@@ -541,6 +541,36 @@ const char W_BAD_ARGS[] PROGMEM = "BAD ARGS";
 const char W_BAD_PATH[] PROGMEM = "BAD PATH";
 const char W_FILE_NOT_FOUND[] PROGMEM = "ERROR 404 File Not Found";
 const char W_STARTED_AP[] PROGMEM = "Started AP";
+const char W_WEBINTERFACE[] PROGMEM = "/web";  // default folder containing the web files
+const char W_DEFAULT_LANG[] PROGMEM = "/lang/default.lang";
+
+const char W_HTML[] PROGMEM = "text/html";
+const char W_CSS[] PROGMEM = "text/css";
+const char W_JS[] PROGMEM = "application/javascript";
+const char W_PNG[] PROGMEM = "image/png";
+const char W_GIF[] PROGMEM = "image/gif";
+const char W_JPG[] PROGMEM = "image/jpeg";
+const char W_ICON[] PROGMEM = "image/x-icon";
+const char W_XML[] PROGMEM = "text/xml";
+const char W_XPDF[] PROGMEM = "application/x-pdf";
+const char W_XZIP[] PROGMEM = "application/x-zip";
+const char W_GZIP[] PROGMEM = "application/x-gzip";
+const char W_JSON[] PROGMEM = "application/json";
+const char W_TXT[] PROGMEM = "text/plain";
+
+const char W_DOT_HTM[] PROGMEM = ".htm";
+const char W_DOT_HTML[] PROGMEM = ".html";
+const char W_DOT_CSS[] PROGMEM = ".css";
+const char W_DOT_JS[] PROGMEM = ".js";
+const char W_DOT_PNG[] PROGMEM = ".png";
+const char W_DOT_GIF[] PROGMEM = ".gif";
+const char W_DOT_JPG[] PROGMEM = ".jpg";
+const char W_DOT_ICON[] PROGMEM = ".ico";
+const char W_DOT_XML[] PROGMEM = ".xml";
+const char W_DOT_PDF[] PROGMEM = ".pdf";
+const char W_DOT_ZIP[] PROGMEM = ".zip";
+const char W_DOT_GZIP[] PROGMEM = ".gz";
+const char W_DOT_JSON[] PROGMEM = ".json";
 
 // ===== SETTINGS ====== //
 // Version

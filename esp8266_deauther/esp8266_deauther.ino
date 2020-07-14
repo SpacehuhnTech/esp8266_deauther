@@ -33,7 +33,6 @@ extern "C" {
 #include "CLI.h"
 #include "DisplayUI.h"
 #include "A_config.h"
-#include "webfiles.h"
 
 #include "LED.h"
 
@@ -108,13 +107,7 @@ void setup() {
     settings::save();
     #endif // ifndef RESET_SETTINGS
 
-    // set mac address
-    wifi_set_macaddr(STATION_IF, (uint8_t*)settings::getWifiSettings().mac_st);
-    wifi_set_macaddr(SOFTAP_IF, (uint8_t*)settings::getWifiSettings().mac_ap);
-
-    // start WiFi
-    WiFi.mode(WIFI_OFF);
-    wifi_set_opmode(STATION_MODE);
+    wifi::begin();
     wifi_set_promiscuous_rx_cb([](uint8_t* buf, uint16_t len) {
         scan.sniffer(buf, len);
     });
@@ -126,7 +119,7 @@ void setup() {
     }
 
     // copy web files to SPIFFS
-    copyWebFiles(false);
+    //copyWebFiles(false);
 
     // load everything else
     names.load();
@@ -139,9 +132,6 @@ void setup() {
     // set channel
     setWifiChannel(settings::getWifiSettings().channel);
 
-    // load Wifi settings: SSID, password,...
-    loadWifiConfigDefaults();
-
     // dis/enable serial command interface
     if (settings::getCLISettings().enabled) {
         cli.enable();
@@ -152,7 +142,7 @@ void setup() {
     }
 
     // start access point/web interface
-    if (settings::getWebSettings().enabled) startAP();
+    if (settings::getWebSettings().enabled) wifi::startAP();
 
     // STARTED
     prntln(SETUP_STARTED);
@@ -168,7 +158,7 @@ void loop() {
     currentTime = millis();
 
     led.update();    // update LED color
-    wifiUpdate();    // manage access point
+    wifi::update();    // manage access point
     attack.update(); // run attacks
     displayUI.update();
     cli.update();    // read and run serial input
