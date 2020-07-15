@@ -174,6 +174,8 @@
   #define LED_NEOPIXEL_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
+  #define HIGHLIGHT_LED 16
+
 // ===== DISPLAY ===== //
   #define SH1106_I2C
   #define FLIP_DIPLAY true

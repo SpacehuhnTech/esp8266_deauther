@@ -14,11 +14,11 @@
 #include "Scan.h" // used in update()
 
 // Inlcude libraries for Neopixel or LED_MY92xx if used
-#if defined(NEOPIXEL_LED) || defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB)
+#if defined(LED_NEOPIXEL)
 #include <Adafruit_NeoPixel.h>
 #elif defined(LED_MY92)
 #include <my92xx.h>
-#endif // if defined(NEOPIXEL_LED)
+#endif // if defined(LED_NEOPIXEL)
 
 extern Attack   attack;
 extern Scan     scan;
@@ -28,12 +28,12 @@ namespace led {
     LED_MODE mode = OFF;
 
     #if defined(LED_NEOPIXEL_RGB)
-        Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400);
+        Adafruit_NeoPixel strip {LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400};
     #elif defined(LED_NEOPIXEL_GRB)
-        Adafruit_NeoPixel strip = Adafruit_NeoPixel(LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400);
+        Adafruit_NeoPixel strip {LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400};
     #elif defined(LED_MY92)
-        my92xx myled = my92xx(LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT);
-    #endif // if defined(NEOPIXEL_LED)
+        my92xx myled {LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT};
+    #endif
 
 
     void setColor(uint8_t r, uint8_t g, uint8_t b) {
@@ -61,7 +61,7 @@ namespace led {
         analogWrite(LED_PIN_R, r);
         analogWrite(LED_PIN_G, g);
         analogWrite(LED_PIN_B, b);
-    #elif defined(NEOPIXEL_LED)
+    #elif defined(LED_NEOPIXEL)
 
         for (size_t i = 0; i < LED_NEOPIXEL_NUM; i++) {
             strip.setPixelColor(i, r, g, b);
@@ -86,7 +86,7 @@ namespace led {
             if (LED_PIN_R < 255) pinMode(LED_PIN_R, OUTPUT);
             if (LED_PIN_G < 255) pinMode(LED_PIN_G, OUTPUT);
             if (LED_PIN_B < 255) pinMode(LED_PIN_B, OUTPUT);
-        #elif defined(NEOPIXEL_LED)
+        #elif defined(LED_NEOPIXEL)
             strip.begin();
             strip.setBrightness(LED_MODE_BRIGHTNESS);
             strip.show();
