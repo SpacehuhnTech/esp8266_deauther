@@ -6,3 +6,5 @@
 *.map
 
 .DS_Store
+
+*.pyc
