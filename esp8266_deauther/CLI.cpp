@@ -814,7 +814,7 @@ void CLI::runCommand(String input) {
     // ===== STOP ===== //
     // stop [<mode>]
     else if (eqlsCMD(0, CLI_STOP)) {
-        led.setMode(IDLE, true);
+        led::setMode(IDLE, true);
 
         if ((list->size() >= 2) && !(eqlsCMD(1, CLI_ALL))) {
             for (int i = 1; i < list->size(); i++) {
@@ -1098,7 +1098,7 @@ void CLI::runCommand(String input) {
             scan.update();   // run scan
             attack.update(); // run attacks
             ssids.update();  // run random mode, if enabled
-            led.update();    // update LED color
+            led::update();    // update LED color
 
             // auto-save
             if (settings::getAutosaveSettings().enabled && (currentTime - autosaveTime > settings::getAutosaveSettings().time)) {

@@ -34,10 +34,9 @@ extern "C" {
 #include "DisplayUI.h"
 #include "A_config.h"
 
-#include "LED.h"
+#include "led.h"
 
 // Run-Time Variables //
-LED led;
 Names    names;
 SSIDs    ssids;
 Accesspoints accesspoints;
@@ -151,13 +150,13 @@ void setup() {
     prntln(DEAUTHER_VERSION);
 
     // setup LED
-    led.setup();
+    led::setup();
 }
 
 void loop() {
     currentTime = millis();
 
-    led.update();    // update LED color
+    led::update();    // update LED color
     wifi::update();    // manage access point
     attack.update(); // run attacks
     displayUI.update();
