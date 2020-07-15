@@ -8,3 +8,5 @@
 .DS_Store
 
 *.pyc
+
+utils/web_converter/css_html_js_minify/__pycache__/
