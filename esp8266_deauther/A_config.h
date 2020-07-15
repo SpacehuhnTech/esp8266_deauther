@@ -31,14 +31,19 @@
 // #define DEAUTHER_OLED_V3_5
 // #define DEAUTHER_OLED_V4
 // #define DEAUTHER_OLED_V5
+// #define DEAUTHER_OLED_V6
 // #define DEAUTHER_MOSTER
 // #define DEAUTHER_MOSTER_V2
 // #define DEAUTHER_MOSTER_V3
+// #define DEAUTHER_MOSTER_V4
+// #define DEAUTHER_MOSTER_V5
 // #define USB_DEAUTHER
 // #define USB_DEAUTHER_V2
 // #define DEAUTHER_WRISTBAND
-// #define DEAUTHER_WRISTBAND_V2
+// #define DEAUTHER_WATCH
+// #define DEAUTHER_WATCH_V2
 // #define DEAUTHER_MINI
+// #define DEAUTHER_MINI_EVO
 // #define LYASI_7W_E27_LAMP
 // #define AVATAR_5W_E14_LAMP
 
@@ -145,7 +150,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_OLED_V3_5) || defined(DEAUTHER_OLED_V4)  || defined(DEAUTHER_OLED_V5)  || defined(DEAUTHER_MOSTER)  || defined(DEAUTHER_MOSTER_V2)  || defined(DEAUTHER_MOSTER_V3)
+#elif defined(DEAUTHER_OLED_V3_5) || defined(DEAUTHER_OLED_V4)  || defined(DEAUTHER_OLED_V5)  || defined(DEAUTHER_MOSTER)  || defined(DEAUTHER_MOSTER_V2)  || defined(DEAUTHER_MOSTER_V3)  || defined(DEAUTHER_MOSTER_V4)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -162,6 +167,25 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
+#elif defined(DEAUTHER_OLED_V6) || defined(DEAUTHER_MOSTER_V5)
+
+// ===== LED ===== //
+  #define LED_NEOPIXEL_GRB
+  #define LED_NEOPIXEL_NUM 1
+  #define LED_NEOPIXEL_PIN 15
+
+// ===== DISPLAY ===== //
+  #define SH1106_I2C
+  #define FLIP_DIPLAY true
+  #define DISPLAY_TEXT "Hardware by DSTIKE"
+
+  #define RTC_DS3231
+
+// ===== BUTTONS ===== //
+  #define BUTTON_UP 12
+  #define BUTTON_DOWN 13
+  #define BUTTON_A 14
+
 #elif defined(USB_DEAUTHER_V2)
 
 // ===== LED ===== //
@@ -169,7 +193,28 @@
   #define LED_NEOPIXEL_NUM 1
   #define LED_NEOPIXEL_PIN 4
 
-#elif defined(DEAUTHER_WRISTBAND) || defined(DEAUTHER_WRISTBAND_V2) || defined(DEAUTHER_MINI)
+#elif defined(DEAUTHER_WRISTBAND) || defined(DEAUTHER_WATCH) || defined(DEAUTHER_MINI)
+
+// ===== LED ===== //
+  #define LED_NEOPIXEL_GRB
+  #define LED_NEOPIXEL_NUM 1
+  #define LED_NEOPIXEL_PIN 15
+
+  #define HIGHLIGHT_LED 16
+
+// ===== DISPLAY ===== //
+  #define SH1106_I2C
+  #define FLIP_DIPLAY true
+  #define DISPLAY_TEXT "Hardware by DSTIKE"
+
+  #define RTC_DS3231
+
+// ===== BUTTONS ===== //
+  #define BUTTON_UP 12
+  #define BUTTON_DOWN 13
+  #define BUTTON_A 14
+
+#elif defined(DEAUTHER_WATCH_V2) || defined(DEAUTHER_MINI_EVO)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
