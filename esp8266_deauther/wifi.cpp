@@ -20,9 +20,9 @@ extern "C" {
 #include "language.h"
 #include "debug.h"
 #include "settings.h"
-#include "cli.h"
-#include "attack.h"
-#include "scan.h"
+#include "CLI.h"
+#include "Attack.h"
+#include "Scan.h"
 
 extern bool progmemToSpiffs(const char* adr, int len, String path);
 
