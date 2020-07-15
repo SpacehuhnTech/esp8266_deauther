@@ -14,7 +14,7 @@
 #include "Scan.h" // used in update()
 
 // Inlcude libraries for Neopixel or LED_MY92xx if used
-#if defined(NEOPIXEL_LED)
+#if defined(NEOPIXEL_LED) || defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB)
 #include <Adafruit_NeoPixel.h>
 #elif defined(LED_MY92)
 #include <my92xx.h>

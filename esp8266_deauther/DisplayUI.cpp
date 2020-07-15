@@ -63,8 +63,16 @@ void DisplayUI::setup() {
     setupButtons();
     buttonTime = currentTime;
 
+#ifdef RTC_DS3231
+    bool h12;
+    bool PM_time;
+    clock.setClockMode(false);
+    clockHour   = clock.getHour(h12, PM_time);
+    clockMinute = clock.getMinute();
+#else
     clockHour   = random(12);
     clockMinute = random(60);
+#endif
 
     // ===== MENUS ===== //
 
@@ -891,4 +899,10 @@ void DisplayUI::setTime(int h, int m, int s) {
     clockHour   = h;
     clockMinute = m;
     clockSecond = s;
+
+#ifdef RTC_DS3231
+    clock.setHour(clockHour);
+    clock.setMinute(clockMinute);
+    clock.setSecond(clockSecond);
+#endif
 }

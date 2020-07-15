@@ -23,6 +23,10 @@
   #include <SH1106Spi.h>
 #endif /* if defined(SSD1306_I2C) */
 
+#ifdef RTC_DS3231
+#include <DS3231.h>
+#endif
+
 #include <SimpleButton.h>
 
 using namespace simplebutton;
@@ -184,6 +188,10 @@ class DisplayUI {
         int clockSecond = 0;
 
         uint32_t clockTime = 0;
+
+#ifdef RTC_DS3231
+        DS3231 clock;
+#endif
 };
 
 // ===== FONT ===== //
