@@ -13,37 +13,37 @@
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
-// #define DEAUTHER
-// #define DEAUTHER_V1
-// #define DEAUTHER_V2
-// #define DEAUTHER_V3
-// #define DEAUTHER_V3_5
-// #define D_DUINO_B_V5_LED_RING
-// #define DEAUTHER_BOY
-// #define NODEMCU_07
-// #define NODEMCU_07_V2
-// #define DEAUTHER_OLED
-// #define DEAUTHER_OLED_V1_5_S
-// #define DEAUTHER_OLED_V1_5
-// #define DEAUTHER_OLED_V2
-// #define DEAUTHER_OLED_V2_5
-// #define DEAUTHER_OLED_V3
-// #define DEAUTHER_OLED_V3_5
-// #define DEAUTHER_OLED_V4
-// #define DEAUTHER_OLED_V5
-// #define DEAUTHER_OLED_V6
-// #define DEAUTHER_MOSTER
-// #define DEAUTHER_MOSTER_V2
-// #define DEAUTHER_MOSTER_V3
-// #define DEAUTHER_MOSTER_V4
-// #define DEAUTHER_MOSTER_V5
-// #define USB_DEAUTHER
-// #define USB_DEAUTHER_V2
-// #define DEAUTHER_WRISTBAND
-// #define DEAUTHER_WATCH
-// #define DEAUTHER_WATCH_V2
-// #define DEAUTHER_MINI
-// #define DEAUTHER_MINI_EVO
+// #define DSTIKE_DEAUTHER
+// #define DSTIKE_DEAUTHER_V1
+// #define DSTIKE_DEAUTHER_V2
+// #define DSTIKE_DEAUTHER_V3
+// #define DSTIKE_DEAUTHER_V3_5
+// #define DSTIKE_D_DUINO_B_V5_LED_RING
+// #define DSTIKE_DEAUTHER_BOY
+// #define DSTIKE_NODEMCU_07
+// #define DSTIKE_NODEMCU_07_V2
+// #define DSTIKE_DEAUTHER_OLED
+// #define DSTIKE_DEAUTHER_OLED_V1_5_S
+// #define DSTIKE_DEAUTHER_OLED_V1_5
+// #define DSTIKE_DEAUTHER_OLED_V2
+// #define DSTIKE_DEAUTHER_OLED_V2_5
+// #define DSTIKE_DEAUTHER_OLED_V3
+// #define DSTIKE_DEAUTHER_OLED_V3_5
+// #define DSTIKE_DEAUTHER_OLED_V4
+// #define DSTIKE_DEAUTHER_OLED_V5
+// #define DSTIKE_DEAUTHER_OLED_V6
+// #define DSTIKE_DEAUTHER_MOSTER
+// #define DSTIKE_DEAUTHER_MOSTER_V2
+// #define DSTIKE_DEAUTHER_MOSTER_V3
+// #define DSTIKE_DEAUTHER_MOSTER_V4
+// #define DSTIKE_DEAUTHER_MOSTER_V5
+// #define DSTIKE_USB_DEAUTHER
+// #define DSTIKE_USB_DEAUTHER_V2
+// #define DSTIKE_DEAUTHER_WRISTBAND
+// #define DSTIKE_DEAUTHER_WATCH
+// #define DSTIKE_DEAUTHER_WATCH_V2
+// #define DSTIKE_DEAUTHER_MINI
+// #define DSTIKE_DEAUTHER_MINI_EVO
 // #define LYASI_7W_E27_LAMP
 // #define AVATAR_5W_E14_LAMP
 
@@ -55,7 +55,7 @@
 // #define RESET_SETTINGS
 
 // ========== CONFIGS ========== //
-#if defined(D_DUINO_B_V5_LED_RING)
+#if defined(DSTIKE_D_DUINO_B_V5_LED_RING)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -72,7 +72,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_BOY)
+#elif defined(DSTIKE_DEAUTHER_BOY)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -90,14 +90,14 @@
   #define BUTTON_A 14
   #define BUTTON_B 12
 
-#elif defined(DEAUTHER_V3_5) || defined(NODEMCU_07_V2)
+#elif defined(DSTIKE_DEAUTHER_V3_5) || defined(DSTIKE_NODEMCU_07_V2)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
   #define LED_NEOPIXEL_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
-#elif defined(DEAUTHER_OLED_V1_5_S)
+#elif defined(DSTIKE_DEAUTHER_OLED_V1_5_S)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -114,7 +114,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_OLED) || defined(DEAUTHER_OLED_V1_5)
+#elif defined(DSTIKE_DEAUTHER_OLED) || defined(DSTIKE_DEAUTHER_OLED_V1_5)
 
 // ===== LED ===== //
   #define LED_DIGITAL
@@ -132,7 +132,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_OLED_V2) || defined(DEAUTHER_OLED_V2_5)  || defined(DEAUTHER_OLED_V3)
+#elif defined(DSTIKE_DEAUTHER_OLED_V2) || defined(DSTIKE_DEAUTHER_OLED_V2_5)  || defined(DSTIKE_DEAUTHER_OLED_V3)
 
 // ===== LED ===== //
   #define LED_DIGITAL
@@ -150,7 +150,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_OLED_V3_5) || defined(DEAUTHER_OLED_V4)  || defined(DEAUTHER_OLED_V5)  || defined(DEAUTHER_MOSTER)  || defined(DEAUTHER_MOSTER_V2)  || defined(DEAUTHER_MOSTER_V3)  || defined(DEAUTHER_MOSTER_V4)
+#elif defined(DSTIKE_DEAUTHER_OLED_V3_5) || defined(DSTIKE_DEAUTHER_OLED_V4)  || defined(DSTIKE_DEAUTHER_OLED_V5)  || defined(DSTIKE_DEAUTHER_MOSTER)  || defined(DSTIKE_DEAUTHER_MOSTER_V2)  || defined(DSTIKE_DEAUTHER_MOSTER_V3)  || defined(DSTIKE_DEAUTHER_MOSTER_V4)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -167,7 +167,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_OLED_V6) || defined(DEAUTHER_MOSTER_V5)
+#elif defined(DSTIKE_DEAUTHER_OLED_V6) || defined(DSTIKE_DEAUTHER_MOSTER_V5)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -188,14 +188,14 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(USB_DEAUTHER_V2)
+#elif defined(DSTIKE_USB_DEAUTHER_V2)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
   #define LED_NEOPIXEL_NUM 1
   #define LED_NEOPIXEL_PIN 4
 
-#elif defined(DEAUTHER_WRISTBAND) || defined(DEAUTHER_WATCH) || defined(DEAUTHER_MINI)
+#elif defined(DSTIKE_DEAUTHER_WRISTBAND) || defined(DSTIKE_DEAUTHER_WATCH) || defined(DSTIKE_DEAUTHER_MINI)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -216,7 +216,7 @@
   #define BUTTON_DOWN 13
   #define BUTTON_A 14
 
-#elif defined(DEAUTHER_WATCH_V2) || defined(DEAUTHER_MINI_EVO)
+#elif defined(DSTIKE_DEAUTHER_WATCH_V2) || defined(DSTIKE_DEAUTHER_MINI_EVO)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -275,13 +275,13 @@
  #define LED_MY92_CH_BRIGHTNESS 3
  #define LED_MY92_MODEL MY92XX_MODEL_MY9291
 
-#elif defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(USB_DEAUTHER) || defined(NODEMCU_07) || defined(DEAUTHER) || defined(DEAUTHER_V1) || defined(DEAUTHER_V2) || defined(DEAUTHER_V3)
+#elif defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3)
 // ===== LED ===== //
    #define LED_DIGITAL
    #define LED_PIN_R 16 // NodeMCU on-board LED
    #define LED_PIN_B 2  // ESP-12 LED
 
-#endif /* if defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(USB_DEAUTHER) || defined(NODEMCU_07) || defined(DEAUTHER) || defined(DEAUTHER_V1) || defined(DEAUTHER_V2) || defined(DEAUTHER_V3) */
+#endif /* if defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3) */
 // ============================== //
 
 
