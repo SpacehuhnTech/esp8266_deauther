@@ -527,7 +527,7 @@
 
    // ===== WEB INTERFACE ===== //
  #define WEB_ENABLED true
- #define WEB_CAPTIVE_PORTAL true
+ #define WEB_CAPTIVE_PORTAL false
  #define WEB_USE_SPIFFS false
  #define DEFAULT_LANG "en"
 

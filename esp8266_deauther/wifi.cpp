@@ -396,9 +396,8 @@ namespace wifi {
         // use it to load content from SPIFFS
         server.onNotFound([] () {
             if (!handleFileRead(server.uri())) {
-                server.send(404, str(W_TXT), str(W_FILE_NOT_FOUND));
-                //server.send(200, "text/html", indexhtml); 
-                //sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
+                if(settings::getWebSettings().captive_portal) sendProgmem(indexhtml, sizeof(indexhtml), W_HTML);
+                else server.send(404, str(W_TXT), str(W_FILE_NOT_FOUND));
             }
         });
 
