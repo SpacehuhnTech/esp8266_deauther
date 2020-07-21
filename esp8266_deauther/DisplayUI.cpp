@@ -659,11 +659,13 @@ void DisplayUI::draw() {
         drawTime = currentTime;
 
         updatePrefix();
-
+        
+#ifndef RTC_DS3231
         if (clockTime < currentTime - 1000) {
             setTime(clockHour, clockMinute++, clockSecond + 1);
             clockTime += 1000;
         }
+#endif
 
         switch (mode) {
             case DISPLAY_MODE::BUTTON_TEST:
