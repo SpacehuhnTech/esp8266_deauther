@@ -209,8 +209,6 @@
   #define FLIP_DIPLAY true
   #define DISPLAY_TEXT "Hardware by DSTIKE"
 
-  #define RTC_DS3231
-
 // ===== BUTTONS ===== //
   #define BUTTON_UP 12
   #define BUTTON_DOWN 13
@@ -229,6 +227,8 @@
   #define SH1106_I2C
   #define FLIP_DIPLAY true
   #define DISPLAY_TEXT "Hardware by DSTIKE"
+
+  #define RTC_DS3231
 
 // ===== BUTTONS ===== //
   #define BUTTON_UP 12
