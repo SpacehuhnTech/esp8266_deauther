@@ -14,7 +14,7 @@
 
 - CLI
   - Powerful new command line interface
-  - Support for the [Huhnitor](github.com/spacehuhntech/huhnitor) an easy to use, cross platform serial terminal
+  - Support for the [Huhnitor](https://github.com/spacehuhntech/huhnitor) an easy to use, cross platform serial terminal
   - User friendly `start` command to run complex commands step by step
 - Attack
   - More options for specific targeting
