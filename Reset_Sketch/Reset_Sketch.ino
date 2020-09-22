@@ -1,7 +1,7 @@
 #include <EEPROM.h>
 #include <FS.h>
 
-/*
+/
   Upload this sketch to your ESP8266 to erase 
   - all files in the SPIFFS, 
   - all data in the EEPROM
