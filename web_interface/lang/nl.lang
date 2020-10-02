@@ -1,4 +1,4 @@
- {
+ { 
     "lang": "nl",
     "warning": "WAARSCHUWING",
     "disclaimer": "Dit project is een proof of concept voor test- en educatieve doeleinden. \ nNoch de ESP8266, noch de SDK is bedoeld of gebouwd voor deze doeleinden. Er kunnen bugs optreden! \ n \ nGebruik het alleen voor uw eigen netwerken en apparaten ! \ n \ nHet maakt gebruik van geldige Wi-Fi-frames zoals beschreven in de IEEE 802.11-standaard en blokkeert of verstoort geen frequenties. \ nControleer de wettelijke voorschriften in uw land voordat u het gebruikt. \ n \ nRaadpleeg dit project niet als \ "jammer \", dat ondermijnt het werkelijke doel van dit project volledig! \ nAls je dat doet, bewijst het alleen dat je niets begreep van waar dit project voor staat. \ nPubliceren van inhoud hierover zonder een goede uitleg laat zien dat je het alleen doet voor de kliks, roem en / of geld en geen respect hebt voor intellectueel eigendom, de gemeenschap erachter en de strijd voor een betere wifi-standaard. \ n \ nVoor meer informatie bezoek:",
