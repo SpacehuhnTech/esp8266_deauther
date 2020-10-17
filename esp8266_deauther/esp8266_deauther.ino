@@ -60,8 +60,9 @@ void setup() {
     // for random generator
     randomSeed(os_random());
 
-    // start serial
-    Serial.begin(115200);
+    // start serial // using baud rate 19200
+   // Serial.begin(115200);
+    Serial.begin(19200);
     Serial.println();
 
     // start SPIFFS
