@@ -1,4 +1,4 @@
-# ESP8266 Deauther 2.0
+# ESP8266 Deauther 2.0 Hack Wifi menggunakan Arduino
 
 <p align="center"><img alt="PICTURE logo" src="https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/deauther_logo.png" width="200"></p>
 
@@ -93,6 +93,7 @@ A huge thanks to:
 - [@tobozo](https://github.com/tobozo)
 - [@xdavidhu](https://github.com/xdavidhu)
 - [@PwnKitteh](https://github.com/PwnKitteh)
+- [@sansabillagalih](https://github.com/sansabillagalih)
 
 for helping out with various things regarding this project and keeping it alive!  
 
