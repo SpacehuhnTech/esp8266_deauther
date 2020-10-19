@@ -68,7 +68,7 @@
 	"setting_deauthReason": "Der Reason-Code beim Versenden der Deauth-Pakete um dem Ziel zu sagen, warum die Verbindung getrennt wird.",
 	"setting_beaconchannel": "Wenn aktiviert, sendet Beacon-Pakete auf verschiedenen Kanälen.",
 	"setting_beaconInterval": "Wenn aktiviert, versendet je SSID ein Beacon-Pakete jede Sekunde. Sonst alle 100ms.\nEin größeres Intervall bedeutet mehr Stabilität und weniger Paket-Spamming, aber es könnte länger dauern bis Client-Geräte die Netzwerke finden.",
-	"setting_randomTX": "Enables randomized transmission power for sending out beacon and probe request frames.",
+	"setting_randomTX": "Aktiviert zufällige Sendeleistung für Beacon-Pakete und Probe Requests.",
 	"setting_probesPerSSID": "Wie viele Probe Requests pro SSID versendet werden sollen.",
 	"setting_lang": "Standardsprache für Webinterface.\nSei sicher, dass eine passende Sprachdatei existiert!"
 }
