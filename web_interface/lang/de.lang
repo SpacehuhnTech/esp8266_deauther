@@ -51,7 +51,7 @@
 	"setting_autosave": "Aktiviert automatisches Speichern der SSIDs, Geräte und Einstellungen.",
 	"setting_autosavetime": "Zeitintervall für automatisches Speichern in Millisekunden.",
 	"setting_display": "Aktiviert Display-Interface.",
-	"setting_displayTimeout": "Zeit in Sekunden nachdem der Display automatisch ausschaltet, wenn inaktiv.\nZum Deaktivieren des Timeouts, setze es auf 0.",
+	"setting_displayTimeout": "Zeit in Sekunden nachdem das Display automatisch ausschaltet, wenn inaktiv.\nZum Deaktivieren des Timeouts, setze es auf 0.",
 	"setting_serial": "Aktiviere Serial-Interface.\nEs wird empfohlen es immer aktiviert zu lassen!",
 	"setting_serialEcho": "Erlaubt Echo für jede Nachricht über die serielle Verbindung.",
 	"setting_web": "Aktiviert Webinterface.",
