@@ -64,7 +64,7 @@
 	"setting_minDeauths": "Minimale Anzahl an Deauthentication-Frames beim Scannen, um den LED-Modus zu ändern.",
 	"setting_attacktimeout": "Nach wie viel Sekunden die Attacke automatisch gestoppt wird.\nSetze es auf 0 um diese Funktion zu deaktivieren.",
 	"setting_forcepackets": "Wie oft versucht werden soll ein Paket zu versenden.\nÄndere diesen Wert um weine bessere Paketrate zu erreichen.\nSei Vorsichtig, diese Einstellung kann das Gerät langsamer machen.\nDer maximal Wert ist 255!",
-	"setting_deauthspertarget": "Wie viele Deauthentication- und Disassociaten-Frames für jedes Ziel versendet werden sollen.",
+	"setting_deauthspertarget": "Wie viele Deauthentication- und Disassociation-Frames für jedes Ziel versendet werden sollen.",
 	"setting_deauthReason": "Der Reason-Code beim Versenden der Deauth-Pakete um dem Ziel zu sagen, warum die Verbindung getrennt wird.",
 	"setting_beaconchannel": "Wenn aktiviert, sendet Beacon-Pakete auf verschiedenen Kanälen.",
 	"setting_beaconInterval": "Wenn aktiviert, versendet je SSID ein Beacon-Pakete jede Sekunde. Sonst alle 100ms.\nEin größeres Intervall bedeutet mehr Stabilität und weniger Paket-Spamming, aber es könnte länger dauern bis Client-Geräte die Netzwerke finden.",
