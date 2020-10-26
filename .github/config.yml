@@ -2,11 +2,12 @@
 newIssueWelcomeComment: >
   Thanks for opening your first issue here! 🎉<br>
   👉 Be sure to:<br>
-  1. 📖 Have a look at the [Wiki](https://github.com/spacehuhntech/esp8266_deauther/wiki) and [README](https://github.com/SpacehuhnTech/esp8266_deauther/blob/v2/README.md) for information<br>
-  2. 🔍 Search for similar [issues (open and closed)](https://github.com/SpacehuhnTech/esp8266_deauther/issues?q=is%3Aissue+)<br>
-  3. ✍️ Provide enough information to understand, recreate and help out with your problem<br>
-  4. ℹ️ Let us know if you find a solution and please share it with us<br>
-  5. 📕 Close the issue when your problem has been solved
+  1. 🇬🇧 Communicate in English so everybody can understand you<br>
+  2. 📖 Have a look at the [Wiki](https://github.com/spacehuhntech/esp8266_deauther/wiki) and [README](https://github.com/SpacehuhnTech/esp8266_deauther/blob/v2/README.md) for information<br>
+  3. 🔍 Search for similar [issues (open and closed)](https://github.com/SpacehuhnTech/esp8266_deauther/issues?q=is%3Aissue+)<br>
+  4. ✍️ Provide enough information to understand, recreate and help out with your problem<br>
+  5. ℹ️ Let us know if you find a solution and please share it with us<br>
+  6. 📕 Close the issue when your problem has been solved
 
 newPRWelcomeComment: 
 
