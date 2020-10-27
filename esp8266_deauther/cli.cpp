@@ -510,11 +510,11 @@ namespace cli {
                                            "mac",
                                            (res == "mac" || res == "ap" || res == "st"));
 
-                    { // Name
+                    { // MAC
                         if (res == "mac") {
                             CLI_READ_UNTIL("Enter a valid MAC address:",
                                            (mac::valid(res.c_str(), res.length())));
-                            cmd += " " + res.substring(0, 17);
+                            cmd += " -mac " + res.substring(0, 17);
                         }
 
                         else if (res == "ap") {
