@@ -95,45 +95,15 @@ namespace scan {
 #include "scan_ap.h"
 #include "scan_st.h"
 #include "scan_auth.h"
-    // #include "scan_rssi.h"
+#include "scan_rssi.h"
 
     // ===== PUBLIC ===== //
 
-    /*
-       void startRSSI(rssi_cb_f rssi_cb, MACList& mac_filter, uint16_t channels, unsigned long ch_time) {
-        if (!rssi_cb) {
-            // ERROR
-            return;
-        }
-
-        data.rssi_cb = rssi_cb;
-        data.mac_filter.moveFrom(mac_filter);
-
-        data.channels = channels;
-        data.ch_time  = ch_time;
-
-        uint8_t num_of_channels = 0;
-
-        for (uint8_t i = 0; i<14; ++i) {
-            num_of_channels += ((channels >> i) & 0x01);
-        }
-
-        unsigned long current_time = millis();
-
-        data.rssi            = true;
-        data.num_of_channels = num_of_channels;
-        data.start_time      = current_time;
-        data.ch_update_time  = current_time;
-
-        start_rssi_scan();
-       }
-     */
     void stop() {
         stopAP();
         stopST();
         stopAuth();
-
-        // stop_rssi_scan();
+        stopRSSI();
     }
 
     void printAPs(const result_filter_t* filter) {
@@ -156,7 +126,7 @@ namespace scan {
         update_ap_scan();
         update_st_scan();
         update_auth_scan();
-        // update_rssi_scan();
+        update_rssi_scan();
     }
 
     AccessPointList& getAccessPoints() {
@@ -168,6 +138,6 @@ namespace scan {
     }
 
     bool active(){
-        return ap_scan_active() || st_scan_active() || auth_scan_active()/* || rssi_scan_active()*/;
+        return ap_scan_active() || st_scan_active() || auth_scan_active() || rssi_scan_active();
     }
 }

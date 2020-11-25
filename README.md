@@ -61,6 +61,7 @@
 7. Connect and find port of ESP8266 dev board  
   `arduino-cli board list`
 8. Compile  
+  `cd esp8266_deauther`  
   `arduino-cli compile esp8266_deauther --fqbn deauther:esp8266:d1_mini`
 9. Upload  
    `arduino-cli upload -p <PORT> --fqbn deauther:esp8266:d1_mini`

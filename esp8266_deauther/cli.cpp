@@ -700,20 +700,6 @@ namespace cli {
             "  -r:  keep previous scan results"
             );
 
-        /*
-                Command cmd_rssi = cli.addCommand("rssi", [](cmd* c) {
-                    Command cmd(c);
-                    String mac_str = cmd.getArg("mac").getValue();
-
-                    MACList macs(mac_str, ",");
-
-                    scan::startRSSI(&rssi_meter_cb, macs);
-                });
-                cmd_rssi.addPosArg("mac", "");
-                cmd_rssi.setDescription(
-                    "  RSSI meter\r\n"
-                    "  -mac: MAC addresses");
-         */
         Command cmd_auth = cli.addCommand("auth", [](cmd* c) {
             Command cmd(c);
 
@@ -782,6 +768,43 @@ namespace cli {
                                 "  -ct:    channel scan time in milliseconds (default=284)\r\n"
                                 "  -t:     scan timeout (default=none)\r\n"
                                 "  -save:  save recorded probe requests");
+        
+        Command cmd_rssi = cli.addCommand("rssi", [](cmd* c) {
+            Command cmd(c);
+
+            rssi_scan_settings_t rssi_settings;
+
+            { // MACs
+                String bssid_str { cmd.getArg("mac").getValue() };
+                rssi_settings.macs += MacArr { bssid_str };
+            }
+
+            { // Channels
+                String ch_str          = cmd.getArg("ch").getValue();
+                rssi_settings.channels = parse_channels(ch_str);
+            }
+
+            { // Channel scan time
+                String time_str       = cmd.getArg("ct").getValue();
+                rssi_settings.ch_time = parse_time(time_str, 1);
+            }
+
+            { // Update Time
+                String time_str       = cmd.getArg("ut").getValue();
+                rssi_settings.update_time = parse_time(time_str, 1000);
+            }
+
+            scan::startRSSI(rssi_settings);
+        });
+        cmd_rssi.addPosArg("mac", "");
+        cmd_rssi.addArg("ch/annel", "all");
+        cmd_rssi.addArg("ct/ime", "284");
+        cmd_rssi.addArg("ut,u/pdate/time", "1s");
+        cmd_rssi.setDescription("  Signal Strength scan\r\n"
+                                "  -mac: filter by MAC(s)\r\n"
+                                "  -ch:  2.4 GHz channel(s) for scan [1-14] (default=all)\r\n"
+                                "  -ct:  channel scan time in milliseconds (default=284)\r\n"
+                                "  -ut:  update time (default=1s)");
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
             Command cmd(c);
@@ -1251,6 +1274,8 @@ namespace cli {
                         scan::stopST();
                     } else if (mode == "auth") {
                         scan::stopAuth();
+                    } else if (mode == "rssi") {
+                        scan::stopRSSI();
                     } else if (mode == "attack") {
                         attack::stop();
                     } else if (mode == "beacon") {
@@ -1267,7 +1292,7 @@ namespace cli {
         });
         cmd_stop.addPosArg("mode", "all");
         cmd_stop.setDescription("  Stop scans or attacks\r\n"
-                                "  -mode: all,scan,auth,attack,beacon,deauth,probe,ap (default=all)");
+                                "  -mode: all,scan,auth,rssi,attack,beacon,deauth,probe,ap (default=all)");
 
 #ifdef ENABLE_HISTORY
         Command cmd_history = cli.addCommand("history", [](cmd* c) {
