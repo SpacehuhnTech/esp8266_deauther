@@ -20,8 +20,6 @@ typedef struct auth_data_t {
     // Settings
     auth_scan_settings_t settings;
 
-    MacArr bssids;
-
     // Temp
     unsigned long start_time;
     unsigned long ch_update_time;
