@@ -56,15 +56,17 @@
    `cd esp8266` and  
    `git checkout v3`
 3. Update board URLs `arduino-cli core update-index`
-5. Install [ESP8266 Deauther Core](https://github.com/tobozo/Arduino/)  
+4. Install [ESP8266 Deauther Core](https://github.com/tobozo/Arduino/)  
    `arduino-cli core install deauther:esp8266`
-7. Connect and find port of ESP8266 dev board  
-  `arduino-cli board list`
-8. Compile  
+5. Compile  
   `cd esp8266_deauther`  
   `arduino-cli compile esp8266_deauther --fqbn deauther:esp8266:d1_mini`
-9. Upload  
-   `arduino-cli upload -p <PORT> --fqbn deauther:esp8266:d1_mini`
+6. Connect and find port of ESP8266 dev board  
+  `arduino-cli board list`
+7. Upload  
+   `arduino-cli upload -p <PORT> --fqbn deauther:esp8266:d1_mini`  
+   or  
+   `esptool.py --port <PORT> -b 115200 write_flash 0 <PATH_TO_BIN_FILE>`
 
 ## Debug Exceptions using Arduino IDE
 
