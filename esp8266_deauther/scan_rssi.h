@@ -76,8 +76,8 @@ void startRSSI(const rssi_scan_settings_t& settings) {
     rssi_data.last_update_time = current_time;
     rssi_data.last_ch_update_time = current_time;
 
-    rssi_stats.min = 0;
-    rssi_stats.max = -99;
+    rssi_stats.min = -60;
+    rssi_stats.max = -60;
     rssi_stats.pkts = 0;
     rssi_stats.start_time = current_time;
 
@@ -116,15 +116,15 @@ void startRSSI(const rssi_scan_settings_t& settings) {
                 debugln(strh::mac(rssi_data.settings.macs.iterate()));
             }
 
-            debuglnF("=================");
+            debuglnF("===================");
         }
 
         debugln();
         debuglnF("Type 'stop rssi' to stop the scan");
         debugln();
 
-        debuglnF("RSSI   Pkts/s");
-        debuglnF("==============");
+        debuglnF("RSSI      Packets");
+        debuglnF("===================");
     
         sysh::set_next_ch(rssi_data.settings.channels);
 
@@ -140,7 +140,7 @@ void stopRSSI() {
 
         rssi_data.settings.macs.clear();
         
-        debuglnF("==============");
+        debuglnF("===================");
         debugln();
         debuglnF("> Stopped RSSI scanner");
         debugln();
@@ -152,13 +152,24 @@ void update_rssi_scan() {
         unsigned long current_time = millis();
 
         if(current_time - rssi_data.last_update_time >= rssi_data.settings.update_time) {
+            if(rssi_stats.pkts == 0 || rssi_buffer.rssi < rssi_stats.min) rssi_stats.min = rssi_buffer.rssi;
+            if(rssi_stats.pkts == 0 || rssi_buffer.rssi > rssi_stats.max) rssi_stats.max = rssi_buffer.rssi;
+            rssi_stats.pkts += rssi_buffer.pkts;
+
             debug((int)rssi_buffer.rssi);
             debug(' ');
-            debugln((int)rssi_buffer.pkts);
 
-            rssi_stats.pkts += rssi_buffer.pkts;
-            if(rssi_buffer.rssi < rssi_stats.min) rssi_stats.min = rssi_buffer.rssi;
-            if(rssi_buffer.rssi > rssi_stats.max) rssi_stats.max = rssi_buffer.rssi;
+            if(rssi_buffer.rssi > -40) debugF("=====");
+            else if(rssi_buffer.rssi > -55) debugF("==== ");
+            else if(rssi_buffer.rssi > -65) debugF("===  ");
+            else if(rssi_buffer.rssi > -80) debugF("==   ");
+            else debugF("=    ");
+            
+            debug(' ');
+            debug(strh::right(4, String((int)rssi_buffer.pkts)));
+            debug(' ');
+            debuglnF("pkts");
+
             rssi_buffer.pkts = 0;
             rssi_data.last_update_time = current_time;
         }
