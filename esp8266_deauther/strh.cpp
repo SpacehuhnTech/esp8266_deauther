@@ -7,6 +7,12 @@
 #include "strh.h"
 
 namespace strh {
+    bool hidden { false };
+
+    void hide_mac(bool mode) {
+        hidden = mode;
+    }
+
     String whitespace(int len) {
         String res;
 
@@ -64,8 +70,13 @@ namespace strh {
 
         for (int i = 0; i < len; i++) {
             if (i>0) str += ':';
-            if (b[i] < 0x10) str += '0';
-            str += String(b[i], HEX);
+            if (hidden && (i>=2) && (i<=4)) {
+                str += '*';
+                str += '*';
+            } else {
+                if (b[i] < 0x10) str += '0';
+                str += String(b[i], HEX);
+            }
         }
 
         return str;
@@ -129,7 +140,7 @@ namespace strh {
     }
 
     String boolean(bool value) {
-        if(value) {
+        if (value) {
             return String(F("True"));
         } else {
             return String(F("False"));

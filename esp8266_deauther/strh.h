@@ -9,6 +9,7 @@
 #include <Arduino.h> // String
 
 namespace strh {
+    void hide_mac(bool mode);
     String whitespace(int len);
     String left(int len, String str);
     String right(int len, String str);

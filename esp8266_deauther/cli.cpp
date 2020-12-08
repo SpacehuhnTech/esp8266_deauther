@@ -1570,6 +1570,24 @@ namespace cli {
                               "  -h:  Hidden network\r\n"
                               "  -ch: Channel (default=1)\r\n"
                               "  -b:  BSSID MAC address (default=random)");
+
+        Command cmd_demo = cli.addCommand("demo", [](cmd* c) {
+            Command cmd(c);
+
+            String mode { cmd.getArg("m").getValue() };
+
+            if (mode == "on") {
+                strh::hide_mac(true);
+                debugln("Demo Mode: ACTIVATED");
+            } else {
+                strh::hide_mac(false);
+                debugln("Demo Mode: DEACTIVATED");
+            }
+        });
+        cmd_demo.addPosArg("m/ode", "on");
+        cmd_demo.setDescription("  Demo mode\r\n"
+                                "  on:  turn on demo mode\r\n"
+                                "  off: turn off demo mode");
     }
 
     void parse(const char* input) {
