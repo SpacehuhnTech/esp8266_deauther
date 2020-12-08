@@ -7,14 +7,14 @@
 #pragma once
 
 typedef struct rssi_t {
-    double min;
-    double max;
-    uint32_t pkts;
+    double        min;
+    double        max;
+    uint32_t      pkts;
     unsigned long start_time;
 } rssi_t;
 
 typedef struct rssi_tmp_t {
-    double rssi;
+    double   rssi;
     uint32_t pkts;
 } rssi_tmp_t;
 
@@ -31,7 +31,7 @@ typedef struct rssi_data_t {
 
 rssi_data_t rssi_data;
 rssi_tmp_t  rssi_buffer;
-rssi_t      rssi_stats;
+rssi_t rssi_stats;
 
 void rssi_sniffer(uint8_t* buf, uint16_t len) {
     SNIFFER_PREAMBLE();
@@ -44,7 +44,7 @@ void rssi_sniffer(uint8_t* buf, uint16_t len) {
     const int8_t   rssi     = ctrl->rssi;
 
     if ((rssi_data.settings.macs.size() == 0) || rssi_data.settings.macs.contains(sender)) {
-        if(rssi_buffer.pkts == 0) {
+        if (rssi_buffer.pkts == 0) {
             rssi_buffer.pkts = 1;
             rssi_buffer.rssi = rssi;
         } else {
@@ -71,14 +71,14 @@ void startRSSI(const rssi_scan_settings_t& settings) {
 
     unsigned long current_time = millis();
 
-    rssi_data.enabled        = true;
-    rssi_data.settings       = settings;
-    rssi_data.last_update_time = current_time;
+    rssi_data.enabled             = true;
+    rssi_data.settings            = settings;
+    rssi_data.last_update_time    = current_time;
     rssi_data.last_ch_update_time = current_time;
 
-    rssi_stats.min = -60;
-    rssi_stats.max = -60;
-    rssi_stats.pkts = 0;
+    rssi_stats.min        = -60;
+    rssi_stats.max        = -60;
+    rssi_stats.pkts       = 0;
     rssi_stats.start_time = current_time;
 
     rssi_buffer.rssi = -99;
@@ -125,7 +125,7 @@ void startRSSI(const rssi_scan_settings_t& settings) {
 
         debuglnF("RSSI      Packets");
         debuglnF("===================");
-    
+
         sysh::set_next_ch(rssi_data.settings.channels);
 
         wifi_set_promiscuous_rx_cb(rssi_sniffer);
@@ -139,7 +139,7 @@ void stopRSSI() {
         rssi_data.enabled = false;
 
         rssi_data.settings.macs.clear();
-        
+
         debuglnF("===================");
         debugln();
         debuglnF("> Stopped RSSI scanner");
@@ -151,26 +151,29 @@ void update_rssi_scan() {
     if (rssi_data.enabled) {
         unsigned long current_time = millis();
 
-        if(current_time - rssi_data.last_update_time >= rssi_data.settings.update_time) {
-            if(rssi_stats.pkts == 0 || rssi_buffer.rssi < rssi_stats.min) rssi_stats.min = rssi_buffer.rssi;
-            if(rssi_stats.pkts == 0 || rssi_buffer.rssi > rssi_stats.max) rssi_stats.max = rssi_buffer.rssi;
+        if (current_time - rssi_data.last_update_time >= rssi_data.settings.update_time) {
+            if ((rssi_stats.pkts == 0) || (rssi_buffer.rssi < rssi_stats.min)) rssi_stats.min = rssi_buffer.rssi;
+            if ((rssi_stats.pkts == 0) || (rssi_buffer.rssi > rssi_stats.max)) rssi_stats.max = rssi_buffer.rssi;
             rssi_stats.pkts += rssi_buffer.pkts;
 
+            if (rssi_buffer.rssi > -100) debug(' ');
             debug((int)rssi_buffer.rssi);
             debug(' ');
 
-            if(rssi_buffer.rssi > -40) debugF("=====");
-            else if(rssi_buffer.rssi > -55) debugF("==== ");
-            else if(rssi_buffer.rssi > -65) debugF("===  ");
-            else if(rssi_buffer.rssi > -80) debugF("==   ");
-            else debugF("=    ");
-            
+            if (rssi_buffer.rssi > -35) debugF("[======]");
+            else if (rssi_buffer.rssi > -45) debugF("[===== ]");
+            else if (rssi_buffer.rssi > -55) debugF("[====  ]");
+            else if (rssi_buffer.rssi > -65) debugF("[===   ]");
+            else if (rssi_buffer.rssi > -75) debugF("[==    ]");
+            else if (rssi_buffer.rssi > -85) debugF("[=     ]");
+            else debugF("[      ]");
+
             debug(' ');
-            debug(strh::right(4, String((int)rssi_buffer.pkts)));
+            debug(strh::right(5, String((int)rssi_buffer.pkts)));
             debug(' ');
             debuglnF("pkts");
 
-            rssi_buffer.pkts = 0;
+            rssi_buffer.pkts           = 0;
             rssi_data.last_update_time = current_time;
         }
 

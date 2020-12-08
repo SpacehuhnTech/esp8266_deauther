@@ -10,7 +10,7 @@
 
 #if SIMPLECLI_VERSION_MAJOR == 1 && SIMPLECLI_VERSION_MINOR < 1
     #error "Please update SimpleCLI library"
-#endif
+#endif // if SIMPLECLI_VERSION_MAJOR == 1 && SIMPLECLI_VERSION_MINOR < 1
 
 #include "debug.h"
 #include "scan.h"
@@ -68,7 +68,7 @@ void rssi_meter_cb(int8_t rssi) {
 
 namespace cli {
     // ===== PRIVATE ===== //
-    SimpleCLI cli { 64, 64 };                    // !< Instance of SimpleCLI library
+    SimpleCLI cli { 64, 64 };         // !< Instance of SimpleCLI library
 
     unsigned long timer = 0;          // !< Timestamp to wakeup, if sleep command was used
 
@@ -147,6 +147,7 @@ namespace cli {
         if (ch_str == "all") return 0x3FFF;
 
         SortedStringList ch_list = parse_int_list(ch_str);
+
         ch_list.begin();
 
         uint16_t channels = 0;
@@ -187,18 +188,19 @@ namespace cli {
             debuglnF(VERSION);
 
             debuglnF("\r\n"
-                    "[ ================== DISCLAIMER ================== ]\r\n"
-                    "  This is a tool.\r\n"
-                    "  It's neither good nor bad.\r\n"
-                    "  Use it to study and test.\r\n"
-                    "  Never use it to create harm or damage!\r\n"
-                    "\r\n"
-                    "  The continuation of this project counts on you!\r\n"
-                    "[ ================================================ ]\r\n");
+                     "[ ================== DISCLAIMER ================== ]\r\n"
+                     "  This is a tool.\r\n"
+                     "  It's neither good nor bad.\r\n"
+                     "  Use it to study and test.\r\n"
+                     "  Never use it to create harm or damage!\r\n"
+                     "\r\n"
+                     "  The continuation of this project counts on you!\r\n"
+                     "[ ================================================ ]\r\n");
 
             debuglnF("Type \"help\" to see all commands.\r\n"
-                    "Type \"start\" to go through the functionalities step by step.");
+                     "Type \"start\" to go through the functionalities step by step.");
         });
+
         cmd_welcome.setDescription("  Print welcome screen including version and disclaimer");
 
         cmd_welcome.run();
@@ -222,6 +224,7 @@ namespace cli {
                 debug(cli.toString(description));
             }
         });
+
         cmd_help.addPosArg("cmd,command", "");
         cmd_help.addFlagArg("s/hort");
         cmd_help.setDescription("  Print the list of commands that you see right now");
@@ -635,6 +638,7 @@ namespace cli {
 
             cli::parse(cmd.c_str());
         });
+
         cmd_start.addPosArg("cmd", "");
         cmd_start.setDescription("  Start a guided tour through the functions of this device");
 
@@ -686,6 +690,7 @@ namespace cli {
             if (ap) scan::startAP(scan_settings);
             else if (st) scan::startST(scan_settings.st_settings);
         });
+
         cmd_scan.addPosArg("m/ode", "ap+st");
         cmd_scan.addArg("t/ime", "20s");
         cmd_scan.addArg("ch/annel", "all");
@@ -755,6 +760,7 @@ namespace cli {
 
             scan::startAuth(auth_settings);
         });
+
         cmd_auth.addPosArg("bssid", "");
         cmd_auth.addArg("ap", "");
         cmd_auth.addArg("t/ime", "0");
@@ -768,20 +774,125 @@ namespace cli {
                                 "  -ct:    channel scan time in milliseconds (default=284)\r\n"
                                 "  -t:     scan timeout (default=none)\r\n"
                                 "  -save:  save recorded probe requests");
-        
+
         Command cmd_rssi = cli.addCommand("rssi", [](cmd* c) {
             Command cmd(c);
 
             rssi_scan_settings_t rssi_settings;
+            rssi_settings.channels = 0;
 
             { // MACs
                 String bssid_str { cmd.getArg("mac").getValue() };
                 rssi_settings.macs += MacArr { bssid_str };
             }
 
+            { // Read Access Point MACs
+                String ap_str { cmd.getArg("ap").getValue() };
+                SortedStringList list { ap_str };
+                AccessPointList& aps = scan::getAccessPoints();
+                MacArr ap_bssids { list.size() };
+
+                list.begin();
+
+                while (list.available()) {
+                    String value { list.iterate() };
+                    SortedStringList ids { parse_int_list(value) };
+                    uint8_t mac[6];
+                    AccessPoint* ap;
+
+                    if (alias::resolve(value, mac)) { // MAC address (or alias)
+                        ap = aps.search(mac);
+                        if (!ap) {
+                            debugF("WARNING: Access Point ");
+                            debug(value);
+                            debuglnF(" not found");
+                        } else {
+                            ap_bssids.add(ap->getBSSID());
+                            rssi_settings.channels |= 1 << (ap->getChannel()-1);
+                        }
+                    } else if (ids.size() > 0) { // ID(s)
+                        int id;
+                        ids.begin();
+
+                        while (ids.available()) {
+                            id = ids.iterate().toInt();
+                            ap = aps.get(id);
+                            if (!ap) {
+                                debugF("WARNING: Access Point ");
+                                debug(id);
+                                debuglnF(" not found");
+                            } else {
+                                ap_bssids.add(ap->getBSSID());
+                                rssi_settings.channels |= 1 << (ap->getChannel()-1);
+                            }
+                        }
+                    } else { // SSID
+                        aps.begin();
+
+                        while (aps.available()) {
+                            ap = aps.iterate();
+                            if (ap && (String(ap->getSSID()) == value)) {
+                                ap_bssids.add(ap->getBSSID());
+                                rssi_settings.channels |= 1 << (ap->getChannel()-1);
+                            }
+                        }
+                    }
+                }
+
+                rssi_settings.macs += ap_bssids;
+            }
+
+            { // Read Station MACs
+                String st_str { cmd.getArg("st").getValue() };
+                SortedStringList list { st_str };
+                StationList& sts = scan::getStations();
+                MacArr st_macs { list.size() };
+
+                list.begin();
+
+                while (list.available()) {
+                    String value { list.iterate() };
+                    SortedStringList ids { parse_int_list(value) };
+                    uint8_t mac[6];
+                    Station* st;
+
+                    if (alias::resolve(value, mac)) { // MAC address (or alias)
+                        st = sts.search(mac);
+                        if (!st) {
+                            debugF("WARNING: Station ");
+                            debug(value);
+                            debuglnF(" not found");
+                        } else {
+                            st_macs.add(st->getMAC());
+                            if (st->getAccessPoint()) rssi_settings.channels |= 1 << (st->getAccessPoint()->getChannel()-1);
+                        }
+                    } else if (ids.size() > 0) { // ID(s)
+                        int id;
+                        ids.begin();
+
+                        while (ids.available()) {
+                            id = ids.iterate().toInt();
+                            st = sts.get(id);
+                            if (!st) {
+                                debugF("WARNING: Station ");
+                                debug(id);
+                                debuglnF(" not found");
+                            } else {
+                                if (st->getAccessPoint()) rssi_settings.channels |= 1 << (st->getAccessPoint()->getChannel()-1);
+                            }
+                        }
+                    }
+                }
+
+                rssi_settings.macs += st_macs;
+            }
+
             { // Channels
-                String ch_str          = cmd.getArg("ch").getValue();
-                rssi_settings.channels = parse_channels(ch_str);
+                Argument ch_arg = cmd.getArg("ch");
+                if ((rssi_settings.channels == 0) || ch_arg.isSet()) {
+                    String ch_str          = ch_arg.getValue();
+                    rssi_settings.channels = parse_channels(ch_str);
+                }
             }
 
             { // Channel scan time
@@ -790,20 +901,25 @@ namespace cli {
             }
 
             { // Update Time
-                String time_str       = cmd.getArg("ut").getValue();
+                String time_str           = cmd.getArg("ut").getValue();
                 rssi_settings.update_time = parse_time(time_str, 1000);
             }
 
             scan::startRSSI(rssi_settings);
         });
+
         cmd_rssi.addPosArg("mac", "");
+        cmd_rssi.addArg("ap", "");
+        cmd_rssi.addArg("st/ation", "");
         cmd_rssi.addArg("ch/annel", "all");
-        cmd_rssi.addArg("ct/ime", "284");
+        cmd_rssi.addArg("ct/ime", "120");
         cmd_rssi.addArg("ut,u/pdate/time", "1s");
         cmd_rssi.setDescription("  Signal Strength scan\r\n"
                                 "  -mac: filter by MAC(s)\r\n"
+                                "  -ap:  filter by AP(s)\r\n"
+                                "  -st:  filter by Station(s)\r\n"
                                 "  -ch:  2.4 GHz channel(s) for scan [1-14] (default=all)\r\n"
-                                "  -ct:  channel scan time in milliseconds (default=284)\r\n"
+                                "  -ct:  channel scan time in milliseconds (default=120)\r\n"
                                 "  -ut:  update time (default=1s)");
 
         Command cmd_results = cli.addCommand("results", [](cmd* c) {
@@ -829,6 +945,7 @@ namespace cli {
 
             scan::print(&filter);
         });
+
         cmd_results.addPosArg("t/ype", "ap+st");
         cmd_results.addArg("ch/annel/s", "all");
         cmd_results.addArg("ssid/s", "");
@@ -895,6 +1012,7 @@ namespace cli {
 
             attack::startBeacon(beacon_settings);
         });
+
         cmd_beacon.addPosArg("ssid/s");
         cmd_beacon.addArg("bssid,from", "random");
         cmd_beacon.addArg("receiver,to", "broadcast");
@@ -1064,6 +1182,7 @@ namespace cli {
 
             attack::startDeauth(deauth_settings);
         });
+
         cmd_deauth.addArg("ap", "");
         cmd_deauth.addArg("st/ation", "");
         cmd_deauth.addArg("mac,manual", "");
@@ -1118,6 +1237,7 @@ namespace cli {
 
             attack::startProbe(probe_settings);
         });
+
         cmd_probe.addPosArg("ssid/s");
         cmd_probe.addArg("sender,from", "random");
         cmd_probe.addArg("receiver,to", "broadcast");
@@ -1215,6 +1335,7 @@ namespace cli {
                 debuglnF("Try \"alias list\", \"alias add [...]\", \"alias remove [...]\" or \"alias clear\".");
             }
         });
+
         cmd_alias.addPosArg("m/ode", "list");
         cmd_alias.addPosArg("name", "");
         cmd_alias.addPosArg("mac", "");
@@ -1233,6 +1354,7 @@ namespace cli {
                 debugln();
             }
         });
+
         cmd_clear.setDescription("  Clear serial output (by spamming line breaks :P)");
 
         Command cmd_ram = cli.addCommand("ram", [](cmd* c) {
@@ -1252,6 +1374,7 @@ namespace cli {
             debug(system_get_free_heap_size() / (81920 / 100));
             debuglnF("%)");
         });
+
         cmd_ram.setDescription("  Print memory usage");
 
         Command cmd_stop = cli.addCommand("stop", [](cmd* c) {
@@ -1290,6 +1413,7 @@ namespace cli {
                 }
             }
         });
+
         cmd_stop.addPosArg("mode", "all");
         cmd_stop.setDescription("  Stop scans or attacks\r\n"
                                 "  -mode: all,scan,auth,rssi,attack,beacon,deauth,probe,ap (default=all)");
@@ -1406,13 +1530,13 @@ namespace cli {
                                   "  -mac: MAC address(es)\r\n"
                                   "  -e:   list only exact matchess");
 
-        Command cmd_wait = cli.addCommand("wait", [](cmd* c){
+        Command cmd_wait = cli.addCommand("wait", [](cmd* c) {
             debugln("> Paused CLI");
             cli.pause();
         });
         cmd_wait.setDescription("  Wait until scan or attack has finished");
 
-        Command cmd_sleep = cli.addCommand("sleep", [](cmd* c){
+        Command cmd_sleep = cli.addCommand("sleep", [](cmd* c) {
             Command cmd(c);
 
             timer = millis() + parse_time(cmd.getArg("t").getValue(), 1);
@@ -1420,7 +1544,7 @@ namespace cli {
         });
         cmd_sleep.addPosArg("t/ime", "");
         cmd_sleep.setDescription("  Sleep for specified amount of time\r\n"
-                                "  -t: time to sleep");
+                                 "  -t: time to sleep");
 
         Command cmd_ap = cli.addCommand("ap", [](cmd* c) {
             Command cmd(c);
@@ -1430,16 +1554,16 @@ namespace cli {
             bool hidden { cmd.getArg("h").isSet() };
             uint8_t channel { (uint8_t)cmd.getArg("ch").getValue().toInt() };
             uint8_t bssid[6];
-            String bssid_str {cmd.getArg("bssid").getValue()};
+            String bssid_str { cmd.getArg("bssid").getValue() };
             parse_mac(bssid_str, bssid);
-        
+
             ap::start(ssid, pswd, hidden, channel, bssid);
         });
         cmd_ap.addPosArg("s/sid");
-        cmd_ap.addPosArg("p/assword","");
+        cmd_ap.addPosArg("p/assword", "");
         cmd_ap.addFlagArg("hidden");
-        cmd_ap.addArg("ch/annel","1");
-        cmd_ap.addArg("b/ssid","random");
+        cmd_ap.addArg("ch/annel", "1");
+        cmd_ap.addArg("b/ssid", "random");
         cmd_ap.setDescription("  Start access point\r\n"
                               "  -s:  SSID network name\r\n"
                               "  -p:  Password with at least 8 characters\r\n"
@@ -1534,7 +1658,7 @@ namespace cli {
     }
 
     void update() {
-        if(cli.paused() && ((timer == 0 && !scan::active() && !attack::active()) || (timer > 0 && millis() > timer))) {
+        if (cli.paused() && (((timer == 0) && !scan::active() && !attack::active()) || ((timer > 0) && (millis() > timer)))) {
             debugln("> Resumed CLI");
             cli.unpause();
             timer = 0;
