@@ -13,7 +13,6 @@
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
-// #define DSTIKE_DEAUTHER
 // #define DSTIKE_DEAUTHER_V1
 // #define DSTIKE_DEAUTHER_V2
 // #define DSTIKE_DEAUTHER_V3
@@ -39,11 +38,11 @@
 // #define DSTIKE_DEAUTHER_MOSTER_V5
 // #define DSTIKE_USB_DEAUTHER
 // #define DSTIKE_USB_DEAUTHER_V2
-// #define DSTIKE_DEAUTHER_WRISTBAND
 // #define DSTIKE_DEAUTHER_WATCH
 // #define DSTIKE_DEAUTHER_WATCH_V2
 // #define DSTIKE_DEAUTHER_MINI
 // #define DSTIKE_DEAUTHER_MINI_EVO
+
 // #define LYASI_7W_E27_LAMP
 // #define AVATAR_5W_E14_LAMP
 
@@ -195,7 +194,7 @@
   #define LED_NEOPIXEL_NUM 1
   #define LED_NEOPIXEL_PIN 4
 
-#elif defined(DSTIKE_DEAUTHER_WRISTBAND) || defined(DSTIKE_DEAUTHER_WATCH) || defined(DSTIKE_DEAUTHER_MINI)
+#elif defined(DSTIKE_DEAUTHER_WATCH) || defined(DSTIKE_DEAUTHER_MINI)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
@@ -275,7 +274,7 @@
  #define LED_MY92_CH_BRIGHTNESS 3
  #define LED_MY92_MODEL MY92XX_MODEL_MY9291
 
-#elif defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3)
+#elif defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3)
 // ===== LED ===== //
    #define LED_DIGITAL
    #define LED_PIN_R 16 // NodeMCU on-board LED
