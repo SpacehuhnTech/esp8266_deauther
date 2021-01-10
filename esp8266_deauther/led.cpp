@@ -86,22 +86,22 @@ namespace led {
     void setup() {
         analogWriteRange(0xff);
 
-        #if defined(LED_DIGITAL) || defined(LED_RGB)
+#if defined(LED_DIGITAL) || defined(LED_RGB)
         if (LED_PIN_R < 255) pinMode(LED_PIN_R, OUTPUT);
         if (LED_PIN_G < 255) pinMode(LED_PIN_G, OUTPUT);
         if (LED_PIN_B < 255) pinMode(LED_PIN_B, OUTPUT);
-        #elif defined(LED_NEOPIXEL) || defined(LED_APA)
+#elif defined(LED_NEOPIXEL) || defined(LED_APA)
         strip.begin();
         strip.setBrightness(LED_MODE_BRIGHTNESS);
         strip.show();
-        #elif defined(LED_MY9291)
+#elif defined(LED_MY9291)
         myled.setChannel(LED_MY92_CH_R, 0);
         myled.setChannel(LED_MY92_CH_G, 0);
         myled.setChannel(LED_MY92_CH_B, 0);
         myled.setChannel(LED_MY92_CH_BRIGHTNESS, LED_MODE_BRIGHTNESS);
         myled.setState(true);
         myled.update();
-        #endif // if defined(LED_DIGITAL) || defined(LED_RGB)
+#endif // if defined(LED_DIGITAL) || defined(LED_RGB)
     }
 
     void update() {
