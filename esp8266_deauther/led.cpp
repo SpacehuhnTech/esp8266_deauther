@@ -3,37 +3,37 @@
    This software is licensed under the MIT License. See the license file for details.
    Source: github.com/spacehuhn/esp8266_deauther
  */
- 
+
 #include "led.h"
 
 #include "A_config.h" // Config for LEDs
-#include <Arduino.h> // digitalWrite, analogWrite, pinMode
+#include <Arduino.h>  // digitalWrite, analogWrite, pinMode
 #include "language.h" // Strings used in printColor and tempDisable
 #include "settings.h" // used in update()
-#include "Attack.h" // used in update()
-#include "Scan.h" // used in update()
+#include "Attack.h"   // used in update()
+#include "Scan.h"     // used in update()
 
 // Inlcude libraries for Neopixel or LED_MY92xx if used
 #if defined(LED_NEOPIXEL)
-#include <Adafruit_NeoPixel.h>
+#include "src/Adafruit_NeoPixel-1.7.0/Adafruit_NeoPixel.h"
 #elif defined(LED_MY92)
-#include <my92xx.h>
+#include "src/my92xx-3.0.3/my92xx.h"
 #endif // if defined(LED_NEOPIXEL)
 
-extern Attack   attack;
-extern Scan     scan;
+extern Attack attack;
+extern Scan   scan;
 
 namespace led {
     // ===== PRIVATE ===== //
     LED_MODE mode = OFF;
 
     #if defined(LED_NEOPIXEL_RGB)
-        Adafruit_NeoPixel strip {LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400};
+    Adafruit_NeoPixel strip { LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400 };
     #elif defined(LED_NEOPIXEL_GRB)
-        Adafruit_NeoPixel strip {LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400};
+    Adafruit_NeoPixel strip { LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400 };
     #elif defined(LED_MY92)
-        my92xx myled {LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT};
-    #endif
+    my92xx myled { LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT };
+    #endif // if defined(LED_NEOPIXEL_RGB)
 
 
     void setColor(uint8_t r, uint8_t g, uint8_t b) {
@@ -83,20 +83,20 @@ namespace led {
         analogWriteRange(0xff);
 
         #if defined(LED_DIGITAL) || defined(LED_RGB)
-            if (LED_PIN_R < 255) pinMode(LED_PIN_R, OUTPUT);
-            if (LED_PIN_G < 255) pinMode(LED_PIN_G, OUTPUT);
-            if (LED_PIN_B < 255) pinMode(LED_PIN_B, OUTPUT);
+        if (LED_PIN_R < 255) pinMode(LED_PIN_R, OUTPUT);
+        if (LED_PIN_G < 255) pinMode(LED_PIN_G, OUTPUT);
+        if (LED_PIN_B < 255) pinMode(LED_PIN_B, OUTPUT);
         #elif defined(LED_NEOPIXEL)
-            strip.begin();
-            strip.setBrightness(LED_MODE_BRIGHTNESS);
-            strip.show();
+        strip.begin();
+        strip.setBrightness(LED_MODE_BRIGHTNESS);
+        strip.show();
         #elif defined(LED_MY9291)
-            myled.setChannel(LED_MY92_CH_R, 0);
-            myled.setChannel(LED_MY92_CH_G, 0);
-            myled.setChannel(LED_MY92_CH_B, 0);
-            myled.setChannel(LED_MY92_CH_BRIGHTNESS, LED_MODE_BRIGHTNESS);
-            myled.setState(true);
-            myled.update();
+        myled.setChannel(LED_MY92_CH_R, 0);
+        myled.setChannel(LED_MY92_CH_G, 0);
+        myled.setChannel(LED_MY92_CH_B, 0);
+        myled.setChannel(LED_MY92_CH_BRIGHTNESS, LED_MODE_BRIGHTNESS);
+        myled.setState(true);
+        myled.update();
         #endif // if defined(LED_DIGITAL) || defined(LED_RGB)
     }
 

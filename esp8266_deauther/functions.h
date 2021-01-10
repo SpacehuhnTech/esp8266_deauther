@@ -6,7 +6,7 @@
 extern "C" {
   #include "user_interface.h"
 }
-#include "ArduinoJson.h"
+#include "src/ArduinoJson-v5.13.5/ArduinoJson.h"
 
 /*
    Here is a collection of useful functions and variables.
@@ -196,6 +196,7 @@ bool eqls(const char* str, const char* keywordPtr) {
     if (strlen(str) > 255) return false;  // when string too long
 
     char keyword[strlen_P(keywordPtr) + 1];
+
     strcpy_P(keyword, keywordPtr);
 
     uint8_t lenStr     = strlen(str);
@@ -324,6 +325,7 @@ void setOutputPower(float dBm) {
     }
 
     uint8_t val = (dBm * 4.0f);
+
     system_phy_set_max_tpw(val);
 }
 

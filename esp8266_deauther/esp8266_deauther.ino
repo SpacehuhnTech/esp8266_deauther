@@ -14,7 +14,7 @@ extern "C" {
 
 #include "EEPROMHelper.h"
 
-#include <ArduinoJson.h>
+#include "src/ArduinoJson-v5.13.5/ArduinoJson.h"
 #if ARDUINOJSON_VERSION_MAJOR != 5
 // The software was build using ArduinoJson v5.x
 // version 6 is still in beta at the time of writing
@@ -37,8 +37,8 @@ extern "C" {
 #include "led.h"
 
 // Run-Time Variables //
-Names    names;
-SSIDs    ssids;
+Names names;
+SSIDs ssids;
 Accesspoints accesspoints;
 Stations     stations;
 Scan   scan;
@@ -63,9 +63,9 @@ void setup() {
 
     // start SPIFFS
     prnt(SETUP_MOUNT_SPIFFS);
-    //bool spiffsError = !LittleFS.begin();
+    // bool spiffsError = !LittleFS.begin();
     LittleFS.begin();
-    prntln(/*spiffsError ? SETUP_ERROR : */SETUP_OK);
+    prntln(/*spiffsError ? SETUP_ERROR : */ SETUP_OK);
 
     // Start EEPROM
     EEPROMHelper::begin(EEPROM_SIZE);
@@ -83,7 +83,7 @@ void setup() {
 #endif // ifdef FORMAT_EEPROM
 
     // Format SPIFFS when in boot-loop
-    if (/*spiffsError || */!EEPROMHelper::checkBootNum(BOOT_COUNTER_ADDR)) {
+    if (/*spiffsError || */ !EEPROMHelper::checkBootNum(BOOT_COUNTER_ADDR)) {
         prnt(SETUP_FORMAT_SPIFFS);
         LittleFS.format();
         prntln(SETUP_OK);
@@ -118,7 +118,7 @@ void setup() {
     }
 
     // copy web files to SPIFFS
-    //copyWebFiles(false);
+    // copyWebFiles(false);
 
     // load everything else
     names.load();
@@ -156,8 +156,8 @@ void setup() {
 void loop() {
     currentTime = millis();
 
-    led::update();    // update LED color
-    wifi::update();    // manage access point
+    led::update();   // update LED color
+    wifi::update();  // manage access point
     attack.update(); // run attacks
     displayUI.update();
     cli.update();    // read and run serial input

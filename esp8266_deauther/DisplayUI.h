@@ -11,29 +11,29 @@
 // ===== adjustable ===== //
 #if defined(SSD1306_I2C)
   #include <Wire.h>
-  #include <SSD1306Wire.h>
+  #include "src/esp8266-oled-ssd1306-4.1.0/SSD1306Wire.h"
 #elif defined(SSD1306_SPI)
   #include <SPI.h>
-  #include <SSD1306Spi.h>
+  #include "src/esp8266-oled-ssd1306-4.1.0/SSD1306Spi.h"
 #elif defined(SH1106_I2C)
   #include <Wire.h>
-  #include <SH1106Wire.h>
+  #include "src/esp8266-oled-ssd1306-4.1.0/SH1106Wire.h"
 #elif defined(SH1106_SPI)
   #include <SPI.h>
-  #include <SH1106Spi.h>
+  #include "src/esp8266-oled-ssd1306-4.1.0/SH1106Spi.h"
 #endif /* if defined(SSD1306_I2C) */
 
 #ifdef RTC_DS3231
-#include <DS3231.h>
-#endif
+#include "src/DS3231-1.0.3/DS3231.h"
+#endif // ifdef RTC_DS3231
 
-#include <SimpleButton.h>
+#include "src/SimpleButton/SimpleButton.h"
 
 using namespace simplebutton;
 
 
-extern Names    names;
-extern SSIDs    ssids;
+extern Names names;
+extern SSIDs ssids;
 extern Accesspoints accesspoints;
 extern Stations     stations;
 extern Scan     scan;
@@ -59,9 +59,9 @@ struct MenuNode {
 };
 
 struct Menu {
-    SimpleList<MenuNode>*list;
-    Menu  * parentMenu;
-    uint8_t selected;
+    SimpleList<MenuNode>* list;
+    Menu                * parentMenu;
+    uint8_t               selected;
     std::function<void()> build; // function that is executed when button is clicked
 };
 
@@ -69,8 +69,8 @@ class DisplayUI {
     public:
         enum DISPLAY_MODE { OFF = 0, BUTTON_TEST = 1, MENU = 2, LOADSCAN = 3, PACKETMONITOR = 4, INTRO = 5, CLOCK = 6 };
 
-        uint8_t mode         = DISPLAY_MODE::MENU;
-        bool    highlightLED = false;
+        uint8_t mode      = DISPLAY_MODE::MENU;
+        bool highlightLED = false;
 
         Button* up   = NULL;
         Button* down = NULL;
@@ -88,10 +88,10 @@ class DisplayUI {
         SH1106Spi display = SH1106Spi(SPI_RES, SPI_DC, SPI_CS);
 #endif /* if defined(SSD1306_I2C) */
 
-        const uint8_t  maxLen          = 18;
-        const uint8_t  lineHeight      = 12;
-        const uint8_t  buttonDelay     = 250;
-        const uint8_t  drawInterval    = 100; // 100ms = 10 FPS
+        const uint8_t maxLen           = 18;
+        const uint8_t lineHeight       = 12;
+        const uint8_t buttonDelay      = 250;
+        const uint8_t drawInterval     = 100; // 100ms = 10 FPS
         const uint16_t scrollSpeed     = 500; // time interval in ms
         const uint16_t screenIntroTime = 2500;
         const uint16_t screenWidth     = 128;
@@ -191,7 +191,7 @@ class DisplayUI {
 
 #ifdef RTC_DS3231
         DS3231 clock;
-#endif
+#endif // ifdef RTC_DS3231
 };
 
 // ===== FONT ===== //
