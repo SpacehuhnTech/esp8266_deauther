@@ -13,6 +13,7 @@
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
+// #define MALTRONICS
 // #define DSTIKE_DEAUTHER_V1
 // #define DSTIKE_DEAUTHER_V2
 // #define DSTIKE_DEAUTHER_V3
@@ -54,11 +55,22 @@
 // #define RESET_SETTINGS
 
 // ========== CONFIGS ========== //
-#if defined(DSTIKE_D_DUINO_B_V5_LED_RING)
+#if defined(MALTRONICS)
+
+// ===== Reset ====== //
+  #define RESET_BUTTON 5
+
+// ===== LED ===== //
+  #define LED_APA
+  #define LED_NUM 1
+  #define LED_APA_CLK 12
+  #define LED_APA_MOSI 13
+
+#elif defined(DSTIKE_D_DUINO_B_V5_LED_RING)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 12
+  #define LED_NUM 12
   #define LED_NEOPIXEL_PIN 15
 
 // ===== DISPLAY ===== //
@@ -75,7 +87,7 @@
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
 // ===== DISPLAY ===== //
@@ -93,14 +105,14 @@
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
 #elif defined(DSTIKE_DEAUTHER_OLED_V1_5_S)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
 // ===== DISPLAY ===== //
@@ -153,7 +165,7 @@
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
 // ===== DISPLAY ===== //
@@ -170,7 +182,7 @@
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
   #define HIGHLIGHT_LED 16
@@ -191,14 +203,14 @@
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 4
 
 #elif defined(DSTIKE_DEAUTHER_WATCH) || defined(DSTIKE_DEAUTHER_MINI)
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
   #define HIGHLIGHT_LED 16
@@ -217,7 +229,7 @@
 
 // ===== LED ===== //
   #define LED_NEOPIXEL_GRB
-  #define LED_NEOPIXEL_NUM 1
+  #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 15
 
   #define HIGHLIGHT_LED 16
@@ -245,7 +257,7 @@
  #define LED_MODE_IDLE 0, 255, 0
  #define LED_MODE_BRIGHTNESS 10
 
- #define LED_MY92_NUM 1
+ #define LED_NUM 1
  #define LED_MY92_DATA 4
  #define LED_MY92_CLK 5
  #define LED_MY92_CH_R 0
@@ -265,7 +277,7 @@
  #define LED_MODE_IDLE 0, 255, 0
  #define LED_MODE_BRIGHTNESS 10
 
- #define LED_MY92_NUM 1
+ #define LED_NUM 1
  #define LED_MY92_DATA 13
  #define LED_MY92_CLK 15
  #define LED_MY92_CH_R 0
@@ -285,6 +297,11 @@
 
 
 // ========= FALLBACK ========= //
+
+// ===== Reset ====== //
+#ifndef RESET_BUTTON
+  #define RESET_BUTTON 0
+#endif // ifndef RESET_BUTTON
 
 // ===== AUTOSAVE ===== //
 #ifndef AUTOSAVE_ENABLED
@@ -550,7 +567,7 @@
  #define LED_NEOPIXEL_RGB
  #define LED_NEOPIXEL_GRB
 
- #define LED_NEOPIXEL_NUM 1
+ #define LED_NUM 1
  #define LED_NEOPIXEL_PIN 255
 
  #define LED_MODE_OFF 0,0,0
@@ -559,7 +576,7 @@
  #define LED_MODE_IDLE 0,255,0
  #define LED_MODE_BRIGHTNESS 10
 
- #define LED_MY92_NUM 1
+ #define LED_NUM 1
  #define LED_MY92_DATA 4
  #define LED_MY92_CLK 5
  #define LED_MY92_CH_R 0

@@ -18,6 +18,8 @@
 #include "src/Adafruit_NeoPixel-1.7.0/Adafruit_NeoPixel.h"
 #elif defined(LED_MY92)
 #include "src/my92xx-3.0.3/my92xx.h"
+#elif defined(LED_APA)
+#include "src/Adafruit_DotStar-1.1.4/Adafruit_DotStar.h"
 #endif // if defined(LED_NEOPIXEL)
 
 extern Attack attack;
@@ -28,11 +30,13 @@ namespace led {
     LED_MODE mode = OFF;
 
     #if defined(LED_NEOPIXEL_RGB)
-    Adafruit_NeoPixel strip { LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400 };
+    Adafruit_NeoPixel strip { LED_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400 };
     #elif defined(LED_NEOPIXEL_GRB)
-    Adafruit_NeoPixel strip { LED_NEOPIXEL_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400 };
+    Adafruit_NeoPixel strip { LED_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400 };
     #elif defined(LED_MY92)
-    my92xx myled { LED_MY92_MODEL, LED_MY92_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT };
+    my92xx myled { LED_MY92_MODEL, LED_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT };
+    #elif defined(LED_APA)
+    Adafruit_DotStar strip { LED_NUM, LED_APA_MOSI, LED_APA_CLK, DOTSTAR_BRG };
     #endif // if defined(LED_NEOPIXEL_RGB)
 
 
@@ -61,9 +65,9 @@ namespace led {
         analogWrite(LED_PIN_R, r);
         analogWrite(LED_PIN_G, g);
         analogWrite(LED_PIN_B, b);
-    #elif defined(LED_NEOPIXEL)
+    #elif defined(LED_NEOPIXEL) || defined(LED_APA)
 
-        for (size_t i = 0; i < LED_NEOPIXEL_NUM; i++) {
+        for (size_t i = 0; i < LED_NUM; i++) {
             strip.setPixelColor(i, r, g, b);
         }
 
@@ -86,7 +90,7 @@ namespace led {
         if (LED_PIN_R < 255) pinMode(LED_PIN_R, OUTPUT);
         if (LED_PIN_G < 255) pinMode(LED_PIN_G, OUTPUT);
         if (LED_PIN_B < 255) pinMode(LED_PIN_B, OUTPUT);
-        #elif defined(LED_NEOPIXEL)
+        #elif defined(LED_NEOPIXEL) || defined(LED_APA)
         strip.begin();
         strip.setBrightness(LED_MODE_BRIGHTNESS);
         strip.show();
