@@ -7,10 +7,6 @@
 
 #define DEFAULT_ESP8266
 
-/* ---------------------------------------------------------- */
-/* ===>> !!! Uncomment the board that you're using: !!! <<=== */
-/* ---------------------------------------------------------- */
-
 // #define NODEMCU
 // #define WEMOS_D1_MINI
 // #define DISPLAY_EXAMPLE_I2C
@@ -84,6 +80,7 @@
 
   #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 9
+  #define LED_MODE_BRIGHTNESS 10
 
 
 // https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Setup-Display-&-Buttons#example-setup-with-spi-oled
@@ -109,6 +106,7 @@
 
   #define LED_NUM 1
   #define LED_NEOPIXEL_PIN 9
+  #define LED_MODE_BRIGHTNESS 10
 
 #elif defined(MALTRONICS)
 
@@ -120,7 +118,7 @@
   #define LED_NUM 1
   #define LED_DOTSTAR_CLK 12
   #define LED_DOTSTAR_DATA 13
-  #define LED_MODE_BRIGHTNESS 100
+  #define LED_MODE_BRIGHTNESS 255
 
 #elif defined(DSTIKE_D_DUINO_B_V5_LED_RING)
 
