@@ -580,9 +580,9 @@
 
 // ======== CONSTANTS ========== //
 // Do not change these values unless you know what you're doing!
-#define DEAUTHER_VERSION "2.5.0"
+#define DEAUTHER_VERSION "2.6.0"
 #define DEAUTHER_VERSION_MAJOR 2
-#define DEAUTHER_VERSION_MINOR 5
+#define DEAUTHER_VERSION_MINOR 6
 #define DEAUTHER_VERSION_REVISION 0
 
 #define EEPROM_SIZE 4095
