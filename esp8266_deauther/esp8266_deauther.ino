@@ -189,9 +189,16 @@ void loop() {
     resetButton->update();
     if (resetButton->holding(5000)) {
         led::setMode(LED_MODE::SCAN);
+        DISPLAY_MODE _mode = displayUI.mode;
+        displayUI.mode = DISPLAY_MODE::RESETTING;
+        displayUI.update(true);
+
         settings::reset();
         settings::save(true);
-        delay(1000);
+
+        delay(2000);
+
         led::setMode(LED_MODE::IDLE);
+        displayUI.mode = _mode;
     }
 }
