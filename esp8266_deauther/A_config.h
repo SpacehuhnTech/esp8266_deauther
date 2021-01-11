@@ -61,10 +61,11 @@
   #define RESET_BUTTON 5
 
 // ===== LED ===== //
-  #define LED_APA
+  #define LED_DOTSTAR
   #define LED_NUM 1
-  #define LED_APA_CLK 12
-  #define LED_APA_MOSI 13
+  #define LED_DOTSTAR_CLK 12
+  #define LED_DOTSTAR_DATA 13
+  #define LED_MODE_BRIGHTNESS 100
 
 #elif defined(DSTIKE_D_DUINO_B_V5_LED_RING)
 
@@ -402,12 +403,12 @@
   #define LED_NEOPIXEL
 #endif /* if defined(LED_NEOPIXEL_RGB) || defined(LED_NEOPIXEL_GRB) */
 
-#if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92)
+#if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(LED_MY92) && !defined(LED_DOTSTAR)
   #define LED_DIGITAL
   #define USE_LED false
-#else /* if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92) */
+#else // if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(LED_MY92) && !defined(LED_DOTSTAR)
   #define USE_LED true
-#endif /* if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(MY92) */
+#endif // if !defined(LED_DIGITAL) && !defined(LED_RGB) && !defined(LED_NEOPIXEL) && !defined(LED_MY92) && !defined(LED_DOTSTAR)
 
 #ifndef LED_PIN_R
   #define LED_PIN_R 255
@@ -522,6 +523,10 @@
 
 
 /*
+
+   // ===== Reset ====== //
+ #define RESET_BUTTON 5
+
    // ===== ATTACK ===== //
  #define ATTACK_ALL_CH false
  #define RANDOM_TX false
@@ -585,6 +590,11 @@
  #define LED_MY92_CH_BRIGHTNESS 3
  #define LED_MY92_MODEL MY92XX_MODEL_MY9291
  #define LED_MY92_MODEL MY92XX_MODEL_MY9231
+
+ #define LED_DOTSTAR
+ #define LED_NUM 1
+ #define LED_DOTSTAR_CLK 12
+ #define LED_DOTSTAR_DATA 13
 
    // ===== DISPLAY ===== //
  #define USE_DISPLAY false

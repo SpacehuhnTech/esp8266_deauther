@@ -11,6 +11,7 @@ import sys
 boards = [
     "NODEMCU",
     "WEMOS_D1_MINI",
+    "MALTRONICS",
     "DSTIKE_DEAUTHER_V1",
     "DSTIKE_DEAUTHER_V2",
     "DSTIKE_DEAUTHER_V3",
