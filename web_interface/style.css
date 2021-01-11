@@ -1,3 +1,5 @@
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 /* Global */
 body {
 	background: #36393e;
@@ -13,7 +15,7 @@ h1 {
     color: #bfbfbb;
     padding: 0.2em 1em;
     border-radius: 3px;
-    border-left: solid #4974a9 5px;
+	border-left: solid #20c20e 5px;
     font-weight: 100;
 }
 
@@ -24,7 +26,7 @@ h2 {
     color: #bfbfbb;
     padding: 0.4em 1.8em;
     border-radius: 3px;
-    border-left: solid #4974a9 5px;
+	border-left: solid #20c20e 5px;
     font-weight: 100;
 }
 
@@ -84,13 +86,14 @@ p{
 	text-decoration: underline;
 }
 
-#error {
-    text-align: center;
-    color: #fff;
-    background: #af3535;
-    border-radius: 5px;
-	padding: 10px;
-	margin-top: 10px;
+#status {
+	text-align: center;
+	text-transform: capitalize;
+	padding: 5px;
+	color: #fff;
+	position: sticky;
+	top: 0;
+	z-index: 99;
 }
 
 #closeError{
@@ -100,8 +103,8 @@ p{
 	cursor: pointer;
 }
 
-#copyright{
-	font-size: 0.95em;
+footer {
+	font-size: .95em;
 	text-align: center;
 	margin-top: 3em;
 	margin-bottom: 3em;
@@ -274,24 +277,35 @@ th, td {
 	}
 }
 
-/* Navigation bar */
 nav {
 	display: block;
-	padding: 8px 10px;
-	background: #2f3136;
+	background: #1d2236
+	font-weight: bold;
+	padding: 0 10px;
 }
-
+  
 nav a {
-	color: #bfbfbf;
-	padding: 0.5em;
-	display: inline-block;
-	text-decoration: none;
+	color: inherit;
+	padding: 0 .5em;
 }
 
-nav a:hover{
-	background: #36393f;
-	color:#cecece;
-	border-radius: 4px;
+.menu {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: row;
+	display:block;
+}
+
+.menu li {
+	margin: 10px 20px 10px 0;
+	display: inline-block;
+}
+
+.menu li:last-child {
+	float: right;
 }
 
 /* Inputs and buttons */

@@ -1,88 +1,121 @@
+<!--- This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther -->
+
 <!Doctype html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
-		<meta name="description" content="ESP8266 Deauther">
-		<meta name="author" content="Spacehuhn - Stefan Kremser">
-		<meta name="theme-color" content="#36393E" />
-		<title>ESP8266 Deauther</title>
-		<link rel="stylesheet" href="style.css">
-		<script src="js/site.js"></script>
-	</head>
-	<body onload="loadLang()">
-		<nav>
-			<a href="scan.html" data-translate="scan">Scan</a>
-			<a href="ssids.html" data-translate="ssids">SSIDs</a>
-			<a href="attack.html" data-translate="attacks">Attacks</a>
-			<a href="settings.html" data-translate="settings">Settings</a>
-			<a class="right" href="info.html" data-translate="info">Info</a>
-		</nav>
-		<div class="container">
-			<div class="row">
-				<div class="col-12">
-					<div id="error" class="hide"></div>
-					<h1 class="header" data-translate="info">Info</h1>
-					
-					<h2>ESP8266 Deauther</h2>
-					<p>
-						<span class="bold">Copyright (c) 2018 Stefan Kremser</span><br />
-						<br />
-						This project is licensed under the MIT License. See the <a href="LICENSE">license file</a> for details.<br />
-						The source code is available on <a href="https://github.com/spacehuhn/esp8266_deauther" target="_blank">GitHub</a>.<br />
-						<br />
-						Use it only for testing or educational purposes against your own networks and devices!<br />
-						<br />
-						<span class="bold">Please don't refer to this project as "jammer", that totally undermines the real purpose of this project!</span>
-					</p>
-					
-					<h2>Credits</h2>
-					<p>
-						A huge thanks to:<br>
-						<ul>
-							<li><a href="http://github.com/deantonious" target="_blank">@deantonious</a></li>
-							<li><a href="http://github.com/jLynx" target="_blank">@jLynx</a></li>
-							<li><a href="http://github.com/lspoplove" target="_blank">@lspoplove</a></li>
-							<li><a href="http://github.com/schinfo" target="_blank">@schinfo</a></li>
-							<li><a href="http://github.com/tobozo" target="_blank">@tobozo</a></li>
-							<li><a href="http://github.com/xdavidhu" target="_blank">@xdavidhu</a></li>
-							<li><a href="http://github.com/PwnKitteh" target="_blank">@PwnKitteh</a></li>
-						</ul>
-						for helping out with various things regarding this project and keeping it alive!<br>
-						<br>
-						I also want to thank Espressif and their community for this awesome chip and all the software and hardware projects around it and the countless tutorials you can find online!<br>
-						<br>
-						Shoutout to everyone working on the libraries used for this project:<br>
-						<ul>
-							<li><a href="https://github.com/ThingPulse/esp8266-oled-ssd1306" target="_blank">esp8266-oled-ssd1306</a></li>
-							<li><a href="https://github.com/bblanchon/ArduinoJson" target="_blank">ArduinoJson</a></li>
-							<li><a href="https://github.com/ivanseidel/LinkedList" target="_blank">LinkedList</a></li>
-						</ul>
-						<br>
-						Also thanks to everyone that supports this project by <a href="http://spacehuhn.de/donate" target="_blank">donating]</a>, beeing my <a href="http://patreon.com/spacehuhn" target="_blank">patron</a> or buying one of the <a href="https://www.tindie.com/stores/lspoplove" target="_blank">official Deauther boards</a> from DSTIKE.<br>
-					</p>
-					
-					<h2>Contact</h2>
-					<p>
-						Web: <a target="_blank" href="http://spacehuhn.com/">spacehuhn.com</a><br>
-						GitHub: <a target="_blank" href="http://github.com/spacehuhn/">github.com/spacehuhn</a><br />
-						Twitter: <a target="_blank" href="http://twitter.com/spacehuhn/">@spacehuhn</a><br />
-						E-mail: mail@spacehuhn.com<br />
-						<br>
-						If you would like to support me with my projects, please consider becoming a patron on <a target="_blank" href="https://patreon.com/spacehuhn">patreon.com/spacehuhn</a>.<br />
-						<br>
-						Or buy the official hardware for this project from DSTIKE on <a target="_blank" href="https://www.tindie.com/stores/lspoplove/">tindie.com/stores/lspoplove</a>.
-					</p>
-					
-					<div id="copyright">
-						<a href="https://github.com/spacehuhn/esp8266_deauther/wiki" target="_blank">Wiki</a> | <a href="https://github.com/spacehuhn/esp8266_deauther" target="_blank">GitHub</a><br>
-						<br>
-						Version 2.5<br>
-						Copyright (c) 2020 Spacehuhn Technologies<br>
-						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
-					</div>
-				</div>
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+	<meta name="theme-color" content="#36393E">
+
+	<meta name="description" content="ESP8266 Deauther">
+	<title>ESP8266 Deauther</title>
+
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script src="js/site.js"></script>
+</head>
+
+<body onload="loadLang()">
+	<nav>
+		<ul class="menu">
+			<li><a href="scan.html" data-translate="scan">Scan</a></li>
+			<li><a href="ssids.html" data-translate="ssids">SSIDs</a></li>
+			<li><a href="attack.html" data-translate="attacks">Attack</a></li>
+			<li><a href="settings.html" data-translate="settings">Settings</a></li>
+		</ul>
+	</nav>
+
+	<div id="status"></div>
+
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<h1 class="header">Credits</h1>
+
+				<h2>Disclaimer</h2>
+				<p data-translate="disclaimer">
+					This project is a proof of concept for testing and educational purposes.<br>
+					Neither the ESP8266, nor its SDK was meant or build for such purposes. Bugs can occur!<br>
+					<br>
+					Use it only against your own networks and devices!<br>
+					<br>
+					It uses valid Wi-Fi frames described in the IEEE 802.11 standard and does not block or disrupt any
+					frequencies.<br>
+					Please check the legal regulations in your country before using it.<br>
+					<br>
+					Please don't refer to this project as "jammer", as it undermines the real purpose of this
+					project!<br>
+					If you do, it only proves that you didn't understand anything of what this project stands for.<br>
+					Publishing content about this without without a proper explanation shows that you only do it for the
+					clicks,
+					fame and/or money and have no respect for intellectual property, the community behind it and the
+					fight for a better WiFi standard.<br>
+					<br>
+					For more information visit:<br>
+					<a
+						href="https://github.com/spacehuhntech/esp8266_deauther">github.com/spacehuhntech/esp8266_deauther</a>
+				</p>
+
+				<h2>Acknowledgements</h2>
+				<p>
+					A huge thanks to:<br>
+				<ul>
+					<li><a href="http://github.com/deantonious" target="_blank">@deantonious</a></li>
+					<li><a href="http://github.com/jLynx" target="_blank">@jLynx</a></li>
+					<li><a href="http://github.com/lspoplove" target="_blank">@lspoplove</a></li>
+					<li><a href="http://github.com/schinfo" target="_blank">@schinfo</a></li>
+					<li><a href="http://github.com/tobozo" target="_blank">@tobozo</a></li>
+					<li><a href="http://github.com/xdavidhu" target="_blank">@xdavidhu</a></li>
+					<li><a href="http://github.com/PwnKitteh" target="_blank">@PwnKitteh</a></li>
+				</ul>
+				for helping out with various things regarding this project and keeping it alive!<br>
+				<br>
+				Also thanks to everyone working on the libraries used for this project:<br>
+				<ul>
+					<li><a href="https://github.com/ThingPulse/esp8266-oled-ssd1306"
+							target="_blank">esp8266-oled-ssd1306</a></li>
+					<li><a href="https://github.com/bblanchon/ArduinoJson" target="_blank">ArduinoJson</a></li>
+					<li><a href="https://github.com/adafruit/Adafruit_DotStar" target="_blank">Adafruit DotStar</a></li>
+					<li><a href="https://github.com/adafruit/Adafruit_NeoPixel" target="_blank">Adafruit NeoPixel</a>
+					</li>
+					<li><a href="https://github.com/NorthernWidget/DS3231" target="_blank">DS3231</a></li>
+					<li><a href="https://github.com/xoseperez/my92xx" target="_blank">my92xx</a></li>
+				</ul>
+				We also thank Espressif and their community for this awesome chip and all the software and
+				hardware projects around it and the countless tutorials you can find online!<br>
+				</p>
+
+				<h2>License</h2>
+				<p>
+					<b>In regards to the firmware:</b><br>
+					<br>
+					MIT License<br>
+					Copyright (c) 2020 Spacehuhn Technologies<br>
+					<br>
+					Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
+					associated documentation files (the "Software"), to deal in the Software without restriction,
+					including without limitation the rights to use, copy, modify, merge, publish, distribute,
+					sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+					furnished to do so, subject to the following conditions:<br>
+					<br>
+					The above copyright notice and this permission notice shall be included in all copies or substantial
+					portions of the Software.<br>
+					<br>
+					THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT
+					NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+					NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
+					OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+					CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+				</p>
 			</div>
 		</div>
-	</body>
+	</div>
+	<footer>
+		<span id="version">Version 2.6.0</span>
+		<br>
+		<br>
+		<a href="http://deauther.maltronics.com" target="_blank">Wiki</a> | <a href="info.html">Credits</a>
+	</footer>
+</body>
+
 </html>
