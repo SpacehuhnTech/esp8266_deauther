@@ -55,8 +55,8 @@ namespace wifi {
     // Server and other global objects
     ESP8266WebServer server(80);
     DNSServer dns;
-    IPAddress ip(192, 168, 4, 1);
-    IPAddress netmask(255, 255, 255, 0);
+    IPAddress ip WEB_IP_ADDR;
+    IPAddress    netmask(255, 255, 255, 0);
 
     void setPath(String path) {
         if (path.charAt(0) != '/') {
@@ -265,7 +265,7 @@ namespace wifi {
         dns.setErrorReplyCode(DNSReplyCode::NoError);
         dns.start(53, "*", ip);
 
-        MDNS.begin("deauth.me");
+        MDNS.begin(WEB_URL);
 
         server.on("/list", HTTP_GET, handleFileList); // list directory
 

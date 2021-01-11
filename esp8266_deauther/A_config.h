@@ -120,6 +120,10 @@
   #define LED_DOTSTAR_DATA 13
   #define LED_MODE_BRIGHTNESS 255
 
+// ===== Web ===== //
+#define WEB_IP_ADDR (192, 168, 4, 2)
+#define WEB_URL "deauther.tools"
+
 #elif defined(DSTIKE_D_DUINO_B_V5_LED_RING)
 
 // ===== LED ===== //
@@ -565,6 +569,15 @@
   #endif // if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0
 #endif // ifndef RESET_BUTTON
 
+// ===== Web ===== //
+#ifndef WEB_IP_ADDR
+  #define WEB_IP_ADDR (192, 168, 4, 1)
+#endif // ifndef WEB_IP_ADDR
+
+#ifndef WEB_URL
+  #define WEB_URL "deauth.me"
+#endif // ifndef WEB_URL
+
 // ======== CONSTANTS ========== //
 // Do not change these values unless you know what you're doing!
 #define DEAUTHER_VERSION "2.5.0"
@@ -580,10 +593,6 @@
 
 
 /*
-
-   // ===== Reset ====== //
- #define RESET_BUTTON 5
-
    // ===== ATTACK ===== //
  #define ATTACK_ALL_CH false
  #define RANDOM_TX false
@@ -676,6 +685,14 @@
  #define BUTTON_DOWN 255
  #define BUTTON_A 255
  #define BUTTON_B 255
+
+   // ===== Reset ====== //
+ #define RESET_BUTTON 5
+
+
+   // ===== Web ===== //
+ #define WEB_IP_ADDR (192, 168, 4, 1)
+ #define WEB_URL "deauth.me"
 
  */
 
