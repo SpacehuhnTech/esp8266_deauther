@@ -47,10 +47,14 @@ extern String right(String a, int len);
 extern String leftRight(String a, String b, int len);
 extern String replaceUtf8(String str, String r);
 
-const char D_INTRO_0[] PROGMEM = "";
-const char D_INTRO_1[] PROGMEM = "ESP8266 Deauther";
-const char D_INTRO_2[] PROGMEM = "by @Spacehuhn";
-const char D_INTRO_3[] PROGMEM = DISPLAY_TEXT;
+const char D_INTRO_0[] PROGMEM = "ESP8266 Deauther";
+const char D_INTRO_1[] PROGMEM = "by @Spacehuhn";
+const char D_INTRO_2[] PROGMEM = DISPLAY_TEXT;
+const char D_RESETTING[] PROGMEM = "Resetting...";
+const char D_SCANNING_0[] PROGMEM = "> Scanning";
+const char D_SCANNING_1[] PROGMEM = "> Scanning.";
+const char D_SCANNING_2[] PROGMEM = "> Scanning..";
+const char D_SCANNING_3[] PROGMEM = "> Scanning...";
 
 struct MenuNode {
     std::function<String()>getStr; // function used to create the displayed string
@@ -65,11 +69,18 @@ struct Menu {
     std::function<void()> build; // function that is executed when button is clicked
 };
 
+enum class DISPLAY_MODE { OFF,
+                          BUTTON_TEST,
+                          MENU,
+                          LOADSCAN,
+                          PACKETMONITOR,
+                          INTRO,
+                          CLOCK,
+                          RESETTING };
+
 class DisplayUI {
     public:
-        enum DISPLAY_MODE { OFF = 0, BUTTON_TEST = 1, MENU = 2, LOADSCAN = 3, PACKETMONITOR = 4, INTRO = 5, CLOCK = 6 };
-
-        uint8_t mode      = DISPLAY_MODE::MENU;
+        DISPLAY_MODE mode = DISPLAY_MODE::MENU;
         bool highlightLED = false;
 
         Button* up   = NULL;
@@ -115,7 +126,7 @@ class DisplayUI {
         void setupLED();
 #endif // ifdef HIGHLIGHT_LED
 
-        void update();
+        void update(bool force = false);
         void on();
         void off();
 
@@ -160,12 +171,13 @@ class DisplayUI {
         String getChannel();
 
         // draw functions
-        void draw();
+        void draw(bool force = false);
         void drawButtonTest();
         void drawMenu();
         void drawLoadingScan();
         void drawPacketMonitor();
         void drawIntro();
+        void drawResetting();
         void clearMenu(Menu* menu);
 
         // menu functions

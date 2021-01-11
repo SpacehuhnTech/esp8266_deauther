@@ -1094,11 +1094,11 @@ void CLI::runCommand(String input) {
             // ------- loop function ----- //
             currentTime = millis();
 
-            wifi::update();    // manage access point
+            wifi::update();  // manage access point
             scan.update();   // run scan
             attack.update(); // run attacks
             ssids.update();  // run random mode, if enabled
-            led::update();    // update LED color
+            led::update();   // update LED color
 
             // auto-save
             if (settings::getAutosaveSettings().enabled && (currentTime - autosaveTime > settings::getAutosaveSettings().time)) {
@@ -1229,10 +1229,10 @@ void CLI::runCommand(String input) {
     // ===== SCREEN ===== //
     // screen mode <menu/packetmonitor/buttontest/loading>
     else if (eqlsCMD(0, CLI_SCREEN) && eqlsCMD(1, CLI_MODE)) {
-        if (eqlsCMD(2, CLI_MODE_BUTTONTEST)) displayUI.mode = displayUI.DISPLAY_MODE::BUTTON_TEST;
-        else if (eqlsCMD(2, CLI_MODE_PACKETMONITOR)) displayUI.mode = displayUI.DISPLAY_MODE::PACKETMONITOR;
-        else if (eqlsCMD(2, CLI_MODE_LOADINGSCREEN)) displayUI.mode = displayUI.DISPLAY_MODE::LOADSCAN;
-        else if (eqlsCMD(2, CLI_MODE_MENU)) displayUI.mode = displayUI.DISPLAY_MODE::MENU;
+        if (eqlsCMD(2, CLI_MODE_BUTTONTEST)) displayUI.mode = DISPLAY_MODE::BUTTON_TEST;
+        else if (eqlsCMD(2, CLI_MODE_PACKETMONITOR)) displayUI.mode = DISPLAY_MODE::PACKETMONITOR;
+        else if (eqlsCMD(2, CLI_MODE_LOADINGSCREEN)) displayUI.mode = DISPLAY_MODE::LOADSCAN;
+        else if (eqlsCMD(2, CLI_MODE_MENU)) displayUI.mode = DISPLAY_MODE::MENU;
         else parameterError(list->get(2));
         prntln(CLI_CHANGED_SCREEN);
     }

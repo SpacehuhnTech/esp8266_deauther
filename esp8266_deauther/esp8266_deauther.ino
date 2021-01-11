@@ -116,7 +116,7 @@ void setup() {
     // start display
     if (settings::getDisplaySettings().enabled) {
         displayUI.setup();
-        displayUI.mode = displayUI.DISPLAY_MODE::INTRO;
+        displayUI.mode = DISPLAY_MODE::INTRO;
     }
 
     // copy web files to SPIFFS
