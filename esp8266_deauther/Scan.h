@@ -1,5 +1,6 @@
-#ifndef Scan_h
-#define Scan_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 #include "Accesspoints.h"
@@ -23,7 +24,7 @@ extern Stations     stations;
 extern Names names;
 extern SSIDs ssids;
 
-extern uint8_t  wifiMode;
+extern uint8_t wifiMode;
 
 extern void setWifiChannel(uint8_t ch);
 extern bool appendFile(String path, String& buf);
@@ -91,5 +92,3 @@ class Scan {
 
         String FILE_PATH = "/scan.json";
 };
-
-#endif // ifndef Scan_h

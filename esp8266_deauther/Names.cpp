@@ -1,3 +1,5 @@
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 #include "Names.h"
 
 #include <LittleFS.h>
@@ -258,6 +260,7 @@ void Names::setMac(int num, String macStr) {
     if (!check(num)) return;
 
     uint8_t mac[6];
+
     strToMac(macStr, mac);
     internal_add(mac, getName(num), getBssid(num), getCh(num), getSelected(num));
     prntln(N_CHANGED_MAC);
@@ -280,6 +283,7 @@ void Names::setBSSID(int num, String bssidStr) {
     if (!check(num)) return;
 
     uint8_t mac[6];
+
     strToMac(bssidStr, mac);
     internal_add(getMac(num), getName(num), mac, getCh(num), getSelected(num));
     prntln(N_CHANGED_BSSID);
@@ -362,6 +366,7 @@ String Names::getMacStr(int num) {
     if (!check(num)) return String();
 
     uint8_t* mac = getMac(num);
+
     return bytesToStr(mac, 6);
 }
 
@@ -471,6 +476,7 @@ void Names::internal_add(uint8_t* mac, String name, uint8_t* bssid, uint8_t ch, 
     if ((ch < 1) || (ch > 14)) ch = 1;
 
     Device newDevice;
+
     newDevice.mac      = deviceMac;
     newDevice.name     = deviceName;
     newDevice.apBssid  = deviceBssid;

@@ -1,5 +1,6 @@
-#ifndef Stations_h
-#define Stations_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 extern "C" {
@@ -94,5 +95,3 @@ class Stations {
         void internal_remove(int num);
         void internal_removeAll();
 };
-
-#endif // ifndef Stations_h

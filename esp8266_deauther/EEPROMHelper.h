@@ -1,5 +1,6 @@
-#ifndef EEPROMHELPER_H
-#define EEPROMHELPER_H
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 // ========== Includes ========== //
 #include <EEPROM.h>
@@ -59,5 +60,3 @@ class EEPROMHelper {
             EEPROM.commit();
         }
 };
-
-#endif /* ifndef EEPROMHELPER_H */

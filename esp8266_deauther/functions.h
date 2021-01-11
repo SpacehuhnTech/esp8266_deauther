@@ -1,5 +1,6 @@
-#ifndef functions_h
-#define functions_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 #include <LittleFS.h>
@@ -828,5 +829,3 @@ String formatBytes(size_t bytes) {
     else if (bytes < (1024 * 1024 * 1024)) return String(bytes / 1024.0 / 1024.0) + "MB";
     else return String(bytes / 1024.0 / 1024.0 / 1024.0) + "GB";
 }
-
-#endif // ifndef functions_h

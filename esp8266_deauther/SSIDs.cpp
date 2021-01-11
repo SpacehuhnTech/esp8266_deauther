@@ -1,3 +1,5 @@
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 #include "SSIDs.h"
 
 #include <LittleFS.h>
@@ -42,6 +44,7 @@ void SSIDs::save(bool force) {
     if (!force && !changed) return;
 
     String buf = String();                              // create buffer
+
     buf += String(OPEN_CURLY_BRACKET) + String(DOUBLEQUOTES) + str(SS_JSON_RANDOM) + String(DOUBLEQUOTES) + String(
         DOUBLEPOINT) + b2s(randomMode) + String(COMMA); // {"random":false,
     buf += String(DOUBLEQUOTES) + str(SS_JSON_SSIDS) + String(DOUBLEQUOTES) + String(DOUBLEPOINT) +
@@ -233,6 +236,7 @@ void SSIDs::replace(int num, String name, bool wpa2) {
 
     if (len > 32) len = 32;
     SSID newSSID;
+
     newSSID.name = randomize(name);
     newSSID.wpa2 = wpa2;
     newSSID.len  = (uint8_t)len;
@@ -301,6 +305,7 @@ void SSIDs::internal_add(String name, bool wpa2, int len) {
     name = fixUtf8(name);
 
     SSID newSSID;
+
     newSSID.name = name;
     newSSID.wpa2 = wpa2;
     newSSID.len  = (uint8_t)len;

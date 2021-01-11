@@ -1,12 +1,6 @@
-#ifndef SimpleList_h
-#define SimpleList_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
 
-/*
-   ===========================================
-      Copyright (c) 2018 Stefan Kremser
-             github.com/spacehuhn
-   ===========================================
- */
+#pragma once
 
 #include <type_traits>
 #include <cstddef>
@@ -166,6 +160,7 @@ void SimpleList<T>::add(int index, T obj) {
     }
 
     SimpleListNode<T>* newNode = new SimpleListNode<T>();
+
     newNode->data = obj;
 
     if (index == 0) {
@@ -191,6 +186,7 @@ void SimpleList<T>::insert(T obj) {
 
     // create new node
     SimpleListNode<T>* newNode = new SimpleListNode<T>();
+
     newNode->data = obj;
 
     if (listSize == 0) {
@@ -517,5 +513,3 @@ void SimpleList<T>::sort() {
 
     this->sorted = true;
 }
-
-#endif // ifndef SimpleList_h

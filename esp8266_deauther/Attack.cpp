@@ -1,3 +1,5 @@
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 #include "Attack.h"
 
 #include "settings.h"
@@ -285,11 +287,11 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
     // build deauth packet
     packetSize = sizeof(deauthPacket);
-    
+
     uint8_t deauthpkt[packetSize];
 
     memcpy(deauthpkt, deauthPacket, packetSize);
-    
+
     memcpy(&deauthpkt[4], stMac, 6);
     memcpy(&deauthpkt[10], apMac, 6);
     memcpy(&deauthpkt[16], apMac, 6);
@@ -305,8 +307,9 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
     // send disassociate frame
     uint8_t disassocpkt[packetSize];
+
     memcpy(disassocpkt, deauthpkt, packetSize);
-    
+
     disassocpkt[0] = 0xa0;
 
     if (sendPacket(disassocpkt, packetSize, ch, 1)) {
@@ -372,6 +375,7 @@ bool Attack::sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2) {
     // =====
     uint16_t tmpPacketSize = (packetSize - 32) + ssidLen;                // calc size
     uint8_t* tmpPacket     = new uint8_t[tmpPacketSize];                 // create packet buffer
+
     memcpy(&tmpPacket[0], &beaconPacket[0], 38 + ssidLen);               // copy first half of packet into buffer
     tmpPacket[37] = ssidLen;                                             // update SSID length byte
     memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer

@@ -1,5 +1,6 @@
-#ifndef CLI_h
-#define CLI_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
@@ -16,8 +17,8 @@ extern "C" {
 #include "DisplayUI.h"
 #include "led.h"
 
-extern Names    names;
-extern SSIDs    ssids;
+extern Names names;
+extern SSIDs ssids;
 extern Accesspoints accesspoints;
 extern Stations     stations;
 extern Scan   scan;
@@ -64,8 +65,8 @@ class CLI {
     private:
         bool enabled = false;
 
-        SimpleList<String>*list;
-        SimpleList<String>*queue;
+        SimpleList<String>* list;
+        SimpleList<String>* queue;
 
         bool delayed            = false;
         uint32_t delayTime      = 0;
@@ -86,5 +87,3 @@ class CLI {
         uint32_t getTime(String time);
         bool eqlsCMD(int i, const char* keyword);
 };
-
-#endif // ifndef CLI_h

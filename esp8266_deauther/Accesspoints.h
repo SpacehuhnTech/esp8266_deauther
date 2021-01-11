@@ -1,5 +1,6 @@
-#ifndef Accesspoints_h
-#define Accesspoints_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
@@ -77,5 +78,3 @@ class Accesspoints {
         void internal_deselect(int num);
         void internal_remove(int num);
 };
-
-#endif // ifndef Accesspoints_h

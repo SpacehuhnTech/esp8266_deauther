@@ -1,3 +1,5 @@
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 #include "Stations.h"
 
 Stations::Stations() {
@@ -133,6 +135,7 @@ String Stations::getAPMacStr(int num) {
     if (!check(num)) return String();
 
     uint8_t* mac = getAPMac(num);
+
     return bytesToStr(mac, 6);
 }
 
@@ -164,6 +167,7 @@ String Stations::getMacStr(int num) {
     if (!check(num)) return String();
 
     uint8_t* mac = getMac(num);
+
     return bytesToStr(mac, 6);
 }
 
@@ -256,7 +260,7 @@ void Stations::remove(int num) {
 
     prnt(ST_REMOVED_STATION);
     prntln(num);
-    
+
     internal_remove(num);
     changed = true;
 }
@@ -342,6 +346,7 @@ void Stations::internal_add(uint8_t* mac, int accesspointNum) {
     if (count() >= STATION_LIST_SIZE) removeOldest();
 
     Station newStation;
+
     newStation.ap       = accesspointNum;
     newStation.ch       = wifi_channel;
     newStation.mac      = (uint8_t*)malloc(6);

@@ -1,12 +1,8 @@
-/*
-   Copyright (c) 2020 Stefan Kremser (@Spacehuhn)
-   This software is licensed under the MIT License. See the license file for details.
-   Source: github.com/spacehuhn/esp8266_deauther
- */
- 
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 #pragma once
 
-#include <Arduino.h>  // Arduino String, Serial
+#include <Arduino.h> // Arduino String, Serial
 #include "A_config.h"
 
 // ===== VERSION ===== //
@@ -24,7 +20,7 @@ typedef struct autosave_settings_t {
 
 // ===== ATTACK ===== //
 typedef enum beacon_interval_t {
-    INTERVAL_1S = 0,
+    INTERVAL_1S    = 0,
     INTERVAL_100MS = 1
 } beacon_interval_t;
 
@@ -114,11 +110,11 @@ namespace settings {
     void print();
 
     const settings_t& getAllSettings();
-    const version_t & getVersion();
+    const version_t& getVersion();
     const autosave_settings_t& getAutosaveSettings();
-    const attack_settings_t  & getAttackSettings();
-    const wifi_settings_t    & getWifiSettings();
-    const sniffer_settings_t & getSnifferSettings();
+    const attack_settings_t& getAttackSettings();
+    const wifi_settings_t& getWifiSettings();
+    const sniffer_settings_t& getSnifferSettings();
     const access_point_settings_t& getAccessPointSettings();
     const web_settings_t& getWebSettings();
     const cli_settings_t& getCLISettings();

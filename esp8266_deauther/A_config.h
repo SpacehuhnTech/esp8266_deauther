@@ -1,5 +1,6 @@
-#ifndef config_h
-#define config_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #define ENABLE_DEBUG
 #define DEBUG_PORT Serial
@@ -700,5 +701,3 @@
 #if LED_MODE_BRIGHTNESS == 0
 #error LED_MODE_BRIGHTNESS must not be zero!
 #endif /* if LED_MODE_BRIGHTNESS == 0 */
-
-#endif /* ifndef config_h */

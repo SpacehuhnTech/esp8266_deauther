@@ -1,3 +1,5 @@
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
 #include "Accesspoints.h"
 
 Accesspoints::Accesspoints() {
@@ -170,6 +172,7 @@ String Accesspoints::getMacStr(int num) {
     if (!check(num)) return String();
 
     uint8_t* mac = getMac(num);
+
     return bytesToStr(mac, 6);
 }
 

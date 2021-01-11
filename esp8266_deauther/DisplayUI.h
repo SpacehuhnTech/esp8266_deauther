@@ -1,5 +1,6 @@
-#ifndef DisplayUI_h
-#define DisplayUI_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "language.h"
 #include "A_config.h"
@@ -665,5 +666,3 @@ const uint8_t DejaVu_Sans_Mono_12[] PROGMEM = {
     0x00, 0x00, 0xFC, 0x7F, 0x20, 0x08, 0x20, 0x08, 0x20, 0x08, 0xC0, 0x07,             // 254
     0x00, 0x00, 0x60, 0x40, 0x88, 0x67, 0x00, 0x1C, 0x88, 0x03, 0x60                    // 255
 };
-
-#endif // ifndef DisplayUI_h

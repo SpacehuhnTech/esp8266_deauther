@@ -1,5 +1,6 @@
-#ifndef Attack_h
-#define Attack_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
@@ -12,7 +13,7 @@ extern "C" {
 #include "SSIDs.h"
 #include "Scan.h"
 
-extern SSIDs    ssids;
+extern SSIDs ssids;
 extern Accesspoints accesspoints;
 extern Stations     stations;
 extern Scan scan;
@@ -151,16 +152,16 @@ class Attack {
         };
 
         uint8_t beaconPacket[109] = {
-            /*  0 - 3  */ 0x80,   0x00,                 0x00,                 0x00,                         // Type/Subtype: managment beacon frame
-            /*  4 - 9  */ 0xFF,   0xFF,                 0xFF,                 0xFF, 0xFF, 0xFF,             // Destination: broadcast
-            /* 10 - 15 */ 0x01,   0x02,                 0x03,                 0x04, 0x05, 0x06,             // Source
-            /* 16 - 21 */ 0x01,   0x02,                 0x03,                 0x04, 0x05, 0x06,             // Source
+            /*  0 - 3  */ 0x80,   0x00,                 0x00,                 0x00,                                         // Type/Subtype: managment beacon frame
+            /*  4 - 9  */ 0xFF,   0xFF,                 0xFF,                 0xFF,                 0xFF, 0xFF,             // Destination: broadcast
+            /* 10 - 15 */ 0x01,   0x02,                 0x03,                 0x04,                 0x05, 0x06,             // Source
+            /* 16 - 21 */ 0x01,   0x02,                 0x03,                 0x04,                 0x05, 0x06,             // Source
 
             // Fixed parameters
-            /* 22 - 23 */ 0x00,   0x00,                                                                     // Fragment & sequence number (will be done by the SDK)
-            /* 24 - 31 */ 0x83,   0x51,                 0xf7,                 0x8f, 0x0f, 0x00, 0x00, 0x00, // Timestamp
-            /* 32 - 33 */ 0xe8,   0x03,                                                                     // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
-            /* 34 - 35 */ 0x31,   0x00,                                                                     // capabilities Tnformation
+            /* 22 - 23 */ 0x00,   0x00,                                                                                     // Fragment & sequence number (will be done by the SDK)
+            /* 24 - 31 */ 0x83,   0x51,                 0xf7,                 0x8f,                 0x0f, 0x00, 0x00, 0x00, // Timestamp
+            /* 32 - 33 */ 0xe8,   0x03,                                                                                     // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
+            /* 34 - 35 */ 0x31,   0x00,                                                                                     // capabilities Tnformation
 
             // Tagged parameters
 
@@ -195,11 +196,9 @@ class Attack {
             /*  85 -  86 */ 0x01, 0x00,
             /*  87 -  90 */ 0x00, 0x0f,                 0xac,                 0x02,
             /*  91 -  92 */ 0x02, 0x00,
-            /*  93 - 100 */ 0x00, 0x0f,                 0xac,                 0x04, 0x00, 0x0f, 0xac, 0x04, /*Fix: changed 0x02(TKIP) to 0x04(CCMP) is default. WPA2 with TKIP not supported by many devices*/
+            /*  93 - 100 */ 0x00, 0x0f,                 0xac,                 0x04,                 0x00, 0x0f, 0xac, 0x04, /*Fix: changed 0x02(TKIP) to 0x04(CCMP) is default. WPA2 with TKIP not supported by many devices*/
             /* 101 - 102 */ 0x01, 0x00,
             /* 103 - 106 */ 0x00, 0x0f,                 0xac,                 0x02,
             /* 107 - 108 */ 0x00, 0x00
         };
 };
-
-#endif // ifndef Attack_h

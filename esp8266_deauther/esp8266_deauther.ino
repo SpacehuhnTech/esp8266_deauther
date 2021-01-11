@@ -1,9 +1,7 @@
-/*
-   ===========================================
-      Copyright (c) 2018 Stefan Kremser
-             github.com/spacehuhn
-   ===========================================
- */
+/* =====================
+   This software is licensed under the MIT License:
+   https://github.com/spacehuhntech/esp8266_deauther
+   ===================== */
 
 extern "C" {
     // Please follow this tutorial:

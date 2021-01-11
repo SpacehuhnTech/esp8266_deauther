@@ -1,5 +1,6 @@
-#ifndef SSIDs_h
-#define SSIDs_h
+/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+
+#pragma once
 
 #include "Arduino.h"
 #include <ESP8266WiFi.h>
@@ -81,5 +82,3 @@ class SSIDs {
         void internal_remove(int num);
         void internal_removeAll();
 };
-
-#endif // ifndef SSIDs_h
