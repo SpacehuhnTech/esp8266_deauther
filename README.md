@@ -1,9 +1,11 @@
 # ESP8266 Deauther Version 2
 
-<p align="center"><img alt="PICTURE logo" src="https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/deauther_logo.png" width="200"></p>
-
-<b>Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners!<br><br>
-
+<p align="center">
+  <img alt="PICTURE logo" src="https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/deauther_logo.png" width="200">
+  <br>
+  <b>Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners!<b>
+  <br>
+  <br>
 </p>
 
 ## Difference to Version 3
