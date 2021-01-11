@@ -13,6 +13,9 @@
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
+// #define DISPLAY_EXAMPLE_I2C
+// #define DISPLAY_EXAMPLE_SPI
+
 // #define MALTRONICS
 // #define DSTIKE_DEAUTHER_V1
 // #define DSTIKE_DEAUTHER_V2
@@ -55,7 +58,59 @@
 // #define RESET_SETTINGS
 
 // ========== CONFIGS ========== //
-#if defined(MALTRONICS)
+
+
+// https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Setup-Display-&-Buttons#example-setup-with-i2c-oled
+#if defined(DISPLAY_EXAMPLE_I2C)
+
+// ===== DISPLAY ===== //
+  #define SH1106_I2C
+// #define SSD1306_I2C
+
+  #define I2C_ADDR 0x3C
+  #define I2C_SDA 5
+  #define I2C_SCL 4
+
+// #define FLIP_DIPLAY true
+
+// ===== BUTTONS ===== //
+  #define BUTTON_UP 14
+  #define BUTTON_DOWN 12
+  #define BUTTON_A 13
+
+// ===== LED ===== //
+  #define LED_NEOPIXEL_GRB
+// #define LED_NEOPIXEL_RGB
+
+  #define LED_NUM 1
+  #define LED_NEOPIXEL_PIN 9
+
+
+// https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Setup-Display-&-Buttons#example-setup-with-spi-oled
+#elif defined(DISPLAY_EXAMPLE_SPI)
+
+  #define SH1106_SPI
+// #define SSD1306_SPI
+
+  #define SPI_RES 5
+  #define SPI_DC 4
+  #define SPI_CS 15
+
+// #define FLIP_DIPLAY true
+
+// ===== BUTTONS ===== //
+  #define BUTTON_UP 0
+  #define BUTTON_DOWN 12
+  #define BUTTON_A 2
+
+// ===== LED ===== //
+  #define LED_NEOPIXEL_GRB
+// #define LED_NEOPIXEL_RGB
+
+  #define LED_NUM 1
+  #define LED_NEOPIXEL_PIN 9
+
+#elif defined(MALTRONICS)
 
 // ===== Reset ====== //
   #define RESET_BUTTON 5
@@ -299,11 +354,6 @@
 
 // ========= FALLBACK ========= //
 
-// ===== Reset ====== //
-#ifndef RESET_BUTTON
-  #define RESET_BUTTON 0
-#endif // ifndef RESET_BUTTON
-
 // ===== AUTOSAVE ===== //
 #ifndef AUTOSAVE_ENABLED
   #define AUTOSAVE_ENABLED true
@@ -507,6 +557,15 @@
 #ifndef BUTTON_B
   #define BUTTON_B 255
 #endif // ifndef BUTTON_B
+
+// ===== Reset ====== //
+#ifndef RESET_BUTTON
+  #if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0 && BUTTON_B != 0
+    #define RESET_BUTTON 0
+  #else // if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0
+    #define RESET_BUTTON 255
+  #endif // if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0
+#endif // ifndef RESET_BUTTON
 
 // ======== CONSTANTS ========== //
 // Do not change these values unless you know what you're doing!
