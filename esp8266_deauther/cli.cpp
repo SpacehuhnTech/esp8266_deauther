@@ -6,7 +6,7 @@
 
 #include "cli.h"
 
-#include <SimpleCLI.h> // SimpleCLI library
+#include "src/SimpleCLI-1.1.1/SimpleCLI.h"
 
 #if SIMPLECLI_VERSION_MAJOR == 1 && SIMPLECLI_VERSION_MINOR < 1
     #error "Please update SimpleCLI library"
