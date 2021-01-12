@@ -148,7 +148,7 @@ namespace wifi {
         else if (filename.endsWith(str(W_DOT_PDF))) return str(W_XPDF);
         else if (filename.endsWith(str(W_DOT_ZIP))) return str(W_XZIP);
         else if (filename.endsWith(str(W_DOT_JSON))) return str(W_JSON);
-        else return str(W_TXT);
+        return str(W_TXT);
     }
 
     bool handleFileRead(String path) {

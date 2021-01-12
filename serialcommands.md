@@ -44,7 +44,6 @@
 - [`send probe <mac> <ssid> <ch>`](#send)
 - [`led <r> <g> <b> [<brightness>]`](#led)
 - [`led <#rrggbb> [<brightness>]`](#led)
-- [`led <enable/disable>`](#led)
 - [`draw`](#draw)
 - [`startap`](#startap)
 - [`stopap`](#startap)
@@ -290,18 +289,13 @@ Copy pasting packets out of Wireshark is very unlikely to work.
 Also note that you're still limited to 512 characters per command!  
 
 ## LED
-`led <r> <g> <b> [<brightness>]`  
+`led <r> <g> <b>`  
 Changes LED color based on input.  
-Be sure to disable the LED updates (see command below), if you don't want the color the be rewritten by a scan or attack.  
-The brightness is optional and must be given in percent (between 0 and 100).  
+Be sure to disable the LED updates (see command below), if you don't want the color the be rewritten by a scan or attack.   
 
-`led <#rrggbb> [<brightness>]`  
+`led <#rrggbb>`  
 Changes LED color based on input in form of a hex value.  
 The value **must** start with a `#` and have 6 following characters.  
-
-`led <enable/disable>`  
-Dis/Enables the LED updates. If disabled, the color will not change automatically anymore if you start a scan or attack.  
-To disable the LED in general use `set ledenabled false`.  
 
 ## DELAY
 `delay <time>`  
