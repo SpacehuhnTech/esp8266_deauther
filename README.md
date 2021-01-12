@@ -3,7 +3,7 @@
 <p align="center">
   <img alt="PICTURE logo" src="https://raw.githubusercontent.com/wiki/spacehuhn/esp8266_deauther/img/deauther_logo.png" width="200">
   <br>
-  <b>Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners!<b>
+  <b>Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners!</b>
   <br>
   <br>
 </p>
