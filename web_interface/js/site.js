@@ -29,9 +29,17 @@ function convertLineBreaks(str) {
 }
 
 function showMessage(msg, closeAfter) {
-	getE("status").style.backgroundColor = "#d33";
-	console.error("disconnected (" + msg + ")");
-	getE("status").innerHTML = "disconnected";
+	if (msg.startsWith("ERROR")) {
+		getE("status").style.backgroundColor = "#d33";
+		getE("status").innerHTML = "disconnected";
+
+		console.error("disconnected (" + msg + ")");
+	} else {
+		getE("status").style.backgroundColor = "#3c5";
+		getE("status").innerHTML = "connected";
+
+		console.log("" + msg + "");
+	}
 }
 
 function getFile(adr, callback, timeout, method, onTimeout, onError) {

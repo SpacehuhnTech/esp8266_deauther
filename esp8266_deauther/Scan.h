@@ -26,7 +26,7 @@ extern SSIDs ssids;
 
 extern uint8_t wifiMode;
 
-extern void setWifiChannel(uint8_t ch);
+extern void setWifiChannel(uint8_t ch, bool force);
 extern bool appendFile(String path, String& buf);
 extern bool writeFile(String path, String& buf);
 extern void readFileToSerial(const String path);

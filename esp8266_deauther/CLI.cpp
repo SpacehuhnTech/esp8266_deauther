@@ -1079,7 +1079,7 @@ void CLI::runCommand(String input) {
         for (int i = 0; i < packetSize; i++) packet[i] = strtoul((packetStr.substring(i * 2,
                                                                                       i * 2 + 2)).c_str(), NULL, 16);
 
-        if (attack.sendPacket(packet, packetSize, wifi_channel, 10)) {
+        if (attack.sendPacket(packet, packetSize, wifi_channel, 10, true)) {
             prntln(CLI_CUSTOM_SENT);
             counter++;
         } else {

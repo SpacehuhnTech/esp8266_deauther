@@ -6,6 +6,7 @@ function load() {
 	getFile("run?cmd=save ssids", function () {
 		getFile("ssids.json", function (res) {
 			ssidJson = JSON.parse(res);
+			showMessage("connected");
 			draw();
 		});
 	});

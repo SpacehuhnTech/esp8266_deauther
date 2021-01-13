@@ -5,6 +5,7 @@ var settingsJson = {};
 function load() {
 	getFile("settings.json", function (res) {
 		settingsJson = JSON.parse(res);
+		showMessage("connected");
 		draw();
 	});
 }

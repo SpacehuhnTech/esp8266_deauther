@@ -61,7 +61,7 @@ void Scan::start(uint8_t mode, uint32_t time, uint8_t nextmode, uint32_t continu
                  uint8_t channel) {
     if (mode != SCAN_MODE_OFF) stop();
 
-    setWifiChannel(channel);
+    setWifiChannel(channel, true);
     Scan::continueStartTime  = currentTime;
     Scan::snifferPacketTime  = continueStartTime;
     Scan::snifferOutputTime  = continueStartTime;
@@ -239,7 +239,7 @@ void Scan::setChannel(uint8_t ch) {
     else if (ch < 1) ch = 14;
 
     wifi_promiscuous_enable(0);
-    setWifiChannel(ch);
+    setWifiChannel(ch, true);
     wifi_promiscuous_enable(1);
 }
 

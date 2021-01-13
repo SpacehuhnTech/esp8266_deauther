@@ -27,7 +27,7 @@ extern void getRandomMac(uint8_t* mac);
 extern void setOutputPower(float dBm);
 extern String macToStr(const uint8_t* mac);
 extern String bytesToStr(const uint8_t* b, uint32_t size);
-extern void setWifiChannel(uint8_t ch);
+extern void setWifiChannel(uint8_t ch, bool force);
 extern bool writeFile(String path, String& buf);
 extern int8_t free80211_send(uint8_t* buffer, uint16_t len);
 
@@ -56,7 +56,7 @@ class Attack {
         bool sendProbe(uint8_t tc);
         bool sendProbe(uint8_t* mac, const char* ssid, uint8_t ch);
 
-        bool sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16_t tries);
+        bool sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16_t tries, bool force_ch);
 
         bool isRunning();
 
@@ -152,16 +152,16 @@ class Attack {
         };
 
         uint8_t beaconPacket[109] = {
-            /*  0 - 3  */ 0x80,   0x00,                 0x00,                 0x00,                                         // Type/Subtype: managment beacon frame
-            /*  4 - 9  */ 0xFF,   0xFF,                 0xFF,                 0xFF,                 0xFF, 0xFF,             // Destination: broadcast
-            /* 10 - 15 */ 0x01,   0x02,                 0x03,                 0x04,                 0x05, 0x06,             // Source
-            /* 16 - 21 */ 0x01,   0x02,                 0x03,                 0x04,                 0x05, 0x06,             // Source
+            /*  0 - 3  */ 0x80,   0x00,                 0x00,                 0x00,                                                                         // Type/Subtype: managment beacon frame
+            /*  4 - 9  */ 0xFF,   0xFF,                 0xFF,                 0xFF,                 0xFF,                 0xFF,                             // Destination: broadcast
+            /* 10 - 15 */ 0x01,   0x02,                 0x03,                 0x04,                 0x05,                 0x06,                             // Source
+            /* 16 - 21 */ 0x01,   0x02,                 0x03,                 0x04,                 0x05,                 0x06,                             // Source
 
             // Fixed parameters
-            /* 22 - 23 */ 0x00,   0x00,                                                                                     // Fragment & sequence number (will be done by the SDK)
-            /* 24 - 31 */ 0x83,   0x51,                 0xf7,                 0x8f,                 0x0f, 0x00, 0x00, 0x00, // Timestamp
-            /* 32 - 33 */ 0xe8,   0x03,                                                                                     // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
-            /* 34 - 35 */ 0x31,   0x00,                                                                                     // capabilities Tnformation
+            /* 22 - 23 */ 0x00,   0x00,                                                                                                                     // Fragment & sequence number (will be done by the SDK)
+            /* 24 - 31 */ 0x83,   0x51,                 0xf7,                 0x8f,                 0x0f,                 0x00,                 0x00, 0x00, // Timestamp
+            /* 32 - 33 */ 0xe8,   0x03,                                                                                                                     // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
+            /* 34 - 35 */ 0x31,   0x00,                                                                                                                     // capabilities Tnformation
 
             // Tagged parameters
 
@@ -196,7 +196,7 @@ class Attack {
             /*  85 -  86 */ 0x01, 0x00,
             /*  87 -  90 */ 0x00, 0x0f,                 0xac,                 0x02,
             /*  91 -  92 */ 0x02, 0x00,
-            /*  93 - 100 */ 0x00, 0x0f,                 0xac,                 0x04,                 0x00, 0x0f, 0xac, 0x04, /*Fix: changed 0x02(TKIP) to 0x04(CCMP) is default. WPA2 with TKIP not supported by many devices*/
+            /*  93 - 100 */ 0x00, 0x0f,                 0xac,                 0x04,                 0x00,                 0x0f,                 0xac, 0x04, /*Fix: changed 0x02(TKIP) to 0x04(CCMP) is default. WPA2 with TKIP not supported by many devices*/
             /* 101 - 102 */ 0x01, 0x00,
             /* 103 - 106 */ 0x00, 0x0f,                 0xac,                 0x02,
             /* 107 - 108 */ 0x00, 0x00

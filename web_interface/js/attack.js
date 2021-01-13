@@ -18,6 +18,12 @@ function draw() {
 	getE("allpkts").innerHTML = esc(attackJSON[3] + "");
 }
 
+function stopAll() {
+	getFile("run?cmd=stop attack", function () {
+		load();
+	});
+}
+
 function start(mode) {
 	switch (mode) {
 		case 0:
@@ -31,6 +37,7 @@ function start(mode) {
 			break;
 	}
 	getFile("run?cmd=attack" + (attackJSON[0][0] ? " -d" : "") + (attackJSON[1][0] ? " -b" : "") + (attackJSON[2][0] ? " -p" : ""), function () {
+		setTimeout(load, 2000);
 		draw();
 	});
 }
@@ -38,6 +45,8 @@ function start(mode) {
 function load() {
 	getFile("attack.json", function (response) {
 		attackJSON = JSON.parse(response);
+		console.log(response);
+		showMessage("connected");
 		draw();
 	});
 }

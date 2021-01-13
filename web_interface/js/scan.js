@@ -150,7 +150,8 @@ function scan(type) {
 		+ " -ch " + getE("ch").options[getE("ch").selectedIndex].value;
 	getFile("run?cmd=" + cmdStr);
 	duts = parseInt(type);
-	setTimeout(buttonFunc, elxtime)
+	setTimeout(buttonFunc, elxtime);
+	setTimeout(load, elxtime);
 }
 
 function buttonFunc() {
@@ -171,6 +172,7 @@ function load() {
 	getFile("run?cmd=save scan", function () {
 		getFile("scan.json", function (res) {
 			scanJson = JSON.parse(res);
+			showMessage("connected");
 			drawScan();
 		});
 	});
@@ -178,6 +180,7 @@ function load() {
 	getFile("run?cmd=save names", function () {
 		getFile("names.json", function (res) {
 			nameJson = JSON.parse(res);
+			showMessage("connected");
 			drawNames();
 		});
 	});
