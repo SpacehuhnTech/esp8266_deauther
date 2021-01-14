@@ -11,7 +11,7 @@ extern "C" {
 #include "SimpleList.h"
 
 #define NAME_LIST_SIZE 25
-#define NAME_MAX_LENGTH 16
+#define NAME_MAX_LENGTH 17
 
 extern void checkFile(String path, String data);
 extern JsonVariant parseJSONFile(String path, DynamicJsonBuffer& jsonBuffer);
