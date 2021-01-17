@@ -54,8 +54,8 @@ os.system(f"mkdir {folder}")
 
 for board in boards:
     print(f"Compiling {board}...", flush=True)
-    os.system(f"arduino-cli cache clean");
-    command = f"arduino-cli compile --fqbn deauther:esp8266:d1_mini --build-properties \"build.extra_flags=-DESP8266 -D{board}\" --output-dir {folder}"
+    os.system(f"arduino-cli cache clean")
+    command = f"arduino-cli compile --fqbn deauther:esp8266:generic --build-properties \"build.extra_flags=-DESP8266 -D{board}\" --output-dir {folder}"
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     process.wait()
     os.system(f"mv {folder}/esp8266_deauther.ino.bin {folder}/esp8266_deauther_{version}_{board}.bin")
