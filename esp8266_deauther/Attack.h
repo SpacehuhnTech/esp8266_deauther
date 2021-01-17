@@ -56,7 +56,7 @@ class Attack {
         bool sendProbe(uint8_t tc);
         bool sendProbe(uint8_t* mac, const char* ssid, uint8_t ch);
 
-        bool sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16_t tries, bool force_ch);
+        bool sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, bool force_ch);
 
         bool isRunning();
 

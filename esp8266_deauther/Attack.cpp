@@ -303,7 +303,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
     // send deauth frame
     deauthpkt[0] = 0xc0;
 
-    if (sendPacket(deauthpkt, packetSize, ch, 1, true)) {
+    if (sendPacket(deauthpkt, packetSize, ch, true)) {
         success = true;
         deauth.packetCounter++;
     }
@@ -315,7 +315,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
 
     disassocpkt[0] = 0xa0;
 
-    if (sendPacket(disassocpkt, packetSize, ch, 1, false)) {
+    if (sendPacket(disassocpkt, packetSize, ch, false)) {
         success = true;
         deauth.packetCounter++;
     }
@@ -330,7 +330,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
         // send deauth frame
         disassocpkt[0] = 0xc0;
 
-        if (sendPacket(disassocpkt, packetSize, ch, 1, false)) {
+        if (sendPacket(disassocpkt, packetSize, ch, false)) {
             success = true;
             deauth.packetCounter++;
         }
@@ -338,7 +338,7 @@ bool Attack::deauthDevice(uint8_t* apMac, uint8_t* stMac, uint8_t reason, uint8_
         // send disassociate frame
         disassocpkt[0] = 0xa0;
 
-        if (sendPacket(disassocpkt, packetSize, ch, 1, false)) {
+        if (sendPacket(disassocpkt, packetSize, ch, false)) {
             success = true;
             deauth.packetCounter++;
         }
@@ -383,7 +383,7 @@ bool Attack::sendBeacon(uint8_t* mac, const char* ssid, uint8_t ch, bool wpa2) {
     tmpPacket[37] = ssidLen;                                             // update SSID length byte
     memcpy(&tmpPacket[38 + ssidLen], &beaconPacket[70], wpa2 ? 39 : 13); // copy second half of packet into buffer
 
-    bool success = sendPacket(tmpPacket, tmpPacketSize, ch, 1, false);
+    bool success = sendPacket(tmpPacket, tmpPacketSize, ch, false);
 
     if (success) {
         beacon.time = currentTime;
@@ -411,7 +411,7 @@ bool Attack::sendProbe(uint8_t* mac, const char* ssid, uint8_t ch) {
     memcpy(&probePacket[10], mac, 6);
     memcpy(&probePacket[26], ssid, ssidLen);
 
-    if (sendPacket(probePacket, packetSize, ch, 1, false)) {
+    if (sendPacket(probePacket, packetSize, ch, false)) {
         probe.time = currentTime;
         probe.packetCounter++;
         return true;
@@ -420,7 +420,7 @@ bool Attack::sendProbe(uint8_t* mac, const char* ssid, uint8_t ch) {
     return false;
 }
 
-bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16_t tries, bool force_ch) {
+bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, bool force_ch) {
     // Serial.println(bytesToStr(packet, packetSize));
 
     // set channel
@@ -429,10 +429,7 @@ bool Attack::sendPacket(uint8_t* packet, uint16_t packetSize, uint8_t ch, uint16
     // sent out packet
     bool sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
 
-    // try again until it's sent out
-    for (int i = 0; i < tries && !sent; i++) sent = wifi_send_pkt_freedom(packet, packetSize, 0) == 0;
-
-    if (sent) tmpPacketRate++;
+    if (sent) ++tmpPacketRate;
 
     return sent;
 }

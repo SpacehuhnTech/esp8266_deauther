@@ -23,7 +23,6 @@
   - [`chTime`](#ch-time)
   - [`minDeauths`](#mindeauths)
   - [`attackTimeout`](#attacktimeout)
-  - [`forcePackets`](#force-packets)
   - [`deauthsPerTarget`](#deauths-per-target)
   - [`deauthReason`](#deauth-reason)
   - [`beaconChannel`](#beacon-channel)
@@ -131,13 +130,6 @@ Minimum number of deauthentication frames when scanning to change the LED to dea
 `uint32_t attackTimeout = 600`  
 After what amount of time (in seconds) the attack will stop automatically.  
 Set it to 0 to disable it.  
-
-## FORCE-PACKETS
-`uint8_t forcePackets = 1;`  
-How many attempts to send out a packet.  
-Set this value higher if you want to achieve a better packet rate in a busy area.  
-Be careful this setting could make the device slower or more unstable.  
-**Max value is 255**.  
 
 ## DEAUTHS-PER-TARGET
 `uint16_t deauthsPerTarget = 10;`  
