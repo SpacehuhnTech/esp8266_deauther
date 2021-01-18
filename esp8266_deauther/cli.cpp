@@ -356,7 +356,7 @@ namespace cli {
                                            "  n: No",
                                            "n",
                                            (res == String('y') || res == String('n')));
-                    if (res == String('y')) cmd += " -scan";
+                    if (res == String('y')) cmd += " -auth";
                 }
             } else if (res == "deauth") {
                 { // Target
