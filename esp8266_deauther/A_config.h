@@ -563,7 +563,7 @@
 
 // ===== Reset ====== //
 #ifndef RESET_BUTTON
-  #if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0 && BUTTON_B != 0
+  #if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0
     #define RESET_BUTTON 0
   #else // if BUTTON_UP != 0 && BUTTON_DOWN != 0 && BUTTON_A != 0 && BUTTON_B != 0
     #define RESET_BUTTON 255

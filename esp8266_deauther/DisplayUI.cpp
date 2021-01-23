@@ -88,7 +88,7 @@ void DisplayUI::setup() {
             mode = DISPLAY_MODE::PACKETMONITOR;
         });
 
-        addMenuNode(&mainMenu, D_CLOCK, [this]() { // PACKET MONITOR
+        addMenuNode(&mainMenu, D_CLOCK, [this]() { // CLOCK
             mode = DISPLAY_MODE::CLOCK;
             display.setFont(ArialMT_Plain_24);
             display.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -523,7 +523,7 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = currentMenu->list->size() - 1;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel + 1);
-            } else if (mode == DISPLAY_MODE::CLOCK) {
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in clock, change time
                 setTime(clockHour, clockMinute + 1, clockSecond);
             }
         }
@@ -539,7 +539,7 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = currentMenu->list->size() - 1;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel + 1);
-            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in clock, change time
                 setTime(clockHour, clockMinute + 10, clockSecond);
             }
         }
@@ -662,12 +662,19 @@ void DisplayUI::draw(bool force) {
 
         updatePrefix();
 
-#ifndef RTC_DS3231
-        if (clockTime < currentTime - 1000) {
-            setTime(clockHour, clockMinute++, clockSecond + 1);
+        if (currentTime - clockTime >= 1000) {
+#ifdef RTC_DS3231
+            bool h12;
+            bool PM_time;
+            clockHour   = clock.getHour(h12, PM_time);
+            clockMinute = clock.getMinute();
+            clockSecond = clock.getSecond();
+#else // ifdef RTC_DS3231
+            ++clockSecond;
+#endif // ifdef RTC_DS3231
+            setTime(clockHour, clockMinute, clockSecond);
             clockTime += 1000;
         }
-#endif // ifndef RTC_DS3231
 
         switch (mode) {
             case DISPLAY_MODE::BUTTON_TEST:
