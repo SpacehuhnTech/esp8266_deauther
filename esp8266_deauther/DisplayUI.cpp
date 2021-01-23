@@ -672,19 +672,18 @@ void DisplayUI::draw(bool force) {
 
         updatePrefix();
 
-        if (currentTime - clockTime >= 1000) {
 #ifdef RTC_DS3231
-            bool h12;
-            bool PM_time;
-            clockHour   = clock.getHour(h12, PM_time);
-            clockMinute = clock.getMinute();
-            clockSecond = clock.getSecond();
+        bool h12;
+        bool PM_time;
+        clockHour   = clock.getHour(h12, PM_time);
+        clockMinute = clock.getMinute();
+        clockSecond = clock.getSecond();
 #else // ifdef RTC_DS3231
-            ++clockSecond;
-#endif // ifdef RTC_DS3231
-            setTime(clockHour, clockMinute, clockSecond);
+        if (currentTime - clockTime >= 1000) {
+            setTime(clockHour, clockMinute, ++clockSecond);
             clockTime += 1000;
         }
+#endif // ifdef RTC_DS3231
 
         switch (mode) {
             case DISPLAY_MODE::BUTTON_TEST:
