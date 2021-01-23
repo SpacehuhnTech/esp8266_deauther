@@ -196,6 +196,11 @@ namespace wifi {
         setHidden(settings::getAccessPointSettings().hidden);
         setCaptivePortal(settings::getWebSettings().captive_portal);
 
+        // copy web files to SPIFFS
+        if (settings::getWebSettings().use_spiffs) {
+            copyWebFiles(false);
+        }
+
         // Set mode
         mode = wifi_mode_t::off;
         WiFi.mode(WIFI_OFF);
@@ -404,6 +409,11 @@ namespace wifi {
         // ================================================================
         #endif /* ifdef USE_PROGMEM_WEB_FILES */
 
+        // aggressively caching static assets
+        if (settings::getWebSettings().use_spiffs) {
+            server.serveStatic("/", LittleFS, String(ap_settings.path).c_str(), "max-age=86400");
+        }
+
         server.on("/run", HTTP_GET, []() {
             server.send(200, str(W_TXT), str(W_OK).c_str());
             String input = server.arg("cmd");
@@ -413,9 +423,6 @@ namespace wifi {
         server.on("/attack.json", HTTP_GET, []() {
             server.send(200, str(W_JSON), attack.getStatusJSON());
         });
-
-        // aggressively caching static assets
-        server.serveStatic("/js", LittleFS, String(String(ap_settings.path) + "/js").c_str(), "max-age=86400");
 
         // called when the url is not defined here
         // use it to load content from SPIFFS

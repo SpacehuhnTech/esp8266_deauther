@@ -117,9 +117,6 @@ void setup() {
         displayUI.mode = DISPLAY_MODE::INTRO;
     }
 
-    // copy web files to SPIFFS
-    // copyWebFiles(false);
-
     // load everything else
     names.load();
     ssids.load();
