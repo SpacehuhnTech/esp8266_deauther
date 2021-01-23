@@ -409,11 +409,6 @@ namespace wifi {
         // ================================================================
         #endif /* ifdef USE_PROGMEM_WEB_FILES */
 
-        // aggressively caching static assets
-        if (settings::getWebSettings().use_spiffs) {
-            server.serveStatic("/", LittleFS, String(ap_settings.path).c_str(), "max-age=86400");
-        }
-
         server.on("/run", HTTP_GET, []() {
             server.send(200, str(W_TXT), str(W_OK).c_str());
             String input = server.arg("cmd");
