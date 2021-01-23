@@ -77,6 +77,7 @@ enum class DISPLAY_MODE { OFF,
                           PACKETMONITOR,
                           INTRO,
                           CLOCK,
+                          CLOCK_DISPLAY,
                           RESETTING };
 
 class DisplayUI {
@@ -156,6 +157,7 @@ class DisplayUI {
         Menu scanMenu;
         Menu showMenu;
         Menu attackMenu;
+        Menu clockMenu;
 
         Menu apListMenu;
         Menu stationListMenu;

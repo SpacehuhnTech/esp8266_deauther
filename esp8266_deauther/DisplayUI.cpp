@@ -87,15 +87,10 @@ void DisplayUI::setup() {
             scan.start(SCAN_MODE_SNIFFER, 0, SCAN_MODE_OFF, 0, false, wifi_channel);
             mode = DISPLAY_MODE::PACKETMONITOR;
         });
-
-        addMenuNode(&mainMenu, D_CLOCK, [this]() { // CLOCK
-            mode = DISPLAY_MODE::CLOCK;
-            display.setFont(ArialMT_Plain_24);
-            display.setTextAlignment(TEXT_ALIGN_CENTER);
-        });
+        addMenuNode(&mainMenu, D_CLOCK, &clockMenu); // CLOCK
 
 #ifdef HIGHLIGHT_LED
-        addMenuNode(&mainMenu, D_LED, [this]() { // LED
+        addMenuNode(&mainMenu, D_LED, [this]() {     // LED
             highlightLED = !highlightLED;
             digitalWrite(HIGHLIGHT_LED, highlightLED);
         });
@@ -446,6 +441,20 @@ void DisplayUI::setup() {
         });
     });
 
+    // CLOCK MENU
+    createMenu(&clockMenu, &mainMenu, [this]() {
+        addMenuNode(&clockMenu, D_CLOCK_DISPLAY, [this]() { // CLOCK
+            mode = DISPLAY_MODE::CLOCK_DISPLAY;
+            display.setFont(ArialMT_Plain_24);
+            display.setTextAlignment(TEXT_ALIGN_CENTER);
+        });
+        addMenuNode(&clockMenu, D_CLOCK_SET, [this]() { // CLOCK SET TIME
+            mode = DISPLAY_MODE::CLOCK;
+            display.setFont(ArialMT_Plain_24);
+            display.setTextAlignment(TEXT_ALIGN_CENTER);
+        });
+    });
+
     // ===================== //
 
     // set current menu to main menu
@@ -601,6 +610,7 @@ void DisplayUI::setupButtons() {
                     break;
 
                 case DISPLAY_MODE::CLOCK:
+                case DISPLAY_MODE::CLOCK_DISPLAY:
                     mode = DISPLAY_MODE::MENU;
                     display.setFont(DejaVu_Sans_Mono_12);
                     display.setTextAlignment(TEXT_ALIGN_LEFT);
@@ -700,6 +710,7 @@ void DisplayUI::draw(bool force) {
                 drawIntro();
                 break;
             case DISPLAY_MODE::CLOCK:
+            case DISPLAY_MODE::CLOCK_DISPLAY:
                 drawClock();
                 break;
             case DISPLAY_MODE::RESETTING:

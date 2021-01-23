@@ -365,6 +365,8 @@ const char D_SHOW[] PROGMEM = "SELECT";
 const char D_ATTACK[] PROGMEM = "ATTACK";
 const char D_PACKET_MONITOR[] PROGMEM = "PACKET MONITOR";
 const char D_CLOCK[] PROGMEM = "CLOCK";
+const char D_CLOCK_DISPLAY[] PROGMEM = "CLOCK DISPLAY";
+const char D_CLOCK_SET[] PROGMEM = "SET CLOCK";
 
 // SCAN MENU
 const char D_SCAN_APST[] PROGMEM = "SCAN AP + ST";
