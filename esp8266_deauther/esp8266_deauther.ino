@@ -125,9 +125,6 @@ void setup() {
     // create scan.json
     scan.setup();
 
-    // set channel
-    setWifiChannel(settings::getWifiSettings().channel, true);
-
     // dis/enable serial command interface
     if (settings::getCLISettings().enabled) {
         cli.enable();

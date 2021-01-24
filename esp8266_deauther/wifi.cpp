@@ -192,7 +192,7 @@ namespace wifi {
         setPath("/web");
         setSSID(settings::getAccessPointSettings().ssid);
         setPassword(settings::getAccessPointSettings().password);
-        setChannel(1);
+        setChannel(settings::getWifiSettings().channel);
         setHidden(settings::getAccessPointSettings().hidden);
         setCaptivePortal(settings::getWebSettings().captive_portal);
 
