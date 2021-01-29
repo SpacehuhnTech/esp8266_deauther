@@ -33,7 +33,9 @@
 			<div class="col-12">
 				<h1 class="header" data-translate="settings">Settings</h1>
 
-				<button onclick="getFile('run?cmd=stopap')" class="red" data-translate="wifi_off">WiFi off</button>
+				<button
+					onclick="getFile('run?cmd=stopap');alert('Turning off access point now. Restart your Deauther to be able to connect again.')"
+					class="red" data-translate="wifi_off">WiFi off</button>
 				<button onclick="getFile('run?cmd=reset;;save settings')" class="red"
 					data-translate="reset">Reset</button>
 				<button onclick="getFile('run?cmd=reboot')" class="red right" data-translate="reboot">reboot</button>
