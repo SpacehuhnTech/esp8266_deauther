@@ -75,7 +75,7 @@ function getFile(adr, callback, timeout, method, onTimeout, onError) {
 	request.onreadystatechange = function () {
 		if (this.readyState == 4) {
 			if (this.status == 200) {
-				showMessage();
+				showMessage("CONNECTED");
 				callback(this.responseText);
 			}
 		}
