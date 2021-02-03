@@ -404,10 +404,6 @@
   #define MIN_DEAUTH_FRAMES 3
 #endif /* ifndef MIN_DEAUTH_FRAMES */
 
-#ifndef DEFAULT_SSID
-  #define DEFAULT_SSID "pwned"
-#endif /* ifndef DEFAULT_SSID */
-
 // ===== ACCESS POINT ===== //
 #ifndef AP_SSID
   #define AP_SSID "pwned"
