@@ -160,7 +160,7 @@ class Attack {
             // Fixed parameters
             /* 22 - 23 */ 0x00,   0x00,                                                                                                                     // Fragment & sequence number (will be done by the SDK)
             /* 24 - 31 */ 0x83,   0x51,                 0xf7,                 0x8f,                 0x0f,                 0x00,                 0x00, 0x00, // Timestamp
-            /* 32 - 33 */ 0xe8,   0x03,                                                                                                                     // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
+            /* 32 - 33 */ 0x64,   0x00,                                                                                                                     // Interval: 0x64, 0x00 => every 100ms - 0xe8, 0x03 => every 1s
             /* 34 - 35 */ 0x31,   0x00,                                                                                                                     // capabilities Tnformation
 
             // Tagged parameters
