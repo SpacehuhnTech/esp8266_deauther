@@ -37,7 +37,7 @@
 ## Install using Arduino IDE
 
 1. Install Arduino IDE
-2. In Arduino go to `File` -> `Preferences` add both URLs to `Additional Boards Manager URLs`
+2. In Arduino go to `File` -> `Preferences` add the URL to `Additional Boards Manager URLs`
    `https://raw.githubusercontent.com/SpacehuhnTech/arduino/main/package_spacehuhn_index.json`  
 3. In Arduino go to `Tools` -> `Board` -> `Boards Manager` search for and install the `deauther` package  
 4. Download [V3 source code](https://github.com/SpacehuhnTech/esp8266_deauther/archive/v3.zip) and unzip it  
