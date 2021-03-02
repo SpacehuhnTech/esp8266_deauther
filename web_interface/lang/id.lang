@@ -1,5 +1,5 @@
 {
-    "lang": "in",
+    "lang": "id",
     "warning": "PERINGATAN",
     "disclaimer": "Proyek ini adalah bukti konsep untuk pengujian dan tujuan pendidikan.\nBaik ESP8266 maupun SDK-nya tidak dimaksudkan atau dibuat untuk tujuan tersebut. Bug bisa terjadi!\n\nGunakan hanya untuk jaringan dan perangkat Anda sendiri!\n\nIni menggunakan bingkai Wi-Fi valid yang dijelaskan dalam standar IEEE 802.11 dan tidak memblokir atau mengganggu frekuensi apa pun.\nHarap periksa peraturan hukum di negara Anda sebelum menggunakannya.\n\nHarap jangan merujuk proyek ini sebagai \"jammer\", yang benar-benar merusak tujuan sebenarnya dari proyek ini!\nJika Anda melakukannya, itu hanya membuktikan bahwa Anda tidak memahami apa pun tentang apa tujuan proyek ini.\nMenerbitkan konten tentang ini tanpa penjelasan yang tepat menunjukkan bahwa Anda hanya melakukannya untuk klik, ketenaran dan/atau uang dan tidak menghormati kekayaan intelektual, komunitas di baliknya, dan perjuangan untuk standar WiFi yang lebih baik.\n\nUntuk informasi lebih lanjut kunjungi:",
 	"disclaimer-button": "Saya telah membaca dan memahami pemberitahuan di atas",
