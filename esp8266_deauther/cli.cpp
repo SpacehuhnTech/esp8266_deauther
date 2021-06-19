@@ -709,6 +709,7 @@ namespace cli {
             Command cmd(c);
 
             auth_scan_settings_t auth_settings;
+            auth_settings.beacon = false;
 
             { // Channels
                 String ch_str          = cmd.getArg("ch").getValue();
