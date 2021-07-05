@@ -71,6 +71,11 @@ void DisplayUI::setup() {
     clock.setClockMode(false);
     clockHour   = clock.getHour(h12, PM_time);
     clockMinute = clock.getMinute();
+    
+    clock.setDate(5);
+    clock.setMonth(7);
+    clock.setYear(21);
+    
 #else // ifdef RTC_DS3231
     clockHour   = random(12);
     clockMinute = random(60);
@@ -448,7 +453,7 @@ void DisplayUI::setup() {
             display.setFont(ArialMT_Plain_24);
             display.setTextAlignment(TEXT_ALIGN_CENTER);
         });
-        addMenuNode(&clockMenu, D_CLOCK_SET, [this]() { // CLOCK SET TIME
+        addMenuNode(&clockMenu, D_CLOCK_TIME_SET, [this]() { // CLOCK SET TIME
             mode = DISPLAY_MODE::CLOCK;
             display.setFont(ArialMT_Plain_24);
             display.setTextAlignment(TEXT_ALIGN_CENTER);
@@ -534,6 +539,8 @@ void DisplayUI::setupButtons() {
                 scan.setChannel(wifi_channel + 1);
             } else if (mode == DISPLAY_MODE::CLOCK) {         // when in clock, change time
                 setTime(clockHour, clockMinute + 1, clockSecond);
+            } else if (mode == DISPLAY_MODE::CLOCK_DATE) {
+              setDate(clockDay + 1, clockMonth, clockYear);
             }
         }
     });
@@ -550,6 +557,8 @@ void DisplayUI::setupButtons() {
                 scan.setChannel(wifi_channel + 1);
             } else if (mode == DISPLAY_MODE::CLOCK) {         // when in clock, change time
                 setTime(clockHour, clockMinute + 10, clockSecond);
+            } else if (mode == DISPLAY_MODE::CLOCK_DATE) {
+              setDate(clockDay, clockMonth + 1, clockYear);
             }
         }
     }, buttonDelay);
@@ -567,6 +576,8 @@ void DisplayUI::setupButtons() {
                 scan.setChannel(wifi_channel - 1);
             } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
                 setTime(clockHour, clockMinute - 1, clockSecond);
+            } else if (mode == DISPLAY_MODE::CLOCK_DATE) {
+              setDate(clockDay - 1, clockMonth, clockYear);
             }
         }
     });
@@ -581,10 +592,10 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = 0;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel - 1);
-            }
-
-            else if (mode == DISPLAY_MODE::CLOCK) { // when in packet monitor, change channel
+            } else if (mode == DISPLAY_MODE::CLOCK) { // when in packet monitor, change channel
                 setTime(clockHour, clockMinute - 10, clockSecond);
+            } else if (mode == DISPLAY_MODE::CLOCK_DATE) {
+              setDate(clockDay, clockMonth - 1, clockYear);
             }
         }
     }, buttonDelay);
@@ -610,6 +621,7 @@ void DisplayUI::setupButtons() {
                     break;
 
                 case DISPLAY_MODE::CLOCK:
+                case DISPLAY_MODE::CLOCK_DATE:
                 case DISPLAY_MODE::CLOCK_DISPLAY:
                     mode = DISPLAY_MODE::MENU;
                     display.setFont(DejaVu_Sans_Mono_12);
@@ -672,12 +684,16 @@ void DisplayUI::draw(bool force) {
 
         updatePrefix();
 
-#ifdef RTC_DS3231
-        bool h12;
-        bool PM_time;
-        clockHour   = clock.getHour(h12, PM_time);
-        clockMinute = clock.getMinute();
-        clockSecond = clock.getSecond();
+#ifdef RTC_DS3231    
+    DateTime now = myRTC.now();
+    
+    clockHour   = now.hour();
+    clockMinute = now.minute();
+    clockSecond = now.second();
+    clockDay    = now.day();
+    clockMonth  = now.month();
+    clockYear   = now.year();
+
 #else // ifdef RTC_DS3231
         if (currentTime - clockTime >= 1000) {
             setTime(clockHour, clockMinute, ++clockSecond);
@@ -708,10 +724,19 @@ void DisplayUI::draw(bool force) {
                 }
                 drawIntro();
                 break;
+                
             case DISPLAY_MODE::CLOCK:
+                drawClockTime();
+                break;
+                
             case DISPLAY_MODE::CLOCK_DISPLAY:
                 drawClock();
                 break;
+                
+            case DISPLAY_MODE::CLOCK_DATE:
+                drawDate();
+                break;
+                
             case DISPLAY_MODE::RESETTING:
                 drawResetting();
                 break;
@@ -818,13 +843,31 @@ void DisplayUI::drawIntro() {
 }
 
 void DisplayUI::drawClock() {
+    drawClockTime();
+    drawDate();
+}
+
+void DisplayUI::drawClockTime() {
     String clockTime = String(clockHour);
 
     clockTime += ':';
     if (clockMinute < 10) clockTime += '0';
     clockTime += String(clockMinute);
 
-    display.drawString(64, 20, clockTime);
+    display.drawString(64, 10, clockTime);
+}
+
+void DisplayUI::drawDate() {
+    String clockDate = String(clockDay);
+    
+    clockDate += '/';
+    clockMonth = clockMonth - 48;
+    if ((clockMonth) < 10) clockMonth += '0';
+    clockDate += String(clockMonth);
+    clockDate += '/';
+    clockDate += String(clockYear);
+
+    display.drawString(64, 30, clockDate);
 }
 
 void DisplayUI::drawResetting() {
@@ -929,13 +972,45 @@ void DisplayUI::setTime(int h, int m, int s) {
         h = 23;
     }
 
-    clockHour   = h;
-    clockMinute = m;
-    clockSecond = s;
+#ifdef RTC_DS3231
+    clock.setHour(h);
+    clock.setMinute(m);
+    clock.setSecond(s);
+#endif // ifdef RTC_DS3231
+}
+
+void DisplayUI::setDate(int dd, int mm, int yy) {
+    if (dd > 31) {
+        dd = 1;
+        mm++;
+    }
+
+    if (mm >= 12) {
+        mm = 1;
+        yy++;
+    }
+
+    if (yy >= 99) {
+        yy = 0;
+    }
+
+    if (dd < 0) {
+        dd = 31;
+        mm--;
+    }
+
+    if (mm < 0) {
+        mm = 12;
+        yy--;
+    }
+
+    if (yy < 0) {
+        yy = 99;
+    }
 
 #ifdef RTC_DS3231
-    clock.setHour(clockHour);
-    clock.setMinute(clockMinute);
-    clock.setSecond(clockSecond);
+    clock.setDate(dd);
+    clock.setMonth(mm);
+    clock.setYear(yy);
 #endif // ifdef RTC_DS3231
 }

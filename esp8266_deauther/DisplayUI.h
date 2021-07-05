@@ -77,6 +77,7 @@ enum class DISPLAY_MODE { OFF,
                           PACKETMONITOR,
                           INTRO,
                           CLOCK,
+                          CLOCK_DATE,
                           CLOCK_DISPLAY,
                           RESETTING };
 
@@ -196,16 +197,26 @@ class DisplayUI {
 
         // fake clock
         void drawClock();
+        void drawClockTime();
+        void drawDate();
         void setTime(int h, int m, int s);
+        void setDate(int dd, int mm, int yy);
 
         int clockHour   = 6;
         int clockMinute = 0;
         int clockSecond = 0;
 
+        int clockDay   = 0;
+        int clockMonth = 0;
+        int clockYear  = 0;
+
         uint32_t clockTime = 0;
+        uint32_t clockDate = 0;
 
 #ifdef RTC_DS3231
         DS3231 clock;
+        RTClib myRTC;
+        
 #endif // ifdef RTC_DS3231
 };
 
