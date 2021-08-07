@@ -69,7 +69,7 @@
   #define LED_MODE_BRIGHTNESS 10
 
   #define LED_NUM 1
-  #define LED_NEOPIXEL_PIN D8
+  #define LED_NEOPIXEL_PIN 15 // D8
 
 // ===== DISPLAY ===== //
   #define USE_DISPLAY true
@@ -78,14 +78,14 @@
   #define SH1106_I2C
 
   #define I2C_ADDR 0x3C
-  #define I2C_SDA D2
-  #define I2C_SCL D1
+  #define I2C_SDA 4      // D2
+  #define I2C_SCL 5      // D1
 
 // ===== BUTTONS ===== //
-  #define BUTTON_UP D5
-  #define BUTTON_DOWN D6
-  #define BUTTON_A D4
-  #define BUTTON_B D3
+  #define BUTTON_UP 14   // D5
+  #define BUTTON_DOWN 12 // D6
+  #define BUTTON_A 2     // D4
+  #define BUTTON_B 0     // D3
 
 // https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Setup-Display-&-Buttons#example-setup-with-i2c-oled
 #elif defined(DISPLAY_EXAMPLE_I2C)
