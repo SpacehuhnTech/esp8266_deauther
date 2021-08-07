@@ -11,6 +11,7 @@ import sys
 boards = [
     "NODEMCU",
     "WEMOS_D1_MINI",
+    "HACKHELD_VEGA",
     "MALTRONICS",
     "DISPLAY_EXAMPLE_I2C",
     "DISPLAY_EXAMPLE_SPI",
@@ -54,11 +55,17 @@ os.system(f"mkdir {folder}")
 
 for board in boards:
     print(f"Compiling {board}...", flush=True)
+
+    if os.path.exists(f"{folder}/esp8266_deauther_{version}_{board}.bin"):
+        print("Already compiled")
+        continue
+
     os.system(f"arduino-cli cache clean")
-    command = f"arduino-cli compile --fqbn deauther:esp8266:generic --build-properties \"build.extra_flags=-DESP8266 -D{board}\" --output-dir {folder}"
+    command = f"arduino-cli compile --fqbn deauther:esp8266:generic --build-property \"build.extra_flags=-DESP8266 -D{board}\" --output-dir {folder}"
     process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE)
     process.wait()
-    os.system(f"mv {folder}/esp8266_deauther.ino.bin {folder}/esp8266_deauther_{version}_{board}.bin")
+    os.system(
+        f"mv {folder}/esp8266_deauther.ino.bin {folder}/esp8266_deauther_{version}_{board}.bin")
     print(f"OK")
 
 os.system(f"rm {folder}/esp8266_deauther.ino.elf")
