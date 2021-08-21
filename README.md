@@ -71,7 +71,7 @@ They are based in the UK.
 
 **[DSTIKE](https://dstike.com/)**:  
 DSTIKE was our first partner. They manufactured the first official deauther boards.  
-They offer a wide range of deauthers in all kind of form factores. Including a smart watch.  
+They offer a wide range of deauthers in a variety of form factors, including a smart watch.  
 They are based in China, but their products are available through a variety of stores:  
 - [Tindie](https://tindie.com/stores/lspoplove)  
 - [AliExpress](https://dstike.aliexpress.com/store/2996024)  
