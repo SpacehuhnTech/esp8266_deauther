@@ -1,8 +1,8 @@
 # ESP8266 Deauther 3.0
 
-**This version is still in development!**  
+**👉 For tutorials check out our [Blog](https://blog.spacehuhn.com/tag/deauther-v3/)**
 
-[Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
+This version is still in development! [Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
 
 ## Currently implemented
 
