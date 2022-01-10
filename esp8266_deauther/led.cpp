@@ -26,9 +26,9 @@ namespace led {
     LED_MODE mode = OFF;
 
 #if defined(LED_NEOPIXEL_RGB)
-    Adafruit_NeoPixel strip { LED_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ400 };
+    Adafruit_NeoPixel strip { LED_NUM, LED_NEOPIXEL_PIN, NEO_RGB + NEO_KHZ800 };
 #elif defined(LED_NEOPIXEL_GRB)
-    Adafruit_NeoPixel strip { LED_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ400 };
+    Adafruit_NeoPixel strip { LED_NUM, LED_NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800 };
 #elif defined(LED_MY92)
     my92xx myled { LED_MY92_MODEL, LED_NUM, LED_MY92_DATA, LED_MY92_CLK, MY92XX_COMMAND_DEFAULT };
 #elif defined(LED_DOTSTAR)

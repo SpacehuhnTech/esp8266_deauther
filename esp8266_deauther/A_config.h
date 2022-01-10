@@ -10,6 +10,7 @@
 
 // #define NODEMCU
 // #define WEMOS_D1_MINI
+// #define HACKHELD_VEGA
 // #define DISPLAY_EXAMPLE_I2C
 // #define DISPLAY_EXAMPLE_SPI
 
@@ -56,9 +57,38 @@
 
 // ========== CONFIGS ========== //
 
+// https://github.com/spacehuhntech/hackheld
+#if defined(HACKHELD_VEGA)
+// ===== LED ===== //
+  #define USE_LED true
+  #define LED_NEOPIXEL
+
+  #define LED_NEOPIXEL_GRB
+// #define LED_NEOPIXEL_RGB
+
+  #define LED_MODE_BRIGHTNESS 10
+
+  #define LED_NUM 1
+  #define LED_NEOPIXEL_PIN 15 // D8
+
+// ===== DISPLAY ===== //
+  #define USE_DISPLAY true
+  #define FLIP_DIPLAY true
+
+  #define SH1106_I2C
+
+  #define I2C_ADDR 0x3C
+  #define I2C_SDA 4      // D2
+  #define I2C_SCL 5      // D1
+
+// ===== BUTTONS ===== //
+  #define BUTTON_UP 14   // D5
+  #define BUTTON_DOWN 12 // D6
+  #define BUTTON_A 2     // D4
+  #define BUTTON_B 0     // D3
 
 // https://github.com/SpacehuhnTech/esp8266_deauther/wiki/Setup-Display-&-Buttons#example-setup-with-i2c-oled
-#if defined(DISPLAY_EXAMPLE_I2C)
+#elif defined(DISPLAY_EXAMPLE_I2C)
 
 // ===== DISPLAY ===== //
   #define SH1106_I2C
@@ -347,9 +377,9 @@
 
 #elif defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3)
 // ===== LED ===== //
-   #define LED_DIGITAL
-   #define LED_PIN_R 16 // NodeMCU on-board LED
-   #define LED_PIN_B 2  // ESP-12 LED
+// #define LED_DIGITAL
+// #define LED_PIN_R 16 // NodeMCU on-board LED
+// #define LED_PIN_B 2  // ESP-12 LED
 
 #endif /* if defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3) */
 // ============================== //
@@ -577,10 +607,10 @@
 
 // ======== CONSTANTS ========== //
 // Do not change these values unless you know what you're doing!
-#define DEAUTHER_VERSION "2.6.0"
+#define DEAUTHER_VERSION "2.6.1"
 #define DEAUTHER_VERSION_MAJOR 2
 #define DEAUTHER_VERSION_MINOR 6
-#define DEAUTHER_VERSION_REVISION 0
+#define DEAUTHER_VERSION_REVISION 1
 
 #define EEPROM_SIZE 4095
 #define BOOT_COUNTER_ADDR 1
@@ -692,6 +722,7 @@
  #define WEB_URL "deauth.me"
 
  */
+
 
 // ========== ERROR CHECKS ========== //
 #if LED_MODE_BRIGHTNESS == 0
