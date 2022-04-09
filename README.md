@@ -1,16 +1,12 @@
 # ESP8266 Deauther 3.0
 
-**👉 For tutorials check out our [Blog](https://blog.spacehuhn.com/tag/deauther-v3/)**
+**This version lacks a Web Interface and support for a Display (OLED)** [Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
 
-This version is still in development! [Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
-
-## Currently implemented
-
-- [x] Serial Command Line Interface
-- [ ] Web Interface
-- [ ] Display (OLED) Interface
+**For tutorials check out our [Blog](https://blog.spacehuhn.com/tag/deauther-v3/)**
 
 ## What's new
+
+👉 You can now use [serial.huhn.me](https://serial.huhn.me), our web based serial terminal, for Deauther V3. 
 
 - CLI
   - Powerful new command line interface
