@@ -565,7 +565,7 @@ void DisplayUI::setupButtons() {
                 else currentMenu->selected = 0;
             } else if (mode == DISPLAY_MODE::PACKETMONITOR) { // when in packet monitor, change channel
                 scan.setChannel(wifi_channel - 1);
-            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in packet monitor, change channel
+            } else if (mode == DISPLAY_MODE::CLOCK) {         // when in clock, change time
                 setTime(clockHour, clockMinute - 1, clockSecond);
             }
         }
@@ -583,7 +583,7 @@ void DisplayUI::setupButtons() {
                 scan.setChannel(wifi_channel - 1);
             }
 
-            else if (mode == DISPLAY_MODE::CLOCK) { // when in packet monitor, change channel
+            else if (mode == DISPLAY_MODE::CLOCK) {           // when in clock, change time
                 setTime(clockHour, clockMinute - 10, clockSecond);
             }
         }
