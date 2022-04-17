@@ -9,7 +9,7 @@
 import argparse
 from urllib.request import urlopen
 
-DEFAULT_URL = "https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf"
+DEFAULT_URL = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf"
 DEFAULT_FILENAME = "../esp8266_deauther/vendor_list.h"
 
 macs = []
