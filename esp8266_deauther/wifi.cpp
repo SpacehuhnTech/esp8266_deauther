@@ -376,6 +376,9 @@ namespace wifi {
             server.on("/lang/th.lang", HTTP_GET, []() {
                 sendProgmem(thlang, sizeof(thlang), W_JSON);
             });
+            server.on("/lang/vi.lang", HTTP_GET, []() {
+                sendProgmem(vilang, sizeof(vilang), W_JSON);
+            });
         }
         server.on("/lang/default.lang", HTTP_GET, []() {
             if (!settings::getWebSettings().use_spiffs) {
@@ -400,6 +403,7 @@ namespace wifi {
                 else if (String(settings::getWebSettings().lang) == "tlh") sendProgmem(tlhlang, sizeof(tlhlang), W_JSON);
                 else if (String(settings::getWebSettings().lang) == "es") sendProgmem(eslang, sizeof(eslang), W_JSON);
                 else if (String(settings::getWebSettings().lang) == "th") sendProgmem(thlang, sizeof(thlang), W_JSON);
+                else if (String(settings::getWebSettings().lang) == "vi") sendProgmem(vilang, sizeof(vilang), W_JSON);
 
                 else handleFileRead("/web/lang/"+String(settings::getWebSettings().lang)+".lang");
             } else {
