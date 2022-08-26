@@ -25,9 +25,9 @@ It is command line based, which allows it to offer not just more features, but m
 | [Huhnitor](https://github.com/spacehuhntech/huhnitor) support | | ✅ |
 | Signal strength scanner | | ✅ |
 | Authentication scanner | | ✅ |
-| Rogue AP | | ✅ |
+| Rogue AP | | ✅ | 
 
-## Installation
+## Installation:
 
 Please refer to the [installation guide in our wiki](https://github.com/spacehuhntech/esp8266_deauther/wiki/Installation).  
 If you're just looking for the .bin files, go to [releases](https://github.com/spacehuhn/esp8266_deauther/releases).  
