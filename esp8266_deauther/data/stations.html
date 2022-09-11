@@ -1,0 +1,91 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="description" content="Wi-Fi Deauthenticator">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="theme-color" content="#36393E" />
+		<title>ESP8266 Deauther</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="js/functions.js"></script>
+	</head>
+	<body>
+		<nav>
+			<a href="apscan.html">{APs}</a>
+			<a href="stations.html">{Stations}</a>
+			<a href="attack.html">{Attacks}</a>
+			<a href="settings.html">{Settings}</a>
+			<a class="right" href="info.html">{Info}</a>
+		</nav>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					
+					<div id="error" class="hide"></div>
+				
+					<h1 class="header">{h1}</h1>
+			
+					<label>{label1}
+						<input type="number" id="scanTime" value="10">s
+					</label>
+					
+					<button onclick="scan()" id="startScan" class="right button-primary">{button1}</button>
+					
+					<a id="clientScanStatus"><br />{a1}</a>
+					
+					<p class="red">{p1}</p>
+					
+					<p>
+						{p2} <span id="clientsFound">0</span><br />
+						<br />
+						<button class="marginNull button-primary left" onclick="select(-2)">{button2}</button>
+						<button class="marginNull button-primary right" onclick="select(-1)">{button3}</button><br />
+					</p>
+					
+					<table></table>
+					
+					<p class="block bold" >
+						{p3} <span id="clientNames"></span>
+					</p>
+					
+					<table id="nameList"></table>
+					
+					<button class="red left" onclick="clearNameList()">{button4}</button>
+					
+					<p>
+						<br class="clear" />
+						<br />
+						{p4}
+					</p>
+					
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-4">
+					<label>{label2} <input type="text" placeholder="{placeholder1}" id="cMac" /></label>
+				</div>
+				<div class="col-4">
+					<label>{label3} <input type="text" placeholder="{placeholder2}" id="cName" /></label>
+				</div>
+				<div class="col-4">
+					<button class="button-primary" style="width: 100%" onclick="addClient()">{button5}</button>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					<div id="copyright">
+						Version 1.6<br />
+						Copyright (c) 2017 Stefan Kremser<br />
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
+					</div>
+				</div>
+			</div>
+		</div>
+        <script src="js/l10n.js" async defer></script>
+        <script data-src="js/stations.js"></script>
+	</body>
+</html>

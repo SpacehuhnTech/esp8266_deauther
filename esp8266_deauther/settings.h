@@ -1,134 +1,91 @@
-/* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
+#ifndef Settings_h
+#define Settings_h
 
-#pragma once
+#include <EEPROM.h>
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#include "Mac.h"
+#include "MacList.h"
+#include "NameList.h"
 
-#include <Arduino.h> // Arduino String, Serial
-#include "A_config.h"
-
-// ===== VERSION ===== //
-typedef struct version_t {
-    uint8_t major;
-    uint8_t minor;
-    uint8_t revision;
-} version_t;
-
-// ===== AUTOSAVE ===== //
-typedef struct autosave_settings_t {
-    bool     enabled;
-    uint32_t time;
-} autosave_t;
-
-// ===== ATTACK ===== //
-typedef enum beacon_interval_t {
-    INTERVAL_1S    = 0,
-    INTERVAL_100MS = 1
-} beacon_interval_t;
-
-typedef struct attack_settings_t {
-    // General
-    bool     attack_all_ch;
-    bool     random_tx;
-    uint32_t timeout;
-
-    // Deauth
-    uint8_t deauths_per_target;
-    uint8_t deauth_reason;
-
-    // Beacon
-    beacon_interval_t beacon_interval;
-
-    // Probe
-    uint8_t probe_frames_per_ssid;
-} attack_settings_t;
-
-// ====== WIFI ====== //
-typedef struct wifi_settings_t {
-    uint8_t channel;
-    uint8_t mac_st[6];
-    uint8_t mac_ap[6];
-} wifi_settings_t;
-
-// ===== SNIFFER ===== //
-typedef struct sniffer_settings_t {
-    uint16_t channel_time;
-    uint16_t min_deauth_frames;
-} sniffer_settings_t;
-
-// ===== ACCESS POINT ===== //
-typedef struct access_point_settings_t {
-    char    ssid[33];
-    char    password[65];
-    bool    hidden;
-    uint8_t ip[4];
-} access_point_settings_t;
-
-// ===== WEB INTERFACE ===== //
-typedef struct web_settings_t {
-    bool enabled;
-    bool captive_portal;
-    bool use_spiffs;
-    char lang[3];
-} web_settings_t;
-
-// ===== CLI ===== //
-typedef struct cli_settings_t {
-    bool enabled;
-    bool serial_echo;
-} cli_settings_t;
-
-// ===== LED ===== //
-typedef struct led_settings_t {
-    bool enabled;
-} led_settings_t;
-
-// ===== DISPLAY ===== //
-typedef struct display_settings_t {
-    bool     enabled;
-    uint32_t timeout;
-} display_settings_t;
-
-// ===== SETTINGS ===== //
-typedef struct settings_t {
-    uint32_t                magic_num;
-    version_t               version;
-    autosave_settings_t     autosave;
-    attack_settings_t       attack;
-    wifi_settings_t         wifi;
-    sniffer_settings_t      sniffer;
-    access_point_settings_t ap;
-    web_settings_t          web;
-    cli_settings_t          cli;
-    led_settings_t          led;
-    display_settings_t      display;
-} settings_t;
-
-namespace settings {
-    void load();
-    void save(bool force = false);
-
-    void reset();
-    void print();
-
-    const settings_t& getAllSettings();
-    const version_t& getVersion();
-    const autosave_settings_t& getAutosaveSettings();
-    const attack_settings_t& getAttackSettings();
-    const wifi_settings_t& getWifiSettings();
-    const sniffer_settings_t& getSnifferSettings();
-    const access_point_settings_t& getAccessPointSettings();
-    const web_settings_t& getWebSettings();
-    const cli_settings_t& getCLISettings();
-    const led_settings_t& getLEDSettings();
-    const display_settings_t& getDisplaySettings();
-
-    void setAllSettings(settings_t& settings);
-    void setAutosaveSettings(const autosave_settings_t& autosave);
-    void setAttackSettings(const attack_settings_t& attack);
-    void setWifiSettings(const wifi_settings_t& wifi);
-    void setSnifferSettings(const sniffer_settings_t& sniffer);
-    void setAccessPointSettings(const access_point_settings_t& ap);
-    void setWebSettings(const web_settings_t& web);
-    void setCLISettings(const cli_settings_t& cli);
-    void setLEDSettings(const led_settings_t& led);
-    void setDisplaySettings(const display_settings_t& display);
+extern "C" {
+  #include "user_interface.h"
 }
+
+extern void sendBuffer();
+extern void sendToBuffer(String str);
+extern void sendHeader(int code, String type, size_t _size);
+
+extern const bool debug;
+extern String data_getVendor(uint8_t first, uint8_t second, uint8_t third);
+extern void eepromWriteInt(int adr, int val);
+extern int eepromReadInt(int adr);
+extern NameList nameList;
+
+#define ssidLenAdr 1024
+#define ssidAdr 1025
+#define passwordLenAdr 1057
+#define passwordAdr 1058
+#define deauthReasonAdr 1090
+#define attackTimeoutAdr 1091
+#define attackPacketRateAdr 1093
+#define clientScanTimeAdr 1094
+//#define attackEncryptedAdr 1095 <-- address is now free for another setting
+#define ssidHiddenAdr 1096
+#define apScanHiddenAdr 1097
+#define apChannelAdr 1098
+#define useLedAdr 1099
+#define channelHopAdr 1100
+#define multiAPsAdr 1101
+#define multiAttacksAdr 1102
+#define macIntervalAdr 1103
+#define beaconIntervalAdr 1105
+#define ledPinAdr 1106
+#define macAPAdr 1107
+#define isMacAPRandAdr 1113
+
+#define checkNumAdr 2001
+#define checkNum 16
+
+class Settings
+{
+  public:
+    Settings();
+    void load();
+    void reset();
+    void save();
+    void send();
+    void info();
+
+    int ssidLen;
+    String ssid = "";
+    bool ssidHidden;
+    int passwordLen;
+    String password = "";
+    int apChannel;
+    bool apScanHidden;
+    uint8_t deauthReason;
+    unsigned int attackTimeout;
+    int attackPacketRate;
+    int clientScanTime;
+    bool useLed;
+    bool channelHop;
+    bool multiAPs;
+    bool multiAttacks;
+    int macInterval;
+    bool beaconInterval;
+    int ledPin = 0;
+    int prevLedPin = 0;
+    Mac defaultMacAP;
+    Mac macAP;
+    bool isMacAPRand;
+    bool isSettingsLoaded = 0;
+    void syncMacInterface();
+    void setLedPin(int newLedPin);
+    bool pinStateOff = true;  // When attack is off, pin state is HIGH
+    
+  private:
+    size_t getSize();
+};
+
+#endif

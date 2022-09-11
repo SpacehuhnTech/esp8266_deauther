@@ -1,0 +1,263 @@
+<!Doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=0.8, minimal-ui">
+		<meta name="description" content="Wi-Fi Deauthenticator">
+		<meta name="author" content="Spacehuhn - Stefan Kremser">
+		<meta name="theme-color" content="#36393E" />
+		<title>ESP8266 Deauther</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="js/functions.js"></script>
+	</head>
+	<body>
+		<nav>
+			<a href="apscan.html">{APs}</a>
+			<a href="stations.html">{Stations}</a>
+			<a href="attack.html">{Attacks}</a>
+			<a href="settings.html">{Settings}</a>
+			<a class="right" href="info.html">{Info}</a>
+		</nav>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-12">
+					
+					<div id="error" class="hide"></div>
+					
+					<h1 class="header">{h1}</h1>
+					<h2>{locale}</h2>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-12">
+					<span class="flag" data-lang="en">{english}</span>
+                    
+					<span class="flag" data-lang="fr">{french}</span>
+					
+					<span class="flag" data-lang="zh-CN">{chinese}</span>
+					<!--
+					<span class="flag" data-lang="de">{german}</span>
+					<span class="flag" data-lang="es">{spanish}</span>
+					<span class="flag" data-lang="it">{italian}</span>
+					<span class="flag" data-lang="kl">{klingon}</span>
+					-->
+					
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-12">
+					<h2>{h2}</h2>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="ssid" class="labelFix">{label01}</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="ssid" minlength="1" maxlength="32">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="password" class="labelFix">{label02} (<span class="red">{label03}</span>)</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="password" minlength="8" maxlength="32">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="ssidHidden">{label04} (<span class="red">{label05}</span>)</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="ssidHidden" id="ssidHidden" value="false">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="apChannel" class="labelFix">{label06}</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="apChannel" min="1" max="14">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="apChannel" class="labelFix">{label07}</label>
+				</div>
+				<div class="col-6">
+					<input type="text" id="macAp" min="1" max="14">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="randMacAp" class="labelFix">{label08}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="randMacAp" id="randMacAp" value="false">
+				</div>
+			</div>
+			
+			
+			<div class="row">
+				<div class="col-12">
+					<h2>{h3}</h2>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="apScanHidden">{label09}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="apScanHidden" id="apScanHidden" value="false">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="multiAPs">{label10}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="multiAPs" id="multiAPs" value="false">
+				</div>
+			</div>
+			
+			
+			<div class="row">
+				<div class="col-12">
+					<h2>{h4}</h2>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="scanTime" class="labelFix">{label11}</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="scanTime" min="1" max="255"> s
+				</div>
+			</div>
+			
+			
+			<div class="row">
+				<div class="col-12">
+					<h2>{h5}</h2>
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="timeout" class="labelFix">{label12}</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="timeout" min="-1" max="65536"> s
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="useLed">{label13}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="useLed" value="false">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="ledPin" class="labelFix">{label14}</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="ledPin" min="0" max="18">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="beaconInterval">{label15}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="beaconInterval" value="false">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="deauthReason" class="labelFix">{label16}e</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="deauthReason" min="1" max="45">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="packetRate" class="labelFix">{label17} (<span class="red">{label18}</span>)</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="packetRate" min="1" max="50"> pkts/s
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="multiAttacks">{label19}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" id="multiAttacks" value="false">
+				</div>
+			</div>
+			
+			<div class="row">
+				<div class="col-6">
+					<label for="macInterval" class="labelFix">{label20}</label>
+				</div>
+				<div class="col-6">
+					<input type="number" id="macInterval" min="0" max="65000">s
+				</div>
+			</div>
+			
+			
+			<!--
+			<div class="row">
+				<div class="col-6">
+					<label for="channelHop">{label21}</label>
+				</div>
+				<div class="col-6">
+					<input type="checkbox" name="channelHop" id="channelHop" value="false">
+				</div>
+			</div>
+			-->
+			<div class="row">
+				<div class="col-12">
+					<br />
+					<button class="red" onclick="resetSettings()">reset</button> 
+					<button class="red" onclick="restart()">restart</button> 
+					<button class="button-primary right" onclick="saveSettings()">save</button>
+					<br class="clear" />
+					<p id="saved"></p>
+					<br class="clear" />
+
+					<div id="copyright">
+						Version 1.6<br />
+						Copyright (c) 2017 Stefan Kremser<br />
+						<a href="https://github.com/spacehuhn" target="_blank">github.com/spacehuhn</a>
+					</div>
+						
+				</div>
+			</div>
+		</div>
+        <script src="js/l10n.js" async defer></script>
+		<script data-src="js/settings.js"></script>
+	</body>
+</html>
