@@ -8,6 +8,8 @@
   <br>
 </p>
 
+### The main perpose of this fork is to add the `WebConsole` feature
+
 ## Difference to Version 3
 
 [Version 3](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v3) is in development. It is stable to use, but it is very different.  
