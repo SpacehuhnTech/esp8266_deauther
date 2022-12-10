@@ -19,6 +19,9 @@ extern "C" {
 #include "CLI.h"
 #include "Attack.h"
 #include "Scan.h"
+#ifdef ENABLE_WEB_CONSOLE
+#include "functions.h"
+#endif
 
 extern bool progmemToSpiffs(const char* adr, int len, String path);
 
@@ -414,7 +417,13 @@ namespace wifi {
             String input = server.arg("cmd");
             cli.exec(input);
         });
-
+#ifdef ENABLE_WEB_CONSOLE
+        server.on("/console", HTTP_GET, []() {
+            server.send(200, str(W_TXT), WebConsoleOutputCache.c_str());
+            //Clearing the cache once it is sent
+            WebConsoleOutputCache="";
+        });
+#endif
         server.on("/attack.json", HTTP_GET, []() {
             server.send(200, str(W_JSON), attack.getStatusJSON());
         });

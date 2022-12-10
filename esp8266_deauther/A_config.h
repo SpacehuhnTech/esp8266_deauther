@@ -8,6 +8,8 @@
 
 #define DEFAULT_ESP8266
 
+#define ENABLE_WEB_CONSOLE
+
 // #define NODEMCU
 // #define WEMOS_D1_MINI
 // #define HACKHELD_VEGA
