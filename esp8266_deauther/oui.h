@@ -6,7 +6,7 @@
   Wireshark is released under the GNU General Public License version 2
 */
 
-//#define ENABLE_MAC_LIST // comment out if you want to save memory
+#define ENABLE_MAC_LIST // comment out if you want to save memory
 
 const static uint8_t data_vendors[] PROGMEM = {
 #ifdef ENABLE_MAC_LIST
