@@ -2,7 +2,7 @@
 
 **This version lacks a Web Interface and support for a Display (OLED)** [Link to Version 2](https://github.com/SpacehuhnTech/esp8266_deauther/tree/v2/esp8266_deauther)  
 
-**For tutorials check out our [Blog](https://blog.spacehuhn.com/tag/deauther-v3/)**
+**For tutorials check out our [Blog](https://blog.spacehuhn.com/series/deautherv3)**
 
 ## What's new
 
