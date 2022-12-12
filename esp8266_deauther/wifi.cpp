@@ -298,6 +298,14 @@ namespace wifi {
             server.on("/settings.html", HTTP_GET, []() {
                 sendProgmem(settingshtml, sizeof(settingshtml), W_HTML);
             });
+#ifdef ENABLE_WEB_CONSOLE
+            server.on("/webconsole.html", HTTP_GET, []() {
+                sendProgmem(webconsolehtml, sizeof(webconsolehtml), W_HTML);
+            });
+            server.on("/js/webconsole.js", HTTP_GET, []() {
+                sendProgmem(webconsolejs, sizeof(webconsolejs), W_JS);
+            });
+#endif
             server.on("/style.css", HTTP_GET, []() {
                 sendProgmem(stylecss, sizeof(stylecss), W_CSS);
             });
