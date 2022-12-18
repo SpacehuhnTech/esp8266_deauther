@@ -7,12 +7,19 @@ Command.addEventListener('keyup',(ev)=>{
         //Enter is pressed
         cmd=Command.value
         if (cmd.length>0) {
-            // cmd_url_encodded=encodeURIComponent(cmd)
-            getFile(`/run?cmd=${cmd}`,()=>{
-                CLIHistory.push(cmd)
+            if(cmd.trim()=="clear"){
+                Output.value=""
                 Command.value=""
-                HistoryPointer=0
-            })
+            }else{
+                getFile(`/run?cmd=${cmd}`,()=>{
+                    CLIHistory.push(cmd)
+                    Command.value=""
+                    HistoryPointer=0
+                    getFile("/console",(responseText)=>{
+                        Output.value=responseText+Output.value
+                    })
+                })
+            }
         }
     }
 
