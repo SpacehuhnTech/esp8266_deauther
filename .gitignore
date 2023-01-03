@@ -10,3 +10,9 @@
 *.pyc
 
 utils/web_converter/css_html_js_minify/__pycache__/
+
+utils/simple_web_converter/__pycache__
+
+web_interface/gz/*
+
+.vscode

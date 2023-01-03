@@ -1,6 +1,8 @@
 /* This software is licensed under the MIT License: https://github.com/spacehuhntech/esp8266_deauther */
 
 #pragma once
+#ifndef __FUNCTIONS_H__
+#define __FUNCTIONS_H__
 
 #include "Arduino.h"
 #include <LittleFS.h>
@@ -8,7 +10,7 @@ extern "C" {
   #include "user_interface.h"
 }
 #include "src/ArduinoJson-v5.13.5/ArduinoJson.h"
-
+#include "A_config.h"
 /*
    Here is a collection of useful functions and variables.
    They are used globally via an 'extern' reference in every class.
@@ -247,22 +249,52 @@ String b2a(bool input) {
 bool s2b(String input) {
     return eqls(input, STR_TRUE);
 }
+// ===== WEBCONSOLE FUNCTIONS ===== //
+#ifdef ENABLE_WEB_CONSOLE
+String WebConsoleOutputCache="";
+
+void WebConsoleMemoryHandler(){
+  //The main job of this funtion to clear the memory occupied by webconsole output cache
+  //If the cache uses memory more than 4kB, this function will clear the cache.
+  //This way we can limit the memory usage by webconsole
+  if(WebConsoleOutputCache.length()>4096){
+    //Clear the WebConsoleOutputCache
+    WebConsoleOutputCache="";
+  }
+}
+#endif
 
 // ===== PRINT FUNCTIONS ===== //
 void prnt(const String s) {
     Serial.print(s);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=s;
+#endif
 }
 
 void prnt(const bool b) {
     Serial.print(b2s(b));
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=b2s(b);
+#endif
 }
 
 void prnt(const char c) {
     Serial.print(c);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=(String)c;
+#endif
 }
 
 void prnt(const char* ptr) {
     Serial.print(FPSTR(ptr));
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=FPSTR(ptr);
+#endif
 }
 
 void prnt(const char* ptr, int len) {
@@ -271,30 +303,64 @@ void prnt(const char* ptr, int len) {
 
 void prnt(const int i) {
     Serial.print((String)i);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=(String)i;
+#endif
 }
 
 void prnt(const uint32_t i) {
     Serial.printf("%u", i);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    char* s="";
+    sprintf(s,"%u",i);
+    WebConsoleOutputCache+=s;
+#endif
 }
 
 void prntln() {
     Serial.println();
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+='\n';
+#endif
 }
 
 void prntln(const String s) {
     Serial.println(s);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=s;
+    WebConsoleOutputCache+='\n';
+#endif
 }
 
 void prntln(const bool b) {
     Serial.println(b2s(b));
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=b2s(b);
+    WebConsoleOutputCache+='\n';
+#endif
 }
 
 void prntln(const char c) {
     Serial.println(c);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=(String)c;
+    WebConsoleOutputCache+='\n';
+#endif
 }
 
 void prntln(const char* ptr) {
     Serial.println(FPSTR(ptr));
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=FPSTR(ptr);
+    WebConsoleOutputCache+='\n';
+#endif
 }
 
 void prntln(const char* ptr, int len) {
@@ -304,10 +370,21 @@ void prntln(const char* ptr, int len) {
 
 void prntln(const int i) {
     Serial.println((String)i);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    WebConsoleOutputCache+=(String)i;
+#endif
 }
 
 void prntln(const uint32_t i) {
     Serial.printf("%u\r\n", i);
+#ifdef ENABLE_WEB_CONSOLE
+    WebConsoleMemoryHandler();
+    char* s="";
+    sprintf(s,"%u",i);
+    WebConsoleOutputCache+=s;
+    WebConsoleOutputCache+='\n';
+#endif
 }
 
 /* ===== WiFi ===== */
@@ -331,6 +408,7 @@ void setOutputPower(float dBm) {
 }
 
 /* ===== MAC ADDRESSES ===== */
+#include "oui.h"
 bool macBroadcast(uint8_t* mac) {
     for (uint8_t i = 0; i < 6; i++)
         if (mac[i] != broadcast[i]) return false;
@@ -401,7 +479,6 @@ int binSearchVendors(uint8_t* searchBytes, int lowerEnd, int upperEnd) {
 
     return -1;
 }
-
 String searchVendor(uint8_t* mac) {
     String vendorName = String();
     int    pos        = binSearchVendors(mac, 0, sizeof(data_macs) / 5 - 1);
@@ -829,3 +906,4 @@ String formatBytes(size_t bytes) {
     else if (bytes < (1024 * 1024 * 1024)) return String(bytes / 1024.0 / 1024.0) + "MB";
     else return String(bytes / 1024.0 / 1024.0 / 1024.0) + "GB";
 }
+#endif

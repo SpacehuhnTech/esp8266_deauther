@@ -390,6 +390,15 @@ input[type="file"] {
   min-height: 0.125rem;
 }
 
+/*Web Console*/
+#Output{
+	width: 100%;
+	height: 80vh;
+}
+#Command{
+	width: 100%;
+	height: 10vh;
+}
 .col-1,
 .col-2,
 .col-3,

@@ -22,7 +22,8 @@ extern "C" {
 
 #include "oui.h"
 #include "language.h"
-#include "functions.h"
+//#include "functions.h"
+#include <LittleFS.h>
 #include "settings.h"
 #include "Names.h"
 #include "SSIDs.h"
