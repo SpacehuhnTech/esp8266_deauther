@@ -85,7 +85,7 @@ namespace wifi {
     }
 
     void setChannel(uint8_t ch) {
-        if ((ch < 1) && (ch > 14)) {
+        if ((ch < 1) || (ch > 14)) {
             debuglnF("ERROR: Channel must be withing the range of 1-14");
         } else {
             ap_settings.channel = ch;
