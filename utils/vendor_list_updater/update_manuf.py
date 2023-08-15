@@ -9,7 +9,7 @@
 import argparse
 from urllib.request import urlopen
 
-WS_MANUF_FILE_URL = "https://code.wireshark.org/review/gitweb?p=wireshark.git;a=blob_plain;f=manuf"
+WS_MANUF_FILE_URL = "https://web.archive.org/web/20230328024857if_/https://gitlab.com/wireshark/wireshark/-/raw/master/manuf"
 macs = []
 vendors = []
 tempVendors = []
