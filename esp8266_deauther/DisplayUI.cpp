@@ -263,19 +263,19 @@ void DisplayUI::setup() {
             accesspoints.getSelected(selectedID) ? accesspoints.deselect(selectedID) : accesspoints.select(selectedID);
         });
         addMenuNode(&apMenu, [this]() {
-            return str(D_ENCRYPTION) + accesspoints.getEncStr(selectedID);
+            return leftRight(str(D_ENCRYPTION), accesspoints.getEncStr(selectedID), maxLen - 1);
         }, NULL);                                                                          // Encryption: -/WPA2
         addMenuNode(&apMenu, [this]() {
-            return str(D_RSSI) + (String)accesspoints.getRSSI(selectedID);
+            return leftRight(str(D_RSSI), (String)accesspoints.getRSSI(selectedID), maxLen - 1);
         }, NULL);                                                                          // RSSI: -90
         addMenuNode(&apMenu, [this]() {
-            return str(D_CHANNEL) + (String)accesspoints.getCh(selectedID);
+            return leftRight(str(D_CHANNEL), (String)accesspoints.getCh(selectedID), maxLen - 1);
         }, NULL);                                                                          // Channel: 11
         addMenuNode(&apMenu, [this]() {
             return accesspoints.getMacStr(selectedID);
         }, NULL);                                                                          // 00:11:22:00:11:22
         addMenuNode(&apMenu, [this]() {
-            return str(D_VENDOR) + accesspoints.getVendorStr(selectedID);
+            return leftRight(str(D_VENDOR), accesspoints.getVendorStr(selectedID), maxLen - 1);
         }, NULL);                                                                          // Vendor: INTEL
         addMenuNode(&apMenu, [this]() {
             return accesspoints.getSelected(selectedID) ? str(D_DESELECT) : str(D_SELECT); // SELECT/DESELECT
@@ -307,10 +307,10 @@ void DisplayUI::setup() {
             return stations.getMacStr(selectedID);
         }, NULL);                                             // 00:11:22:00:11:22
         addMenuNode(&stationMenu, [this]() {
-            return str(D_VENDOR) + stations.getVendorStr(selectedID);
+            return leftRight(str(D_VENDOR), stations.getVendorStr(selectedID), maxLen - 1);
         }, NULL);                                             // Vendor: INTEL
         addMenuNode(&stationMenu, [this]() {
-            return str(D_AP) + stations.getAPStr(selectedID); // AP: someAP
+            return leftRight(str(D_AP), stations.getAPStr(selectedID), maxLen - 1); // AP: someAP
         }, [this]() {
             int apID = accesspoints.find(stations.getAP(selectedID));
 
@@ -320,13 +320,13 @@ void DisplayUI::setup() {
             }
         });
         addMenuNode(&stationMenu, [this]() {
-            return str(D_PKTS) + String(*stations.getPkts(selectedID));
+            return leftRight(str(D_PKTS), String(*stations.getPkts(selectedID)), maxLen - 1);
         }, NULL);                                                                      // Pkts: 12
         addMenuNode(&stationMenu, [this]() {
-            return str(D_CHANNEL) + String(stations.getCh(selectedID));
+            return leftRight(str(D_CHANNEL), String(stations.getCh(selectedID)), maxLen - 1);
         }, NULL);                                                                      // Channel: 11
         addMenuNode(&stationMenu, [this]() {
-            return str(D_SEEN) + stations.getTimeStr(selectedID);
+            return leftRight(str(D_SEEN), stations.getTimeStr(selectedID), maxLen - 1);
         }, NULL);                                                                      // Seen: <1min
 
         addMenuNode(&stationMenu, [this]() {
@@ -352,13 +352,13 @@ void DisplayUI::setup() {
             return names.getMacStr(selectedID);
         }, NULL);                                                                   // 00:11:22:00:11:22
         addMenuNode(&nameMenu, [this]() {
-            return str(D_VENDOR) + names.getVendorStr(selectedID);
+            return leftRight(str(D_VENDOR), names.getVendorStr(selectedID), maxLen - 1);
         }, NULL);                                                                   // Vendor: INTEL
         addMenuNode(&nameMenu, [this]() {
-            return str(D_AP) + names.getBssidStr(selectedID);
+            return leftRight(str(D_AP), names.getBssidStr(selectedID), maxLen - 1);
         }, NULL);                                                                   // AP: 00:11:22:00:11:22
         addMenuNode(&nameMenu, [this]() {
-            return str(D_CHANNEL) + (String)names.getCh(selectedID);
+            return leftRight(str(D_CHANNEL), (String)names.getCh(selectedID), maxLen - 1);
         }, NULL);                                                                   // Channel: 11
 
         addMenuNode(&nameMenu, [this]() {
@@ -379,7 +379,7 @@ void DisplayUI::setup() {
             return ssids.getName(selectedID).substring(0, ssids.getLen(selectedID));
         }, NULL);                                                   // SSID
         addMenuNode(&ssidMenu, [this]() {
-            return str(D_ENCRYPTION) + ssids.getEncStr(selectedID); // WPA2
+            return leftRight(str(D_ENCRYPTION), ssids.getEncStr(selectedID), maxLen - 1); // WPA2
         }, [this]() {
             ssids.setWPA2(selectedID, !ssids.getWPA2(selectedID));
         });
