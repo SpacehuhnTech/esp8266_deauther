@@ -1025,7 +1025,7 @@ void CLI::runCommand(String input) {
     }
 
     // ===== SEND ===== //
-    // send deauth <apMac> <stMac> <rason> <channel>
+    // send deauth <apMac> <stMac> <reason> <channel>
     else if (eqlsCMD(0, CLI_SEND) && (list->size() == 6) && eqlsCMD(1, CLI_DEAUTH)) {
         uint8_t apMac[6];
         uint8_t stMac[6];

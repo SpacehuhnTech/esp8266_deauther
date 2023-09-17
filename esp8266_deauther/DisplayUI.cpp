@@ -80,7 +80,7 @@ void DisplayUI::setup() {
 
     // MAIN MENU
     createMenu(&mainMenu, NULL, [this]() {
-        addMenuNode(&mainMenu, D_SCAN, &scanMenu);          /// SCAN
+        addMenuNode(&mainMenu, D_SCAN, &scanMenu);          // SCAN
         addMenuNode(&mainMenu, D_SHOW, &showMenu);          // SHOW
         addMenuNode(&mainMenu, D_ATTACK, &attackMenu);      // ATTACK
         addMenuNode(&mainMenu, D_PACKET_MONITOR, [this]() { // PACKET MONITOR

@@ -38,7 +38,7 @@ extern void prntln(const uint32_t i);
 
 // ===== GLOBAL STRINGS ===== //
 
-// Often used characters, therefor in the RAM
+// Often used characters, therefore in the RAM
 const char CURSOR              = '|';
 const char SPACE               = ' ';
 const char DOUBLEPOINT         = ':';
@@ -198,7 +198,7 @@ const char CLI_HELP_CHICKEN[] PROGMEM = "chicken";
 const char CLI_HELP_REBOOT[] PROGMEM = "reboot";
 const char CLI_HELP_INFO[] PROGMEM = "info";
 const char CLI_HELP_COMMENT[] PROGMEM = "// <comments>";
-const char CLI_HELP_SEND_DEAUTH[] PROGMEM = "send deauth <apMac> <stMac> <rason> <channel>";
+const char CLI_HELP_SEND_DEAUTH[] PROGMEM = "send deauth <apMac> <stMac> <reason> <channel>";
 const char CLI_HELP_SEND_BEACON[] PROGMEM = "send beacon <mac> <ssid> <ch> [wpa2]";
 const char CLI_HELP_SEND_PROBE[] PROGMEM = "send probe <mac> <ssid> <ch>";
 const char CLI_HELP_LED_A[] PROGMEM = "led <r> <g> <b>";
