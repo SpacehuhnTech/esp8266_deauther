@@ -772,14 +772,14 @@ void DisplayUI::drawLoadingScan() {
     drawString(0, leftRight(str(DSP_SCAN_FOR), scan.getMode(), maxLen));
     drawString(1, leftRight(str(DSP_APS), String(accesspoints.count()), maxLen));
     drawString(2, leftRight(str(DSP_STS), String(stations.count()), maxLen));
-    drawString(3, leftRight(str(DSP_PKTS), String(scan.getPacketRate()) + str(DSP_S), maxLen));
+    drawString(3, leftRight(str(D_PKTRATE), String(scan.getPacketRate()), maxLen));
     drawString(4, center(percentage, maxLen));
 }
 
 void DisplayUI::drawPacketMonitor() {
     double scale = scan.getScaleFactor(sreenHeight - lineHeight - 2);
 
-    String headline = leftRight(str(D_CH) + getChannel() + String(' ') + String('[') + String(scan.deauths) + String(']'), String(scan.getPacketRate()) + str(D_PKTS), maxLen);
+    String headline = leftRight(str(D_CH) + getChannel() + String(' ') + String('[') + String(scan.deauths) + String(']'), String(scan.getPacketRate()) + str(D_PKTRATE), maxLen);
 
     drawString(0, 0, headline);
 

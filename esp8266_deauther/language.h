@@ -336,7 +336,6 @@ const char D_MSG_DISPLAY_ON[] PROGMEM = "Turned display on";
 const char DSP_SCAN_FOR[] PROGMEM = "Scan for";
 const char DSP_APS[] PROGMEM = "APs";
 const char DSP_STS[] PROGMEM = "STs";
-const char DSP_PKTS[] PROGMEM = "Pkts";
 const char DSP_S[] PROGMEM = "/s";
 const char DSP_SCAN_DONE[] PROGMEM = "Done";
 
@@ -397,7 +396,8 @@ const char D_CHANNEL[] PROGMEM = "Channel:";
 const char D_CH[] PROGMEM = "Ch";
 const char D_VENDOR[] PROGMEM = "Vendor:";
 const char D_AP[] PROGMEM = "AP:";
-const char D_PKTS[] PROGMEM = "pkts";
+const char D_PKTS[] PROGMEM = "Pkts:";
+const char D_PKTRATE[] PROGMEM = "Pkt/s";
 const char D_SEEN[] PROGMEM = "Seen:";
 
 // ===== STATIONS ===== //
