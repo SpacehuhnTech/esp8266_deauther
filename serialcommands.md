@@ -39,7 +39,7 @@
 - [`write <file> <commands>`](#write)
 - [`info`](#info)
 - [`// <comments>`](#comment)
-- [`send deauth <apMac> <stMac> <rason> <channel>`](#send)
+- [`send deauth <apMac> <stMac> <reason> <channel>`](#send)
 - [`send beacon <mac> <ssid> <ch> [wpa2]`](#send)
 - [`send probe <mac> <ssid> <ch>`](#send)
 - [`led <r> <g> <b> [<brightness>]`](#led)
@@ -263,7 +263,7 @@ Please don't use this command within a script! It won't work but it might lead t
 ## WRITE
 `write <file> <commands>`  
 Writes (appends) a command to the given file and saves it.  
-**Please note** that this command has, like all commands, a limit of 512 characters and therefor shouldn't be used 
+**Please note** that this command has, like all commands, a limit of 512 characters and therefore shouldn't be used
 to write extensive files. There is a better way to upload files to the SPIFFS explained in the tutorials.md file.  
 
 ## INFO

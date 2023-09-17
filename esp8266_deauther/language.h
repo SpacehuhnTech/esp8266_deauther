@@ -38,7 +38,7 @@ extern void prntln(const uint32_t i);
 
 // ===== GLOBAL STRINGS ===== //
 
-// Often used characters, therefor in the RAM
+// Often used characters, therefore in the RAM
 const char CURSOR              = '|';
 const char SPACE               = ' ';
 const char DOUBLEPOINT         = ':';
@@ -198,7 +198,7 @@ const char CLI_HELP_CHICKEN[] PROGMEM = "chicken";
 const char CLI_HELP_REBOOT[] PROGMEM = "reboot";
 const char CLI_HELP_INFO[] PROGMEM = "info";
 const char CLI_HELP_COMMENT[] PROGMEM = "// <comments>";
-const char CLI_HELP_SEND_DEAUTH[] PROGMEM = "send deauth <apMac> <stMac> <rason> <channel>";
+const char CLI_HELP_SEND_DEAUTH[] PROGMEM = "send deauth <apMac> <stMac> <reason> <channel>";
 const char CLI_HELP_SEND_BEACON[] PROGMEM = "send beacon <mac> <ssid> <ch> [wpa2]";
 const char CLI_HELP_SEND_PROBE[] PROGMEM = "send probe <mac> <ssid> <ch>";
 const char CLI_HELP_LED_A[] PROGMEM = "led <r> <g> <b>";
@@ -336,7 +336,6 @@ const char D_MSG_DISPLAY_ON[] PROGMEM = "Turned display on";
 const char DSP_SCAN_FOR[] PROGMEM = "Scan for";
 const char DSP_APS[] PROGMEM = "APs";
 const char DSP_STS[] PROGMEM = "STs";
-const char DSP_PKTS[] PROGMEM = "Pkts";
 const char DSP_S[] PROGMEM = "/s";
 const char DSP_SCAN_DONE[] PROGMEM = "Done";
 
@@ -397,7 +396,8 @@ const char D_CHANNEL[] PROGMEM = "Channel:";
 const char D_CH[] PROGMEM = "Ch";
 const char D_VENDOR[] PROGMEM = "Vendor:";
 const char D_AP[] PROGMEM = "AP:";
-const char D_PKTS[] PROGMEM = "pkts";
+const char D_PKTS[] PROGMEM = "Pkts:";
+const char D_PKTRATE[] PROGMEM = "Pkt/s";
 const char D_SEEN[] PROGMEM = "Seen:";
 
 // ===== STATIONS ===== //
@@ -503,8 +503,8 @@ const char SC_RESTRAT[] PROGMEM = "Scan will restart in ";
 const char SC_CONTINUE[] PROGMEM = "s - type stop to disable the continuous mode";
 const char SC_RESTART[] PROGMEM = "restarting in ";
 const char SC_ERROR_MODE[] PROGMEM = "ERROR: Invalid scan mode ";
-const char SC_OUTPUT_A[] PROGMEM = "Scanning WiFi [%+2u%%]: %+3u packets/s | %+2u devices | %+2u deauths\r\n";
-const char SC_OUTPUT_B[] PROGMEM = "Scanning WiFi: %+3u packets/s | %+2u devices | %+2u deauths\r\n";
+const char SC_OUTPUT_A[] PROGMEM = "Scanning WiFi [%+2u%%]: %+4u packets/s | %+2u devices | %+2u deauths\r\n";
+const char SC_OUTPUT_B[] PROGMEM = "Scanning WiFi: %+4u packets/s | %+2u devices | %+2u deauths\r\n";
 const char SC_JSON_APS[] PROGMEM = "aps";
 const char SC_JSON_STATIONS[] PROGMEM = "stations";
 const char SC_JSON_NAMES[] PROGMEM = "names";
