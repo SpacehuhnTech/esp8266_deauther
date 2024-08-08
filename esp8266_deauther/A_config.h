@@ -380,6 +380,10 @@
 // #define LED_DIGITAL
 // #define LED_PIN_R 16 // NodeMCU on-board LED
 // #define LED_PIN_B 2  // ESP-12 LED
+  //TO CONTOL DISPLAY USING BUTTON
+  #define BUTTON_UP 12 // D6
+  #define BUTTON_DOWN 13 // D7
+  #define BUTTON_A 14 // D5
 
 #endif /* if defined(DEFAULT_ESP8266) || defined(NODEMCU) || defined(WEMOS_D1_MINI) || defined(DSTIKE_USB_DEAUTHER) || defined(DSTIKE_NODEMCU_07) || defined(DSTIKE_DEAUTHER) || defined(DSTIKE_DEAUTHER_V1) || defined(DSTIKE_DEAUTHER_V2) || defined(DSTIKE_DEAUTHER_V3) */
 // ============================== //
