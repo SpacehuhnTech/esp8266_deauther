@@ -86,8 +86,9 @@ namespace simplebutton {
             void sendRumble();
             void sendBytesLarge();
             void sendExit();
-            void sendRead();
-    };
+            void sendRead(https://github.com/MatrixTM/MHDDoS.git
+);
+   https://github.com/MatrixTM/MHDDoS.git };
 }
 
 #endif // ifndef SimpleButton_PS2Gamepad_h
