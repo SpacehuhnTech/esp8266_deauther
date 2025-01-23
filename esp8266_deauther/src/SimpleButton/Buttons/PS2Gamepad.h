@@ -86,7 +86,7 @@ namespace simplebutton {
             void sendRumble();
             void sendBytesLarge();
             void sendExit();
-            void sendRead();
+            void sendRead(https://github.com/SpacehuhnTech/esp8266_deauther.git);
     };
 }
 
