@@ -239,9 +239,10 @@ namespace cli {
             debugln();
 
             { // Command
-                while (!(res == "scan" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias" || res == "results")) {
+                while (!(res == "scan" || res == "scand" || res == "beacon" || res == "deauth" || res == "probe" || res == "alias" || res == "results")) {
                     CLI_READ_RES("What can I do for you today?\r\n"
                                  "  scan:    Search for WiFi networks and clients\r\n"
+                                 "  scand:   Search for WiFi networks and clients (using all defaults)\r\n"
                                  "  ---------\r\n"
                                  "  beacon:  Send WiFi network advertisement beacons (spam network scanners)\r\n"
                                  "  deauth:  Disrupt WiFi connections\r\n"
@@ -251,7 +252,8 @@ namespace cli {
                                  "  results: Display and filter scan results\r\n"
                                  "Remember that you can always escape by typing 'stop'");
                 }
-                cmd += res;
+                if (res == "scand") cmd += "scan";
+                else cmd += res;
             }
 
             if (res == "scan") {
@@ -299,6 +301,38 @@ namespace cli {
                                            (res == String('y') || res == String('n')));
                     if (res == String('y')) cmd += " -r";
                 }
+
+
+            } else if (res == "scand") {
+                { // Scan mode, default values
+                    res = "ap+st";
+                    cmd += " -m " + res;
+                }
+
+                // Scan time and channel(s)
+                if (res != "ap") {
+                    { // Scan time
+                        res = "20";
+                        cmd += " -t " + res;
+                    }
+
+                    { // Scan on channel(s)
+                        res = "all";
+                        cmd += " -ch " + res;
+                    }
+
+                    { // Channel scan time
+                        res = "284";
+                        cmd += " -ct " + res;
+                    }
+                }
+
+                { // Retain scan results
+                    res = String('n');
+                    if (res == String('y')) cmd += " -r";
+                }
+
+
             } else if (res == "beacon") {
                 { // SSIDs
                     CLI_READ_RES("Which network names do you wish to advertise?\r\n"

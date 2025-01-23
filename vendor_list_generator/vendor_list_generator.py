@@ -6,10 +6,11 @@
 # https://github.com/xdavidhu/
 #
 
+import re
 import argparse
 from urllib.request import urlopen
 
-DEFAULT_URL = "https://gitlab.com/wireshark/wireshark/-/raw/master/manuf"
+DEFAULT_URL = "https://www.wireshark.org/download/automated/data/manuf"
 DEFAULT_FILENAME = "../esp8266_deauther/vendor_list.h"
 
 macs = []
@@ -34,6 +35,8 @@ def generate_lists(url, output, small):
     global vendors
     global macs
 
+    extraction_pattern = re.compile(r'([0-9A-Fa-f]{2}:[0-9A-Fa-f]{2}:[0-9A-Fa-f]{2})\s+(.*?)(?=\s)')
+
     print(f"Downloading MAC list from '{url}'...", end='', flush=True)
     data = urlopen(url)
 
@@ -45,23 +48,24 @@ def generate_lists(url, output, small):
 
     for line in lines:
         line = line.decode()
-        if line.startswith('#') or line.startswith('\n'):
-            continue
-        mac, short_desc, *rest = line.strip().split('\t')
-        short_desc = short_desc[0:8]
-        short_desc = short_desc.encode("ascii", "ignore").decode()
-        mac_octects = len(mac.split(':'))
-        if mac_octects == 6:
-            continue
-        else:
-            inList = False
-            for vendor in tempVendors:
-                if vendor[0] == short_desc:
-                    inList = True
-                    vendor[1] += 1
-                    break
-            if not inList:
-                tempVendors.append([short_desc, 1])
+        match = extraction_pattern.match(line)
+        if match:
+            mac = match.group(1)
+            vendor = match.group(2).strip()
+            short_desc = vendor[0:8]
+            short_desc = short_desc.encode("ascii", "ignore").decode()
+            mac_octects = len(mac.split(":"))
+            if mac_octects == 6:
+                continue
+            else:
+                inList = False
+                for vendor in tempVendors:
+                    if vendor[0] == short_desc:
+                        inList = True
+                        vendor[1] += 1
+                        break
+                if not inList:
+                    tempVendors.append([short_desc, 1])
 
     print("Done")
 
@@ -78,19 +82,20 @@ def generate_lists(url, output, small):
 
     for line in lines:
         line = line.decode()
-        if line.startswith('#') or line.startswith('\n'):
-            continue
-        mac, short_desc, *rest = line.strip().split('\t')
-        short_desc = short_desc[0:8]
-        short_desc = short_desc.encode("ascii", "ignore").decode()
-        mac_octects = len(mac.split(':'))
-        if mac_octects == 6:
-            continue
-        else:
-            for vendor in vendors:
-                if vendor == short_desc:
-                    index = vendors.index(vendor)
-                    macs.append([mac, index])
+        match = extraction_pattern.match(line)
+        if match:
+            mac = match.group(1)
+            vendor = match.group(2).strip()
+            short_desc = vendor[0:8]
+            short_desc = short_desc.encode("ascii", "ignore").decode()
+            mac_octects = len(mac.split(":"))
+            if mac_octects == 6:
+                continue
+            else:
+                for vendor in vendors:
+                    if vendor == short_desc:
+                        index = vendors.index(vendor)
+                        macs.append([mac, index])
 
     print("Done")
 
@@ -120,7 +125,7 @@ def generate_files(output):
     for mac in macs:
         macaddr = mac[0]
         vendorindex = mac[1]
-        (oc1, oc2, oc3) = macaddr.split(':')
+        (oc1, oc2, oc3) = macaddr.split(":")
         if vendorindex > 255:
             num = vendorindex
             index_bytes = []
