@@ -1,6 +1,6 @@
 # ESP8266 Deauther
 
-<img src='https://deauther.com/img/logo.png' alt='Deauther Logo' width='200' />
+<img width="474" height="668" alt="image" src="https://github.com/user-attachments/assets/6e193547-ef4d-4108-aa44-60b4aae90d89" />
 
 **Scan for WiFi devices, block selected connections, create dozens of networks and confuse WiFi scanners.**
 
