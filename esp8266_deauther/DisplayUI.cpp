@@ -14,7 +14,7 @@ void DisplayUI::configInit() {
        make sure to have version 4 of the display library installed
        https://github.com/ThingPulse/esp8266-oled-ssd1306/releases/tag/4.0.0
      */
-    display.setFont(DejaVu_Sans_Mono_12);
+    setDefaultFont();
 
     display.setContrast(255);
 
@@ -445,13 +445,11 @@ void DisplayUI::setup() {
     createMenu(&clockMenu, &mainMenu, [this]() {
         addMenuNode(&clockMenu, D_CLOCK_DISPLAY, [this]() { // CLOCK
             mode = DISPLAY_MODE::CLOCK_DISPLAY;
-            display.setFont(ArialMT_Plain_24);
-            display.setTextAlignment(TEXT_ALIGN_CENTER);
+            setClockFont();
         });
         addMenuNode(&clockMenu, D_CLOCK_SET, [this]() { // CLOCK SET TIME
             mode = DISPLAY_MODE::CLOCK;
-            display.setFont(ArialMT_Plain_24);
-            display.setTextAlignment(TEXT_ALIGN_CENTER);
+            setClockFont();
         });
     });
 
@@ -512,6 +510,16 @@ void DisplayUI::off() {
     } else {
         prntln(D_ERROR_NOT_ENABLED);
     }
+}
+
+void DisplayUI::setDefaultFont() {
+    display.setFont(DejaVu_Sans_Mono_12);
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+}
+
+void DisplayUI::setClockFont() {
+    display.setFont(ArialMT_Plain_24);
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
 }
 
 void DisplayUI::setupButtons() {
@@ -612,8 +620,7 @@ void DisplayUI::setupButtons() {
                 case DISPLAY_MODE::CLOCK:
                 case DISPLAY_MODE::CLOCK_DISPLAY:
                     mode = DISPLAY_MODE::MENU;
-                    display.setFont(DejaVu_Sans_Mono_12);
-                    display.setTextAlignment(TEXT_ALIGN_LEFT);
+                    setDefaultFont();
                     break;
             }
         }
@@ -651,8 +658,7 @@ void DisplayUI::setupButtons() {
 
                 case DISPLAY_MODE::CLOCK:
                     mode = DISPLAY_MODE::MENU;
-                    display.setFont(DejaVu_Sans_Mono_12);
-                    display.setTextAlignment(TEXT_ALIGN_LEFT);
+                    setDefaultFont();
                     break;
             }
         }

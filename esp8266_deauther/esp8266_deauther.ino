@@ -114,7 +114,8 @@ void setup() {
     // start display
     if (settings::getDisplaySettings().enabled) {
         displayUI.setup();
-        displayUI.mode = DISPLAY_MODE::INTRO;
+        displayUI.setClockFont();
+        displayUI.mode = DISPLAY_MODE::CLOCK_DISPLAY;
     }
 
     // load everything else
