@@ -36,12 +36,12 @@ Version number, i.e. `v2.0`.
 **PLEASE NOTE** that this setting can only be changed in the source code.  
 
 ## SSID
-`String ssid = "pwned";`  
+`String ssid = "zqwero";`  
 SSID of access point used for the web interface (if enabled).  
 The length must be between 1 and 31 characters.  
 
 ## PASSWORD
-`String password = "deauther";`  
+`String password = "deauther33";`  
 Password of access point used for the web interface (if enabled).  
 The length must be between 8 and 31 characters.  
 
